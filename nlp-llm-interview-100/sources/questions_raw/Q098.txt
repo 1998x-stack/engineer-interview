@@ -1,0 +1,57 @@
+Q098 手写 Multi‑Head Attention：Shape、Mask、Contiguous
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  PyTorch   Attention
+
+ 面试官在考什么：高频白板/现场 coding。
+ 题目：不调用 nn.MultiheadAttention，实现 self‑attention。列出关键 shape。
+
+ 60 秒标准回答
+
+ 输入 [B,T,D] 线性投影后 reshape 为 [B,H,T,Dh]；score 为 q @ k^T → [B,H,T,T]；scale、mask、
+ softmax 后乘 v，再 transpose/contiguous/reshape 回 [B,T,D] 并过输出投影。
+
+
+
+深度解析：Know‑Why
+
+‧ transpose 后 tensor 可能 non‑contiguous，view 前需 contiguous 或使用 reshape。
+‧ padding mask、causal mask 的 broadcast shape 要验证。
+‧ 生产实现要考虑 fused QKV、FlashAttention 与 dropout。
+
+ 高频失分点
+
+  ‧ softmax dim 错。
+  ‧ 忘 scale/mask。
+  ‧ head 维与 seq 维调换。
+
+ 追问树
+
+  1. 加入 GQA 怎么改 shape？
+  2. KV cache 后 query/key length 分别是多少？
+
+
+
+最小代码 / 测试骨架
+
+q = Wq(x).view(B,T,H,Dh).transpose(1,2)
+k = Wk(x).view(B,T,H,Dh).transpose(1,2)
+v = Wv(x).view(B,T,H,Dh).transpose(1,2)
+score = (q @ k.transpose(-2,-1)) / math.sqrt(Dh)
+score = score.masked_fill(mask == 0, float("-inf"))
+a = torch.softmax(score, dim=-1)
+y = a @ v
+y = y.transpose(1,2).contiguous().view(B,T,D)
+y = Wo(y)
+
+
+
+
+                                     复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                    108 / 116
+NLP/LLM 算法岗面试 100 题                                            2026 专业版
+
+

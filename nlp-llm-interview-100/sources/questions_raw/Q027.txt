@@ -1,0 +1,41 @@
+Q027 Hierarchical Softmax 为什么是 O(log|V|)？
+
+
+ 难度 ★★★ 频率 ★★★☆☆ 依据高频公开题型
+  Word2Vec   Huffman
+
+ 面试官在考什么：理解树结构概率分解。
+ 题目：Hierarchical Softmax 如何把多分类变成一系列二分类？为什么常用 Huffman Tree？
+
+ 60 秒标准回答
+
+ 每个词是树的叶子，预测词等价于从根走到该叶子的多次二分类。路径长度约 O(log|V|)；Huffman
+ 让高频词路径更短，降低平均计算量。
+
+
+
+深度解析：Know‑Why
+
+‧ 每个内部节点有一个 binary classifier。
+‧ 词概率是路径上分支概率的乘积。
+‧ 与 negative sampling 相比，它更接近显式归一化的概率模型。
+
+ 高频失分点
+
+  ‧ 把 Huffman 树理解为用词向量做压缩。
+
+ 追问树
+
+  1. 什么时候 HS 可能优于 negative sampling？
+  2. 为什么 rare word 路径更长？
+
+
+
+
+                                  复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                  30 / 116
+NLP/LLM 算法岗面试 100 题                                                              2026 专业版
+
+

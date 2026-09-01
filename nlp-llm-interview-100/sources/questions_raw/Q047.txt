@@ -1,0 +1,41 @@
+Q047 Transformer 为什么 Attention 后还需要 FFN？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  FFN   Token Mixing
+
+ 面试官在考什么：区分 token mixing 与 channel mixing。
+ 题目：如果 Attention 已经让所有 token 交互，为什么每层还要大 FFN？
+
+ 60 秒标准回答
+
+ Attention 主要在序列维度路由/混合 token 信息；FFN 对每个位置独立进行高容量非线性特征变
+ 换，在 hidden/channel 维度完成表示重组。两者互补。
+
+
+
+深度解析：Know‑Why
+
+‧ 经典 FFN 是升维 → 激活 → 降维。
+‧ 现代 LLM 中 FFN 参数量常占 block 很大比例。
+‧ MoE 主要替换/扩展的正是 FFN 子层。
+
+ 高频失分点
+
+  ‧ 说 FFN 只是“增加非线性”不够。
+
+ 追问树
+
+  1. d_ff 为什么常大于 d_model？
+  2. SwiGLU 为什么通常需要三组投影？
+
+
+
+
+                               复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                               51 / 116
+NLP/LLM 算法岗面试 100 题                                  2026 专业版
+
+

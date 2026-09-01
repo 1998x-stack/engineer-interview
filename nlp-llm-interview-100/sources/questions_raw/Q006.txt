@@ -1,0 +1,48 @@
+Q006 BatchNorm 与 LayerNorm：Transformer 为什么偏爱 LN？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  Normalization
+
+ 面试官在考什么：理解统计维度、训练/推理差异与序列建模。
+ 题目：BN 和 LN 分别沿什么维度归一化？Transformer 为什么通常采用 LN/RMSNorm？
+
+ 60 秒标准回答
+
+ BN 依赖 batch 统计；LN 对单个 token/样本的 hidden dimension 做归一化，不依赖 batch size，
+ 适合变长序列与自回归推理。
+
+
+白板公式
+
+                                      x−µ
+                          LN (x) = γ √        +β
+                                       σ2 + ϵ
+
+
+深度解析：Know‑Why
+
+‧ BN 训练与推理使用的统计不同，需要 running mean/variance。
+‧ LN 在每个位置内部归一化，更适合 sequence model。
+‧ 现代 LLM 常用 RMSNorm：不减均值，只按 RMS 缩放，结构更简洁。
+
+ 高频失分点
+
+  ‧ 说“LN 不受序列长度影响”但没说明归一化轴。
+  ‧ 忽略 Pre‑LN/Post‑LN。
+
+ 追问树
+
+  1. RMSNorm 与 LayerNorm 差异？
+  2. 为什么很深的 Transformer 常偏好 Pre‑Norm？
+
+
+
+
+                                 复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                  7 / 116
+NLP/LLM 算法岗面试 100 题                                          2026 专业版
+
+

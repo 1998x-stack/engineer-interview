@@ -1,0 +1,201 @@
+Q100 Transformer Debug + 实现 KV Cache：综合终局题
+
+
+ 难度 ★★★★★ 频率 ★★★★★             依据公开候选人报告题型
+  Debug   KV Cache   Systems
+
+ 面试官在考什么：用一题检验模型原理、PyTorch 正确性与系统意识。
+ 题目：给数百行 Transformer，找四处 bug，再加 KV cache。你先检查什么？
+
+ 60 秒标准回答
+
+ 先按不变量排查：shape、causal mask、scale、softmax dim、residual/norm、position offset、
+ dtype/device；再把历史 K/V 变成显式 state。prefill 写入整段 cache；decode 只追加新 K/V，新
+ Q 读取历史 + 当前 K/V。
+
+
+
+深度解析：Know‑Why
+
+‧ 最危险 bug 是“代码能跑但数学错”：mask 方向、softmax axis、position offset。
+‧ 直接 torch.cat 每步会反复复制 cache，生产应预分配或 paged blocks。
+‧ cache state 必须与 batch reorder、beam、sequence length、RoPE position 保持一致。
+
+ 高频失分点
+
+  ‧ 只修语法错误。
+  ‧ 缓存了历史 Q。
+  ‧ 忘记 cache 中 RoPE 后/前的表示约定。
+
+ 追问树
+
+  1. 如何为 KV cache 写单元测试？
+  2. 如何验证 cache decode 与 full forward logits 一致？
+  3. 如何扩展到 GQA 与 prefix caching？
+
+
+
+最小代码 / 测试骨架
+
+# 核心测试思想（伪代码）
+full = model(tokens).logits
+cache = None
+outs = []
+for t in range(tokens.size(1)):
+   y, cache = model(tokens[:, t:t+1], cache=cache, use_cache=True)
+   outs.append(y.logits)
+step = torch.cat(outs, dim=1)
+assert torch.allclose(full, step, atol=tol)
+
+
+
+
+                                     复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                     110 / 116
+第A篇
+
+高频公式速查
+
+
+主题              核心公式/记忆点
+                       ∑
+Cross Entropy   L = − k yk log pk ；Softmax+CE：∂L/∂zk = pk − yk 。
+AUC             P (s(x+ ) > s(x− ))，本质是 pairwise ranking。
+BM25            TF saturation + document length normalization。
+                                 √
+Attention       sof tmax(QK T / dk )V 。
+RoPE            RmTR =R        ，相对位置进入 QK 点积。
+                     n
+                         ∏ n−m
+Decoder LM      P (x) = t P (xt |x<t )。
+LoRA            W = W0 + BA，r ≪ d。
+DPO             优化 chosen/rejected 的 policy‑reference log‑ratio 差。
+MinHash         P (hmin (A) = hmin (B)) = J(A, B)。
+KV Cache        2 × layers × tokens × KV heads × headdim × bytes。
+
+
+
+
+                               111
+第B篇
+
+代码题检查清单
+
+1. Shape：先在纸上写每个 tensor shape，再写代码。
+
+2. Axis：softmax、sum、max 的维度是否正确？
+
+3. Mask：方向、broadcast、dtype、cache offset 是否正确？
+
+4. Numerical：exp/log/division 是否稳定？是否要减 max、加 epsilon？
+
+5. Complexity：有没有无意构造三维/四维巨大临时张量？
+
+6. Contiguous：transpose 后使用 view 是否安全？
+
+7. State：KV cache、RNN hidden、optimizer state 是否与 batch reorder 一致？
+
+8. Tests：至少覆盖空输入/长度 1、随机小例子、与慢实现对拍、极值/低精度。
+
+
+
+
+                                    112
+第C篇
+
+30 天刷题路线
+
+
+时间          主线        目标
+Day 1–4     Q1–24     补齐 ML + 传统 NLP；所有公式能闭卷写。
+Day 5–7     Q25–34    把 Word2Vec→RNN→LSTM→Attention 演化讲成
+                      一条因果链。
+Day 8–14    Q35–50    Transformer 核心；重点 Q35/36/39/43/45/46/50。
+Day 15–18   Q51–64    预训练、Tokenizer、数据、混合精度、MoE。
+Day 19–22   Q65–74    LoRA/QLoRA、RLHF、DPO、GRPO；每题能讲选择
+                      条件。
+Day 23–25   Q75–84    搜索/RAG；能设计完整两阶段检索与评测。
+Day 26–27   Q85–90    数据清洗、去重、污染、合成数据、Judge。
+Day 28      Q91–96    KV Cache、量化、Serving、分布式并行。
+Day 29      Q97–100   闭卷写代码、对拍、Debug。
+Day 30      Mock      随机抽 10 题：每题 60 秒回答 + 3 分钟追问；记录所
+                      有“知道但讲不顺”的点。
+
+
+
+
+                       113
+第D篇
+
+公开来源与真实性说明
+
+本书不声称拥有任何公司的内部面试题。题目来源分为三类：公开候选人报告中的具体题型、开源/公开
+NLP 面试题库中反复出现的同类题型、由 2026 年公开岗位能力要求映射出的高概率能力题。候选人报
+告具有个体差异，只能作为“曾有人公开报告被问过”的证据，不代表公司固定题库。
+
+
+2026 岗位能力参考
+
+ ‧ OpenAI, Research Engineer: 强调 bug‑free ML code、massive‑scale distributed ML sys‑
+   tems。
+    https://openai.com/careers/research-engineer-san-francisco/
+
+ ‧ OpenAI, Research Engineer, Retrieval & Search: document search、knowledge retrieval、
+   web‑scale search、vector databases/search indices。
+    https://openai.com/careers/research-engineer-retrieval-and-search-applied-eng
+    ineering-san-francisco/
+
+ ‧ OpenAI, Research Engineer / Research Scientist / AI Systems Engineer, RSI: LLM training、
+   evaluations、synthetic data、RL environments、distributed systems。
+    https://openai.com/careers/research-engineer-research-scientist-ai-systems-e
+    ngineer-rsi-san-francisco/
+
+ ‧ Apple, Machine Learning Engineer, Natural Language Generation: SFT、RLHF、prompt
+   engineering、data synthesis、automatic evaluation、RAG，以及端到端 data curation 到
+   evaluation。
+    https://jobs.apple.com/en-ca/details/200636204-3337/machine-learning-enginee
+    r-natural-language-generation-input-experience
+
+
+公开题型/面经参考
+
+ ‧ Exponent, OpenAI Research Engineer Interview Experience (candidate‑reported)：报告
+   过 Transformer bug hunting、KV cache、all_gather/noisy communication 等题型。
+    https://www.tryexponent.com/experiences/openai-machine-learning-engineer-int
+    erview-c7b6a2
+
+ ‧ GitHub, km1994/NLP‑Interview‑Notes：CRF、TF‑IDF、Word2Vec、Transformer 等传统与
+   深度 NLP 高频题整理。
+    https://github.com/km1994/NLP-Interview-Notes
+
+                                          114
+NLP/LLM 算法岗面试 100 题                                                 2026 专业版
+
+
+ ‧ GitHub, amusi/Deep‑Learning‑Interview‑Book ‑ 自然语言处理：Transformer/BERT/NLP 面
+   试知识整理与公开资料索引。
+    https://github.com/amusi/Deep-Learning-Interview-Book
+
+ ‧ GitHub, yanqiangmiffy/NLP‑Interview‑Notes：多家公司公开 NLP 面经与传统算法问题汇总。
+    https://github.com/yanqiangmiffy/NLP-Interview-Notes
+
+
+
+
+                                     115 / 116
+最后一页：真正应该记住的不是 100 个答案
+
+60 秒标准回答
+
+面试官常从一个简单问题连续向下挖：定义 → 公式 → 为什么 → 边界 → 缺点 → 改进 → 工程实现
+→ 线上失败。因此最有效的准备方式不是背 100 段话，而是把 100 题织成几条因果链：
+Word2Vec → RNN/LSTM → Attention → Transformer → BERT/GPT → RoPE/GQA → Pre‑
+training → SFT/DPO/RL → Retrieval/RAG → Data/Eval → Inference/Distributed。
+
+
+
+
+                                   116
+

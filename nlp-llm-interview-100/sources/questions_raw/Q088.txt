@@ -1,0 +1,42 @@
+Q088 合成数据质量：Validity、Faithfulness、Diversity、Utility
+
+
+ 难度 ★★★★★ 频率 ★★★★★             依据高频公开题型
+  Synthetic Data   Quality
+
+ 面试官在考什么：合成数据岗的核心方法论题。
+ 题目：一条合成样本“读起来很好”为什么仍可能是坏训练数据？
+
+ 60 秒标准回答
+
+ 需要四层质量：Validity 样本结构成立；Faithfulness 忠于 seed/事实；Diversity 扩大支持集而非
+ 复读教师；Utility 通过实际训练验证带来边际收益。LLM Judge 只能覆盖其中部分。
+
+
+
+深度解析：Know‑Why
+
+‧ 有锚改写通常比完全自由生成更易验证事实一致性。
+‧ 可验证领域优先执行器/单元测试，而非单一 Judge。
+‧ 最终标准是 proxy/full training ablation，而不是文本美学。
+
+ 高频失分点
+
+  ‧ 只用一个 LLM 打 1‑5 分。
+  ‧ 忽略 source lineage。
+
+ 追问树
+
+  1. 怎样做 atomic claim verification？
+  2. 合成比例如何通过 proxy model 搜索？
+
+
+
+
+                                      复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                      96 / 116
+NLP/LLM 算法岗面试 100 题                                       2026 专业版
+
+

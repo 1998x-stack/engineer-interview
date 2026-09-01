@@ -1,0 +1,41 @@
+Q063 Gradient Checkpointing：省了什么、付出什么？
+
+
+ 难度 ★★ 频率 ★★★★☆ 依据高频公开题型
+  Memory   Recompute
+
+ 面试官在考什么：理解 activation memory 与 compute trade‑off。
+ 题目：为什么 checkpointing 能显著省显存？
+
+ 60 秒标准回答
+
+ 正常反向传播需保存中间 activation；checkpointing 只保留部分节点，反向时重新 forward 计
+ 算丢失 activation，因此以额外 FLOPs 换取更低峰值内存。
+
+
+
+深度解析：Know‑Why
+
+‧ 对超长序列/深层模型 activation memory 很可观。
+‧ checkpoint 粒度影响重算比例与调度开销。
+‧ 与 offload、ZeRO、sequence parallel 可组合。
+
+ 高频失分点
+
+  ‧ 误以为减少 optimizer state。
+
+ 追问树
+
+  1. 如何选择 checkpoint 边界？
+  2. 为什么重算会影响随机 dropout 一致性？
+
+
+
+
+                                  复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                  68 / 116
+NLP/LLM 算法岗面试 100 题                                          2026 专业版
+
+

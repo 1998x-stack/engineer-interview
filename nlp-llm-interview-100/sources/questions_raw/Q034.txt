@@ -1,0 +1,60 @@
+Q034 Seq2Seq 为什么需要 Attention？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  Seq2Seq   Attention
+
+ 面试官在考什么：理解固定向量瓶颈如何催生 Attention。
+ 题目：原始 Encoder‑Decoder 将整个源句压成一个向量有什么问题？Attention 如何解决？
+
+ 60 秒标准回答
+
+ 固定长度上下文向量对长序列构成信息瓶颈。Attention 让 decoder 在每个生成步骤对所有 en‑
+ coder hidden states 动态加权读取，不必依赖单一最终状态。
+
+
+
+深度解析：Know‑Why
+
+‧ Bahdanau additive attention 与 dot‑product attention 计算形式不同。
+‧ Attention 权重可视为软对齐，但不应简单当作解释性真值。
+‧ Transformer 进一步去掉递归，直接用 attention 建 token‑to‑token 交互。
+
+ 高频失分点
+
+  ‧ 只说“Attention 让模型关注重要词”过于空泛。
+
+ 追问树
+
+  1. 为什么 dot‑product 更适合 GPU？
+  2. Encoder‑Decoder attention 与 self‑attention 的 Q/K/V 来源分别是什么？
+
+
+
+
+                                    复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                    37 / 116
+第4篇
+
+Transformer 核心原理
+
+本篇目标：这是全书权重最高的一篇：要求会画结构、会推公式、会算复杂度、会解释工程取舍。
+题目范围：Q35 Self‑Attention 的完整计算流程、Q36 为什么 Attention 要除以 sqrt(d_k)？         、Q37
+为什么 Q、K、V 要用不同投影？        、Q38 Multi‑Head Attention 为什么不是一个大 Head？     、Q39 Self‑
+Attention 的复杂度到底是多少？、Q40 Causal Mask 是怎么工作的？、Q41 为什么 Transformer
+必须注入位置信息？       、Q42 Sinusoidal Positional Encoding 的设计直觉、Q43 RoPE：如何把相对
+位置写进 QK 点积？    、Q44 为什么 RoPE 通常只作用于 Q/K，不作用于 V？           、Q45 RoPE 为什么会有长
+度外推问题？YaRN/PI 在解决什么？         、Q46 Pre‑LN 与 Post‑LN：为什么深层模型更偏 Pre‑Norm？         、
+Q47 Transformer 为什么 Attention 后还需要 FFN？       、Q48 GELU、ReLU 与 SiLU/SwiGLU 怎么
+比较？  、Q49 SwiGLU 为什么成了现代 LLM 常客？           、Q50 MHA、MQA、GQA：为什么共享 K/V 能
+省 KV Cache？
+
+
+
+
+                                      38
+NLP/LLM 算法岗面试 100 题                                                          2026 专业版
+
+

@@ -1,0 +1,57 @@
+Q090 离线指标涨了，为什么线上可能变差？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  Offline‑Online Gap   A   B
+
+ 面试官在考什么：真正工业算法岗必问。
+ 题目：一个 reranker 离线 NDCG 上升，但线上 CTR/成功率下降，如何分析？
+
+ 60 秒标准回答
+
+ 可能来自数据分布错配、  metric proxy 不对应业务、
+                                延迟上升、    召回链路变化、
+                                               长尾 regression、  用户
+ 行为反馈环等。应走 offline→shadow→A/B→monitoring，并建立可归因的 failure taxonomy。
+
+
+
+深度解析：Know‑Why
+
+‧ 线上目标常是多目标：质量、延迟、成本、安全、留存。
+‧ 离线测试集可能被迭代过拟合。
+‧ A/B 还需样本量、显著性与 guardrail 指标。
+
+ 高频失分点
+
+  ‧ 认为线上下降说明离线指标“没用”。
+
+ 追问树
+
+  1. 如何设置 guardrail metric？
+  2. 怎样做 counterfactual/off‑policy evaluation？
+
+
+
+
+                                      复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                      98 / 116
+第9篇
+
+推理、分布式与 AI Infra
+
+本篇目标：越接近大模型核心团队，越会考内存、带宽、通信与可靠性。
+题目范围：Q91 KV Cache 为什么能显著加速自回归 Decode？          、Q92 KV Cache 大小怎么估算？      、Q93
+Quantization 为什么能提升 LLM 推理吞吐？      、Q94 Continuous Batching 与 PagedAttention 解
+决什么？  、Q95 Speculative Decoding 为什么能“保证分布”又加速？         、Q96 DP、TP、PP、EP：四
+种并行怎么组合？
+
+
+
+
+                                      99
+NLP/LLM 算法岗面试 100 题                                          2026 专业版
+
+

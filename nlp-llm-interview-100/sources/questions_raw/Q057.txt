@@ -1,0 +1,40 @@
+Q057 Perplexity：什么时候能比、什么时候不能比？
+
+
+ 难度 ★★★ 频率 ★★★★☆ 依据高频公开题型
+  PPL   Eval
+
+ 面试官在考什么：避免指标误用。
+ 题目：PPL 的定义是什么？为什么不同 tokenizer 的 PPL 不宜直接横比？
+
+ 60 秒标准回答
+
+ PPL 是平均 token NLL 的指数。Tokenizer 改变 token 单位与序列长度，因此“每 token 困惑度”
+ 基准不同；同 tokenizer、同数据预处理下比较更有意义。
+
+
+深度解析：Know‑Why
+
+‧ PPL 是 intrinsic metric，不保证下游任务能力。
+‧ 文档边界、context length 与评测 sliding window 都会影响结果。
+‧ 可以用 bits‑per‑byte/character 增强跨 tokenizer 可比性。
+
+ 高频失分点
+
+  ‧ PPL 越低就宣称模型所有能力更强。
+
+ 追问树
+
+  1. 为什么中文与英文 PPL 不能直接比？
+  2. PPL 与 cross‑entropy 的关系？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   62 / 116
+NLP/LLM 算法岗面试 100 题                                           2026 专业版
+
+

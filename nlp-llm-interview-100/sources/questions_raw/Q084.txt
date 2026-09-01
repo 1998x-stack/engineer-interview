@@ -1,0 +1,57 @@
+Q084 如何完整评估一个 RAG 系统？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  RAG Eval   Groundedness
+
+ 面试官在考什么：必须拆检索与生成，不能只看答案。
+ 题目：设计 RAG 离线评测体系。
+
+ 60 秒标准回答
+
+ 至少分 retrieval 与 generation：检索看 Recall@K、MRR/NDCG、gold evidence coverage；生
+ 成看 correctness、faithfulness/groundedness、citation accuracy；最终再看 end‑to‑end task
+ success、latency、cost。
+
+
+
+深度解析：Know‑Why
+
+‧ 若 gold doc 未召回，生成错应归因 retrieval。
+‧ 答案正确但引用错，仍是 groundedness/citation failure。
+‧ LLM‑as‑judge 需用人工集/确定性验证校准。
+
+ 高频失分点
+
+  ‧ 只看 BLEU/ROUGE。
+  ‧ 只评价生成，不评价召回。
+
+ 追问树
+
+  1. 没有 gold evidence 时怎么评？
+  2. 线上如何做 failure taxonomy？
+
+
+
+
+                                     复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                     91 / 116
+第8篇
+
+数据工程与 Evaluation
+
+本篇目标：数据质量不是“看起来干净”，而是来源可追踪、错误可验证、训练后有效。
+题目范围：Q85 预训练数据清洗 Pipeline 应如何设计？              、Q86 Exact Dedup 与 MinHash：何时用
+哪一个？ 、Q87 Benchmark Decontamination 为什么不能只做 Exact Match？         、Q88 合成数据质
+量：Validity、Faithfulness、Diversity、Utility、Q89 LLM‑as‑a‑Judge 有哪些系统性偏差？   、Q90
+离线指标涨了，为什么线上可能变差？
+
+
+
+
+                                     92
+NLP/LLM 算法岗面试 100 题                                                2026 专业版
+
+

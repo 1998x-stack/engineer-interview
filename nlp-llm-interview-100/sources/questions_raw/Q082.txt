@@ -1,0 +1,50 @@
+Q082 Hybrid Search 与 RRF：为什么排名融合常比 raw score 加权稳？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  Hybrid   RRF
+
+ 面试官在考什么：Sparse+Dense 实战题。
+ 题目：BM25 score 和 cosine score 量纲不同，如何融合？
+
+ 60 秒标准回答
+
+ 可做归一化后加权，但跨 query 的 score 分布不稳定。RRF 只使用各系统的 rank，以 1/(k+rank)
+ 累加，减少不同打分尺度造成的校准问题。
+
+
+
+白板公式
+
+                                     ∑         1
+                         RRF (d) =
+                                         k + rankj (d)
+                                     j
+
+
+
+深度解析：Know‑Why
+
+‧ RRF 无需训练，baseline 强。
+‧ rank‑based 融合会丢失 score gap 信息。
+‧ 可进一步学习 LambdaMART/神经融合模型。
+
+ 高频失分点
+
+  ‧ 直接 bm25+cosine 不做任何 scale 处理。
+
+ 追问树
+
+  1. RRF 中 k 的作用？
+  2. 何时学习式融合更好？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   89 / 116
+NLP/LLM 算法岗面试 100 题                                            2026 专业版
+
+

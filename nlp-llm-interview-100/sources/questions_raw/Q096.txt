@@ -1,0 +1,55 @@
+Q096 DP、TP、PP、EP：四种并行怎么组合？
+
+
+ 难度 ★★★★★ 频率 ★★★★★              依据当前岗位能力要求 + 公开系统面经
+  Distributed Training
+
+ 面试官在考什么：大模型核心工程题。
+ 题目：解释 Data/Tensor/Pipeline/Expert Parallel，各自主要通信是什么？
+
+ 60 秒标准回答
+
+ DP 复制模型分数据，梯度需 all‑reduce/reduce‑scatter；TP 切单层矩阵，层内频繁通信；PP 按
+ 层切 stage，产生 pipeline bubbles；EP 把 MoE experts 分设备，token routing 需要 all‑to‑all。
+ 大规模训练常多维组合。
+
+
+深度解析：Know‑Why
+
+‧ ZeRO/FSDP 属于数据并行下参数/梯度/optimizer state 分片。
+‧ TP 通信频率高，偏好高速互联。
+‧ PP microbatch 数影响 bubble 比例。
+
+ 高频失分点
+
+  ‧ 把 ZeRO 当第五种完全独立并行。
+
+ 追问树
+
+  1. 为什么 TP 通常限制在单节点高速互联？
+  2. all‑reduce 与 reduce‑scatter+all‑gather 的关系？
+
+
+
+
+                                      复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                      105 / 116
+第 10 篇
+
+手写代码与 Debug
+
+ 本篇目标：最终区分“背过”和“做过”的部分：正确性、数值稳定性、shape、复杂度与边界测试。
+ 题目范围：Q97 手写 Numerical Stable Softmax、 Q98 手写 Multi‑Head Attention：Shape、
+                                                                        Mask、
+ Contiguous、Q99 Vectorized 1‑NN：禁止 Python For‑loop、Q100 Transformer Debug + 实
+ 现 KV Cache：综合终局题
+
+
+
+
+                                    106
+NLP/LLM 算法岗面试 100 题                                          2026 专业版
+
+

@@ -1,0 +1,42 @@
+Q053 BERT 与 GPT：双向理解和因果生成如何取舍？
+
+
+ 难度 ★★ 频率 ★★★★★ 依据高频公开题型
+  Encoder vs Decoder
+
+ 面试官在考什么：面试必须能从 attention mask、objective、任务形态三层比较。
+ 题目：BERT 与 GPT 的核心差异是什么？
+
+ 60 秒标准回答
+
+ BERT encoder 使用双向 self‑attention，
+                                 适合固定输入上的表征与判别；  GPT decoder 使用 causal
+ mask 做自回归 next‑token prediction，天然适合开放式生成与 in‑context learning。
+
+
+
+深度解析：Know‑Why
+
+‧ BERT 并非不能做生成，GPT 也不只做生成，但 inductive bias 不同。
+‧ 大规模 decoder‑only 通过 prompt 将很多理解任务转成生成。
+‧ 检索双塔仍大量使用 encoder，因为吞吐和向量表示更经济。
+
+ 高频失分点
+
+  ‧ 把“encoder 更懂语义”当作绝对事实。
+
+ 追问树
+
+  1. 为什么 decoder‑only 成为通用 LLM 主流？
+  2. encoder‑decoder 在翻译/条件生成中的优势？
+
+
+
+
+                                复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                58 / 116
+NLP/LLM 算法岗面试 100 题                                        2026 专业版
+
+

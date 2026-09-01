@@ -1,0 +1,41 @@
+Q052 为什么 BERT 不能天然像 GPT 一样左到右生成？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  BERT vs GPT
+
+ 面试官在考什么：从概率分解解释架构差异。
+ 题目：BERT 会预测词，为什么不能直接当 GPT 用？
+
+ 60 秒标准回答
+
+ BERT 的 MLM 学的是被遮蔽位置在双向上下文条件下的条件分布，并没有训练完整的自回归链式
+ 分解。GPT 直接优化 P(x_t|x_<t)，与逐 token 生成过程一致。
+
+
+
+深度解析：Know‑Why
+
+‧ 可以用 Gibbs‑like iterative masking 生成，但效率与分布不同。
+‧ Encoder‑only 更适合表示/理解；decoder‑only 统一生成接口。
+‧ Prefix‑LM/encoder‑decoder 是中间路线。
+
+ 高频失分点
+
+  ‧ 回答“因为 BERT 是 encoder，GPT 是 decoder”但不说明训练目标。
+
+ 追问树
+
+  1. T5 为什么能生成？
+  2. BERT 做填空生成的局限？
+
+
+
+
+                                 复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                 57 / 116
+NLP/LLM 算法岗面试 100 题                                            2026 专业版
+
+

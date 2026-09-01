@@ -1,0 +1,51 @@
+Q070 RLHF 的经典 Pipeline 与 KL 约束
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  RLHF   PPO
+
+ 面试官在考什么：对齐主线必答。
+ 题目：从 SFT、偏好数据、Reward Model 到 PPO，完整描述经典 RLHF。
+
+ 60 秒标准回答
+
+ 先 SFT 得到可用 policy；   收集偏好训练 reward model；
+                                         再用 RL 最大化奖励，
+                                                    同时通过对 reference
+ policy 的 KL penalty 防止策略过度偏离。
+
+
+
+白板公式
+
+
+                      max E[r(x, y)] − βKL(πθ (·|x)∥πref (·|x))
+                       θ
+
+
+
+深度解析：Know‑Why
+
+‧ RM 学的是人类偏好代理而非客观真值。
+‧ PPO 需要在线采样、value/advantage 等组件，成本高。
+‧ KL 系数控制“奖励优化”与“保持原模型”之间的权衡。
+
+ 高频失分点
+
+  ‧ 把 RLHF 简化成“人打分然后强化学习”。
+
+ 追问树
+
+  1. 为什么 reward hacking 会发生？
+  2. PPO clipping 在限制什么？
+
+
+
+
+                                      复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                      76 / 116
+NLP/LLM 算法岗面试 100 题                                              2026 专业版
+
+

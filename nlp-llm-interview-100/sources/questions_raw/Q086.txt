@@ -1,0 +1,49 @@
+Q086 Exact Dedup 与 MinHash：何时用哪一个？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  Dedup   MinHash
+
+ 面试官在考什么：要求会 Jaccard、LSH 概率与工程阶段。
+ 题目：为什么 exact hash 查不到轻微改写？MinHash 如何近似 Jaccard？
+
+ 60 秒标准回答
+
+ Exact 对规范化文本求 hash，只能抓完全相同；MinHash 对 shingle 集计算多个最小哈希，利用
+“最小哈希相等概率等于 Jaccard”的性质，再用 LSH 分桶高效找近重复。
+
+
+
+白板公式
+
+
+                                |A ∩ B|
+                    J(A, B) =           ,   P [hmin (A) = hmin (B)] = J(A, B)
+                                |A ∪ B|
+
+
+深度解析：Know‑Why
+
+‧ 通常先 exact 降规模，再 MinHash。
+‧ LSH 阈值不是硬阈值，而是 S 型候选概率。
+‧ 去重簇代表样本应按质量/provenance 选，而非随机先到。
+
+ 高频失分点
+
+  ‧ 把 MinHash 当语义 embedding。
+
+ 追问树
+
+  1. band 数与每 band hash 数怎么影响召回/精度？
+  2. 中文做 word/char n‑gram 怎么选？
+
+
+
+
+                                             复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                             94 / 116
+NLP/LLM 算法岗面试 100 题                                        2026 专业版
+
+

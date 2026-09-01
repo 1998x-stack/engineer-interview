@@ -1,0 +1,60 @@
+{
+  "name": "memcached-interview-100",
+  "version_baseline": "1.6.45",
+  "generated_at": "2026-09-01",
+  "question_count": 100,
+  "must_do_count": 37,
+  "source_pdf": "book/Memcached_Interview_100_剑指Offer风格.pdf",
+  "chapters": [
+    {
+      "id": 1,
+      "title": "基础架构与设计哲学",
+      "dir": "01-architecture-design"
+    },
+    {
+      "id": 2,
+      "title": "Item 与 SET/GET 源码链路",
+      "dir": "02-item-set-get-source"
+    },
+    {
+      "id": 3,
+      "title": "Slab Allocator 与内存管理",
+      "dir": "03-slab-memory"
+    },
+    {
+      "id": 4,
+      "title": "Assoc / Hash Table",
+      "dir": "04-assoc-hashtable"
+    },
+    {
+      "id": 5,
+      "title": "LRU、TTL 与 Eviction",
+      "dir": "05-lru-ttl-eviction"
+    },
+    {
+      "id": 6,
+      "title": "线程、锁、Libevent 与协议",
+      "dir": "06-thread-lock-libevent-protocol"
+    },
+    {
+      "id": 7,
+      "title": "一致性哈希与分布式 Memcached",
+      "dir": "07-consistent-hashing-distributed"
+    },
+    {
+      "id": 8,
+      "title": "缓存一致性、雪崩、击穿与热点",
+      "dir": "08-cache-consistency-resilience"
+    },
+    {
+      "id": 9,
+      "title": "监控、容量规划与故障诊断",
+      "dir": "09-observability-capacity-troubleshooting"
+    },
+    {
+      "id": 10,
+      "title": "高级特性、源码与系统设计",
+      "dir": "10-advanced-source-system-design"
+    }
+  ]
+}

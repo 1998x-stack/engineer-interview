@@ -1,0 +1,40 @@
+Q087 Benchmark Decontamination 为什么不能只做 Exact Match？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  Contamination   Eval Integrity
+
+ 面试官在考什么：评测可信度核心题。
+ 题目：预训练语料里评测题可能被改写、变量替换或只复制答案，怎么查？
+
+ 60 秒标准回答
+
+ 应从 exact match 扩展到 n‑gram、长公共子串、规范化匹配、语义候选检索；代码/数学还需变量
+ 重命名、数值与答案泄漏检测。没有字符串命中不代表没有污染。
+
+
+深度解析：Know‑Why
+
+‧ 需要冻结 benchmark 版本与数据 snapshot。
+‧ 合成数据教师模型也可能记忆 benchmark 后再改写。
+‧ 污染分析应记录文档来源与 cluster/provenance。
+
+ 高频失分点
+
+  ‧ 把去重等同去污染。
+
+ 追问树
+
+  1. 训练后如何估计 contamination？
+  2. 语义去污染的 false positive 怎么控制？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   95 / 116
+NLP/LLM 算法岗面试 100 题                                           2026 专业版
+
+

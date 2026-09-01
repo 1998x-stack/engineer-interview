@@ -1,0 +1,59 @@
+Q024 NLP 数据增强：怎么保证不破坏标签？
+
+
+ 难度 ★★★ 频率 ★★★★☆ 依据高频公开题型
+  数据增强    合成数据
+
+ 面试官在考什么：区分“生成更多文本”与“生成有效监督”。
+ 题目：列举 NLP 数据增强方法，并说明怎样验证 label preservation。
+
+ 60 秒标准回答
+
+ 可做同义改写、回译、上下文替换、模板/LLM 生成、counterfactual augmentation。关键要验
+ 证语义和标签不被改变，并控制分布漂移与模式坍塌。
+
+
+
+深度解析：Know‑Why
+
+‧ 对情感、否定、数值、实体任务，轻微改写也可能改标签。
+‧ LLM 生成可扩大覆盖，但会继承教师偏差与套话。
+‧ 应按 validity、faithfulness、diversity、utility 评估，而不是只看 fluency。
+
+ 高频失分点
+
+  ‧ 把“更多样本”自动等价于“更高效果”。
+  ‧ 数据增强后不做去重。
+
+ 追问树
+
+  1. 怎样生成 hard negatives？
+  2. 如何通过 proxy training 评估合成数据效用？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   26 / 116
+第3篇
+
+表示学习与序列模型
+
+本篇目标：从静态词向量到上下文表示，理解“表示、记忆、长依赖”如何一步步演化。
+题目范围：Q25 CBOW 与 Skip‑Gram：        输入输出正好相反吗？     、
+                                                 Q26 Word2Vec 为什么需要 Negative
+Sampling？  、Q27 Hierarchical Softmax 为什么是 O(log|V|)？
+                                                   、Q28 SGNS 为什么与 PMI Matrix
+Factorization 有关系？  、Q29 GloVe 与 Word2Vec 的差异、Q30 静态词向量为什么解决不了一词多
+义？ 、Q31 RNN 为什么梯度消失/爆炸？           、Q32 LSTM 为什么缓解长依赖问题？      、Q33 GRU 与 LSTM
+怎么选？、Q34 Seq2Seq 为什么需要 Attention？
+
+
+
+
+                                     27
+NLP/LLM 算法岗面试 100 题                                          2026 专业版
+
+

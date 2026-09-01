@@ -1,0 +1,41 @@
+Q095 Speculative Decoding 为什么能“保证分布”又加速？
+
+
+ 难度 ★★★★★ 频率 ★★★★☆         依据高频公开题型
+  Speculative Decoding
+
+ 面试官在考什么：考察 sampling correctness 与系统收益。
+ 题目：draft model 一次提议多个 token，target model 如何验证？什么时候反而不快？
+
+ 60 秒标准回答
+
+ 小模型先生成候选序列，大模型用一次并行前向验证多个位置，通过接受/拒绝规则保持目标分布。
+ 若接受率高，一次 target forward 确认多个 token；若 draft 慢或接受率低，收益会消失。
+
+
+
+深度解析：Know‑Why
+
+‧ 收益取决于 draft‑target 匹配、batch、硬件与输出长度。
+‧ 可用同模型小头/Medusa 类多 token head 作为 draft。
+‧ 验证阶段是并行的，但最终依然尊重自回归分布。
+
+ 高频失分点
+
+  ‧ 说“先小模型生成，直接让大模型纠错”太粗。
+
+ 追问树
+
+  1. 接受率如何估计？
+  2. 为什么 temperature 越高可能影响 acceptance？
+
+
+
+
+                                复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                               104 / 116
+NLP/LLM 算法岗面试 100 题                                                   2026 专业版
+
+

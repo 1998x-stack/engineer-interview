@@ -1,0 +1,42 @@
+Q091 KV Cache 为什么能显著加速自回归 Decode？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据公开候选人报告 + 高频系统题
+  Inference   KV Cache
+
+ 面试官在考什么：公开高阶面经代表题。
+ 题目：生成第 t 个 token 时，过去 token 的哪些计算可以复用？
+
+ 60 秒标准回答
+
+ 在 causal decoder 中，历史 token 的 K/V 在后续步骤不会改变。缓存每层历史 K/V 后，每次只
+ 计算新 token 的 Q/K/V，并让新 Q 读取缓存 K/V，避免对整个 prefix 重复做投影与 attention 前
+ 处理。
+
+
+深度解析：Know‑Why
+
+‧ prefill 仍是对 prompt 的批量计算。
+‧ decode 每步 query length≈1，但 key length 随上下文增长。
+‧ cache 带来巨大显存/带宽成本，促使 GQA、PagedAttention、KV quantization。
+
+ 高频失分点
+
+  ‧ 说缓存 Q/K/V 全部；通常历史 Q 不需要。
+  ‧ 用 torch.cat 每步复制整个 cache。
+
+ 追问树
+
+  1. prefill 与 decode 的性能瓶颈为何不同？
+  2. beam search 如何复制/重排 KV cache？
+
+
+
+
+                                 复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                100 / 116
+NLP/LLM 算法岗面试 100 题                                                2026 专业版
+
+

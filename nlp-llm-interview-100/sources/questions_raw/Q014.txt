@@ -1,0 +1,50 @@
+Q014 CRF 和 HMM 有什么根本区别？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  CRF   判别模型
+
+ 面试官在考什么：考察生成式与判别式序列建模。
+ 题目：Linear‑chain CRF 为什么适合序列标注？与 HMM 相比优势在哪里？
+
+ 60 秒标准回答
+
+ HMM 建模 P(X,Y)，CRF 直接建模 P(Y|X)，可自由使用输入特征并通过全局归一化建模标签序列
+ 依赖。
+
+
+白板公式
+
+
+                                          exp s(x, y)
+                            P (y|x) = ∑                 ′
+                                          y ′ exp s(x, y )
+
+
+
+深度解析：Know‑Why
+
+‧ CRF 的 score 通常由 emission 与 transition 累加。
+‧ 分母需要对所有标签序列求和，可用动态规划计算 partition function。
+‧ CRF 避免 MEMM 的局部归一化 label bias 问题。
+
+ 高频失分点
+
+  ‧ 把 CRF 当成“一个分类器层”。
+  ‧ 说 CRF 一定比 token softmax 好。
+
+ 追问树
+
+  1. 什么是 label bias？
+  2. CRF 训练的负对数似然如何计算？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                    16 / 116
+NLP/LLM 算法岗面试 100 题                                          2026 专业版
+
+

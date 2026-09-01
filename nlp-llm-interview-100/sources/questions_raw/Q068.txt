@@ -1,0 +1,41 @@
+Q068 QLoRA 为什么能在更小显存上微调大模型？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  QLoRA   Quantization
+
+ 面试官在考什么：理解 4‑bit base + 高精度 adapter 的组合。
+ 题目：QLoRA 的 NF4、double quantization、paged optimizer 分别解决什么？
+
+ 60 秒标准回答
+
+ 基座权重以 4‑bit 量化存储并冻结，训练只更新 LoRA；NF4 针对近似正态权重设计码本，double
+ quantization 进一步压缩量化尺度，paged optimizer 缓解显存峰值。
+
+
+
+深度解析：Know‑Why
+
+‧ 计算通常需要反量化到更高精度参与 matmul。
+‧“4‑bit 训练”不意味着所有梯度/激活都是 4‑bit。
+‧ 量化误差对不同层/任务敏感。
+
+ 高频失分点
+
+  ‧ 把 QLoRA 与 GPTQ/AWQ 纯推理量化混为一谈。
+
+ 追问树
+
+  1. NF4 为什么适合正态分布权重？
+  2. 哪些模块通常保持更高精度？
+
+
+
+
+                                复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                74 / 116
+NLP/LLM 算法岗面试 100 题                                             2026 专业版
+
+

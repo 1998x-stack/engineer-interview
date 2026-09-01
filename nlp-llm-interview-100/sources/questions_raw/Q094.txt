@@ -1,0 +1,41 @@
+Q094 Continuous Batching 与 PagedAttention 解决什么？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  Serving   Scheduling
+
+ 面试官在考什么：大模型服务核心。
+ 题目：静态 batch 对变长生成为什么浪费？Paged KV memory 有什么作用？
+
+ 60 秒标准回答
+
+ Continuous batching 在请求完成后即时补入新请求，提高 GPU occupancy；PagedAttention
+ 将 KV cache 分块管理，避免为每个请求预留连续最大长度空间，降低碎片与动态扩容成本。
+
+
+
+深度解析：Know‑Why
+
+‧ 调度还要考虑 prefill/decode 混部和长请求公平性。
+‧ page/block 太小 metadata 多，太大内部碎片多。
+‧ prefix caching 可复用相同前缀 KV。
+
+ 高频失分点
+
+  ‧ 把 PagedAttention 说成改变 attention 数学。
+
+ 追问树
+
+  1. chunked prefill 是什么？
+  2. 如何避免长 prompt 阻塞短请求？
+
+
+
+
+                                  复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                  103 / 116
+NLP/LLM 算法岗面试 100 题                                     2026 专业版
+
+

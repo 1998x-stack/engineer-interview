@@ -1,0 +1,53 @@
+Q035 Self‑Attention 的完整计算流程
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  Transformer   QKV
+
+ 面试官在考什么：Transformer 第一必答题。
+ 题目：从 X 到 Q/K/V、score、softmax、output，完整写出 Self‑Attention。
+
+ 60 秒标准回答
+
+ 线性投影得到 Q=XW_Q、
+              K=XW_K、
+                    V=XW_V；计算缩放点积 QK^T/√d_k，
+                                           加入 mask 后 softmax
+ 得到注意力权重，再乘 V 聚合内容。
+
+
+
+白板公式
+
+                                                       (             )
+                                                           QK ⊤
+                      Attention(Q, K, V ) = sof tmax       √    +M       V
+                                                             dk
+
+
+深度解析：Know‑Why
+
+‧ Q/K 决定匹配，V 提供被读取内容。
+‧ mask 应在 softmax 前加到 logits。
+‧ 实现时最常见错误是 shape、transpose、softmax dimension。
+
+ 高频失分点
+
+  ‧ 忘记 scale。
+  ‧ 把 softmax 做在 query 维。
+
+ 追问树
+
+  1. cross‑attention 时 Q/K/V 来自哪里？
+  2. 为什么可以把 attention 看成 content‑addressable memory？
+
+
+
+
+                                         复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                         39 / 116
+NLP/LLM 算法岗面试 100 题                                            2026 专业版
+
+

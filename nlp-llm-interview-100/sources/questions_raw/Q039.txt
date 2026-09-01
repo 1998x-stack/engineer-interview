@@ -1,0 +1,42 @@
+Q039 Self‑Attention 的复杂度到底是多少？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  复杂度    长上下文
+
+ 面试官在考什么：要求拆出 projection、attention、FFN 而非只背 O(n²)。
+ 题目：给定序列长 n、hidden d，Transformer block 的主要计算复杂度有哪些？
+
+ 60 秒标准回答
+
+ QKV/输出投影约 O(nd²)，attention score 与加权约 O(n²d)，FFN 约 O(nd d_ff)。长序列时 n² 项
+ 主导；大 d、短序列时矩阵投影/FFN 也可能主导。
+
+
+
+深度解析：Know‑Why
+
+‧ Attention memory 传统实现需要存 n×n score/概率。
+‧ FlashAttention 降低 HBM IO 和中间内存，但数学复杂度仍是 quadratic。
+‧ KV cache 改变的是自回归 decode 的重复计算结构。
+
+ 高频失分点
+
+  ‧ 只写 O(n²) 不说明 d。
+  ‧ 把 FlashAttention 说成线性 attention。
+
+ 追问树
+
+  1. 什么时候 FFN FLOPs 比 attention 更大？
+  2. 长上下文有哪些稀疏/线性近似路线？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   43 / 116
+NLP/LLM 算法岗面试 100 题                                         2026 专业版
+
+

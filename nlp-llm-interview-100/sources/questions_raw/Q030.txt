@@ -1,0 +1,41 @@
+Q030 静态词向量为什么解决不了一词多义？
+
+
+ 难度 ★★ 频率 ★★★★☆ 依据高频公开题型
+  Contextual Embedding
+
+ 面试官在考什么：从 Word2Vec 过渡 BERT 的关键逻辑。
+ 题目：“bank”在河岸与银行语境中为什么需要不同表示？ELMo/BERT 如何解决？
+
+ 60 秒标准回答
+
+ 静态 embedding 为词表中每个词给一个固定向量；contextual encoder 让 token 表示成为整个
+ 上下文的函数，因此同一 token 在不同句子中可得到不同向量。
+
+
+
+深度解析：Know‑Why
+
+‧ ELMo 用双向语言模型的上下文状态；BERT 用双向 Transformer。
+‧ tokenization 后的 subword 还需通过上下文组合成词义。
+‧ contextual embedding 并不保证所有语义可线性分离。
+
+ 高频失分点
+
+  ‧ 把 contextual embedding 解释成“每个词有多个预存向量”。
+
+ 追问树
+
+  1. 句向量怎么从 BERT token 表示得到？
+  2. 为什么 [CLS] 不一定是最佳通用语义向量？
+
+
+
+
+                               复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                               33 / 116
+NLP/LLM 算法岗面试 100 题                                    2026 专业版
+
+

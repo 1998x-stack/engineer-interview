@@ -1,0 +1,41 @@
+Q069 知识蒸馏有哪些层级？
+
+
+ 难度 ★★★ 频率 ★★★★☆ 依据高频公开题型
+  Distillation
+
+ 面试官在考什么：从 logits 到 reasoning/data distillation。
+ 题目：Response、Feature、Relation Distillation 分别蒸馏什么？LLM 时代又出现哪些新形态？
+
+ 60 秒标准回答
+
+ Response distillation 对齐教师输出分布/文本，Feature distillation 对齐中间表示，Relation
+ distillation 对齐样本/注意力关系。LLM 时代还大量使用教师生成的 SFT、偏好、推理轨迹作为数
+ 据蒸馏。
+
+
+深度解析：Know‑Why
+
+‧ soft target 的 temperature 可暴露类别相似性。
+‧ 生成式数据蒸馏更依赖教师错误与风格偏差控制。
+‧ 学生容量决定能否吸收教师全部知识。
+
+ 高频失分点
+
+  ‧ 认为学生一定能达到教师。
+
+ 追问树
+
+  1. temperature 对 KL 有什么作用？
+  2. reasoning distillation 的隐藏风险？
+
+
+
+
+                                     复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                     75 / 116
+NLP/LLM 算法岗面试 100 题                                               2026 专业版
+
+

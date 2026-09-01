@@ -1,0 +1,58 @@
+Q074 PPO、DPO、GRPO：什么时候选哪一个？
+
+
+ 难度 ★★★★★ 频率 ★★★★★              依据高频公开题型
+  RL   Preference   Reasoning
+
+ 面试官在考什么：考察方法选择而非名词堆砌。
+ 题目：比较 PPO、DPO、GRPO 类方法的数据需求、在线采样、value model 与适用场景。
+
+ 60 秒标准回答
+
+ PPO 是在线 policy optimization，显式 reward/value，灵活但复杂；DPO 用离线偏好直接优化，
+ 简单稳定；GRPO 类方法对同一问题采一组候选，基于组内相对奖励构造 advantage，可省 value
+ model，适合有可验证 reward 的 reasoning。
+
+
+
+深度解析：Know‑Why
+
+‧ 可验证任务能用 unit test/答案 checker 降低 Judge 偏差。
+‧ 在线 RL 能探索新策略，但成本和 reward hacking 风险更高。
+‧ 不存在“新方法一定替代旧方法”。
+
+ 高频失分点
+
+  ‧ 只比较公式，不谈数据/工程条件。
+
+ 追问树
+
+  1. GRPO 的组内标准化有什么作用？
+  2. 纯 outcome reward 会导致哪些过程错误？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   80 / 116
+第7篇
+
+检索、搜索与 RAG
+
+本篇目标：现代 NLP 算法岗的高频能力域：召回、排序、索引、切块、负样本与端到端评测。
+题目范围：Q75 Sparse Retrieval 与 Dense Retrieval 的核心差异、Q76 Bi‑Encoder 与 Cross‑
+Encoder：为什么一快一准？      、Q77 为什么搜索系统通常是多阶段 Retrieval→Rerank？     、Q78 Dense
+Retrieval 的负样本怎么构造？     、Q79 HNSW：为什么多层小世界图能快速 ANN？        、Q80 IVF‑PQ：如
+何用聚类与乘积量化压缩十亿向量？            、Q81 RAG Chunking：为什么“固定 500 tokens”不是答案？   、
+Q82 Hybrid Search 与 RRF：为什么排名融合常比 raw score 加权稳？   、Q83 为什么 Reranker 通
+常比 Retriever 更准？、Q84 如何完整评估一个 RAG 系统？
+
+
+
+
+                                  81
+NLP/LLM 算法岗面试 100 题                                       2026 专业版
+
+

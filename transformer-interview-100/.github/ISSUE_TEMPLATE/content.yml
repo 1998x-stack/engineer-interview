@@ -1,0 +1,19 @@
+name: Content improvement
+description: Improve a question, derivation, reference, or experiment
+title: "[Content] "
+body:
+  - type: input
+    id: question
+    attributes:
+      label: Question ID
+      placeholder: Q029
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / proposed improvement
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / reference / reproducible experiment

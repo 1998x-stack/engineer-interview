@@ -1,0 +1,42 @@
+Q019 n‑gram Language Model 的核心问题与 Kneser‑Ney 直觉
+
+
+ 难度 ★★★★ 频率 ★★★☆☆ 依据高频公开题型
+  语言模型    Smoothing
+
+ 面试官在考什么：考察统计语言模型的稀疏性与平滑。
+ 题目：为什么 n‑gram 必须做 smoothing？Kneser‑Ney 的关键思想是什么？
+
+ 60 秒标准回答
+
+ 有限语料下大量 n‑gram 从未出现，MLE 会给 0 概率。Kneser‑Ney 不仅看一个词出现多少次，还
+ 看它出现在多少种不同上下文中，用 continuation probability 改善低阶分布。
+
+
+
+深度解析：Know‑Why
+
+‧ Backoff/interpolation 在高阶证据不足时退到低阶模型。
+‧ 简单 add‑one 会把过多概率质量分给未见事件。
+‧ Kneser‑Ney 对“San Francisco”这类固定搭配后的词频偏差处理更合理。
+
+ 高频失分点
+
+  ‧ 说 smoothing 只是“避免 log 0”。
+  ‧ 不会解释 continuation count。
+
+ 追问树
+
+  1. Good‑Turing 在估计什么？
+  2. 为什么神经 LM 仍然需要处理 OOV/tokenization？
+
+
+
+
+                                复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                21 / 116
+NLP/LLM 算法岗面试 100 题                                                 2026 专业版
+
+

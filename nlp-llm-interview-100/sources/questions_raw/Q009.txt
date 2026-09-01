@@ -1,0 +1,42 @@
+Q009 什么是概率校准 Calibration？
+
+
+ 难度 ★★★ 频率 ★★★★☆ 依据高频公开题型
+  Calibration   Confidence
+
+ 面试官在考什么：判断候选人是否理解“分对”与“置信度可信”是两件事。
+ 题目：一个准确率很高的分类器为什么仍可能不 calibrated？怎么校准？
+
+ 60 秒标准回答
+
+ 若模型给出 0.8 概率的一组样本中约 80% 真为正例，则较为 calibrated。准确率只看 argmax 是
+ 否正确，不约束概率数值的可靠性。
+
+
+
+深度解析：Know‑Why
+
+‧ 常用 ECE、Brier score、reliability diagram。
+‧ Temperature scaling 在验证集上学习单个温度参数，通常保持分类排序但改变置信度。
+‧ LLM 的 token probability、verbal confidence 与任务正确率之间也存在校准问题。
+
+ 高频失分点
+
+  ‧ 把 softmax 最大值直接当“真实概率”。
+  ‧ 在测试集上拟合温度。
+
+ 追问树
+
+  1. 温度 T>1 会让分布怎样变化？
+  2. Calibration 和 ranking 能否同时优秀/差？
+
+
+
+
+                                    复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                    10 / 116
+NLP/LLM 算法岗面试 100 题                                               2026 专业版
+
+

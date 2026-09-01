@@ -1,0 +1,41 @@
+Q081 RAG Chunking：为什么“固定 500 tokens”不是答案？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  RAG   Chunking
+
+ 面试官在考什么：理解 retrieval unit 与 context trade‑off。
+ 题目：如何选择 chunk size、overlap 与边界？
+
+ 60 秒标准回答
+
+ chunk 太小会丢上下文和指代，太大降低检索精度并浪费 context。应结合文档结构、标题层级、
+ 段落/语义边界、模型窗口与 query 粒度，通过 retrieval + end‑to‑end eval 调参。
+
+
+
+深度解析：Know‑Why
+
+‧ 可做 parent‑child retrieval：小块召回、大块返回。
+‧ overlap 能缓解边界切断，但增加重复与索引量。
+‧ 表格、代码、FAQ、合同应使用不同结构感知切分。
+
+ 高频失分点
+
+  ‧ 只按 token 数切，无结构意识。
+
+ 追问树
+
+  1. 如何处理超长表格？
+  2. query‑aware chunking 是否值得？
+
+
+
+
+                                  复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                  88 / 116
+NLP/LLM 算法岗面试 100 题                                        2026 专业版
+
+

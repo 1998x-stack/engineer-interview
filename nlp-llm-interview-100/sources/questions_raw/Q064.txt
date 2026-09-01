@@ -1,0 +1,56 @@
+Q064 MoE：为什么参数变大但每 token 计算不同比例增长？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  MoE   Routing
+
+ 面试官在考什么：连接模型容量、稀疏激活与通信。
+ 题目：Top‑k MoE 如何工作？主要工程难点是什么？
+
+ 60 秒标准回答
+
+ Router 为每个 token 选择少数 experts，仅激活对应 FFN；因此总参数可随 expert 数增长，而每
+ token FLOPs 近似只与激活的 k 个 experts 相关。难点是负载均衡、路由、all‑to‑all 通信与容量
+ 溢出。
+
+
+深度解析：Know‑Why
+
+‧ 通常 attention 仍是 dense，MoE 替换 FFN。
+‧ load balancing auxiliary loss 防止所有 token 挤向少数 expert。
+‧ Expert Parallel 把不同 experts 分布到设备。
+
+ 高频失分点
+
+  ‧ 说“MoE 推理完全不增加内存”。
+
+ 追问树
+
+  1. 什么是 expert capacity factor？
+  2. router z‑loss / aux loss 的作用？
+
+
+
+
+                                     复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                     69 / 116
+第6篇
+
+SFT、PEFT 与对齐
+
+本篇目标：后训练不只是记术语；重点是目标函数、数据语义、稳定性和何时选择哪种方法。
+题目范围：Q65 Pretraining 与 SFT 的本质区别、Q66 LoRA 的低秩假设到底是什么？    、Q67 LoRA
+应该加 Q/V 还是加所有 Linear？、Q68 QLoRA 为什么能在更小显存上微调大模型？、Q69 知识蒸
+馏有哪些层级？、Q70 RLHF 的经典 Pipeline 与 KL 约束、Q71 REINFORCE 是 On‑policy 还是
+Off‑policy？、Q72 REINFORCE 为什么加 Baseline 不引入偏差？、Q73 DPO 为什么不需要显式
+Reward Model？、Q74 PPO、DPO、GRPO：什么时候选哪一个？
+
+
+
+
+                                70
+NLP/LLM 算法岗面试 100 题                                     2026 专业版
+
+

@@ -1,0 +1,47 @@
+Q071 REINFORCE 是 On‑policy 还是 Off‑policy？
+
+
+ 难度 ★★★ 频率 ★★★★☆ 依据高频公开题型
+  Policy Gradient
+
+ 面试官在考什么：RL 基础真假题。
+ 题目：写出 REINFORCE 梯度估计，并说明为什么经典形式是 on‑policy。
+
+ 60 秒标准回答
+
+ REINFORCE 用当前策略采样 trajectory，并用 return 乘 log‑policy gradient，因此经典形式是
+ on‑policy Monte Carlo policy gradient。
+
+
+
+白板公式
+
+
+                          ∇J(θ) = Eτ ∼πθ [R(τ )∇θ log πθ (τ )]
+
+
+深度解析：Know‑Why
+
+‧ 无 value function 的原始 REINFORCE 方差很大。
+‧ 可以加入 baseline 不改变期望梯度。
+‧ off‑policy 需要 importance sampling 等修正。
+
+ 高频失分点
+
+  ‧ 把“使用历史 buffer”默认当 REINFORCE。
+
+ 追问树
+
+  1. 为什么 log‑derivative trick 成立？
+  2. Monte Carlo 与 TD 的差异？
+
+
+
+
+                                       复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                       77 / 116
+NLP/LLM 算法岗面试 100 题                                          2026 专业版
+
+

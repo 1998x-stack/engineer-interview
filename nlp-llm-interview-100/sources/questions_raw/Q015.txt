@@ -1,0 +1,42 @@
+Q015 BERT 后为什么还要接 CRF？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  BERT‑CRF   NER
+
+ 面试官在考什么：理解 contextual feature 与 structured prediction 分工。
+ 题目：BERT 已经很强，NER 为什么仍有人在顶部加 CRF？
+
+ 60 秒标准回答
+
+ BERT 提供上下文 token 表示与 emission score；若逐 token 独立 softmax，标签之间没有显式
+ 转移约束。CRF 可学习 BIO/BIOES 等标签转移偏好并做全局最优解码。
+
+
+
+深度解析：Know‑Why
+
+‧ BERT 解决“看上下文”，CRF 解决“标签序列结构”。
+‧ 在数据量大、标签规则简单时，纯 token classifier 也可能足够。
+‧ 生成式 LLM 做结构化抽取时，约束方式又发生变化。
+
+ 高频失分点
+
+  ‧ 把 CRF 说成“纠正 BERT 错误”的万能模块。
+  ‧ 没有说明训练/解码差异。
+
+ 追问树
+
+  1. 如何禁止 O→I‑PER 之类非法转移？
+  2. Viterbi 的时间复杂度？
+
+
+
+
+                                 复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                 17 / 116
+NLP/LLM 算法岗面试 100 题                                         2026 专业版
+
+

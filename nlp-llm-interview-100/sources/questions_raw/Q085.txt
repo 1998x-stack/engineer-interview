@@ -1,0 +1,43 @@
+Q085 预训练数据清洗 Pipeline 应如何设计？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  Data Curation   Pipeline
+
+ 面试官在考什么：现代基础模型岗高频系统题。
+ 题目：从 Common Crawl/文档源到可训练 shard，给出完整数据管线。
+
+ 60 秒标准回答
+
+ 典型链路：来源/许可登记 → 解析与正文抽取 →Unicode 规范化 → 语言识别 → 质量/重复/PII 过滤
+ →Exact/MinHash/substring 去重 →benchmark decontamination→ 统计/分层 →tokenize/‑
+ pack/shard。每一步都应保存原因、版本和 retention。
+
+
+
+深度解析：Know‑Why
+
+‧ 低成本高精度规则应尽量放前面，昂贵模型过滤放后面。
+‧ 过滤策略需要 per‑domain/per‑language 校准。
+‧“流式 pipeline”不代表全局去重能单遍完成。
+
+ 高频失分点
+
+  ‧ 只列步骤，不谈 observability/provenance。
+  ‧ 删除样本不保存原因。
+
+ 追问树
+
+  1. 为什么先抽取正文再做语言识别？
+  2. 如何重跑阈值而不重算昂贵信号？
+
+
+
+
+                                  复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                  93 / 116
+NLP/LLM 算法岗面试 100 题                                                             2026 专业版
+
+

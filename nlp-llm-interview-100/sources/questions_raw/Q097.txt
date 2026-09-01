@@ -1,0 +1,50 @@
+Q097 手写 Numerical Stable Softmax
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  Coding   Numerical
+
+ 面试官在考什么：最小代码却最能暴露数值意识。
+ 题目：不用框架 softmax，如何防止 exp overflow？
+
+ 60 秒标准回答
+
+ 利用 softmax 对所有 logit 同减常数不变，通常减去每行最大值，使最大指数为 exp(0)=1，再归一
+ 化。
+
+
+深度解析：Know‑Why
+
+‧ batch 情况要沿最后一维求 max/sum 并 keepdims。
+‧ log‑softmax 更应使用 logsumexp 稳定实现。
+‧ 极端低精度还要注意 underflow，但通常影响小概率项。
+
+ 高频失分点
+
+  ‧ 直接 np.exp(x)。
+  ‧ 忘记 axis。
+
+ 追问树
+
+  1. 写 stable logsumexp。
+  2. cross entropy 如何避免先显式算 softmax？
+
+
+
+最小代码 / 测试骨架
+
+def softmax(x, axis=-1):
+   x = x - x.max(axis=axis, keepdims=True)
+   e = np.exp(x)
+   return e / e.sum(axis=axis, keepdims=True)
+
+
+
+
+                                     复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                     107 / 116
+NLP/LLM 算法岗面试 100 题                                                  2026 专业版
+
+

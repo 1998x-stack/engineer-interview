@@ -1,0 +1,40 @@
+Q072 REINFORCE 为什么加 Baseline 不引入偏差？
+
+
+ 难度 ★★★★ 频率 ★★★★☆ 依据高频公开题型
+  Variance Reduction
+
+ 面试官在考什么：考察期望推导。
+ 题目：为什么可以把 R 换成 R‑b(s)？baseline 有什么约束？
+
+ 60 秒标准回答
+
+ 若 baseline 不依赖当前 action，则 E[b(s)∇logπ(a|s)]=0，因此不改变梯度期望，却可降低 return
+ 的方差。
+
+
+深度解析：Know‑Why
+
+‧ 最佳 baseline 与条件期望/价值函数相关。
+‧ Advantage A=Q‑V 可视为中心化后的相对好坏。
+‧ baseline 如果偷偷依赖 action，可能引入偏差。
+
+ 高频失分点
+
+  ‧ 只说“减均值所以方差小”。
+
+ 追问树
+
+  1. Actor‑Critic 如何学习 baseline？
+  2. GAE 在做什么？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   78 / 116
+NLP/LLM 算法岗面试 100 题                                                          2026 专业版
+
+

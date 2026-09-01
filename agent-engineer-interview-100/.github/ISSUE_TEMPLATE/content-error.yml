@@ -1,0 +1,24 @@
+name: 内容错误 / Content error
+description: 报告题目、答案、术语或链接中的问题
+title: "[Content] "
+labels: [content]
+body:
+  - type: input
+    id: question
+    attributes:
+      label: 题号 / 文件
+      placeholder: Q023 / questions/03-tools-mcp/q023.md
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: 问题描述
+      description: 请说明具体哪里不准确、矛盾或容易误解。
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议修改
+      description: 如有可验证依据，请一并提供。

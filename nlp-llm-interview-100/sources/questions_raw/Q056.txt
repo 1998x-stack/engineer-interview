@@ -1,0 +1,51 @@
+Q056 Decoder LM Loss：为什么每个 token 都是监督信号？
+
+
+ 难度 ★★ 频率 ★★★★★ 依据高频公开题型
+  Next‑token Prediction
+
+ 面试官在考什么：理解预训练目标与数据规模。
+ 题目：写出自回归语言模型的因子分解和 loss。
+
+ 60 秒标准回答
+
+ 通过链式法则把序列概率分解为每个位置的 next‑token 条件概率；训练时 teacher forcing 一次
+ 前向可对多个位置并行计算交叉熵，因此每个 token 都提供监督。
+
+
+
+白板公式
+
+
+                                        ∏
+                                        T                           ∑
+                          P (x1:T ) =         P (xt |x<t ),   L=−       log P (xt |x<t )
+                                        t=1                         t
+
+
+
+深度解析：Know‑Why
+
+‧ 训练可并行，但生成必须按序列依赖逐步 decode。
+‧ padding/packing 时要正确构造 loss mask。
+‧ instruction tuning 常只对 assistant 部分计算 loss。
+
+ 高频失分点
+
+  ‧ 把“预测下一个词”误认为训练也是一个 token 一个 token 跑。
+
+ 追问树
+
+  1. 为什么 teacher forcing 会产生 exposure bias？
+  2. packing 多条文档时边界如何处理？
+
+
+
+
+                                                       复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                                       61 / 116
+NLP/LLM 算法岗面试 100 题                                        2026 专业版
+
+

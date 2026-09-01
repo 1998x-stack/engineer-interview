@@ -1,0 +1,41 @@
+Q051 BERT 原始预训练任务：MLM 与 NSP
+
+
+ 难度 ★★ 频率 ★★★★★ 依据高频公开题型
+  BERT   Pretraining
+
+ 面试官在考什么：理解 encoder‑only 训练信号。
+ 题目：BERT 的 MLM 与 NSP 分别做什么？后来为什么很多模型去掉 NSP？
+
+ 60 秒标准回答
+
+ MLM 随机遮蔽部分 token，用双向上下文预测；NSP 判断两段是否连续。后续工作发现更长训练、
+ 更多数据、更合理 sentence packing 等比 NSP 本身更关键，因此不少模型取消或替换它。
+
+
+
+深度解析：Know‑Why
+
+‧ MLM 训练/推理存在 [MASK] mismatch。
+‧ 动态 masking 可让不同 epoch 看到不同 mask。
+‧ BERT 的双向性来自非 causal self‑attention。
+
+ 高频失分点
+
+  ‧ 把 MLM 说成自回归。
+
+ 追问树
+
+  1. 15% mask 的 token 如何处理？
+  2. SOP 与 NSP 有什么不同？
+
+
+
+
+                                  复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                  56 / 116
+NLP/LLM 算法岗面试 100 题                                      2026 专业版
+
+

@@ -1,0 +1,48 @@
+Q092 KV Cache 大小怎么估算？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  Memory   GQA
+
+ 面试官在考什么：要求现场心算数量级。
+ 题目：给定层数 L、序列 T、KV heads H_kv、head dim D、dtype bytes，KV cache 公式是什么？
+
+ 60 秒标准回答
+
+ 每层每 token 需存 K 和 V，因此近似 2×L×T×H_kv×D×bytes；还需乘 batch/并发请求。
+ GQA/MQA 通过降低 H_kv 线性降低 cache。
+
+
+
+白板公式
+
+
+                      MKV ≈ 2 · L · T · Hkv · Dh · bytes · batch
+
+
+深度解析：Know‑Why
+
+‧ 实际系统还有 block metadata、对齐、碎片化。
+‧ 长上下文服务经常由 KV memory 而非权重 memory 决定并发。
+‧ KV cache quantization 可继续压缩，但会有精度代价。
+
+ 高频失分点
+
+  ‧ 忘记 K+V 的 2。
+  ‧ 把 Q heads 误当 KV heads。
+
+ 追问树
+
+  1. 一个 32‑layer、8 KV head、head dim 128、16K context、BF16 请求需要多少？
+  2. 为什么 GQA 对 decode 特别有效？
+
+
+
+
+                                      复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                      101 / 116
+NLP/LLM 算法岗面试 100 题                                         2026 专业版
+
+

@@ -1,0 +1,23 @@
+name: Content correction
+description: Report a technical error or ambiguous explanation
+title: "[Correction] Qxxx: "
+labels: [content]
+body:
+  - type: input
+    id: question
+    attributes:
+      label: Question ID
+      placeholder: Q050
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / primary source
+      description: Prefer original papers or official documentation.

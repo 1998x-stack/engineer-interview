@@ -1,0 +1,1761 @@
+[
+  {
+    "id": "Q001",
+    "n": 1,
+    "title": "手推 Self-Attention：为什么要除以 √d_k？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "attention",
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/001.md",
+    "refs": [
+      "R1"
+    ]
+  },
+  {
+    "id": "Q002",
+    "n": 2,
+    "title": "MHA、MQA、GQA 的本质区别是什么？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "attention",
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/002.md",
+    "refs": [
+      "R3",
+      "R15"
+    ]
+  },
+  {
+    "id": "Q003",
+    "n": 3,
+    "title": "为什么大模型主流选择 Decoder-only？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/003.md",
+    "refs": [
+      "R1"
+    ]
+  },
+  {
+    "id": "Q004",
+    "n": 4,
+    "title": "Pre-Norm 与 Post-Norm：为什么超深模型常用 Pre-Norm？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "normalization",
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/004.md",
+    "refs": [
+      "R1"
+    ]
+  },
+  {
+    "id": "Q005",
+    "n": 5,
+    "title": "RMSNorm 与 LayerNorm 的区别是什么？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "易",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "normalization",
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/005.md",
+    "refs": []
+  },
+  {
+    "id": "Q006",
+    "n": 6,
+    "title": "SwiGLU 为什么替代传统 ReLU/GELU FFN？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/006.md",
+    "refs": [
+      "R4"
+    ]
+  },
+  {
+    "id": "Q007",
+    "n": 7,
+    "title": "RoPE 为什么能把相对位置信息写进 Attention？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "attention",
+      "position-encoding",
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/007.md",
+    "refs": [
+      "R2"
+    ]
+  },
+  {
+    "id": "Q008",
+    "n": 8,
+    "title": "为什么现代 LLM 很少使用原始绝对位置 Embedding？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "中",
+    "frequency": "★★★☆☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "position-encoding",
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/008.md",
+    "refs": [
+      "R2"
+    ]
+  },
+  {
+    "id": "Q009",
+    "n": 9,
+    "title": "Embedding 与 LM Head 为什么要 Weight Tying？什么时候不 Tying？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "中",
+    "frequency": "★★★☆☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/009.md",
+    "refs": []
+  },
+  {
+    "id": "Q010",
+    "n": 10,
+    "title": "给你 7B 参数预算，如何从零设计 Decoder-only 架构？",
+    "chapter": "Transformer 与模型架构",
+    "chapter_dir": "01-transformer-architecture",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "transformer-architecture"
+    ],
+    "path": "questions/01-transformer-architecture/010.md",
+    "refs": [
+      "R1"
+    ]
+  },
+  {
+    "id": "Q011",
+    "n": 11,
+    "title": "BPE、WordPiece、SentencePiece 的本质区别？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "tokenizer",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/011.md",
+    "refs": []
+  },
+  {
+    "id": "Q012",
+    "n": 12,
+    "title": "Vocabulary Size 应该怎么定？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "tokenizer",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/012.md",
+    "refs": []
+  },
+  {
+    "id": "Q013",
+    "n": 13,
+    "title": "什么是 Tokenizer Fertility？为什么中文/多语言必须看？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "中",
+    "frequency": "★★★☆☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "tokenizer",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/013.md",
+    "refs": []
+  },
+  {
+    "id": "Q014",
+    "n": 14,
+    "title": "从 Common Crawl 到训练 Token：完整预训练数据 Pipeline 怎么设计？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "data",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/014.md",
+    "refs": [
+      "R11",
+      "R12",
+      "R13"
+    ]
+  },
+  {
+    "id": "Q015",
+    "n": 15,
+    "title": "Exact Dedup、MinHash、SimHash、Semantic Dedup 分别解决什么？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "data",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/015.md",
+    "refs": []
+  },
+  {
+    "id": "Q016",
+    "n": 16,
+    "title": "预训练数据为什么不能简单追求“质量越高越好”？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "data",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/016.md",
+    "refs": []
+  },
+  {
+    "id": "Q017",
+    "n": 17,
+    "title": "预训练数据 Mixture 到底怎么调？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "data",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/017.md",
+    "refs": [
+      "R5",
+      "R11"
+    ]
+  },
+  {
+    "id": "Q018",
+    "n": 18,
+    "title": "什么是 Benchmark Contamination？如何系统检测？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "data",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/018.md",
+    "refs": []
+  },
+  {
+    "id": "Q019",
+    "n": 19,
+    "title": "Packing 与 Padding 有什么区别？为什么 Packing 不是简单拼接？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "data",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/019.md",
+    "refs": [
+      "R14"
+    ]
+  },
+  {
+    "id": "Q020",
+    "n": 20,
+    "title": "Synthetic Data 在预训练阶段的价值与风险是什么？",
+    "chapter": "Tokenizer 与预训练数据",
+    "chapter_dir": "02-tokenizer-data",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "data",
+      "tokenizer-data"
+    ],
+    "path": "questions/02-tokenizer-data/020.md",
+    "refs": [
+      "R11",
+      "R12"
+    ]
+  },
+  {
+    "id": "Q021",
+    "n": 21,
+    "title": "Causal LM Loss 是什么？为什么 Next-Token Prediction 能学出复杂能力？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "objective-optimizer",
+      "optimization"
+    ],
+    "path": "questions/03-objective-optimizer/021.md",
+    "refs": []
+  },
+  {
+    "id": "Q022",
+    "n": 22,
+    "title": "为什么训练能并行预测所有 Token，而推理必须逐 Token 生成？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "易",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "objective-optimizer"
+    ],
+    "path": "questions/03-objective-optimizer/022.md",
+    "refs": []
+  },
+  {
+    "id": "Q023",
+    "n": 23,
+    "title": "AdamW 为什么长期是 LLM 预训练默认优化器？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "objective-optimizer",
+      "optimization"
+    ],
+    "path": "questions/03-objective-optimizer/023.md",
+    "refs": []
+  },
+  {
+    "id": "Q024",
+    "n": 24,
+    "title": "为什么大模型训练需要 Learning-Rate Warmup？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "objective-optimizer",
+      "optimization"
+    ],
+    "path": "questions/03-objective-optimizer/024.md",
+    "refs": []
+  },
+  {
+    "id": "Q025",
+    "n": 25,
+    "title": "Cosine Decay 为什么常见？Continued Pretraining 如何重设 LR？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "objective-optimizer",
+      "optimization"
+    ],
+    "path": "questions/03-objective-optimizer/025.md",
+    "refs": []
+  },
+  {
+    "id": "Q026",
+    "n": 26,
+    "title": "Batch Size 增大后，优化和系统分别发生什么？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "objective-optimizer",
+      "optimization"
+    ],
+    "path": "questions/03-objective-optimizer/026.md",
+    "refs": []
+  },
+  {
+    "id": "Q027",
+    "n": 27,
+    "title": "Global Batch、Micro Batch、Gradient Accumulation 如何换算？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "易",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "objective-optimizer",
+      "optimization"
+    ],
+    "path": "questions/03-objective-optimizer/027.md",
+    "refs": []
+  },
+  {
+    "id": "Q028",
+    "n": 28,
+    "title": "Weight Decay 为什么通常不施加到所有参数？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "中",
+    "frequency": "★★★☆☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "objective-optimizer",
+      "optimization"
+    ],
+    "path": "questions/03-objective-optimizer/028.md",
+    "refs": []
+  },
+  {
+    "id": "Q029",
+    "n": 29,
+    "title": "为什么 Label Smoothing 不是 LLM 预训练的默认配置？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "中",
+    "frequency": "★★★☆☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "objective-optimizer",
+      "optimization"
+    ],
+    "path": "questions/03-objective-optimizer/029.md",
+    "refs": []
+  },
+  {
+    "id": "Q030",
+    "n": 30,
+    "title": "Multi-Token Prediction（MTP）为什么重新受到重视？",
+    "chapter": "目标函数、Optimizer 与 Training Recipe",
+    "chapter_dir": "03-objective-optimizer",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "objective-optimizer"
+    ],
+    "path": "questions/03-objective-optimizer/030.md",
+    "refs": [
+      "R10"
+    ]
+  },
+  {
+    "id": "Q031",
+    "n": 31,
+    "title": "什么是 Scaling Law？预训练团队为什么需要它？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/031.md",
+    "refs": [
+      "R5"
+    ]
+  },
+  {
+    "id": "Q032",
+    "n": 32,
+    "title": "Kaplan Scaling 与 Chinchilla 的关键差异是什么？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/032.md",
+    "refs": [
+      "R5"
+    ]
+  },
+  {
+    "id": "Q033",
+    "n": 33,
+    "title": "为什么今天很多模型会“过训练”更小的参数规模？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/033.md",
+    "refs": [
+      "R5"
+    ]
+  },
+  {
+    "id": "Q034",
+    "n": 34,
+    "title": "为什么训练 FLOPs 常粗略写成 6ND？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/034.md",
+    "refs": [
+      "R5"
+    ]
+  },
+  {
+    "id": "Q035",
+    "n": 35,
+    "title": "给定固定 GPU-hours，如何决定模型大小和 Token 数？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/035.md",
+    "refs": [
+      "R5",
+      "R9"
+    ]
+  },
+  {
+    "id": "Q036",
+    "n": 36,
+    "title": "为什么 1B 模型的最优超参不能原样搬到 100B？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/036.md",
+    "refs": []
+  },
+  {
+    "id": "Q037",
+    "n": 37,
+    "title": "如何用小模型实验预测大模型最终 Loss？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "optimization",
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/037.md",
+    "refs": [
+      "R5"
+    ]
+  },
+  {
+    "id": "Q038",
+    "n": 38,
+    "title": "Loss 平滑 Scaling，为什么能力可能出现阈值或跳变？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "难",
+    "frequency": "★★★☆☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "optimization",
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/038.md",
+    "refs": []
+  },
+  {
+    "id": "Q039",
+    "n": 39,
+    "title": "同样 FLOPs 下，Dense 与 MoE 怎么公平比较？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "moe",
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/039.md",
+    "refs": [
+      "R10"
+    ]
+  },
+  {
+    "id": "Q040",
+    "n": 40,
+    "title": "Scaling Law 能否用于 Data Mixture 优化？",
+    "chapter": "Scaling Law 与预算设计",
+    "chapter_dir": "04-scaling-law",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "data",
+      "scaling-law"
+    ],
+    "path": "questions/04-scaling-law/040.md",
+    "refs": [
+      "R5"
+    ]
+  },
+  {
+    "id": "Q041",
+    "n": 41,
+    "title": "DDP 到底做了什么？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "易",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "distributed",
+      "distributed-training"
+    ],
+    "path": "questions/05-distributed-training/041.md",
+    "refs": [
+      "R9",
+      "R13"
+    ]
+  },
+  {
+    "id": "Q042",
+    "n": 42,
+    "title": "Tensor Parallel 如何切 Transformer？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "distributed",
+      "distributed-training"
+    ],
+    "path": "questions/05-distributed-training/042.md",
+    "refs": [
+      "R8",
+      "R9",
+      "R13"
+    ]
+  },
+  {
+    "id": "Q043",
+    "n": 43,
+    "title": "为什么 TP 通常限制在 NVLink/NVSwitch 高速域？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "distributed-training"
+    ],
+    "path": "questions/05-distributed-training/043.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q044",
+    "n": 44,
+    "title": "Pipeline Parallel 为什么有 Bubble？1F1B 如何改善？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "distributed",
+      "distributed-training"
+    ],
+    "path": "questions/05-distributed-training/044.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q045",
+    "n": 45,
+    "title": "为什么 1F1B 比 All-Forward-Then-Backward 更省 Activation Memory？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "distributed-training",
+      "memory"
+    ],
+    "path": "questions/05-distributed-training/045.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q046",
+    "n": 46,
+    "title": "ZeRO-1、ZeRO-2、ZeRO-3 分别 Shard 什么？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "易",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "distributed",
+      "distributed-training"
+    ],
+    "path": "questions/05-distributed-training/046.md",
+    "refs": [
+      "R7",
+      "R13"
+    ]
+  },
+  {
+    "id": "Q047",
+    "n": 47,
+    "title": "FSDP 与 ZeRO-3 有什么关系和区别？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "distributed",
+      "distributed-training"
+    ],
+    "path": "questions/05-distributed-training/047.md",
+    "refs": [
+      "R9",
+      "R13"
+    ]
+  },
+  {
+    "id": "Q048",
+    "n": 48,
+    "title": "Sequence Parallel 与 Context Parallel 有什么区别？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "distributed",
+      "distributed-training",
+      "long-context"
+    ],
+    "path": "questions/05-distributed-training/048.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q049",
+    "n": 49,
+    "title": "Expert Parallel 为什么需要 All-to-All？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "distributed",
+      "distributed-training",
+      "moe"
+    ],
+    "path": "questions/05-distributed-training/049.md",
+    "refs": [
+      "R9",
+      "R10"
+    ]
+  },
+  {
+    "id": "Q050",
+    "n": 50,
+    "title": "给你 1024 张 GPU，TP/PP/DP/CP/EP 怎么设计？",
+    "chapter": "分布式训练",
+    "chapter_dir": "05-distributed-training",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "distributed",
+      "distributed-training"
+    ],
+    "path": "questions/05-distributed-training/050.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q051",
+    "n": 51,
+    "title": "7B 模型 BF16 参数本身占多少显存？为什么训练远不止这些？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "易",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "memory",
+      "memory-precision-performance",
+      "precision"
+    ],
+    "path": "questions/06-memory-precision-performance/051.md",
+    "refs": []
+  },
+  {
+    "id": "Q052",
+    "n": 52,
+    "title": "Adam 混合精度训练每参数到底多少 Bytes？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "memory-precision-performance",
+      "optimization"
+    ],
+    "path": "questions/06-memory-precision-performance/052.md",
+    "refs": [
+      "R9",
+      "R15"
+    ]
+  },
+  {
+    "id": "Q053",
+    "n": 53,
+    "title": "Activation Memory 和 Parameter Memory 谁更大？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "memory",
+      "memory-precision-performance"
+    ],
+    "path": "questions/06-memory-precision-performance/053.md",
+    "refs": []
+  },
+  {
+    "id": "Q054",
+    "n": 54,
+    "title": "Activation Checkpointing 的原理与代价是什么？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "易",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "debug",
+      "memory",
+      "memory-precision-performance"
+    ],
+    "path": "questions/06-memory-precision-performance/054.md",
+    "refs": [
+      "R13",
+      "R9"
+    ]
+  },
+  {
+    "id": "Q055",
+    "n": 55,
+    "title": "为什么 BF16 通常比 FP16 更适合 LLM 预训练？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "易",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "memory-precision-performance",
+      "precision"
+    ],
+    "path": "questions/06-memory-precision-performance/055.md",
+    "refs": [
+      "R16"
+    ]
+  },
+  {
+    "id": "Q056",
+    "n": 56,
+    "title": "FP8 Training 的核心难点是什么？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "memory-precision-performance",
+      "precision"
+    ],
+    "path": "questions/06-memory-precision-performance/056.md",
+    "refs": []
+  },
+  {
+    "id": "Q057",
+    "n": 57,
+    "title": "什么是 Arithmetic Intensity？为什么 LLM 工程必须懂？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "memory-precision-performance",
+      "performance"
+    ],
+    "path": "questions/06-memory-precision-performance/057.md",
+    "refs": [
+      "R6"
+    ]
+  },
+  {
+    "id": "Q058",
+    "n": 58,
+    "title": "FlashAttention 为什么快？它是不是近似 Attention？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "attention",
+      "memory-precision-performance",
+      "performance"
+    ],
+    "path": "questions/06-memory-precision-performance/058.md",
+    "refs": [
+      "R6",
+      "R15"
+    ]
+  },
+  {
+    "id": "Q059",
+    "n": 59,
+    "title": "为什么减少理论 FLOPs 不一定减少 Wall-Clock？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "memory-precision-performance",
+      "performance",
+      "scaling-law"
+    ],
+    "path": "questions/06-memory-precision-performance/059.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q060",
+    "n": 60,
+    "title": "什么是 MFU？MFU 低应该怎样定位？",
+    "chapter": "显存、数值精度与性能",
+    "chapter_dir": "06-memory-precision-performance",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "memory-precision-performance",
+      "performance"
+    ],
+    "path": "questions/06-memory-precision-performance/060.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q061",
+    "n": 61,
+    "title": "MoE 为什么能“总参数很大、每 Token FLOPs 较小”？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "易",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "moe",
+      "scaling-law"
+    ],
+    "path": "questions/07-moe/061.md",
+    "refs": [
+      "R10"
+    ]
+  },
+  {
+    "id": "Q062",
+    "n": 62,
+    "title": "Top-1 与 Top-2 Routing 有什么 Trade-off？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "moe"
+    ],
+    "path": "questions/07-moe/062.md",
+    "refs": [
+      "R10"
+    ]
+  },
+  {
+    "id": "Q063",
+    "n": 63,
+    "title": "为什么 MoE 会出现 Expert Collapse / Hot Expert？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "moe"
+    ],
+    "path": "questions/07-moe/063.md",
+    "refs": [
+      "R9",
+      "R10"
+    ]
+  },
+  {
+    "id": "Q064",
+    "n": 64,
+    "title": "Load-Balancing Auxiliary Loss 怎么工作？为什么太强会伤模型？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "moe",
+      "optimization"
+    ],
+    "path": "questions/07-moe/064.md",
+    "refs": [
+      "R10"
+    ]
+  },
+  {
+    "id": "Q065",
+    "n": 65,
+    "title": "DeepSeek-V3 的 Auxiliary-Loss-Free Load Balancing 为什么重要？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "moe",
+      "optimization"
+    ],
+    "path": "questions/07-moe/065.md",
+    "refs": [
+      "R10"
+    ]
+  },
+  {
+    "id": "Q066",
+    "n": 66,
+    "title": "Shared Expert 的意义是什么？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "moe"
+    ],
+    "path": "questions/07-moe/066.md",
+    "refs": [
+      "R10"
+    ]
+  },
+  {
+    "id": "Q067",
+    "n": 67,
+    "title": "Fine-Grained Experts 为什么可能优于少量大 Experts？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "moe"
+    ],
+    "path": "questions/07-moe/067.md",
+    "refs": [
+      "R10",
+      "R9"
+    ]
+  },
+  {
+    "id": "Q068",
+    "n": 68,
+    "title": "Expert Parallel 与 Tensor Parallel 如何相互影响？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "distributed",
+      "moe"
+    ],
+    "path": "questions/07-moe/068.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q069",
+    "n": 69,
+    "title": "MoE 为什么特别容易 Communication-Bound？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "moe"
+    ],
+    "path": "questions/07-moe/069.md",
+    "refs": [
+      "R9",
+      "R10"
+    ]
+  },
+  {
+    "id": "Q070",
+    "n": 70,
+    "title": "Qwen3 MoE 与 DeepSeek-V3 MoE 应该怎样专业比较？",
+    "chapter": "Mixture-of-Experts",
+    "chapter_dir": "07-moe",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "moe"
+    ],
+    "path": "questions/07-moe/070.md",
+    "refs": [
+      "R10",
+      "R11",
+      "R12",
+      "R14"
+    ]
+  },
+  {
+    "id": "Q071",
+    "n": 71,
+    "title": "Self-Attention 为什么是 O(S²)？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "易",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "attention",
+      "long-context"
+    ],
+    "path": "questions/08-long-context/071.md",
+    "refs": [
+      "R1"
+    ]
+  },
+  {
+    "id": "Q072",
+    "n": 72,
+    "title": "FlashAttention 解决的是计算复杂度还是 IO Complexity？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "易",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "attention",
+      "long-context",
+      "performance"
+    ],
+    "path": "questions/08-long-context/072.md",
+    "refs": [
+      "R6"
+    ]
+  },
+  {
+    "id": "Q073",
+    "n": 73,
+    "title": "RoPE 为什么会有 Length Extrapolation 问题？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "long-context",
+      "position-encoding"
+    ],
+    "path": "questions/08-long-context/073.md",
+    "refs": [
+      "R2"
+    ]
+  },
+  {
+    "id": "Q074",
+    "n": 74,
+    "title": "NTK-Aware Scaling / YaRN 本质上在做什么？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "long-context",
+      "position-encoding",
+      "scaling-law"
+    ],
+    "path": "questions/08-long-context/074.md",
+    "refs": [
+      "R2"
+    ]
+  },
+  {
+    "id": "Q075",
+    "n": 75,
+    "title": "为什么 Long-Context 通常还需要 Continued Pretraining？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "long-context"
+    ],
+    "path": "questions/08-long-context/075.md",
+    "refs": [
+      "R11",
+      "R12"
+    ]
+  },
+  {
+    "id": "Q076",
+    "n": 76,
+    "title": "Context 从 4K 扩到 32K，为什么常采用阶段式训练？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "long-context"
+    ],
+    "path": "questions/08-long-context/076.md",
+    "refs": [
+      "R11"
+    ]
+  },
+  {
+    "id": "Q077",
+    "n": 77,
+    "title": "Sliding-Window Attention 的优缺点是什么？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "attention",
+      "long-context"
+    ],
+    "path": "questions/08-long-context/077.md",
+    "refs": []
+  },
+  {
+    "id": "Q078",
+    "n": 78,
+    "title": "用了 FlashAttention 为什么长上下文训练仍然 OOM？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "attention",
+      "long-context",
+      "performance"
+    ],
+    "path": "questions/08-long-context/078.md",
+    "refs": [
+      "R6",
+      "R9"
+    ]
+  },
+  {
+    "id": "Q079",
+    "n": 79,
+    "title": "Context Parallel 下 Attention 是怎么计算的？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "attention",
+      "distributed",
+      "long-context"
+    ],
+    "path": "questions/08-long-context/079.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q080",
+    "n": 80,
+    "title": "如何证明一个“128K 模型”真的有 128K 有效能力？",
+    "chapter": "长上下文与高效 Attention",
+    "chapter_dir": "08-long-context",
+    "difficulty": "难",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "coding",
+      "long-context"
+    ],
+    "path": "questions/08-long-context/080.md",
+    "refs": []
+  },
+  {
+    "id": "Q081",
+    "n": 81,
+    "title": "100B 模型训练到 42k Step 突然 Loss Spike，怎么排查？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "debug",
+      "optimization",
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/081.md",
+    "refs": []
+  },
+  {
+    "id": "Q082",
+    "n": 82,
+    "title": "如何区分 Bad Batch 与 Optimizer Instability？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "debug",
+      "optimization",
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/082.md",
+    "refs": []
+  },
+  {
+    "id": "Q083",
+    "n": 83,
+    "title": "Gradient Norm 突然变大意味着什么？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "debug",
+      "normalization",
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/083.md",
+    "refs": []
+  },
+  {
+    "id": "Q084",
+    "n": 84,
+    "title": "Overall Loss 在降，但 Math/Code Benchmark 不涨，为什么？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "optimization",
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/084.md",
+    "refs": []
+  },
+  {
+    "id": "Q085",
+    "n": 85,
+    "title": "Training/Validation Loss 都下降，就能说明模型更好吗？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "optimization",
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/085.md",
+    "refs": []
+  },
+  {
+    "id": "Q086",
+    "n": 86,
+    "title": "如何监控 1000+ GPU 的预训练任务？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "debug",
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/086.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q087",
+    "n": 87,
+    "title": "单个 GPU 比其他 GPU 慢 20%，整个 Job 会怎样？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/087.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q088",
+    "n": 88,
+    "title": "训练出现 NaN，你的排查顺序是什么？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "debug",
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/088.md",
+    "refs": []
+  },
+  {
+    "id": "Q089",
+    "n": 89,
+    "title": "Checkpoint 应保存什么，才能做到真正可恢复？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "debug",
+      "memory",
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/089.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q090",
+    "n": 90,
+    "title": "如何定义一个预训练模型“训练成功”？",
+    "chapter": "训练稳定性、Debug 与评测",
+    "chapter_dir": "09-stability-debug-eval",
+    "difficulty": "中",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "debug",
+      "stability-debug-eval"
+    ],
+    "path": "questions/09-stability-debug-eval/090.md",
+    "refs": []
+  },
+  {
+    "id": "Q091",
+    "n": 91,
+    "title": "手写 Multi-Head Attention，面试官真正看什么？",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "attention",
+      "coding",
+      "coding-system-project"
+    ],
+    "path": "questions/10-coding-system-project/091.md",
+    "refs": [
+      "R13",
+      "R16"
+    ]
+  },
+  {
+    "id": "Q092",
+    "n": 92,
+    "title": "手写 Causal Mask：如何保证语义和数值都正确？",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "易",
+    "frequency": "★★★★☆",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "attention",
+      "coding",
+      "coding-system-project"
+    ],
+    "path": "questions/10-coding-system-project/092.md",
+    "refs": []
+  },
+  {
+    "id": "Q093",
+    "n": 93,
+    "title": "手写 RMSNorm：最常见错误是什么？",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "易",
+    "frequency": "★★★★☆",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "coding",
+      "coding-system-project",
+      "normalization"
+    ],
+    "path": "questions/10-coding-system-project/093.md",
+    "refs": []
+  },
+  {
+    "id": "Q094",
+    "n": 94,
+    "title": "手写 RoPE：代码之外必须证明什么？",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "coding",
+      "coding-system-project",
+      "position-encoding"
+    ],
+    "path": "questions/10-coding-system-project/094.md",
+    "refs": [
+      "R2"
+    ]
+  },
+  {
+    "id": "Q095",
+    "n": 95,
+    "title": "手算一个 Transformer Block 的参数量怎么做？",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "coding",
+      "coding-system-project"
+    ],
+    "path": "questions/10-coding-system-project/095.md",
+    "refs": [
+      "R1"
+    ]
+  },
+  {
+    "id": "Q096",
+    "n": 96,
+    "title": "手算 70B + Adam + BF16 的训练显存，并推到 ZeRO",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "coding",
+      "coding-system-project",
+      "distributed",
+      "memory",
+      "optimization",
+      "precision"
+    ],
+    "path": "questions/10-coding-system-project/096.md",
+    "refs": [
+      "R7",
+      "R9",
+      "R15"
+    ]
+  },
+  {
+    "id": "Q097",
+    "n": 97,
+    "title": "从 0 预训练一个 1B 模型，完整 Pipeline 如何设计？",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "coding",
+      "coding-system-project"
+    ],
+    "path": "questions/10-coding-system-project/097.md",
+    "refs": [
+      "R5",
+      "R9",
+      "R11"
+    ]
+  },
+  {
+    "id": "Q098",
+    "n": 98,
+    "title": "1000 张 GPU 给你一个月，怎样降低 Full Run 失败概率？",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "B 类等价追问题",
+    "tags": [
+      "coding",
+      "coding-system-project"
+    ],
+    "path": "questions/10-coding-system-project/098.md",
+    "refs": [
+      "R9"
+    ]
+  },
+  {
+    "id": "Q099",
+    "n": 99,
+    "title": "面试官问“你真的从 0 预训练过模型吗？”怎样证明？",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "中",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "coding",
+      "coding-system-project"
+    ],
+    "path": "questions/10-coding-system-project/099.md",
+    "refs": []
+  },
+  {
+    "id": "Q100",
+    "n": 100,
+    "title": "你在预训练项目中真正解决的最难问题是什么？",
+    "chapter": "手撕、系统设计与项目拷打",
+    "chapter_dir": "10-coding-system-project",
+    "difficulty": "难",
+    "frequency": "★★★★★",
+    "source_type": "A 类高频真题型",
+    "tags": [
+      "coding",
+      "coding-system-project"
+    ],
+    "path": "questions/10-coding-system-project/100.md",
+    "refs": []
+  }
+]

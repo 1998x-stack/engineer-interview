@@ -1,0 +1,52 @@
+Q026 Word2Vec 为什么需要 Negative Sampling？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  Word2Vec   采样
+
+ 面试官在考什么：理解从 full softmax 到二分类近似。
+ 题目：词表几十万时，Skip‑Gram full softmax 为什么昂贵？Negative Sampling 如何改写目标？
+
+ 60 秒标准回答
+
+ full softmax 每次需对整个词表归一化。Negative Sampling 把一个正 word‑context 对与 K 个
+ 噪声负样本做二分类，使单步复杂度从 O(|V|) 降到 O(K)。
+
+
+
+白板公式
+
+
+                                              ∑
+                                              K
+                           log σ(vo⊤ vi ) +         log σ(−vk⊤ vi )
+                                              k=1
+
+
+
+深度解析：Know‑Why
+
+‧ 负样本分布经典做法与 unigram^0.75 有关。
+‧ Negative Sampling 的目标不是精确估计语言模型概率，而是学习好 embedding。
+‧ K 越大通常估计更好但计算更贵。
+
+ 高频失分点
+
+  ‧ 误以为 negative sample 就是随机采句子。
+  ‧ 不知道正负样本分别优化什么。
+
+ 追问树
+
+  1. 为什么高频词采样分布要平滑？
+  2. 与 Noise Contrastive Estimation 有何联系？
+
+
+
+
+                                        复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                        29 / 116
+NLP/LLM 算法岗面试 100 题                                       2026 专业版
+
+

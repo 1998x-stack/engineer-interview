@@ -1,0 +1,41 @@
+Q093 Quantization 为什么能提升 LLM 推理吞吐？
+
+
+ 难度 ★★★★ 频率 ★★★★☆ 依据高频公开题型
+  INT8   INT4   Memory Bandwidth
+
+ 面试官在考什么：理解 inference 常是 memory‑bound。
+ 题目：把 FP16 权重变 INT4 为什么可能更快？仅仅是“计算更少”吗？
+
+ 60 秒标准回答
+
+ 很多 decode matmul 的算术强度低，瓶颈是从 HBM 搬权重。INT4 将权重带宽降到 FP16 的约
+ 1/4，提高可服务吞吐；同时依赖硬件/kernel 是否高效支持低精度计算。
+
+
+
+深度解析：Know‑Why
+
+‧ weight‑only 与 activation quantization 风险不同。
+‧ group‑wise/per‑channel scale 控制误差。
+‧ outlier channel 常需要特殊处理。
+
+ 高频失分点
+
+  ‧ 认为量化一定线性提速 4 倍。
+
+ 追问树
+
+  1. GPTQ、AWQ 思路差异？
+  2. 为什么小 batch decode 更 memory‑bound？
+
+
+
+
+                                    复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                    102 / 116
+NLP/LLM 算法岗面试 100 题                                         2026 专业版
+
+

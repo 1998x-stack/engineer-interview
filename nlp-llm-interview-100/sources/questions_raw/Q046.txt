@@ -1,0 +1,40 @@
+Q046 Pre‑LN 与 Post‑LN：为什么深层模型更偏 Pre‑Norm？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  Normalization   Residual
+
+ 面试官在考什么：考察梯度路径。
+ 题目：原始 Transformer 的 Post‑LN 与现代常见 Pre‑LN 有什么差别？
+
+ 60 秒标准回答
+
+ Post‑LN 是 LN(x+F(x))；Pre‑LN 是 x+F(LN(x))。Pre‑LN 保留更直接的 identity residual path，
+ 深层网络梯度传播通常更稳定。
+
+
+深度解析：Know‑Why
+
+‧ Post‑LN 有时最终表示质量更好但更难训练，需要 warmup/初始化技巧。
+‧ RMSNorm 常与 Pre‑Norm 组合。
+‧ 稳定训练还涉及 residual scaling、初始化、深度等。
+
+ 高频失分点
+
+  ‧ 只说“Pre‑LN 更稳定”不会解释 residual Jacobian。
+
+ 追问树
+
+  1. 为什么 Pre‑LN 可能导致有效深度问题？
+  2. DeepNorm/μParam 等方法解决什么？
+
+
+
+
+                                    复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                    50 / 116
+NLP/LLM 算法岗面试 100 题                                    2026 专业版
+
+

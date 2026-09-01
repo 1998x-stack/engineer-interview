@@ -1,0 +1,40 @@
+Q089 LLM‑as‑a‑Judge 有哪些系统性偏差？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  Judge   Bias
+
+ 面试官在考什么：Eval 题高频。
+ 题目：为什么 LLM Judge 不能直接当 ground truth？
+
+ 60 秒标准回答
+
+ Judge 可能存在位置、长度、风格、自偏好与共享知识盲区；同源 judge/generator 错误还会高度
+ 相关。因此应使用确定性验证、外部证据、多模型交叉与人工校准。
+
+
+深度解析：Know‑Why
+
+‧ pairwise 比 absolute score 往往更稳定，但也有 position bias。
+‧ 评测 prompt 与输出顺序需要随机化/对称化。
+‧ Judge 分数应与人类标注做相关性和分群误差分析。
+
+ 高频失分点
+
+  ‧“强模型 judge 就可靠”。
+
+ 追问树
+
+  1. 如何检测 verbosity bias？
+  2. 多 Judge 投票为什么也不一定独立？
+
+
+
+
+                                  复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   97 / 116
+NLP/LLM 算法岗面试 100 题                                           2026 专业版
+
+

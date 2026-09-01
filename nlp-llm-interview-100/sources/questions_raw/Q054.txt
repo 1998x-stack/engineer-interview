@@ -1,0 +1,42 @@
+Q054 BPE、WordPiece、Unigram/SentencePiece 有什么区别？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  Tokenizer
+
+ 面试官在考什么：Tokenizer 是数据与模型接口。
+ 题目：比较 BPE、WordPiece、Unigram；SentencePiece 又是什么层级的概念？
+
+ 60 秒标准回答
+
+ BPE 迭代合并高频 pair；WordPiece 使用与似然/评分相关的合并准则；Unigram 从候选子词集
+ 合出发，通过概率模型逐步删减。SentencePiece 是可直接在原始文本上训练/编码的工具框架，常
+ 实现 BPE 或 Unigram。
+
+
+
+深度解析：Know‑Why
+
+‧ Tokenizer 决定序列长度、词表大小、数字/代码切分和多语言公平性。
+‧ byte‑level 方法可避免 OOV。
+‧ 同一模型参数量下，tokenizer 改变实际可见字符长度与训练 token 预算。
+
+ 高频失分点
+
+  ‧ 把 SentencePiece 当作一种唯一算法。
+
+ 追问树
+
+  1. 为什么中文/代码的 token fertility 很重要？
+  2. tokenizer vocabulary 越大越好吗？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   59 / 116
+NLP/LLM 算法岗面试 100 题                                     2026 专业版
+
+

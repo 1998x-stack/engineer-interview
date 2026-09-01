@@ -1,0 +1,20 @@
+{
+  "repository": "agent-engineer-interview-100",
+  "edition": "GitHub Expanded Professional Edition 2.0",
+  "date": "2026-09-01",
+  "total_files": 149,
+  "question_markdown_files": 100,
+  "chapters": 10,
+  "pdf_pages": 122,
+  "pdf_sha256": "869e1aba0faa7b63c7f53ad382ccd10de45243430c64247c1709f02ce16a9641",
+  "question_content_bytes": 1204721,
+  "min_question_bytes": 11262,
+  "avg_question_bytes": 12047,
+  "max_question_bytes": 21487,
+  "priority20_expanded": 20,
+  "validation_commands": [
+    "python scripts/validate_repo.py",
+    "python scripts/build_index.py --check",
+    "python scripts/check_links.py"
+  ]
+}

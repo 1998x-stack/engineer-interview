@@ -1,0 +1,41 @@
+Q055 为什么 LLM 普遍使用 Subword/Byte Tokenization？
+
+
+ 难度 ★★ 频率 ★★★★☆ 依据高频公开题型
+  Tokenizer   OOV
+
+ 面试官在考什么：理解词表大小与序列长度的折中。
+ 题目：word‑level、character‑level、subword 各有什么问题？
+
+ 60 秒标准回答
+
+ 词级词表巨大且 OOV；字符级词表小但序列过长。Subword/byte 方案在开放词汇覆盖与序列长度
+ 之间折中，并能组合罕见词。
+
+
+
+深度解析：Know‑Why
+
+‧ 词表增大可缩短序列但增加 embedding/LM head 参数。
+‧ byte fallback 保证任意 Unicode 内容可编码。
+‧ 多语言 tokenizer 的 token 分配会影响不同语言的计算公平性。
+
+ 高频失分点
+
+  ‧ 只说“解决 OOV”。
+
+ 追问树
+
+  1. 数字为什么经常被奇怪切分？
+  2. Tokenizer 会影响算术能力吗？
+
+
+
+
+                                复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                60 / 116
+NLP/LLM 算法岗面试 100 题                                                                        2026 专业版
+
+

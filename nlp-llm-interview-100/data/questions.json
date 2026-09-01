@@ -1,0 +1,1368 @@
+[
+  {
+    "id": "Q001",
+    "title": "为什么分类任务通常用交叉熵而不是 MSE？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q001-cross-entropy-vs-mse.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "ml-foundations"
+    ],
+    "slug": "cross-entropy-vs-mse"
+  },
+  {
+    "id": "Q002",
+    "title": "Precision、Recall、F1：什么时候 Accuracy 会骗人？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q002-precision-recall-f1.md",
+    "difficulty": "★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "ml-foundations"
+    ],
+    "slug": "precision-recall-f1"
+  },
+  {
+    "id": "Q003",
+    "title": "AUC 的两种理解为什么等价？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q003-auc-ranking-interpretation.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "ml-foundations",
+      "auc"
+    ],
+    "slug": "auc-ranking-interpretation"
+  },
+  {
+    "id": "Q004",
+    "title": "L1、L2 正则化与 MAP 的关系",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q004-l1-l2-map.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "ml-foundations"
+    ],
+    "slug": "l1-l2-map"
+  },
+  {
+    "id": "Q005",
+    "title": "Bias‑Variance Trade‑off 在大模型时代还成立吗？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q005-bias-variance.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "ml-foundations"
+    ],
+    "slug": "bias-variance"
+  },
+  {
+    "id": "Q006",
+    "title": "BatchNorm 与 LayerNorm：Transformer 为什么偏爱 LN？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q006-batchnorm-vs-layernorm.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "ml-foundations"
+    ],
+    "slug": "batchnorm-vs-layernorm"
+  },
+  {
+    "id": "Q007",
+    "title": "Dropout 为什么有效？大模型里为什么常变少？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q007-dropout.md",
+    "difficulty": "★★",
+    "frequency": "★★★★",
+    "tags": [
+      "ml-foundations"
+    ],
+    "slug": "dropout"
+  },
+  {
+    "id": "Q008",
+    "title": "类别极度不平衡怎么处理？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q008-class-imbalance.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "ml-foundations"
+    ],
+    "slug": "class-imbalance"
+  },
+  {
+    "id": "Q009",
+    "title": "什么是概率校准 Calibration？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q009-calibration.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "ml-foundations",
+      "calibration"
+    ],
+    "slug": "calibration"
+  },
+  {
+    "id": "Q010",
+    "title": "贝叶斯基准率陷阱：99% 准确率为何不代表 99% 可信？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q010-bayes-base-rate.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "ml-foundations"
+    ],
+    "slug": "bayes-base-rate"
+  },
+  {
+    "id": "Q011",
+    "title": "超长文件如何等概率抽取 k 行？Reservoir Sampling",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q011-reservoir-sampling.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "ml-foundations"
+    ],
+    "slug": "reservoir-sampling"
+  },
+  {
+    "id": "Q012",
+    "title": "Adam 与 AdamW 到底差在哪？",
+    "chapter": 1,
+    "chapter_title": "数学、概率与机器学习基础",
+    "path": "docs/01-ml-foundations/Q012-adam-vs-adamw.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "ml-foundations",
+      "optimizer"
+    ],
+    "slug": "adam-vs-adamw"
+  },
+  {
+    "id": "Q013",
+    "title": "HMM：三个基本问题与两条核心假设",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q013-hmm.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "classical-nlp",
+      "hmm"
+    ],
+    "slug": "hmm"
+  },
+  {
+    "id": "Q014",
+    "title": "CRF 和 HMM 有什么根本区别？",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q014-crf-vs-hmm.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "classical-nlp",
+      "crf",
+      "hmm"
+    ],
+    "slug": "crf-vs-hmm"
+  },
+  {
+    "id": "Q015",
+    "title": "BERT 后为什么还要接 CRF？",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q015-bert-crf.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "classical-nlp",
+      "bert",
+      "crf"
+    ],
+    "slug": "bert-crf"
+  },
+  {
+    "id": "Q016",
+    "title": "CRF 的 Emission 与 Transition Matrix 分别表示什么？",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q016-crf-emission-transition.md",
+    "difficulty": "★★",
+    "frequency": "★★★★",
+    "tags": [
+      "classical-nlp",
+      "crf"
+    ],
+    "slug": "crf-emission-transition"
+  },
+  {
+    "id": "Q017",
+    "title": "中文分词：传统方法与 LLM 时代如何看？",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q017-chinese-word-segmentation.md",
+    "difficulty": "★★",
+    "frequency": "★★★",
+    "tags": [
+      "classical-nlp",
+      "llm"
+    ],
+    "slug": "chinese-word-segmentation"
+  },
+  {
+    "id": "Q018",
+    "title": "NER 模型为什么从 HMM 演化到 BERT/LLM？",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q018-ner-evolution.md",
+    "difficulty": "★★",
+    "frequency": "★★★★",
+    "tags": [
+      "classical-nlp",
+      "bert",
+      "hmm",
+      "ner",
+      "llm"
+    ],
+    "slug": "ner-evolution"
+  },
+  {
+    "id": "Q019",
+    "title": "n‑gram Language Model 的核心问题与 Kneser‑Ney 直觉",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q019-ngram-kneser-ney.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★",
+    "tags": [
+      "classical-nlp"
+    ],
+    "slug": "ngram-kneser-ney"
+  },
+  {
+    "id": "Q020",
+    "title": "TF‑IDF 的公式、直觉与局限",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q020-tf-idf.md",
+    "difficulty": "★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "classical-nlp"
+    ],
+    "slug": "tf-idf"
+  },
+  {
+    "id": "Q021",
+    "title": "BM25 相比 TF‑IDF 改进了什么？",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q021-bm25.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "classical-nlp",
+      "bm25"
+    ],
+    "slug": "bm25"
+  },
+  {
+    "id": "Q022",
+    "title": "编辑距离：动态规划怎么写？如何降空间？",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q022-edit-distance.md",
+    "difficulty": "★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "classical-nlp"
+    ],
+    "slug": "edit-distance"
+  },
+  {
+    "id": "Q023",
+    "title": "文本分类方案如何随数据规模演进？",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q023-text-classification-evolution.md",
+    "difficulty": "★★",
+    "frequency": "★★★★",
+    "tags": [
+      "classical-nlp",
+      "data"
+    ],
+    "slug": "text-classification-evolution"
+  },
+  {
+    "id": "Q024",
+    "title": "NLP 数据增强：怎么保证不破坏标签？",
+    "chapter": 2,
+    "chapter_title": "统计 NLP 与传统 NLP",
+    "path": "docs/02-classical-nlp/Q024-nlp-data-augmentation.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "classical-nlp",
+      "data"
+    ],
+    "slug": "nlp-data-augmentation"
+  },
+  {
+    "id": "Q025",
+    "title": "CBOW 与 Skip‑Gram：输入输出正好相反吗？",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q025-cbow-vs-skipgram.md",
+    "difficulty": "★★",
+    "frequency": "★★★★",
+    "tags": [
+      "representation-sequence"
+    ],
+    "slug": "cbow-vs-skipgram"
+  },
+  {
+    "id": "Q026",
+    "title": "Word2Vec 为什么需要 Negative Sampling？",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q026-negative-sampling.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "representation-sequence",
+      "word2vec"
+    ],
+    "slug": "negative-sampling"
+  },
+  {
+    "id": "Q027",
+    "title": "Hierarchical Softmax 为什么是 O(log|V|)？",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q027-hierarchical-softmax.md",
+    "difficulty": "★★★",
+    "frequency": "★★★",
+    "tags": [
+      "representation-sequence",
+      "softmax"
+    ],
+    "slug": "hierarchical-softmax"
+  },
+  {
+    "id": "Q028",
+    "title": "SGNS 为什么与 PMI Matrix Factorization 有关系？",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q028-sgns-pmi.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★",
+    "tags": [
+      "representation-sequence"
+    ],
+    "slug": "sgns-pmi"
+  },
+  {
+    "id": "Q029",
+    "title": "GloVe 与 Word2Vec 的差异",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q029-glove-vs-word2vec.md",
+    "difficulty": "★★",
+    "frequency": "★★★",
+    "tags": [
+      "representation-sequence",
+      "word2vec"
+    ],
+    "slug": "glove-vs-word2vec"
+  },
+  {
+    "id": "Q030",
+    "title": "静态词向量为什么解决不了一词多义？",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q030-contextual-embeddings.md",
+    "difficulty": "★★",
+    "frequency": "★★★★",
+    "tags": [
+      "representation-sequence"
+    ],
+    "slug": "contextual-embeddings"
+  },
+  {
+    "id": "Q031",
+    "title": "RNN 为什么梯度消失/爆炸？",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q031-rnn-gradient.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "representation-sequence"
+    ],
+    "slug": "rnn-gradient"
+  },
+  {
+    "id": "Q032",
+    "title": "LSTM 为什么缓解长依赖问题？",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q032-lstm-long-dependency.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "representation-sequence"
+    ],
+    "slug": "lstm-long-dependency"
+  },
+  {
+    "id": "Q033",
+    "title": "GRU 与 LSTM 怎么选？",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q033-gru-vs-lstm.md",
+    "difficulty": "★★",
+    "frequency": "★★★",
+    "tags": [
+      "representation-sequence"
+    ],
+    "slug": "gru-vs-lstm"
+  },
+  {
+    "id": "Q034",
+    "title": "Seq2Seq 为什么需要 Attention？",
+    "chapter": 3,
+    "chapter_title": "表示学习与序列模型",
+    "path": "docs/03-representation-sequence/Q034-seq2seq-attention.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "representation-sequence",
+      "attention"
+    ],
+    "slug": "seq2seq-attention"
+  },
+  {
+    "id": "Q035",
+    "title": "Self‑Attention 的完整计算流程",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q035-self-attention.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer",
+      "attention"
+    ],
+    "slug": "self-attention"
+  },
+  {
+    "id": "Q036",
+    "title": "为什么 Attention 要除以 sqrt(d_k)？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q036-attention-scaling.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer",
+      "attention"
+    ],
+    "slug": "attention-scaling"
+  },
+  {
+    "id": "Q037",
+    "title": "为什么 Q、K、V 要用不同投影？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q037-qkv-projections.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer"
+    ],
+    "slug": "qkv-projections"
+  },
+  {
+    "id": "Q038",
+    "title": "Multi‑Head Attention 为什么不是一个大 Head？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q038-multi-head-attention.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer",
+      "attention"
+    ],
+    "slug": "multi-head-attention"
+  },
+  {
+    "id": "Q039",
+    "title": "Self‑Attention 的复杂度到底是多少？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q039-attention-complexity.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer",
+      "attention"
+    ],
+    "slug": "attention-complexity"
+  },
+  {
+    "id": "Q040",
+    "title": "Causal Mask 是怎么工作的？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q040-causal-mask.md",
+    "difficulty": "★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer"
+    ],
+    "slug": "causal-mask"
+  },
+  {
+    "id": "Q041",
+    "title": "为什么 Transformer 必须注入位置信息？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q041-position-information.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer"
+    ],
+    "slug": "position-information"
+  },
+  {
+    "id": "Q042",
+    "title": "Sinusoidal Positional Encoding 的设计直觉",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q042-sinusoidal-position.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "transformer"
+    ],
+    "slug": "sinusoidal-position"
+  },
+  {
+    "id": "Q043",
+    "title": "RoPE：如何把相对位置写进 QK 点积？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q043-rope.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer",
+      "rope"
+    ],
+    "slug": "rope"
+  },
+  {
+    "id": "Q044",
+    "title": "为什么 RoPE 通常只作用于 Q/K，不作用于 V？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q044-rope-qk-not-v.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "transformer",
+      "rope"
+    ],
+    "slug": "rope-qk-not-v"
+  },
+  {
+    "id": "Q045",
+    "title": "RoPE 为什么会有长度外推问题？YaRN/PI 在解决什么？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q045-rope-context-extension.md",
+    "difficulty": "★★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer",
+      "rope"
+    ],
+    "slug": "rope-context-extension"
+  },
+  {
+    "id": "Q046",
+    "title": "Pre‑LN 与 Post‑LN：为什么深层模型更偏 Pre‑Norm？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q046-preln-vs-postln.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer"
+    ],
+    "slug": "preln-vs-postln"
+  },
+  {
+    "id": "Q047",
+    "title": "Transformer 为什么 Attention 后还需要 FFN？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q047-transformer-ffn.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer",
+      "attention"
+    ],
+    "slug": "transformer-ffn"
+  },
+  {
+    "id": "Q048",
+    "title": "GELU、ReLU 与 SiLU/SwiGLU 怎么比较？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q048-activation-functions.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "transformer"
+    ],
+    "slug": "activation-functions"
+  },
+  {
+    "id": "Q049",
+    "title": "SwiGLU 为什么成了现代 LLM 常客？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q049-swiglu.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "transformer",
+      "llm"
+    ],
+    "slug": "swiglu"
+  },
+  {
+    "id": "Q050",
+    "title": "MHA、MQA、GQA：为什么共享 K/V 能省 KV Cache？",
+    "chapter": 4,
+    "chapter_title": "Transformer 核心原理",
+    "path": "docs/04-transformer/Q050-mha-mqa-gqa.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "transformer",
+      "kv-cache"
+    ],
+    "slug": "mha-mqa-gqa"
+  },
+  {
+    "id": "Q051",
+    "title": "BERT 原始预训练任务：MLM 与 NSP",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q051-bert-mlm-nsp.md",
+    "difficulty": "★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "pretraining",
+      "bert"
+    ],
+    "slug": "bert-mlm-nsp"
+  },
+  {
+    "id": "Q052",
+    "title": "为什么 BERT 不能天然像 GPT 一样左到右生成？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q052-bert-vs-autoregressive-generation.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "pretraining",
+      "bert",
+      "gpt"
+    ],
+    "slug": "bert-vs-autoregressive-generation"
+  },
+  {
+    "id": "Q053",
+    "title": "BERT 与 GPT：双向理解和因果生成如何取舍？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q053-bert-vs-gpt.md",
+    "difficulty": "★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "pretraining",
+      "bert",
+      "gpt"
+    ],
+    "slug": "bert-vs-gpt"
+  },
+  {
+    "id": "Q054",
+    "title": "BPE、WordPiece、Unigram/SentencePiece 有什么区别？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q054-bpe-wordpiece-unigram.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "pretraining"
+    ],
+    "slug": "bpe-wordpiece-unigram"
+  },
+  {
+    "id": "Q055",
+    "title": "为什么 LLM 普遍使用 Subword/Byte Tokenization？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q055-subword-byte-tokenization.md",
+    "difficulty": "★★",
+    "frequency": "★★★★",
+    "tags": [
+      "pretraining",
+      "tokenizer",
+      "llm"
+    ],
+    "slug": "subword-byte-tokenization"
+  },
+  {
+    "id": "Q056",
+    "title": "Decoder LM Loss：为什么每个 token 都是监督信号？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q056-decoder-lm-loss.md",
+    "difficulty": "★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "pretraining"
+    ],
+    "slug": "decoder-lm-loss"
+  },
+  {
+    "id": "Q057",
+    "title": "Perplexity：什么时候能比、什么时候不能比？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q057-perplexity.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "pretraining"
+    ],
+    "slug": "perplexity"
+  },
+  {
+    "id": "Q058",
+    "title": "Weight Tying：为什么输入 Embedding 与 LM Head 可以共享？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q058-weight-tying.md",
+    "difficulty": "★★",
+    "frequency": "★★★",
+    "tags": [
+      "pretraining"
+    ],
+    "slug": "weight-tying"
+  },
+  {
+    "id": "Q059",
+    "title": "Scaling Law：为什么不能只堆参数？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q059-scaling-laws.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "pretraining"
+    ],
+    "slug": "scaling-laws"
+  },
+  {
+    "id": "Q060",
+    "title": "大模型训练为什么必须去重？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q060-pretraining-dedup.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "pretraining"
+    ],
+    "slug": "pretraining-dedup"
+  },
+  {
+    "id": "Q061",
+    "title": "为什么“数据质量越高越好”是危险说法？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q061-data-quality-tradeoff.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "pretraining",
+      "data"
+    ],
+    "slug": "data-quality-tradeoff"
+  },
+  {
+    "id": "Q062",
+    "title": "Mixed Precision：BF16 为什么常比 FP16 稳？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q062-mixed-precision.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "pretraining"
+    ],
+    "slug": "mixed-precision"
+  },
+  {
+    "id": "Q063",
+    "title": "Gradient Checkpointing：省了什么、付出什么？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q063-gradient-checkpointing.md",
+    "difficulty": "★★",
+    "frequency": "★★★★",
+    "tags": [
+      "pretraining"
+    ],
+    "slug": "gradient-checkpointing"
+  },
+  {
+    "id": "Q064",
+    "title": "MoE：为什么参数变大但每 token 计算不同比例增长？",
+    "chapter": 5,
+    "chapter_title": "BERT、GPT 与大模型预训练",
+    "path": "docs/05-pretraining/Q064-moe.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "pretraining",
+      "moe"
+    ],
+    "slug": "moe"
+  },
+  {
+    "id": "Q065",
+    "title": "Pretraining 与 SFT 的本质区别",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q065-pretraining-vs-sft.md",
+    "difficulty": "★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "alignment",
+      "sft"
+    ],
+    "slug": "pretraining-vs-sft"
+  },
+  {
+    "id": "Q066",
+    "title": "LoRA 的低秩假设到底是什么？",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q066-lora.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "alignment",
+      "lora"
+    ],
+    "slug": "lora"
+  },
+  {
+    "id": "Q067",
+    "title": "LoRA 应该加 Q/V 还是加所有 Linear？",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q067-lora-target-modules.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "alignment",
+      "lora"
+    ],
+    "slug": "lora-target-modules"
+  },
+  {
+    "id": "Q068",
+    "title": "QLoRA 为什么能在更小显存上微调大模型？",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q068-qlora.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "alignment",
+      "lora"
+    ],
+    "slug": "qlora"
+  },
+  {
+    "id": "Q069",
+    "title": "知识蒸馏有哪些层级？",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q069-knowledge-distillation.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "alignment"
+    ],
+    "slug": "knowledge-distillation"
+  },
+  {
+    "id": "Q070",
+    "title": "RLHF 的经典 Pipeline 与 KL 约束",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q070-rlhf.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "alignment",
+      "rlhf"
+    ],
+    "slug": "rlhf"
+  },
+  {
+    "id": "Q071",
+    "title": "REINFORCE 是 On‑policy 还是 Off‑policy？",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q071-reinforce-on-policy.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "alignment"
+    ],
+    "slug": "reinforce-on-policy"
+  },
+  {
+    "id": "Q072",
+    "title": "REINFORCE 为什么加 Baseline 不引入偏差？",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q072-reinforce-baseline.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "alignment"
+    ],
+    "slug": "reinforce-baseline"
+  },
+  {
+    "id": "Q073",
+    "title": "DPO 为什么不需要显式 Reward Model？",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q073-dpo.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "alignment",
+      "dpo"
+    ],
+    "slug": "dpo"
+  },
+  {
+    "id": "Q074",
+    "title": "PPO、DPO、GRPO：什么时候选哪一个？",
+    "chapter": 6,
+    "chapter_title": "SFT、PEFT 与对齐",
+    "path": "docs/06-alignment/Q074-ppo-dpo-grpo.md",
+    "difficulty": "★★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "alignment",
+      "dpo",
+      "ppo",
+      "grpo"
+    ],
+    "slug": "ppo-dpo-grpo"
+  },
+  {
+    "id": "Q075",
+    "title": "Sparse Retrieval 与 Dense Retrieval 的核心差异",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q075-sparse-vs-dense-retrieval.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "retrieval-rag",
+      "retrieval"
+    ],
+    "slug": "sparse-vs-dense-retrieval"
+  },
+  {
+    "id": "Q076",
+    "title": "Bi‑Encoder 与 Cross‑Encoder：为什么一快一准？",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q076-biencoder-vs-crossencoder.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "retrieval-rag"
+    ],
+    "slug": "biencoder-vs-crossencoder"
+  },
+  {
+    "id": "Q077",
+    "title": "为什么搜索系统通常是多阶段 Retrieval→Rerank？",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q077-multi-stage-retrieval.md",
+    "difficulty": "★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "retrieval-rag",
+      "retrieval"
+    ],
+    "slug": "multi-stage-retrieval"
+  },
+  {
+    "id": "Q078",
+    "title": "Dense Retrieval 的负样本怎么构造？",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q078-dense-retrieval-negatives.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "retrieval-rag",
+      "retrieval"
+    ],
+    "slug": "dense-retrieval-negatives"
+  },
+  {
+    "id": "Q079",
+    "title": "HNSW：为什么多层小世界图能快速 ANN？",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q079-hnsw.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "retrieval-rag"
+    ],
+    "slug": "hnsw"
+  },
+  {
+    "id": "Q080",
+    "title": "IVF‑PQ：如何用聚类与乘积量化压缩十亿向量？",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q080-ivf-pq.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "retrieval-rag"
+    ],
+    "slug": "ivf-pq"
+  },
+  {
+    "id": "Q081",
+    "title": "RAG Chunking：为什么“固定 500 tokens”不是答案？",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q081-rag-chunking.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "retrieval-rag",
+      "rag"
+    ],
+    "slug": "rag-chunking"
+  },
+  {
+    "id": "Q082",
+    "title": "Hybrid Search 与 RRF：为什么排名融合常比 raw score 加权稳？",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q082-hybrid-search-rrf.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "retrieval-rag"
+    ],
+    "slug": "hybrid-search-rrf"
+  },
+  {
+    "id": "Q083",
+    "title": "为什么 Reranker 通常比 Retriever 更准？",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q083-reranker.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "retrieval-rag"
+    ],
+    "slug": "reranker"
+  },
+  {
+    "id": "Q084",
+    "title": "如何完整评估一个 RAG 系统？",
+    "chapter": 7,
+    "chapter_title": "检索、搜索与 RAG",
+    "path": "docs/07-retrieval-rag/Q084-rag-evaluation.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "retrieval-rag",
+      "rag"
+    ],
+    "slug": "rag-evaluation"
+  },
+  {
+    "id": "Q085",
+    "title": "预训练数据清洗 Pipeline 应如何设计？",
+    "chapter": 8,
+    "chapter_title": "数据工程与 Evaluation",
+    "path": "docs/08-data-evaluation/Q085-pretraining-data-pipeline.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "data-evaluation",
+      "data"
+    ],
+    "slug": "pretraining-data-pipeline"
+  },
+  {
+    "id": "Q086",
+    "title": "Exact Dedup 与 MinHash：何时用哪一个？",
+    "chapter": 8,
+    "chapter_title": "数据工程与 Evaluation",
+    "path": "docs/08-data-evaluation/Q086-exact-dedup-vs-minhash.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "data-evaluation",
+      "dedup"
+    ],
+    "slug": "exact-dedup-vs-minhash"
+  },
+  {
+    "id": "Q087",
+    "title": "Benchmark Decontamination 为什么不能只做 Exact Match？",
+    "chapter": 8,
+    "chapter_title": "数据工程与 Evaluation",
+    "path": "docs/08-data-evaluation/Q087-benchmark-decontamination.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "data-evaluation"
+    ],
+    "slug": "benchmark-decontamination"
+  },
+  {
+    "id": "Q088",
+    "title": "合成数据质量：Validity、Faithfulness、Diversity、Utility",
+    "chapter": 8,
+    "chapter_title": "数据工程与 Evaluation",
+    "path": "docs/08-data-evaluation/Q088-synthetic-data-quality.md",
+    "difficulty": "★★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "data-evaluation",
+      "data"
+    ],
+    "slug": "synthetic-data-quality"
+  },
+  {
+    "id": "Q089",
+    "title": "LLM‑as‑a‑Judge 有哪些系统性偏差？",
+    "chapter": 8,
+    "chapter_title": "数据工程与 Evaluation",
+    "path": "docs/08-data-evaluation/Q089-llm-as-judge.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "data-evaluation",
+      "llm"
+    ],
+    "slug": "llm-as-judge"
+  },
+  {
+    "id": "Q090",
+    "title": "离线指标涨了，为什么线上可能变差？",
+    "chapter": 8,
+    "chapter_title": "数据工程与 Evaluation",
+    "path": "docs/08-data-evaluation/Q090-offline-online-gap.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "data-evaluation"
+    ],
+    "slug": "offline-online-gap"
+  },
+  {
+    "id": "Q091",
+    "title": "KV Cache 为什么能显著加速自回归 Decode？",
+    "chapter": 9,
+    "chapter_title": "推理、分布式与 AI Infra",
+    "path": "docs/09-inference-infra/Q091-kv-cache.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "inference-infra",
+      "kv-cache"
+    ],
+    "slug": "kv-cache"
+  },
+  {
+    "id": "Q092",
+    "title": "KV Cache 大小怎么估算？",
+    "chapter": 9,
+    "chapter_title": "推理、分布式与 AI Infra",
+    "path": "docs/09-inference-infra/Q092-kv-cache-memory.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "inference-infra",
+      "kv-cache"
+    ],
+    "slug": "kv-cache-memory"
+  },
+  {
+    "id": "Q093",
+    "title": "Quantization 为什么能提升 LLM 推理吞吐？",
+    "chapter": 9,
+    "chapter_title": "推理、分布式与 AI Infra",
+    "path": "docs/09-inference-infra/Q093-quantization.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "inference-infra",
+      "quantization",
+      "llm"
+    ],
+    "slug": "quantization"
+  },
+  {
+    "id": "Q094",
+    "title": "Continuous Batching 与 PagedAttention 解决什么？",
+    "chapter": 9,
+    "chapter_title": "推理、分布式与 AI Infra",
+    "path": "docs/09-inference-infra/Q094-continuous-batching-pagedattention.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "inference-infra",
+      "attention"
+    ],
+    "slug": "continuous-batching-pagedattention"
+  },
+  {
+    "id": "Q095",
+    "title": "Speculative Decoding 为什么能“保证分布”又加速？",
+    "chapter": 9,
+    "chapter_title": "推理、分布式与 AI Infra",
+    "path": "docs/09-inference-infra/Q095-speculative-decoding.md",
+    "difficulty": "★★★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "inference-infra"
+    ],
+    "slug": "speculative-decoding"
+  },
+  {
+    "id": "Q096",
+    "title": "DP、TP、PP、EP：四种并行怎么组合？",
+    "chapter": 9,
+    "chapter_title": "推理、分布式与 AI Infra",
+    "path": "docs/09-inference-infra/Q096-distributed-parallelism.md",
+    "difficulty": "★★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "inference-infra"
+    ],
+    "slug": "distributed-parallelism"
+  },
+  {
+    "id": "Q097",
+    "title": "手写 Numerical Stable Softmax",
+    "chapter": 10,
+    "chapter_title": "手写代码与 Debug",
+    "path": "docs/10-coding-debug/Q097-stable-softmax.md",
+    "difficulty": "★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "coding-debug",
+      "softmax"
+    ],
+    "slug": "stable-softmax"
+  },
+  {
+    "id": "Q098",
+    "title": "手写 Multi‑Head Attention：Shape、Mask、Contiguous",
+    "chapter": 10,
+    "chapter_title": "手写代码与 Debug",
+    "path": "docs/10-coding-debug/Q098-implement-mha.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "coding-debug",
+      "attention"
+    ],
+    "slug": "implement-mha"
+  },
+  {
+    "id": "Q099",
+    "title": "Vectorized 1‑NN：禁止 Python For‑loop",
+    "chapter": 10,
+    "chapter_title": "手写代码与 Debug",
+    "path": "docs/10-coding-debug/Q099-vectorized-1nn.md",
+    "difficulty": "★★★★",
+    "frequency": "★★★★",
+    "tags": [
+      "coding-debug"
+    ],
+    "slug": "vectorized-1nn"
+  },
+  {
+    "id": "Q100",
+    "title": "Transformer Debug + 实现 KV Cache：综合终局题",
+    "chapter": 10,
+    "chapter_title": "手写代码与 Debug",
+    "path": "docs/10-coding-debug/Q100-transformer-debug-kv-cache.md",
+    "difficulty": "★★★★★",
+    "frequency": "★★★★★",
+    "tags": [
+      "coding-debug",
+      "kv-cache"
+    ],
+    "slug": "transformer-debug-kv-cache"
+  }
+]

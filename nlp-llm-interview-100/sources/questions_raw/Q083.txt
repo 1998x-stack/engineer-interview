@@ -1,0 +1,41 @@
+Q083 为什么 Reranker 通常比 Retriever 更准？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  Reranking
+
+ 面试官在考什么：解释 interaction 的价值。
+ 题目：同一个 query/document，为什么 Cross‑Encoder reranker 能纠正 Bi‑Encoder？
+
+ 60 秒标准回答
+
+ 双塔在独立编码时把整段压入向量，细粒度 token 交互在打分时丢失；Cross‑Encoder 允许 query
+ token 与 document token 在每层 attention 中直接交互，可识别否定、实体关系和细微语义。
+
+
+
+深度解析：Know‑Why
+
+‧ 代价是 candidate 数线性乘昂贵推理。
+‧ 可用 smaller cross‑encoder 或 listwise reranker 控制成本。
+‧ 训练时 hard negatives 尤其重要。
+
+ 高频失分点
+
+  ‧ 认为 reranker 一定需要 LLM。
+
+ 追问树
+
+  1. pointwise/pairwise/listwise ranking loss 差异？
+  2. 如何蒸馏 reranker 到 retriever？
+
+
+
+
+                                       复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                       90 / 116
+NLP/LLM 算法岗面试 100 题                                                     2026 专业版
+
+

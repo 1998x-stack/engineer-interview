@@ -1,0 +1,41 @@
+Q065 Pretraining 与 SFT 的本质区别
+
+
+ 难度 ★★ 频率 ★★★★★ 依据高频公开题型
+  SFT   Objective
+
+ 面试官在考什么：区分世界建模与行为监督。
+ 题目：Pretraining 和 SFT 的数据形态、loss mask、目标分别是什么？
+
+ 60 秒标准回答
+
+ 预训练主要对自然文本做 next‑token modeling，学习语言/知识分布；SFT 用 instruction‑
+ response 等行为数据教模型如何按期望方式响应，常只对 assistant tokens 计算 loss。
+
+
+
+深度解析：Know‑Why
+
+‧ SFT 数据量通常远小于预训练，但监督密度更高。
+‧ 把 QA 全文当普通 LM 训练更接近 mid‑training；只训 answer 更接近 SFT。
+‧ SFT 会塑造风格，也可能造成能力遗忘，需要数据混合与学习率控制。
+
+ 高频失分点
+
+  ‧ 把 SFT 说成“继续预训练”而不区分监督掩码。
+
+ 追问树
+
+  1. 为什么 SFT 后模型更会遵循指令？
+  2. SFT 数据重复会有什么风险？
+
+
+
+
+                               复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                               71 / 116
+NLP/LLM 算法岗面试 100 题                                                   2026 专业版
+
+

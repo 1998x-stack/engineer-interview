@@ -1,0 +1,22 @@
+name: Content correction
+description: 报告公式、事实、引用或表述问题
+title: "[Correction] "
+labels: [documentation]
+body:
+  - type: input
+    id: question
+    attributes:
+      label: Question ID / file
+      placeholder: Q057 / docs/06-dapo-gspo/...
+  - type: textarea
+    id: issue
+    attributes:
+      label: 问题描述
+      description: 请指出具体句子、公式或引用。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 证据 / Primary source
+      description: 优先提供论文、官方文档或可复现实验。

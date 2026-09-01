@@ -1,0 +1,48 @@
+Q008 类别极度不平衡怎么处理？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  不平衡学习    Hard Negative
+
+ 面试官在考什么：从数据、loss、采样与指标四层回答。
+ 题目：正例只有万分之一，你会如何训练和评估？
+
+ 60 秒标准回答
+
+ 先定义错误成本，再组合采样、loss reweight、hard negative mining 与适配指标。关键不是机
+ 械地 oversample，而是保持训练分布、校准与线上阈值的一致性。
+
+
+
+白板公式
+
+
+                              Lf ocal = −(1 − pt )γ log pt
+
+
+深度解析：Know‑Why
+
+‧ 数据层：分层采样、正例增强、难负例挖掘。
+‧ 目标层：class weight、focal loss、pairwise ranking。
+‧ 评估层：PR‑AUC、Recall@ 固定 Precision、成本敏感指标。
+
+ 高频失分点
+
+  ‧ 对测试集做过采样导致指标失真。
+  ‧ 只用 accuracy。
+
+ 追问树
+
+  1. Focal Loss 为什么能聚焦 hard example？
+  2. Hard negative mining 如何避免 false negatives？
+
+
+
+
+                                       复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                        9 / 116
+NLP/LLM 算法岗面试 100 题                                            2026 专业版
+
+

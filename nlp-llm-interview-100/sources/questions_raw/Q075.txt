@@ -1,0 +1,41 @@
+Q075 Sparse Retrieval 与 Dense Retrieval 的核心差异
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  BM25   Dense Retrieval
+
+ 面试官在考什么：现代搜索必答。
+ 题目：BM25 与 dense retriever 各擅长什么？为什么生产常混合？
+
+ 60 秒标准回答
+
+ Sparse 强于精确词面、稀有实体、数字与可解释性；Dense 把 query/document 映射到低维向量，
+ 擅长语义匹配。二者错误模式互补，混合检索常提升 recall。
+
+
+
+深度解析：Know‑Why
+
+‧ Dense 需要 ANN 索引与 embedding 更新。
+‧ Sparse 对词汇不匹配弱，但对新实体常稳。
+‧ 多语言/跨语言检索时 dense 优势可能更明显。
+
+ 高频失分点
+
+  ‧ 把 dense 说成“永远比 BM25 好”。
+
+ 追问树
+
+  1. SPLADE 属于 sparse 还是 dense？
+  2. hybrid score 怎么融合？
+
+
+
+
+                                  复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                  82 / 116
+NLP/LLM 算法岗面试 100 题                                        2026 专业版
+
+

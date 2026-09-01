@@ -1,0 +1,28 @@
+name: quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate 100-question knowledge base
+        run: python scripts/qa_repo.py
+      - name: Compile examples
+        run: python -m compileall -q examples
+      - name: Run zero-dependency examples
+        run: |
+          for f in examples/*.py; do
+            python "$f"
+          done

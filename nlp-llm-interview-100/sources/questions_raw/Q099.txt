@@ -1,0 +1,56 @@
+Q099 Vectorized 1‑NN：禁止 Python For‑loop
+
+
+ 难度 ★★★★ 频率 ★★★★☆ 依据公开候选人报告题型
+  NumPy   Vectorization
+
+ 面试官在考什么：公开高阶 coding 题型。
+ 题目：给 X[N,d]、Q[M,d]，求每个 query 最近邻，避免构造 M×N×d broadcast。
+
+ 60 秒标准回答
+
+ 利用 ||q‑x||²=||q||²+||x||²‑2q·x，一次矩阵乘得到所有 pair distance 的核心项，只构造 M×N 矩
+ 阵。
+
+
+白板公式
+
+
+                            ∥q − x∥2 = ∥q∥2 + ∥x∥2 − 2q ⊤ x
+
+
+深度解析：Know‑Why
+
+‧ 时间仍是 O(MNd)，但 BLAS/GPU 吞吐高且避免三维临时张量。
+‧ 数值误差可能让 dist² 出现极小负数，可 clip。
+‧ 当 N 极大需 block/chunk 或 ANN，不能真的生成完整 M×N。
+
+ 高频失分点
+
+  ‧ 只把 for‑loop 换成 Python list comprehension。
+  ‧ 广播生成三维 tensor 导致 OOM。
+
+ 追问树
+
+  1. 如何把 L2 nearest neighbor 写成线性层 argmax？
+  2. cosine nearest neighbor 如何向量化？
+
+
+
+最小代码 / 测试骨架
+
+q2 = (Q**2).sum(1, keepdims=True)
+x2 = (X**2).sum(1)[None, :]
+d2 = q2 + x2 - 2 * (Q @ X.T)
+idx = d2.argmin(1)
+
+
+
+
+                                       复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                       109 / 116
+NLP/LLM 算法岗面试 100 题                                                  2026 专业版
+
+

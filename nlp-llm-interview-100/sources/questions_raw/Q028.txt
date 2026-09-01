@@ -1,0 +1,48 @@
+Q028 SGNS 为什么与 PMI Matrix Factorization 有关系？
+
+
+ 难度 ★★★★ 频率 ★★★☆☆ 依据高频公开题型
+  PMI   表示学习
+
+ 面试官在考什么：考察理论深度。
+ 题目：为什么常说 Skip‑Gram with Negative Sampling 隐式分解 shifted PMI matrix？
+
+ 60 秒标准回答
+
+ 在理想化最优条件下，word‑context 内积近似 PMI(w,c)‑log k。说明预测式 embedding 与共现
+ 统计矩阵并非完全割裂。
+
+
+白板公式
+
+
+                                     P (w, c)       ⊤
+                P M I(w, c) = log              ,   vw vc ≈ P M I(w, c) − log k
+                                    P (w)P (c)
+
+
+深度解析：Know‑Why
+
+‧ PMI 衡量联合出现相对独立出现的提升。
+‧ 负采样数量 k 引入 shift。
+‧ 真实训练中低维约束、采样、subsampling 等使关系是近似而非精确。
+
+ 高频失分点
+
+  ‧ 把等式当成训练代码中显式计算 PMI。
+
+ 追问树
+
+  1. PPMI 为什么把负 PMI 截为 0？
+  2. SVD 与 embedding 有什么关系？
+
+
+
+
+                                           复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                            31 / 116
+NLP/LLM 算法岗面试 100 题                                      2026 专业版
+
+

@@ -1,0 +1,49 @@
+Q073 DPO 为什么不需要显式 Reward Model？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  DPO   Preference
+
+ 面试官在考什么：后训练高频核心。
+ 题目：给定 chosen/rejected，DPO 的优化对象是什么？与 PPO‑RLHF 相比少了什么？
+
+ 60 秒标准回答
+
+ DPO 从 KL‑regularized preference model 的闭式关系出发，直接提高 chosen 相对 rejected 在
+ policy/reference log‑ratio 上的优势，不需单独训练 RM 和在线 PPO。
+
+
+
+白板公式
+
+                                 ( [                                    ])
+                                         πθ (yw |x)         πθ (yl |x)
+                      L = − log σ β log              − log
+                                        πref (yw |x)       πref (yl |x)
+
+
+深度解析：Know‑Why
+
+‧ reference policy 提供“偏离基座多少”的基线。
+‧ β 控制 preference 强度与 KL 约束尺度。
+‧ DPO 更简单稳定，但依赖离线 preference 数据质量，探索能力弱于在线 RL。
+
+ 高频失分点
+
+  ‧ 说 DPO 完全没有 reward 概念。
+
+ 追问树
+
+  1. 如果 chosen/rejected 差异很小会怎样？
+  2. IPO/KTO/ORPO 与 DPO 的动机差异？
+
+
+
+
+                                           复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                            79 / 116
+NLP/LLM 算法岗面试 100 题                                        2026 专业版
+
+

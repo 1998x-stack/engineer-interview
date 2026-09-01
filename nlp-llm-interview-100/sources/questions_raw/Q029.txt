@@ -1,0 +1,40 @@
+Q029 GloVe 与 Word2Vec 的差异
+
+
+ 难度 ★★ 频率 ★★★☆☆ 依据高频公开题型
+  GloVe   共现
+
+ 面试官在考什么：理解 count‑based 与 predictive 两类方法。
+ 题目：GloVe 为什么强调 global co‑occurrence？与 Word2Vec 的训练视角有什么不同？
+
+ 60 秒标准回答
+
+ GloVe 显式使用词共现矩阵并拟合 log co‑occurrence；Word2Vec 从局部窗口采样训练预测任务。
+ 二者都将统计结构压入低维向量。
+
+
+深度解析：Know‑Why
+
+‧ GloVe 的 weighting function 抑制极少或极高共现带来的不稳定。
+‧ Word2Vec 更像在线采样优化，GloVe 更显式依赖预统计。
+‧ 今天两者主要作为理解 embedding 的经典基础。
+
+ 高频失分点
+
+  ‧ 只说“GloVe 是全局、Word2Vec 是局部”但不解释目标函数。
+
+ 追问树
+
+  1. 为什么词向量能出现线性类比？
+  2. 静态 embedding 的根本限制？
+
+
+
+
+                             复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                             32 / 116
+NLP/LLM 算法岗面试 100 题                                     2026 专业版
+
+

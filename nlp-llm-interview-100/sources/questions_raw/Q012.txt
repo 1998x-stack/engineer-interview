@@ -1,0 +1,66 @@
+Q012 Adam 与 AdamW 到底差在哪？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  优化器   Weight Decay
+
+ 面试官在考什么：区分“L2 正则”与“参数衰减”的优化路径。
+ 题目：为什么 AdamW 要把 weight decay 从梯度更新中解耦？
+
+ 60 秒标准回答
+
+ Adam 对每个参数使用自适应缩放；若把 L2 项直接加入梯度，正则项也会被同样缩放，已不等价
+ 于传统 weight decay。AdamW 直接对参数做衰减，再执行 Adam 更新。
+
+
+
+白板公式
+
+                                                    m̂t
+                         θt+1 = (1 − ηλ)θt − η √
+                                                   v̂t + ϵ
+
+
+深度解析：Know‑Why
+
+‧ Adam 使用一阶矩和二阶矩估计，对梯度尺度自适应。
+‧ Bias correction 修正训练早期矩估计偏向 0 的问题。
+‧ 现代 Transformer 训练通常对 bias、norm 参数不做 weight decay。
+
+ 高频失分点
+
+  ‧ 把 AdamW 仅理解为“Adam + L2”。
+  ‧ 忽略 epsilon 与数值稳定性。
+
+ 追问树
+
+  1. 为什么 warmup 常与 AdamW 搭配？
+  2. β1、β2 分别影响什么？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   13 / 116
+第2篇
+
+统计 NLP 与传统 NLP
+
+本篇目标：传统方法仍然是理解现代 NLP 的地基，尤其是序列标注、检索和特征工程。
+题目范围：Q13 HMM：三个基本问题与两条核心假设、Q14 CRF 和 HMM 有什么根本区别？                    、Q15
+BERT 后为什么还要接 CRF？     、Q16 CRF 的 Emission 与 Transition Matrix 分别表示什么？
+                                                                    、Q17
+中文分词：传统方法与 LLM 时代如何看？、Q18 NER 模型为什么从 HMM 演化到 BERT/LLM？、
+Q19 n‑gram Language Model 的核心问题与 Kneser‑Ney 直觉、Q20 TF‑IDF 的公式、直觉与局
+限、Q21 BM25 相比 TF‑IDF 改进了什么？、Q22 编辑距离：动态规划怎么写？如何降空间？、Q23
+文本分类方案如何随数据规模演进？           、Q24 NLP 数据增强：怎么保证不破坏标签？
+
+
+
+
+                                  14
+NLP/LLM 算法岗面试 100 题                                      2026 专业版
+
+

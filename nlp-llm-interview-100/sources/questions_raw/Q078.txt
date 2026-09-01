@@ -1,0 +1,41 @@
+Q078 Dense Retrieval 的负样本怎么构造？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  Contrastive Learning   Negatives
+
+ 面试官在考什么：检索训练核心题。
+ 题目：随机负样本、in‑batch negative、hard negative 各有什么优缺点？
+
+ 60 秒标准回答
+
+ 随机负样本多但太容易；in‑batch 利用同批其他文档提高效率；hard negative 语义/词面接近但
+ 不相关，学习信号强。难点是 false negative：看似负例其实也能回答。
+
+
+
+深度解析：Know‑Why
+
+‧ DPR 类方法常从 BM25 挖 hard negative。
+‧ 更强 retriever 挖出的 negatives 更难，但可能形成自举偏差。
+‧ 可用 teacher reranker/标签做 denoise。
+
+ 高频失分点
+
+  ‧ 把所有非正例都当真负例。
+
+ 追问树
+
+  1. 多正例 query 如何训练？
+  2. temperature 对 contrastive loss 有何作用？
+
+
+
+
+                                     复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                     85 / 116
+NLP/LLM 算法岗面试 100 题                                2026 专业版
+
+

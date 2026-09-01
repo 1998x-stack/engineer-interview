@@ -1,0 +1,41 @@
+Q016 CRF 的 Emission 与 Transition Matrix 分别表示什么？
+
+
+ 难度 ★★ 频率 ★★★★☆ 依据高频公开题型
+  CRF   Viterbi
+
+ 面试官在考什么：是否真正理解 BERT‑CRF 的张量。
+ 题目：给定序列长度 T、标签数 K，emission 和 transition 分别是什么 shape？总分如何计算？
+
+ 60 秒标准回答
+
+ Emission 通常为 T×K，表示每个位置属于每个标签的局部分数；Transition 为 K×K，表示相邻
+ 标签转移分数。序列总分是两者沿路径累加。
+
+
+深度解析：Know‑Why
+
+‧ 可以加入 START/STOP 状态。
+‧ 训练计算 gold path score 与 log‑partition 的差。
+‧ 解码用 Viterbi，把 sum‑product 换成 max‑product/max‑sum。
+
+ 高频失分点
+
+  ‧ transition 不是“词之间转移”。
+  ‧ 把概率和未归一化 score 混淆。
+
+ 追问树
+
+  1. 如何 batch 化 CRF？
+  2. padding mask 如何处理？
+
+
+
+
+                                    复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                    18 / 116
+NLP/LLM 算法岗面试 100 题                                    2026 专业版
+
+

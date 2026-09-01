@@ -1,0 +1,152 @@
+site_name: LLM Pretraining Interview 100
+site_description: LLM / Foundation Model 预训练算法岗 100 题
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+markdown_extensions:
+  - admonition
+  - tables
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences
+  - pymdownx.highlight
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+nav:
+  - 首页: README.md
+  - 01. Transformer 与模型架构:
+      - 章节导读: questions/01-transformer-architecture/README.md
+      - "Q001 手推 Self-Attention：为什么要除以 √d_k？": questions/01-transformer-architecture/001.md
+      - "Q002 MHA、MQA、GQA 的本质区别是什么？": questions/01-transformer-architecture/002.md
+      - "Q003 为什么大模型主流选择 Decoder-only？": questions/01-transformer-architecture/003.md
+      - "Q004 Pre-Norm 与 Post-Norm：为什么超深模型常用 Pre-Norm？": questions/01-transformer-architecture/004.md
+      - "Q005 RMSNorm 与 LayerNorm 的区别是什么？": questions/01-transformer-architecture/005.md
+      - "Q006 SwiGLU 为什么替代传统 ReLU/GELU FFN？": questions/01-transformer-architecture/006.md
+      - "Q007 RoPE 为什么能把相对位置信息写进 Attention？": questions/01-transformer-architecture/007.md
+      - "Q008 为什么现代 LLM 很少使用原始绝对位置 Embedding？": questions/01-transformer-architecture/008.md
+      - "Q009 Embedding 与 LM Head 为什么要 Weight Tying？什么时候不 Tying？": questions/01-transformer-architecture/009.md
+      - "Q010 给你 7B 参数预算，如何从零设计 Decoder-only 架构？": questions/01-transformer-architecture/010.md
+  - 02. Tokenizer 与预训练数据:
+      - 章节导读: questions/02-tokenizer-data/README.md
+      - "Q011 BPE、WordPiece、SentencePiece 的本质区别？": questions/02-tokenizer-data/011.md
+      - "Q012 Vocabulary Size 应该怎么定？": questions/02-tokenizer-data/012.md
+      - "Q013 什么是 Tokenizer Fertility？为什么中文/多语言必须看？": questions/02-tokenizer-data/013.md
+      - "Q014 从 Common Crawl 到训练 Token：完整预训练数据 Pipeline 怎么设计？": questions/02-tokenizer-data/014.md
+      - "Q015 Exact Dedup、MinHash、SimHash、Semantic Dedup 分别解决什么？": questions/02-tokenizer-data/015.md
+      - "Q016 预训练数据为什么不能简单追求“质量越高越好”？": questions/02-tokenizer-data/016.md
+      - "Q017 预训练数据 Mixture 到底怎么调？": questions/02-tokenizer-data/017.md
+      - "Q018 什么是 Benchmark Contamination？如何系统检测？": questions/02-tokenizer-data/018.md
+      - "Q019 Packing 与 Padding 有什么区别？为什么 Packing 不是简单拼接？": questions/02-tokenizer-data/019.md
+      - "Q020 Synthetic Data 在预训练阶段的价值与风险是什么？": questions/02-tokenizer-data/020.md
+  - 03. 目标函数、Optimizer 与 Training Recipe:
+      - 章节导读: questions/03-objective-optimizer/README.md
+      - "Q021 Causal LM Loss 是什么？为什么 Next-Token Prediction 能学出复杂能力？": questions/03-objective-optimizer/021.md
+      - "Q022 为什么训练能并行预测所有 Token，而推理必须逐 Token 生成？": questions/03-objective-optimizer/022.md
+      - "Q023 AdamW 为什么长期是 LLM 预训练默认优化器？": questions/03-objective-optimizer/023.md
+      - "Q024 为什么大模型训练需要 Learning-Rate Warmup？": questions/03-objective-optimizer/024.md
+      - "Q025 Cosine Decay 为什么常见？Continued Pretraining 如何重设 LR？": questions/03-objective-optimizer/025.md
+      - "Q026 Batch Size 增大后，优化和系统分别发生什么？": questions/03-objective-optimizer/026.md
+      - "Q027 Global Batch、Micro Batch、Gradient Accumulation 如何换算？": questions/03-objective-optimizer/027.md
+      - "Q028 Weight Decay 为什么通常不施加到所有参数？": questions/03-objective-optimizer/028.md
+      - "Q029 为什么 Label Smoothing 不是 LLM 预训练的默认配置？": questions/03-objective-optimizer/029.md
+      - "Q030 Multi-Token Prediction（MTP）为什么重新受到重视？": questions/03-objective-optimizer/030.md
+  - 04. Scaling Law 与预算设计:
+      - 章节导读: questions/04-scaling-law/README.md
+      - "Q031 什么是 Scaling Law？预训练团队为什么需要它？": questions/04-scaling-law/031.md
+      - "Q032 Kaplan Scaling 与 Chinchilla 的关键差异是什么？": questions/04-scaling-law/032.md
+      - "Q033 为什么今天很多模型会“过训练”更小的参数规模？": questions/04-scaling-law/033.md
+      - "Q034 为什么训练 FLOPs 常粗略写成 6ND？": questions/04-scaling-law/034.md
+      - "Q035 给定固定 GPU-hours，如何决定模型大小和 Token 数？": questions/04-scaling-law/035.md
+      - "Q036 为什么 1B 模型的最优超参不能原样搬到 100B？": questions/04-scaling-law/036.md
+      - "Q037 如何用小模型实验预测大模型最终 Loss？": questions/04-scaling-law/037.md
+      - "Q038 Loss 平滑 Scaling，为什么能力可能出现阈值或跳变？": questions/04-scaling-law/038.md
+      - "Q039 同样 FLOPs 下，Dense 与 MoE 怎么公平比较？": questions/04-scaling-law/039.md
+      - "Q040 Scaling Law 能否用于 Data Mixture 优化？": questions/04-scaling-law/040.md
+  - 05. 分布式训练:
+      - 章节导读: questions/05-distributed-training/README.md
+      - "Q041 DDP 到底做了什么？": questions/05-distributed-training/041.md
+      - "Q042 Tensor Parallel 如何切 Transformer？": questions/05-distributed-training/042.md
+      - "Q043 为什么 TP 通常限制在 NVLink/NVSwitch 高速域？": questions/05-distributed-training/043.md
+      - "Q044 Pipeline Parallel 为什么有 Bubble？1F1B 如何改善？": questions/05-distributed-training/044.md
+      - "Q045 为什么 1F1B 比 All-Forward-Then-Backward 更省 Activation Memory？": questions/05-distributed-training/045.md
+      - "Q046 ZeRO-1、ZeRO-2、ZeRO-3 分别 Shard 什么？": questions/05-distributed-training/046.md
+      - "Q047 FSDP 与 ZeRO-3 有什么关系和区别？": questions/05-distributed-training/047.md
+      - "Q048 Sequence Parallel 与 Context Parallel 有什么区别？": questions/05-distributed-training/048.md
+      - "Q049 Expert Parallel 为什么需要 All-to-All？": questions/05-distributed-training/049.md
+      - "Q050 给你 1024 张 GPU，TP/PP/DP/CP/EP 怎么设计？": questions/05-distributed-training/050.md
+  - 06. 显存、数值精度与性能:
+      - 章节导读: questions/06-memory-precision-performance/README.md
+      - "Q051 7B 模型 BF16 参数本身占多少显存？为什么训练远不止这些？": questions/06-memory-precision-performance/051.md
+      - "Q052 Adam 混合精度训练每参数到底多少 Bytes？": questions/06-memory-precision-performance/052.md
+      - "Q053 Activation Memory 和 Parameter Memory 谁更大？": questions/06-memory-precision-performance/053.md
+      - "Q054 Activation Checkpointing 的原理与代价是什么？": questions/06-memory-precision-performance/054.md
+      - "Q055 为什么 BF16 通常比 FP16 更适合 LLM 预训练？": questions/06-memory-precision-performance/055.md
+      - "Q056 FP8 Training 的核心难点是什么？": questions/06-memory-precision-performance/056.md
+      - "Q057 什么是 Arithmetic Intensity？为什么 LLM 工程必须懂？": questions/06-memory-precision-performance/057.md
+      - "Q058 FlashAttention 为什么快？它是不是近似 Attention？": questions/06-memory-precision-performance/058.md
+      - "Q059 为什么减少理论 FLOPs 不一定减少 Wall-Clock？": questions/06-memory-precision-performance/059.md
+      - "Q060 什么是 MFU？MFU 低应该怎样定位？": questions/06-memory-precision-performance/060.md
+  - 07. Mixture-of-Experts:
+      - 章节导读: questions/07-moe/README.md
+      - "Q061 MoE 为什么能“总参数很大、每 Token FLOPs 较小”？": questions/07-moe/061.md
+      - "Q062 Top-1 与 Top-2 Routing 有什么 Trade-off？": questions/07-moe/062.md
+      - "Q063 为什么 MoE 会出现 Expert Collapse / Hot Expert？": questions/07-moe/063.md
+      - "Q064 Load-Balancing Auxiliary Loss 怎么工作？为什么太强会伤模型？": questions/07-moe/064.md
+      - "Q065 DeepSeek-V3 的 Auxiliary-Loss-Free Load Balancing 为什么重要？": questions/07-moe/065.md
+      - "Q066 Shared Expert 的意义是什么？": questions/07-moe/066.md
+      - "Q067 Fine-Grained Experts 为什么可能优于少量大 Experts？": questions/07-moe/067.md
+      - "Q068 Expert Parallel 与 Tensor Parallel 如何相互影响？": questions/07-moe/068.md
+      - "Q069 MoE 为什么特别容易 Communication-Bound？": questions/07-moe/069.md
+      - "Q070 Qwen3 MoE 与 DeepSeek-V3 MoE 应该怎样专业比较？": questions/07-moe/070.md
+  - 08. 长上下文与高效 Attention:
+      - 章节导读: questions/08-long-context/README.md
+      - "Q071 Self-Attention 为什么是 O(S²)？": questions/08-long-context/071.md
+      - "Q072 FlashAttention 解决的是计算复杂度还是 IO Complexity？": questions/08-long-context/072.md
+      - "Q073 RoPE 为什么会有 Length Extrapolation 问题？": questions/08-long-context/073.md
+      - "Q074 NTK-Aware Scaling / YaRN 本质上在做什么？": questions/08-long-context/074.md
+      - "Q075 为什么 Long-Context 通常还需要 Continued Pretraining？": questions/08-long-context/075.md
+      - "Q076 Context 从 4K 扩到 32K，为什么常采用阶段式训练？": questions/08-long-context/076.md
+      - "Q077 Sliding-Window Attention 的优缺点是什么？": questions/08-long-context/077.md
+      - "Q078 用了 FlashAttention 为什么长上下文训练仍然 OOM？": questions/08-long-context/078.md
+      - "Q079 Context Parallel 下 Attention 是怎么计算的？": questions/08-long-context/079.md
+      - "Q080 如何证明一个“128K 模型”真的有 128K 有效能力？": questions/08-long-context/080.md
+  - 09. 训练稳定性、Debug 与评测:
+      - 章节导读: questions/09-stability-debug-eval/README.md
+      - "Q081 100B 模型训练到 42k Step 突然 Loss Spike，怎么排查？": questions/09-stability-debug-eval/081.md
+      - "Q082 如何区分 Bad Batch 与 Optimizer Instability？": questions/09-stability-debug-eval/082.md
+      - "Q083 Gradient Norm 突然变大意味着什么？": questions/09-stability-debug-eval/083.md
+      - "Q084 Overall Loss 在降，但 Math/Code Benchmark 不涨，为什么？": questions/09-stability-debug-eval/084.md
+      - "Q085 Training/Validation Loss 都下降，就能说明模型更好吗？": questions/09-stability-debug-eval/085.md
+      - "Q086 如何监控 1000+ GPU 的预训练任务？": questions/09-stability-debug-eval/086.md
+      - "Q087 单个 GPU 比其他 GPU 慢 20%，整个 Job 会怎样？": questions/09-stability-debug-eval/087.md
+      - "Q088 训练出现 NaN，你的排查顺序是什么？": questions/09-stability-debug-eval/088.md
+      - "Q089 Checkpoint 应保存什么，才能做到真正可恢复？": questions/09-stability-debug-eval/089.md
+      - "Q090 如何定义一个预训练模型“训练成功”？": questions/09-stability-debug-eval/090.md
+  - 10. 手撕、系统设计与项目拷打:
+      - 章节导读: questions/10-coding-system-project/README.md
+      - "Q091 手写 Multi-Head Attention，面试官真正看什么？": questions/10-coding-system-project/091.md
+      - "Q092 手写 Causal Mask：如何保证语义和数值都正确？": questions/10-coding-system-project/092.md
+      - "Q093 手写 RMSNorm：最常见错误是什么？": questions/10-coding-system-project/093.md
+      - "Q094 手写 RoPE：代码之外必须证明什么？": questions/10-coding-system-project/094.md
+      - "Q095 手算一个 Transformer Block 的参数量怎么做？": questions/10-coding-system-project/095.md
+      - "Q096 手算 70B + Adam + BF16 的训练显存，并推到 ZeRO": questions/10-coding-system-project/096.md
+      - "Q097 从 0 预训练一个 1B 模型，完整 Pipeline 如何设计？": questions/10-coding-system-project/097.md
+      - "Q098 1000 张 GPU 给你一个月，怎样降低 Full Run 失败概率？": questions/10-coding-system-project/098.md
+      - "Q099 面试官问“你真的从 0 预训练过模型吗？”怎样证明？": questions/10-coding-system-project/099.md
+      - "Q100 你在预训练项目中真正解决的最难问题是什么？": questions/10-coding-system-project/100.md
+  - 速查:
+      - 核心公式: cheatsheets/formula-sheet.md
+      - 显存账本: cheatsheets/memory-accounting.md
+      - 并行策略: cheatsheets/parallelism.md
+      - Debug Playbook: cheatsheets/debug-playbook.md
+  - 学习计划:
+      - 四周冲刺: study-plan/4-week-plan.md
+      - S 级 20 题: study-plan/s-tier.md
+  - 模板:
+      - 答题框架: templates/answer-frameworks.md
+      - 项目拷打: templates/project-defense.md
+  - 参考资料: references/README.md

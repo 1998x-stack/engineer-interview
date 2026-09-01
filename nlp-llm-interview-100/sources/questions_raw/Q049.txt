@@ -1,0 +1,41 @@
+Q049 SwiGLU 为什么成了现代 LLM 常客？
+
+
+ 难度 ★★★ 频率 ★★★★☆ 依据高频公开题型
+  SwiGLU   FFN
+
+ 面试官在考什么：理解 gated MLP 的具体计算。
+ 题目：写出 SwiGLU 的计算图，并解释 gate 分支的作用。
+
+ 60 秒标准回答
+
+ 输入分别经过 value/up 投影与 gate 投影，gate 分支经 SiLU 后与 value 分支逐元素相乘，再做
+ down projection。模型可学习按特征动态控制信息通过。
+
+
+
+深度解析：Know‑Why
+
+‧ 与单路线性 + 激活相比，多一条门控分支增加参数与计算。
+‧ 常通过减小 intermediate size 保持总参数/FLOPs 接近。
+‧ gate saturation、低精度 kernel 实现也影响效率。
+
+ 高频失分点
+
+  ‧ 把 SwiGLU 写成 SiLU(Wx) 后直接 W2。
+
+ 追问树
+
+  1. GEGLU 与 SwiGLU 区别？
+  2. 为什么乘法交互常比纯加法更强？
+
+
+
+
+                               复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   53 / 116
+NLP/LLM 算法岗面试 100 题                                          2026 专业版
+
+

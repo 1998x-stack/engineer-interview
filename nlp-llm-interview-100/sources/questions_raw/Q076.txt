@@ -1,0 +1,41 @@
+Q076 Bi‑Encoder 与 Cross‑Encoder：为什么一快一准？
+
+
+ 难度 ★★★ 频率 ★★★★★ 依据高频公开题型
+  Retriever   Reranker
+
+ 面试官在考什么：理解双塔索引与交互编码。
+ 题目：Bi‑Encoder 与 Cross‑Encoder 的计算差异如何决定使用位置？
+
+ 60 秒标准回答
+
+ Bi‑Encoder 独立编码 query/document，文档向量可离线索引，适合大规模召回；Cross‑Encoder
+ 将 q,d 拼接后做完整 token 交互，相关性建模更细但每个 pair 都要推理，适合 reranking。
+
+
+
+深度解析：Know‑Why
+
+‧ 双塔 score 常用 dot/cosine，也可学习 late interaction。
+‧ cross encoder 不适合对百万文档逐一打分。
+‧ ColBERT 处于两者之间：保留 token‑level late interaction。
+
+ 高频失分点
+
+  ‧ 说“Cross‑Encoder 没法缓存任何东西”过度。
+
+ 追问树
+
+  1. 为什么双塔容易受 representation bottleneck 影响？
+  2. ColBERT 的 MaxSim 是什么？
+
+
+
+
+                                   复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                   83 / 116
+NLP/LLM 算法岗面试 100 题                                      2026 专业版
+
+

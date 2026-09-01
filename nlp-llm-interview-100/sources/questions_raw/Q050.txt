@@ -1,0 +1,59 @@
+Q050 MHA、MQA、GQA：为什么共享 K/V 能省 KV Cache？
+
+
+ 难度 ★★★★ 频率 ★★★★★ 依据高频公开题型
+  GQA   KV Cache
+
+ 面试官在考什么：连接模型结构与推理内存。
+ 题目：MHA、MQA、GQA 的 Q head 与 KV head 数量关系是什么？
+
+ 60 秒标准回答
+
+ MHA 每个 Q head 对应独立 K/V head；MQA 所有 Q heads 共用一组 K/V；GQA 多个 Q heads
+ 共享一组 KV，在质量与 cache/带宽之间折中。KV cache 大小与 KV head 数近似线性相关。
+
+
+
+深度解析：Know‑Why
+
+‧ Decode 阶段常 memory‑bandwidth bound，因此减少 K/V 很有价值。
+‧ GQA 不直接减少 Q/O 投影或 FFN 参数。
+‧ 训练质量损失与共享粒度有关。
+
+ 高频失分点
+
+  ‧ 说 GQA 是“减少 attention heads”不准确。
+
+ 追问树
+
+  1. 给定 32 Q heads、8 KV heads，group size 是多少？
+  2. MQA 为什么可能损失质量？
+
+
+
+
+                                  复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                  54 / 116
+第5篇
+
+BERT、GPT 与大模型预训练
+
+本篇目标：从训练目标、Tokenizer、Scaling 到 MoE，回答要同时连接建模与数据。
+题目范围：Q51 BERT 原始预训练任务：MLM 与 NSP、Q52 为什么 BERT 不能天然像 GPT 一样
+左到右生成？    、Q53 BERT 与 GPT：双向理解和因果生成如何取舍？          、Q54 BPE、WordPiece、Uni‑
+gram/SentencePiece 有什么区别？、Q55 为什么 LLM 普遍使用 Subword/Byte Tokenization？、
+Q56 Decoder LM Loss：为什么每个 token 都是监督信号？     、Q57 Perplexity：什么时候能比、什么
+时候不能比？    、Q58 Weight Tying：为什么输入 Embedding 与 LM Head 可以共享？      、Q59 Scaling
+Law：为什么不能只堆参数？         、Q60 大模型训练为什么必须去重？       、Q61 为什么“数据质量越高越好”
+是危险说法？    、Q62 Mixed Precision：BF16 为什么常比 FP16 稳？、Q63 Gradient Checkpointing：
+省了什么、付出什么？、Q64 MoE：为什么参数变大但每 token 计算不同比例增长？
+
+
+
+
+                                    55
+NLP/LLM 算法岗面试 100 题                                       2026 专业版
+
+

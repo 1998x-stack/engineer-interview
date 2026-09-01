@@ -1,0 +1,42 @@
+Q040 Causal Mask 是怎么工作的？
+
+
+ 难度 ★★ 频率 ★★★★★ 依据高频公开题型
+  Mask   Decoder
+
+ 面试官在考什么：实现必会，方向错一行就泄漏未来。
+ 题目：GPT 的 causal mask 应屏蔽哪一半矩阵？为什么是在 softmax 前加 ‑∞？
+
+ 60 秒标准回答
+
+ 第 i 个 query 只能访问位置 ≤i 的 key，未来位置 logit 加 ‑∞，softmax 后概率变为 0。实际实现
+ 需同时处理 padding、cache offset 与 batch shape。
+
+
+
+深度解析：Know‑Why
+
+‧ 常见矩阵约定 row=query、col=key，因此是上三角 future 区域被屏蔽。
+‧ prefill 时是完整三角 mask；单 token decode 配合 cache 时通常无需显式大三角矩阵。
+‧ mask dtype 与极小值选择需兼顾 FP16/BF16。
+
+ 高频失分点
+
+  ‧ 方向反了导致训练 label leakage。
+  ‧ mask broadcast shape 错。
+
+ 追问树
+
+  1. padding mask 与 causal mask 如何合并？
+  2. KV cache 时 position offset 如何影响 mask？
+
+
+
+
+                                    复习动作：先闭卷讲 60 秒，再任选一个追问继续讲 3 分钟。
+
+
+                                    44 / 116
+NLP/LLM 算法岗面试 100 题                                      2026 专业版
+
+

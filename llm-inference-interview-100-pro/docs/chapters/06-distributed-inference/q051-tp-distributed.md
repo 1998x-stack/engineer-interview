@@ -1,0 +1,237 @@
+---
+id: Q051
+title: "Tensor Parallelism 是什么？"
+chapter: "分布式推理与通信"
+difficulty: "★★★★★"
+tags: ["TP", "distributed"]
+source: "LLM_Inference_Interview_100_2026.pdf"
+edition: "2026.09"
+---
+
+# Q051｜Tensor Parallelism 是什么？
+
+> **定位**：分布式推理与通信 · **难度**：★★★★★  
+> **关键词**：`TP` · `distributed`
+
+## 30 秒面试回答
+
+> TP 把同一层的大矩阵沿行/列切到多 GPU 并行，每层都需要某些 AllReduce/AllGather/ReduceScatter 来组合结果。优点是单请求可同时用多卡、降低单卡权重容量；代价是高频同步，非常依赖 scale-up interconnect。
+
+## 1. 面试官到底在考什么
+
+- 这道题不是考名词定义，而是看你能否从系统资源出发解释：TP 把同一层的大矩阵沿行/列切到多 GPU 并行，每层都需要某些 AllReduce/AllGather/ReduceScatter 来组合结果。优点是单请求可同时用多卡、降低单卡权重容量；代价是高频同步，非常依赖 scale-up interconnect。
+- 面试中应先给结论，再给成本模型/瓶颈，再给适用边界。只背框架参数通常拿不到高分。
+
+### 回答结构建议
+
+1. **先下结论**：20-30 秒说清核心瓶颈或机制。
+2. **给成本模型**：至少写一个与显存、带宽、计算或通信相关的量化表达。
+3. **说边界**：明确在什么 batch/context/topology/SLO 条件下成立。
+4. **给证据**：说明会看哪些 metrics、profiler 或 controlled experiment。
+5. **给反例**：解释何时这个优化可能没有收益甚至负优化。
+
+## 2. 关键公式 / 成本模型
+
+公式 Linear Y=XW；W column/row sharding 使每 rank 计算局部结果，再 collective。
+
+> **使用公式的原则**：先做一阶上界/下界估算，再用 profiler 校正有效带宽、kernel efficiency、通信 overlap 与排队时间。不要把理论峰值直接当线上值。
+
+## 3. 深入原理：Know-Why
+
+- 1. TP 把同一层的大矩阵沿行/列切到多 GPU 并行，每层都需要某些 AllReduce/AllGather/ReduceScatter 来组合结果。优点是单请求可同时用多卡、降低单卡权重容量
+- 2. 代价是高频同步，非常依赖 scale-up interconnect。
+- 把这一结论放进 Roofline / 内存容量 / 调度 / 通信四类模型中检查，确认瓶颈是否真的位于关键路径，而不是只优化了一个非关键算子。
+
+### 进一步推导
+
+- 将结论分别放进 **计算（FLOPs/Tensor Core）**、**内存（HBM/KV）**、**通信（NCCL/网络）**、**调度（queue/batch）** 四个视角检查。
+- 问自己：优化前后究竟减少的是 **bytes、FLOPs、collective、kernel launch、排队还是重复计算**？如果没有减少关键路径上的成本，端到端加速通常有限。
+- 对线上系统，最终验收应回到 **TTFT/TPOT/p99/Goodput/成本**，而不是只看单 kernel speedup。
+
+## 4. 工程场景 / 现场推演
+
+现场推演 8×H100 同节点 NVLink 上 TP=8 可能可行；跨慢网络 TP=8 通信可能占主导。
+
+### 建议实验
+
+运行 `nvidia-smi topo -m`，对比单机 TP 与跨节点 TP 的延迟/吞吐，并关联 NCCL timeline。
+
+### 观测指标
+
+- 先画物理拓扑：GPU/NVLink/PCIe/NIC/节点，再选 TP/PP/EP/CP。
+- 记录 collective bytes、时间、overlap 与 straggler。
+- 把单卡 compute 提升和跨卡通信放在同一个 critical path 中评估。
+- 围绕“Tensor Parallelism 是什么？”至少设计一个可证伪的 A/B 实验，明确控制变量与验收指标。
+
+## 5. 边界条件与反例
+
+TP 降低每卡权重与计算，但把 collective 放进几乎每层关键路径；跨慢网络时扩展性会迅速恶化。
+
+- ✗ 认为 TP 数越大 latency 越低
+- ✗ collective 与 small GEMM 会导致扩展效率下降。
+
+## 6. 生产排障 / 落地 Checklist
+
+- [ ] 明确模型 revision、dtype/quantization 与 attention/backend。
+- [ ] 固定硬件与物理拓扑，记录 driver/CUDA/runtime commit。
+- [ ] 固定或记录 input/output length 与 arrival/concurrency 分布。
+- [ ] 同时报 TTFT、TPOT/ITL、E2E、Throughput、Goodput、p95/p99。
+- [ ] 将 GPU 指标与 scheduler/KV/queue 指标对齐到同一时间线。
+- [ ] 对任何“优化”做 on/off A/B，且一次只改变一个关键变量。
+- [ ] 检查收益是否只是从一种 SLO 转移到另一种 SLO。
+
+## 7. 常见错误 / Gotchas
+
+- ✗ 认为 TP 数越大 latency 越低
+- ✗ collective 与 small GEMM 会导致扩展效率下降。
+
+## 8. 追问链
+
+- → Column-parallel 与 row-parallel 各需要什么 collective？
+- → Attention heads 如何切？
+- → TP 与 GQA 有何约束？
+
+### 自我加压追问
+
+- 如果硬件从 H100 换成 B200/A100，结论中哪些部分会变化？
+- 如果 workload 从低并发 Chat 变成高并发 batch inference，最优点会怎么移动？
+- 如果上下文长度增加 8 倍，容量瓶颈和带宽瓶颈分别怎样变化？
+- 如何设计一个实验来证伪你自己的判断？
+
+## 9. 面试官评分标准
+
+- 及格：能给出正确概念和基本方向。
+- 良好：能写出成本/显存/通信公式，能解释为什么。
+- 优秀：能指出反例、适用边界，并能把问题落到 profiler、SLO 或真实系统配置。
+
+### 高分答案的额外特征
+
+- 能把“机制正确”与“线上收益”分开讨论；
+- 会主动声明假设，而不是用绝对句式；
+- 能现场估算数量级，并说明误差来源；
+- 能提出可复现实验和可观测指标；
+- 能指出当前框架版本可能改变实现细节。
+
+## 10. 2026 工程扩展（外部资料）
+
+> 本节是基于 2026 年公开框架/论文的补充，不属于 PDF 原始正文；具体 feature/status 应以目标版本文档为准。
+
+从模型切分上升到拓扑感知的通信成本模型。
+
+- **框架视角**：把本题放回 scheduler、KV manager、executor、kernel 与 distributed runtime 的完整路径，而不是孤立理解单个开关。
+- **评估视角**：统一比较 latency distribution、Goodput 与资源成本；对长上下文和高并发单独建 workload bucket。
+- **维护视角**：记录 runtime commit 和 feature flags。像 scheduler、KV swapping、quant backend 这类细节可能在大版本间变化。
+
+## 10.1 专家级深挖：把结论推到白板上
+
+### 核心机制再抽象
+
+TP 把单层矩阵沿行/列切分，使每个 rank 只存/算部分权重；代价是每层或每几个算子需要 collective。TP 越大，单卡计算变少但同步比例上升。
+
+### 白板推导
+
+通信可粗略写为 $T_{comm}=\alpha\cdot n_{steps}+\beta\cdot bytes$。TP degree 增大时，每 rank compute 降低，但 collective 的 $\alpha/\beta$ 项不会同比下降。
+
+### 做敏感性分析，而不是只背一个公式
+
+面试现场建议把关键成本写成 $T=\max(T_{compute},T_{memory},T_{comm})+T_{sched/overhead}$ 或对应的容量模型，然后逐项回答：
+
+- **哪个变量是一阶项？** 例如 context、batch、world size、bit-width 或 cache hit。
+- **哪个变量只能改善局部项？** 局部加速若不在 critical path，会被 Amdahl 定律吃掉。
+- **主导项何时切换？** 低并发与高并发、短上下文与长上下文、单机与跨节点经常处于不同 regime。
+- **理论量与实测量如何对齐？** 用 effective bandwidth、achieved FLOP/s、exposed communication、实际 cache hit 替代理论峰值。
+
+> **面试技巧**：写完公式后立即给一个“如果变量翻倍会怎样”的定性答案。真正懂系统的人通常能预测曲线形状，而不仅是记住一个点。
+
+## 10.2 源码 / Runtime 视角
+
+**典型执行路径**：Request → rank placement → per-layer compute → collective / point-to-point → next layer。并行策略本质是把显存与计算分摊出去，同时引入通信和同步。
+
+- 固定 rank placement 并保存 topology；同样 world size 在不同 GPU/NIC 映射下结果不可比。
+- 把 collective 时间拆为 exposed 与 overlapped，只有 exposed communication 才直接进入关键路径。
+
+### 阅读源码时建议追的对象
+
+1. **入口对象**：请求从 API/engine 进入后，在哪里被转成内部 request / sequence / batch。
+2. **状态对象**：本题相关状态由谁持有，例如 KV block table、scheduler budget、quant scales、expert routing table。
+3. **关键决策点**：哪个函数真正决定分配、调度、kernel/backend 或 collective。
+4. **数据结构与布局**：shape、stride、page layout、packed format、rank placement 是否与论文抽象一致。
+5. **fallback 路径**：feature“支持”时是否存在慢速 fallback；生产问题经常来自意外 fallback，而不是算法本身。
+
+- 对版本敏感的实现细节，以目标 runtime 的官方文档、release note 与源码 commit 为准。
+
+## 10.3 Benchmark Lab：如何把本题变成可复现实验
+
+### 实验目标
+
+验证本题的核心判断是否在目标硬件和 workload 上成立，而不是证明某个框架宣传数字。
+
+### 推荐实验
+
+固定全局 batch，TP=1/2/4/8 做强扩展；记录每层 collective 占比和每卡 tokens/s，而不是只看 aggregate。
+
+### 控制变量
+
+- 固定 checkpoint、tokenizer、sampling 参数、精度和模型 revision。
+- 固定 GPU 型号、时钟/功耗策略、CUDA/driver、runtime commit 与物理拓扑。
+- 预热后再采样；冷启动问题则单独建立 cold-start benchmark。
+- 对随机 workload 固定 seed，并保存原始请求 trace，保证回归测试可重复。
+
+### 自变量
+
+TP/PP/DP/EP/CP degree、microbatch、node placement、NVLink/IB topology、collective algorithm。一次实验尽量只改变一个关键变量，复杂系统再用二维 sweep 验证交互项。
+
+### 观测量
+
+collective time、overlap ratio、link bandwidth、straggler rank、per-rank memory、TTFT/TPOT。此外保存 profiler trace 与原始 per-request 数据，不只保存聚合平均值。
+
+### 验收方式
+
+- 先验证机制指标：例如 HBM bytes 是否下降、cache hit 是否提高、collective 是否被 overlap。
+- 再验证端到端指标：TTFT/TPOT/Goodput/成本是否改善。
+- 若机制指标改善但 E2E 不变，使用 Amdahl 分析剩余 critical path；不要继续盲调同一优化。
+
+## 10.4 资深面试进阶：从“会答”到“会做系统”
+
+高级回答要先画拓扑和数据流，再决定并行度；必须能估 message bytes 和 exposed communication。
+
+### 面试官可能改变条件
+
+- **硬件变化**：A100/H100/B200、PCIe/SXM、单机/跨节点后，瓶颈是否迁移？
+- **流量变化**：interactive chat、RAG、长 CoT、offline batch 的最优配置是否仍一样？
+- **模型变化**：Dense → MoE、MHA → GQA/MLA、BF16 → FP8/INT4 后，哪个成本项被改变？
+- **SLO 变化**：若从“最大吞吐”改成“p99 TPOT < X ms”，你的答案需要怎样重排优先级？
+- **故障变化**：一张卡变慢、cache miss、NCCL 抖动或 cold start 时，哪些观测指标最先异常？
+
+### 一段高质量 Senior 答案应包含
+
+1. **Assumption**：先明确 batch/context/topology/SLO。
+2. **Model**：写出一阶成本模型或数据流。
+3. **Bottleneck**：指出主导资源并说明为什么。
+4. **Intervention**：提出优化，同时说明它具体减少了 bytes/FLOPs/communication/queue 中哪一项。
+5. **Trade-off**：说明内存、质量、公平性、复杂度或尾延迟代价。
+6. **Evidence**：给出 profiler/metrics 和可证伪 A/B。
+7. **Boundary**：明确何时结论失效。
+
+### 代码审查 / 设计评审追问
+
+- 如果让你在 runtime 源码里实现或修改这一机制，你首先会找哪个 abstraction？
+- 如何写一个单元测试验证“语义正确”，再写一个 benchmark 验证“性能正确”？
+- 如何避免优化只对单一 shape 有效，却让真实请求分布退化？
+- 如何把本题相关指标加入线上 dashboard，并设置回归告警？
+
+## 11. 延伸阅读
+
+- [vLLM 官方文档](https://docs.vllm.ai/en/stable/)
+
+## 12. 相关题目
+
+- [Q056 TP 和 PP 怎么选？](q056-tp-pp-topology.md)
+- [Q072 Expert Parallel 和 Tensor Parallel 的本质区别？](../08-moe-mla-codesign/q072-ep-tp-moe.md)
+- [Q052 Pipeline Parallelism 是什么？](q052-pp-pipeline.md)
+- [Q053 Data Parallel inference 有什么意义？](q053-dp-replica.md)
+- [Q054 Expert Parallelism 是什么？](q054-ep-moe.md)
+
+---
+
+[← Q050](../05-quantization/q050-int4-performance.md) · [06 分布式推理与通信](index.md) · [Q052 →](q052-pp-pipeline.md)

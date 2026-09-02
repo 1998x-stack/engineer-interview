@@ -63,7 +63,7 @@
 | [`cv-algorithm-interview-handbook-v2`](cv-algorithm-interview-handbook-v2/) | 计算机视觉 (CV) | 检测、分割、图像理解、多模态视觉、工程实践 |
 | [`rl-interview-100-v2`](rl-interview-100-v2/) | 强化学习 (RL) | MDP、DQN / PPO、策略梯度、离线 RL、工程实战 |
 | [`embodied-ai-interview-100`](embodied-ai-interview-100/) | 具身智能 | 感知、规划、控制、VLA、多模态交互、仿真 |
-| [`llm-inference-interview-100`](llm-inference-interview-100/) | LLM 推理与部署 | 推理优化、量化、KV Cache、服务化、成本与延迟 |
+| [`llm-inference-interview-100-pro`](llm-inference-interview-100-pro/) | LLM 推理与部署 | 推理优化、量化、KV Cache、服务化、成本与延迟 |
 | [`search-engine-interview-100`](search-engine-interview-100/) | 搜索引擎 | 检索、排序、索引、相关性、搜索工程 |
 | [`JianZhi-Quant-Offer`](JianZhi-Quant-Offer/) | 金融量化 (Quant) | 因子、回测、风控、Alpha、高频交易、量化工程 |
 

@@ -1,0 +1,239 @@
+---
+id: Q100
+title: "终极综合题：线上模型突然慢了 30%，你如何定位？"
+chapter: "Benchmark、生产部署与系统设计"
+difficulty: "★★★★★"
+tags: ["debugging", "production", "systematic"]
+source: "LLM_Inference_Interview_100_2026.pdf"
+edition: "2026.09"
+---
+
+# Q100｜终极综合题：线上模型突然慢了 30%，你如何定位？
+
+> **定位**：Benchmark、生产部署与系统设计 · **难度**：★★★★★  
+> **关键词**：`debugging` · `production` · `systematic`
+
+## 30 秒面试回答
+
+> 先确认变更与流量是否变化；将退化拆为 queue/TTFT/TPOT，按请求长度和 tenant 分桶。再看 scheduler/KV 指标、GPU timeline、kernel/HBM、NCCL 与 CPU。做 fixed-input controlled experiment 并逐项关闭 cache/spec/compile/parallel features，最终用 A/B 或回滚验证根因。
+
+## 1. 面试官到底在考什么
+
+- 这道题不是考名词定义，而是看你能否从系统资源出发解释：先确认变更与流量是否变化；将退化拆为
+queue/TTFT/TPOT，按请求长度和 tenant 分桶。再看 scheduler/KV 指标、GPU timeline、kernel/HBM、NCCL 与 CPU。做 fixed-input controlled experiment 并逐项关闭 cache/spec/compile/parallel features，最终用 A/B 或回滚验证根因。
+- 面试中应先给结论，再给成本模型/瓶颈，再给适用边界。只背框架参数通常拿不到高分。
+
+### 回答结构建议
+
+1. **先下结论**：20-30 秒说清核心瓶颈或机制。
+2. **给成本模型**：至少写一个与显存、带宽、计算或通信相关的量化表达。
+3. **说边界**：明确在什么 batch/context/topology/SLO 条件下成立。
+4. **给证据**：说明会看哪些 metrics、profiler 或 controlled experiment。
+5. **给反例**：解释何时这个优化可能没有收益甚至负优化。
+
+## 2. 关键公式 / 成本模型
+
+公式诊断树：Regression scope → TTFT/TPOT split → Scheduler/KV → GPU/Kernel → Network/CPU → Controlled
+isolation → Root-cause proof。
+
+> **使用公式的原则**：先做一阶上界/下界估算，再用 profiler 校正有效带宽、kernel efficiency、通信 overlap 与排队时间。不要把理论峰值直接当线上值。
+
+## 3. 深入原理：Know-Why
+
+- 1. 先确认变更与流量是否变化
+- 2. 将退化拆为 queue/TTFT/TPOT，按请求长度和 tenant 分桶。再看 scheduler/KV 指标、GPU timeline、kernel/HBM、NCCL 与 CPU。做 fixed-input controlled experiment 并逐项关闭 cache/spec/compile/parallel features，最终用 A/B 或回滚验证根因。
+- 把这一结论放进 Roofline / 内存容量 / 调度 / 通信四类模型中检查，确认瓶颈是否真的位于关键路径，而不是只优化了一个非关键算子。
+
+### 进一步推导
+
+- 将结论分别放进 **计算（FLOPs/Tensor Core）**、**内存（HBM/KV）**、**通信（NCCL/网络）**、**调度（queue/batch）** 四个视角检查。
+- 问自己：优化前后究竟减少的是 **bytes、FLOPs、collective、kernel launch、排队还是重复计算**？如果没有减少关键路径上的成本，端到端加速通常有限。
+- 对线上系统，最终验收应回到 **TTFT/TPOT/p99/Goodput/成本**，而不是只看单 kernel speedup。
+
+## 4. 工程场景 / 现场推演
+
+现场推演若 TTFT 升而 TPOT 不变，优先查 Prefill/queue/cache；若 TPOT 升，查 Decode batch、HBM、KV、NCCL、spec acceptance。
+
+### 建议实验
+
+冻结一组 fixed-input 回放流量，做版本二分和 feature flag 二分；每次只改一个变量，把“相关性”升级为可重复的因果证据。
+
+### 观测指标
+
+- 使用真实 input/output/arrival 分布，报告 p50/p95/p99。
+- 容量规划同时考虑 weights、KV、workspace、graph memory 与冗余。
+- 性能回归先分解 queue/TTFT/TPOT，再逐层二分定位。
+- 围绕“终极综合题：线上模型突然慢了 30%，你如何定位？”至少设计一个可证伪的 A/B 实验，明确控制变量与验收指标。
+
+## 5. 边界条件与反例
+
+避免把局部规律绝对化；必须说明 workload、并发、上下文长度、硬件拓扑、精度和 SLO，才能判断该结论是否成立。
+
+- ✗ 直接猜“驱动问题”
+- ✗ 没有时间线、没有对照、一次改多个变量。
+
+## 6. 生产排障 / 落地 Checklist
+
+- [ ] 明确模型 revision、dtype/quantization 与 attention/backend。
+- [ ] 固定硬件与物理拓扑，记录 driver/CUDA/runtime commit。
+- [ ] 固定或记录 input/output length 与 arrival/concurrency 分布。
+- [ ] 同时报 TTFT、TPOT/ITL、E2E、Throughput、Goodput、p95/p99。
+- [ ] 将 GPU 指标与 scheduler/KV/queue 指标对齐到同一时间线。
+- [ ] 对任何“优化”做 on/off A/B，且一次只改变一个关键变量。
+- [ ] 检查收益是否只是从一种 SLO 转移到另一种 SLO。
+
+## 7. 常见错误 / Gotchas
+
+- ✗ 直接猜“驱动问题”
+- ✗ 没有时间线、没有对照、一次改多个变量。
+
+## 8. 追问链
+
+- → 如何确认是 workload drift？
+- → 如何做 performance bisect？
+- → 怎么防止同类回归再次发生？
+
+### 自我加压追问
+
+- 如果硬件从 H100 换成 B200/A100，结论中哪些部分会变化？
+- 如果 workload 从低并发 Chat 变成高并发 batch inference，最优点会怎么移动？
+- 如果上下文长度增加 8 倍，容量瓶颈和带宽瓶颈分别怎样变化？
+- 如何设计一个实验来证伪你自己的判断？
+
+## 9. 面试官评分标准
+
+- 及格：能给出正确诊断路径，并能把 TTFT/TPOT 分开。
+- 优秀：能用 controlled experiment、profile 与回滚/A-B 建立可证伪的根因证据链。
+
+### 高分答案的额外特征
+
+- 能把“机制正确”与“线上收益”分开讨论；
+- 会主动声明假设，而不是用绝对句式；
+- 能现场估算数量级，并说明误差来源；
+- 能提出可复现实验和可观测指标；
+- 能指出当前框架版本可能改变实现细节。
+
+## 10. 2026 工程扩展（外部资料）
+
+> 本节是基于 2026 年公开框架/论文的补充，不属于 PDF 原始正文；具体 feature/status 应以目标版本文档为准。
+
+把所有局部优化放到 SLO、容量、成本、可观测性与故障证据链中。
+
+- **框架视角**：把本题放回 scheduler、KV manager、executor、kernel 与 distributed runtime 的完整路径，而不是孤立理解单个开关。
+- **评估视角**：统一比较 latency distribution、Goodput 与资源成本；对长上下文和高并发单独建 workload bucket。
+- **维护视角**：记录 runtime commit 和 feature flags。像 scheduler、KV swapping、quant backend 这类细节可能在大版本间变化。
+
+## 10.1 专家级深挖：把结论推到白板上
+
+### 核心机制再抽象
+
+30% 回归排障应先确认 workload/config 是否变化，再把问题拆成 queue/TTFT/TPOT；之后沿 CPU→GPU kernel→HBM→NCCL→KV/scheduler 二分，最后用最小可控实验复现。
+
+### 白板推导
+
+把端到端写成 $T=T_{queue}+T_{prefill}+T_{decode}+T_{network}+T_{overhead}$，先找哪一项上涨，再在该项内部做二分，避免一开始就在几十个 kernel 里盲搜。
+
+### 做敏感性分析，而不是只背一个公式
+
+面试现场建议把关键成本写成 $T=\max(T_{compute},T_{memory},T_{comm})+T_{sched/overhead}$ 或对应的容量模型，然后逐项回答：
+
+- **哪个变量是一阶项？** 例如 context、batch、world size、bit-width 或 cache hit。
+- **哪个变量只能改善局部项？** 局部加速若不在 critical path，会被 Amdahl 定律吃掉。
+- **主导项何时切换？** 低并发与高并发、短上下文与长上下文、单机与跨节点经常处于不同 regime。
+- **理论量与实测量如何对齐？** 用 effective bandwidth、achieved FLOP/s、exposed communication、实际 cache hit 替代理论峰值。
+
+> **面试技巧**：写完公式后立即给一个“如果变量翻倍会怎样”的定性答案。真正懂系统的人通常能预测曲线形状，而不仅是记住一个点。
+
+## 10.2 源码 / Runtime 视角
+
+**典型执行路径**：Traffic → gateway → queue/admission → replica/router → engine → GPU → telemetry。生产问题必须沿请求级、调度级、GPU/网络级证据链定位。
+
+- 所有监控统一到 request_id、model_revision、engine_revision 与 worker/rank，便于跨层 RCA。
+- 容量实验必须包含 burst、长尾长度和故障注入，不只测稳态均匀流量。
+
+### 阅读源码时建议追的对象
+
+1. **入口对象**：请求从 API/engine 进入后，在哪里被转成内部 request / sequence / batch。
+2. **状态对象**：本题相关状态由谁持有，例如 KV block table、scheduler budget、quant scales、expert routing table。
+3. **关键决策点**：哪个函数真正决定分配、调度、kernel/backend 或 collective。
+4. **数据结构与布局**：shape、stride、page layout、packed format、rank placement 是否与论文抽象一致。
+5. **fallback 路径**：feature“支持”时是否存在慢速 fallback；生产问题经常来自意外 fallback，而不是算法本身。
+
+- 对版本敏感的实现细节，以目标 runtime 的官方文档、release note 与源码 commit 为准。
+
+## 10.3 Benchmark Lab：如何把本题变成可复现实验
+
+### 实验目标
+
+验证本题的核心判断是否在目标硬件和 workload 上成立，而不是证明某个框架宣传数字。
+
+### 推荐实验
+
+回放回归前后的同一 trace；逐步固定模型/框架/driver/traffic，再二分关闭 spec/cache/compile，直到找到最小触发条件。
+
+### 控制变量
+
+- 固定 checkpoint、tokenizer、sampling 参数、精度和模型 revision。
+- 固定 GPU 型号、时钟/功耗策略、CUDA/driver、runtime commit 与物理拓扑。
+- 预热后再采样；冷启动问题则单独建立 cold-start benchmark。
+- 对随机 workload 固定 seed，并保存原始请求 trace，保证回归测试可重复。
+
+### 自变量
+
+traffic trace、SLO、replica count、parallelism、autoscaling、admission、cache、failure mode。一次实验尽量只改变一个关键变量，复杂系统再用二维 sweep 验证交互项。
+
+### 观测量
+
+p50/p95/p99、Goodput、queue、GPU/KV utilization、errors/retries、cost/token、availability。此外保存 profiler trace 与原始 per-request 数据，不只保存聚合平均值。
+
+### 验收方式
+
+- 先验证机制指标：例如 HBM bytes 是否下降、cache hit 是否提高、collective 是否被 overlap。
+- 再验证端到端指标：TTFT/TPOT/Goodput/成本是否改善。
+- 若机制指标改善但 E2E 不变，使用 Amdahl 分析剩余 critical path；不要继续盲调同一优化。
+
+## 10.4 资深面试进阶：从“会答”到“会做系统”
+
+高级回答以 SLO、真实 trace、故障域和单位成本为约束，所有局部优化最终回到 Goodput/成本。
+
+### 面试官可能改变条件
+
+- **硬件变化**：A100/H100/B200、PCIe/SXM、单机/跨节点后，瓶颈是否迁移？
+- **流量变化**：interactive chat、RAG、长 CoT、offline batch 的最优配置是否仍一样？
+- **模型变化**：Dense → MoE、MHA → GQA/MLA、BF16 → FP8/INT4 后，哪个成本项被改变？
+- **SLO 变化**：若从“最大吞吐”改成“p99 TPOT < X ms”，你的答案需要怎样重排优先级？
+- **故障变化**：一张卡变慢、cache miss、NCCL 抖动或 cold start 时，哪些观测指标最先异常？
+
+### 一段高质量 Senior 答案应包含
+
+1. **Assumption**：先明确 batch/context/topology/SLO。
+2. **Model**：写出一阶成本模型或数据流。
+3. **Bottleneck**：指出主导资源并说明为什么。
+4. **Intervention**：提出优化，同时说明它具体减少了 bytes/FLOPs/communication/queue 中哪一项。
+5. **Trade-off**：说明内存、质量、公平性、复杂度或尾延迟代价。
+6. **Evidence**：给出 profiler/metrics 和可证伪 A/B。
+7. **Boundary**：明确何时结论失效。
+
+### 代码审查 / 设计评审追问
+
+- 如果让你在 runtime 源码里实现或修改这一机制，你首先会找哪个 abstraction？
+- 如何写一个单元测试验证“语义正确”，再写一个 benchmark 验证“性能正确”？
+- 如何避免优化只对单一 shape 有效，却让真实请求分布退化？
+- 如何把本题相关指标加入线上 dashboard，并设置回归告警？
+
+## 11. 延伸阅读
+
+- [vLLM 官方文档](https://docs.vllm.ai/en/stable/)
+- [Nsight Systems Analysis Guide](https://docs.nvidia.com/nsight-systems/AnalysisGuide/index.html)
+
+## 12. 相关题目
+
+- [Q090 如果 vLLM、SGLang、TensorRT-LLM 三选一，你怎么做技术选型？](../09-serving-runtimes/q090-framework-selection-production.md)
+- [Q029 为什么生产系统应该优化 Goodput，而不是最高 Throughput？](../03-batching-scheduling/q029-goodput-production.md)
+- [Q009 推理慢，你如何判断是 Compute、HBM、Network 还是 CPUBottleneck？](../01-performance-fundamentals/q009-profiling-debugging.md)
+- [Q099 系统设计题：8×H100，部署一个 70B Chat Model，你怎么设计？](q099-system-design-h100-70b.md)
+- [Q098 生产 LLM Server 最重要的监控指标有哪些？](q098-observability-metrics.md)
+
+---
+
+[← Q099](q099-system-design-h100-70b.md) · [10 Benchmark、生产部署与系统设计](index.md)

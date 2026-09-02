@@ -15,3 +15,6 @@ build/
 dist/
 *.pdf
 !**/assets/*.pdf
+
+# Redundant archives
+search-engine-interview-100.zip

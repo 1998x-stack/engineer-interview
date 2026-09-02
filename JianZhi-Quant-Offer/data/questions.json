@@ -1,0 +1,2021 @@
+[
+  {
+    "n": 1,
+    "title": "两枚公平六面骰子的点数和为 10，概率是多少？",
+    "diff": "★☆☆",
+    "tags": "概率｜计数｜Jane Street 公开题型",
+    "answer": "共有 36 个等概率有序结果；和为 10 的只有 (4,6)、(5,5)、(6,4)，所以 P(S=10)=3/36=1/12。",
+    "derivation": "关键不是背 1/12，而是先建立等概率的“原子样本空间”。点数和 2~12 并不等概率：例如和为 7 有 6 种组合，而和为 2 只有 1 种。",
+    "followups": [
+      "如果骰子不是公平的，如何写成卷积？",
+      "三枚骰子之和的分布如何高效计算？",
+      "为什么“11 个可能的和”不能直接给出 1/11？"
+    ],
+    "pitfalls": [
+      "把可观察结果“点数和”误当成等概率状态。",
+      "漏掉有序性，把 (4,6) 与 (6,4) 合并。"
+    ],
+    "interview": "先说“我会在 36 个等概率有序结果上计数”，再给 3 个命中结果。面试官听到这句话，就知道你的样本空间定义是正确的。",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q001-两枚公平六面骰子的点数和为-10-概率是多少.md",
+    "advanced_note": "把“可观察变量的取值”与“底层等概率原子事件”区分开，是组合概率题的第一原则；进一步可用概率生成函数或离散卷积统一处理多骰子问题。"
+  },
+  {
+    "n": 2,
+    "title": "抛 3 枚公平硬币，已知至少一个反面，恰好两个正面的概率？",
+    "diff": "★☆☆",
+    "tags": "条件概率｜样本空间｜Jane Street 公开题型",
+    "answer": "条件“至少一个 T”排除 HHH，剩余 7 个等概率序列；其中 HHT、HTH、THH 满足“恰好两个 H”，故概率为 3/7。",
+    "derivation": "也可写 P(A|B)=P(A∩B)/P(B)=(3/8)/(7/8)=3/7。条件信息不是附注，而是重新定义概率空间。",
+    "followups": [
+      "如果已知“第一枚是反面”，答案是多少？",
+      "如果已知“至少一个正面”，如何变化？",
+      "何时条件会破坏原来的独立性？"
+    ],
+    "pitfalls": [
+      "直接使用无条件的 3/8。",
+      "把“至少一个反面”理解成“某个指定位置是反面”。"
+    ],
+    "interview": "一句话定位：先把条件事件 B 写清楚，再把所有概率都放到 B 里计算。",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q002-抛-3-枚公平硬币-已知至少一个反面-恰好两个正面的概率.md",
+    "advanced_note": "条件事件往往会制造依赖：即使三枚硬币原本独立，在“至少一个反面”的条件下，剩余坐标不再保持原来的联合结构。"
+  },
+  {
+    "n": 3,
+    "title": "连续抽两张牌：有放回与无放回的本质区别是什么？",
+    "diff": "★☆☆",
+    "tags": "独立性｜条件概率｜抽样",
+    "answer": "有放回时第二次分布不受第一次影响，通常独立；无放回时总体组成改变，第二次概率依赖第一次结果。",
+    "derivation": "例如连续两张梅花：有放回为 (13/52)^2=1/16；无放回为 (13/52)*(12/51)。“同边缘分布”与“相互独立”是两个概念。",
+    "followups": [
+      "超几何分布从哪里来？",
+      "大总体下无放回为什么可近似独立？",
+      "协方差符号是什么？"
+    ],
+    "pitfalls": [
+      "把“每次都从一副牌抽”误认为独立。",
+      "只说公式，不解释总体状态为什么改变。"
+    ],
+    "interview": "先回答 dependency structure，再给公式；量化面试更关心你是否能识别依赖。",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q003-连续抽两张牌-有放回与无放回的本质区别是什么.md",
+    "advanced_note": "无放回抽样的负相关可以定量计算；总体足够大、抽样比例足够小时，超几何分布才可近似二项分布。"
+  },
+  {
+    "n": 4,
+    "title": "证明线性期望不要求随机变量独立。",
+    "diff": "★★☆",
+    "tags": "期望｜indicator trick｜证明",
+    "answer": "对任意可积 X,Y，都有 E[X+Y]=E[X]+E[Y]；独立性不是条件。",
+    "derivation": "离散情形：对联合分布求和，Σ(x+y)p(x,y)=Σx p_X(x)+Σy p_Y(y)。连续情形同理由积分线性得到。它使复杂计数题能令 X=ΣI_i，然后 E[X]=ΣP(I_i=1)。",
+    "followups": [
+      "方差的可加性为什么通常需要独立或零协方差？",
+      "用 indicator 计算 fixed points 的期望。",
+      "什么时候交换求和与期望需要额外条件？"
+    ],
+    "pitfalls": [
+      "把“线性期望”和“方差可加”混为一谈。"
+    ],
+    "interview": "面试中先明确：“独立只在乘法期望、方差分解等地方出现；期望本身是线性算子。”",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q004-证明线性期望不要求随机变量独立.md",
+    "advanced_note": "Indicator trick 的威力来自“期望线性 + 指示变量只需边缘概率”，它经常把看似需要联合分布的问题降维为若干简单概率。"
+  },
+  {
+    "n": 5,
+    "title": "一直抛公平硬币，直到第一次出现 HH，期望抛多少次？",
+    "diff": "★★☆",
+    "tags": "Stopping time｜状态递推｜模式重叠",
+    "answer": "设 E0 为当前没有尾随 H，E1 为当前尾随一个 H。E0=1+0.5E0+0.5E1；E1=1+0.5*0+0.5E0。解得 E0=6。",
+    "derivation": "核心是模式有重叠：在状态 H 后再来 T 会回到起点；再来 H 则完成。不能把“HH 概率为 1/4”简单倒数成 4，因为相邻窗口并不独立。",
+    "followups": [
+      "第一次出现 HT 的期望是多少？",
+      "HHH 呢？",
+      "如何用自动机/KMP 状态构造一般 pattern 的等待时间？"
+    ],
+    "pitfalls": [
+      "把每两个 toss 当成独立 block。",
+      "忘记 HH 的前缀/后缀重叠。"
+    ],
+    "interview": "先定义最小充分状态，再写 Bellman 式递推，是最稳的现场方法。",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q005-一直抛公平硬币-直到第一次出现-HH-期望抛多少次.md",
+    "advanced_note": "一般 pattern waiting time 可以构造前缀自动机，把“当前最长匹配前缀”作为 Markov state，再解线性方程组。"
+  },
+  {
+    "n": 6,
+    "title": "Coupon Collector：集齐 n 种卡片平均需要抽多少次？",
+    "diff": "★★☆",
+    "tags": "几何分布｜调和级数｜渐近",
+    "answer": "答案 E[T]=nH_n=n(1+1/2+...+1/n)≈n(log n+γ)。",
+    "derivation": "已有 k 种时，下一张是新品种的概率为 (n-k)/n，等待时间期望 n/(n-k)。把 k=0,...,n-1 的阶段等待时间相加即可。",
+    "followups": [
+      "方差量级是什么？",
+      "集齐 90% 种类需要多少？",
+      "非均匀类别概率时怎么改？"
+    ],
+    "pitfalls": [
+      "只看最后一张最难等，却忘了把每个阶段相加。"
+    ],
+    "interview": "强调“把全局 stopping time 拆成 n 个 geometric waiting time”，比直接背 nH_n 更有价值。",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q006-Coupon-Collector-集齐-n-种卡片平均需要抽多少次.md",
+    "advanced_note": "Coupon Collector 的尾部由最后少数类别主导；其期望约为 n log n，集中性和极值行为也能解释“最后几张为什么最慢”。"
+  },
+  {
+    "n": 7,
+    "title": "X 与 Y 不相关，是否意味着独立？",
+    "diff": "★☆☆",
+    "tags": "相关性｜依赖｜反例",
+    "answer": "一般不意味着。例：X~U(-1,1)，Y=X^2。Y 完全由 X 决定，但 Cov(X,Y)=E[X^3]-E[X]E[X^2]=0。",
+    "derivation": "零相关只排除了线性依赖。独立则要求联合分布可分解：p(x,y)=p(x)p(y)。Gaussian 联合分布是重要特例：零相关可推出独立。",
+    "followups": [
+      "为什么联合高斯是特例？",
+      "哪些统计量能检测非线性依赖？",
+      "rank correlation 与 Pearson 有何差别？"
+    ],
+    "pitfalls": [
+      "说“相关系数为 0 就没有关系”。"
+    ],
+    "interview": "先给反例，再补“jointly Gaussian 情形例外”，回答会更完整。",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q007-X-与-Y-不相关-是否意味着独立.md",
+    "advanced_note": "零相关仅排除一阶线性关系；金融信号中常见门限效应、U 形关系、尾部依赖，因此必须配合 rank、mutual information 或条件分析。"
+  },
+  {
+    "n": 8,
+    "title": "X,Y 独立且服从 U(0,1)，求 E[max(X,Y)]。",
+    "diff": "★★☆",
+    "tags": "Order statistics｜CDF",
+    "answer": "令 M=max(X,Y)。P(M≤z)=z^2，故 f_M(z)=2z，E[M]=∫_0^1 2z^2 dz=2/3。",
+    "derivation": "更一般地，n 个独立 U(0,1) 的最大值 CDF 为 z^n，均值为 n/(n+1)。这是 order statistics 的最简单入口。",
+    "followups": [
+      "求 min 的期望。",
+      "最大值方差是多少？",
+      "一般分布的最大值 CDF 怎么写？"
+    ],
+    "pitfalls": [
+      "直接对 max(x,y) 二重积分但区域拆分出错。"
+    ],
+    "interview": "优先从 CDF 做最大/最小值题，往往比直接积分更短。",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q008-X-Y-独立且服从-U-0-1-求-E-max-X-Y.md",
+    "advanced_note": "Order statistics 的统一公式是 F_{max}(x)=F(x)^n；掌握 CDF 方法后，最大值、最小值和第 k 顺序统计量都能系统推导。"
+  },
+  {
+    "n": 9,
+    "title": "低基准率事件：阳性测试后真正为阳性的后验概率怎么算？",
+    "diff": "★★☆",
+    "tags": "Bayes｜base rate｜posterior",
+    "answer": "若 prevalence=1%，sensitivity=99%，false-positive=5%，则 P(D|+)=0.99*0.01/[0.99*0.01+0.05*0.99]≈16.7%。",
+    "derivation": "即使测试本身很准，极低 base rate 也会让 false positives 占据阳性样本的大部分。金融异常检测、欺诈检测和稀有事件预测都存在同一问题。",
+    "followups": [
+      "若先验从 1% 变 10%，后验怎样变化？",
+      "precision/recall 与 Bayes 的关系？"
+    ],
+    "pitfalls": [
+      "忽略先验，直接回答 99%。"
+    ],
+    "interview": "先写“后验 ∝ 似然 × 先验”，再代数值，是最清楚的表达。",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q009-低基准率事件-阳性测试后真正为阳性的后验概率怎么算.md",
+    "advanced_note": "Bayes 题的面试重点通常不是代公式，而是明确先验、似然和事件率；低 base-rate 场景中 precision 会被先验强烈约束。"
+  },
+  {
+    "n": 10,
+    "title": "如何构造相同边缘分布、但联合行为完全不同的随机变量？",
+    "diff": "★★☆",
+    "tags": "Joint distribution｜copula 直觉",
+    "answer": "令 X~N(0,1)。取 Y=X、Y=-X、或独立 Y~N(0,1)，三种情形 Y 的边缘分布完全相同，但 Corr 分别为 1、-1、0。",
+    "derivation": "这说明 marginal information 不足以决定 dependence。风险建模里，相关结构、尾部依赖与 copula 的重要性由此而来。",
+    "followups": [
+      "相同 Pearson correlation 能否仍有不同尾部依赖？",
+      "为什么极端风险不能只靠相关矩阵？"
+    ],
+    "pitfalls": [
+      "只比较均值和方差，忽略联合分布。"
+    ],
+    "interview": "回答时强调“同 marginals ≠ 同 joint”，然后给三个构造，面试表达非常干净。",
+    "chapter": "A",
+    "chapter_name": "概率论、条件概率与期望",
+    "markdown_path": "questions/01-probability-expectation/q010-如何构造相同边缘分布-但联合行为完全不同的随机变量.md",
+    "advanced_note": "同 marginals 不同 joint 的问题本质上在问 dependence modeling；在风险管理里，尾部共振比普通 Pearson correlation 更值得警惕。"
+  },
+  {
+    "n": 11,
+    "title": "Bernoulli 参数 p 的 MLE 是什么？",
+    "diff": "★☆☆",
+    "tags": "MLE｜Bernoulli｜一致性",
+    "answer": "对 x_i∈{0,1}，log L(p)=Σx_i log p+(n-Σx_i)log(1-p)，一阶条件给 p_hat=bar{x}。",
+    "derivation": "它同时是样本成功率、无偏估计，Var(p_hat)=p(1-p)/n；由 CLT，sqrt(n)(p_hat-p) 渐近正态。",
+    "followups": [
+      "MLE 为何具有不变性？",
+      "边界 p=0/1 时 Fisher information 如何？"
+    ],
+    "pitfalls": [
+      "忘记参数域 p∈[0,1]。"
+    ],
+    "interview": "把 likelihood、score、一阶条件、统计性质按顺序说完即可。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q011-Bernoulli-参数-p-的-MLE-是什么.md",
+    "advanced_note": "Bernoulli MLE 同时也是 sufficient statistic 的函数；样本和 Σx_i 已经包含关于 p 的全部信息。"
+  },
+  {
+    "n": 12,
+    "title": "正态分布均值/方差的 MLE 是什么？为什么样本方差常除以 n-1？",
+    "diff": "★★☆",
+    "tags": "MLE｜无偏性｜自由度",
+    "answer": "μ_hat=bar{x}；σ²_MLE=(1/n)Σ(x_i-bar{x})²。后者有向下偏差；无偏样本方差用 1/(n-1)。",
+    "derivation": "估计 μ 后，残差满足 Σ(x_i-bar{x})=0，只剩 n-1 个自由方向。MLE 优化 likelihood，不承诺无偏。",
+    "followups": [
+      "MLE 方差估计的 bias 是多少？",
+      "为什么 n-1 修正不等于“更好”在所有 loss 下？"
+    ],
+    "pitfalls": [
+      "把 MLE 和 unbiased estimator 当成同一个概念。"
+    ],
+    "interview": "先明确“MLE 是 n，无偏估计是 n-1”，这是该题最关键的分界。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q012-正态分布均值-方差的-MLE-是什么-为什么样本方差常除以-n-1.md",
+    "advanced_note": "“MLE 不等于无偏”是统计估计中的重要分界；应同时讨论 bias、variance、MSE，而不是把无偏性当唯一目标。"
+  },
+  {
+    "n": 13,
+    "title": "Bias-Variance Tradeoff 如何从预测误差分解理解？",
+    "diff": "★★☆",
+    "tags": "泛化｜正则化｜噪声",
+    "answer": "在平方损失下，期望测试误差可分为 irreducible noise + Bias² + Variance。模型复杂度通常使 bias 下降、variance 上升。",
+    "derivation": "金融信噪比低、样本依赖强且分布漂移，variance 往往比通用 benchmark 更危险，所以简单模型和强正则化经常具有竞争力。",
+    "followups": [
+      "Bagging 主要降低哪一项？",
+      "Boosting 主要影响什么？",
+      "double descent 如何扩展经典图景？"
+    ],
+    "pitfalls": [
+      "把训练误差当泛化误差。"
+    ],
+    "interview": "最好把“低信噪比下 variance 是主要敌人”说出来，体现量化语境。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q013-Bias-Variance-Tradeoff-如何从预测误差分解理解.md",
+    "advanced_note": "金融低信噪比下，模型容量增长常先带来 variance 与选择偏差；真正需要比较的是完整 research protocol 下的 OOS utility。"
+  },
+  {
+    "n": 14,
+    "title": "p-value 到底表示什么？",
+    "diff": "★☆☆",
+    "tags": "假设检验｜p-value｜解释",
+    "answer": "p-value 是在 H0 成立条件下，观察到当前统计量或更极端结果的概率；它不是 P(H0|data)。",
+    "derivation": "频率学派把参数视为固定、样本为随机。p-value 小表示数据与 H0 不相容，不等于效果大、不等于研究可复制，也不等于 H1 概率高。",
+    "followups": [
+      "p=0.049 与 p=0.051 本质差异大吗？",
+      "统计显著与经济显著如何区分？"
+    ],
+    "pitfalls": [
+      "把 0.05 解读为“H0 只有 5% 概率为真”。"
+    ],
+    "interview": "给出条件方向：“P(data or more extreme | H0)”，可避免最常见反向条件错误。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q014-p-value-到底表示什么.md",
+    "advanced_note": "p-value 对 effect size、先验可信度和重复研究稳定性都不提供直接保证；面试中应主动把 statistical significance 与 economic significance 分开。"
+  },
+  {
+    "n": 15,
+    "title": "测试 10,000 个特征，总会出现显著结果，怎么处理？",
+    "diff": "★★☆",
+    "tags": "Multiple testing｜FDR｜研究过拟合",
+    "answer": "需要控制 family-wise error 或 false discovery rate：Bonferroni/Holm 控制 FWER，Benjamini-Hochberg 控制 FDR；更重要的是保留 untouched OOS 与独立验证。",
+    "derivation": "如果每个 null test α=5%，在全为 null 且近似独立时，期望会出现约 500 个“显著”结果。量化研究还要记录全部尝试，而不是只记录成功因子。",
+    "followups": [
+      "Bonferroni 为什么保守？",
+      "相关假设下 BH 需要哪些条件？",
+      "如何估计 research degrees of freedom？"
+    ],
+    "pitfalls": [
+      "只对最终选中的特征做单次 t-test。"
+    ],
+    "interview": "把“multiple testing correction + untouched holdout + research log”作为三层防线。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q015-测试-10-000-个特征-总会出现显著结果-怎么处理.md",
+    "advanced_note": "量化研究中的多重检验往往比教科书更严重，因为参数、样本区间、预处理、universe 都可能成为隐式试验次数。"
+  },
+  {
+    "n": 16,
+    "title": "为什么普通 OLS t-stat 在金融时间序列里常失真？",
+    "diff": "★★☆",
+    "tags": "OLS｜HAC｜序列相关",
+    "answer": "普通标准误依赖误差独立同方差；金融数据常有 heteroskedasticity、serial correlation 和 overlapping labels，使标准误被低估或高估。",
+    "derivation": "可使用 Newey-West/HAC、cluster-robust SE 或 block bootstrap。重点不是机械换一个标准误，而是先识别 dependence structure。",
+    "followups": [
+      "Newey-West bandwidth 怎么选？",
+      "overlapping k-day returns 的相关结构是什么？"
+    ],
+    "pitfalls": [
+      "只看回归系数，不审查 residual。"
+    ],
+    "interview": "回答顺序：假设被破坏 → 标准误为什么错 → 根据依赖结构选择修正。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q016-为什么普通-OLS-t-stat-在金融时间序列里常失真.md",
+    "advanced_note": "HAC 只修正标准误，不会自动修正模型设定错误；如果遗漏了动态结构或目标定义有重叠，应该先重新建模依赖。"
+  },
+  {
+    "n": 17,
+    "title": "Ridge 与 Lasso 的本质区别？",
+    "diff": "★★☆",
+    "tags": "Regularization｜高维特征｜共线性",
+    "answer": "Ridge 加 L2 penalty，连续收缩并擅长稳定高度相关特征；Lasso 加 L1 penalty，可产生稀疏解并做变量选择。",
+    "derivation": "几何上 L1 约束域有尖角，更容易让最优点落在坐标轴。高度相关特征下 Lasso 可能不稳定地“挑一个”，Ridge 更平滑地共享权重。",
+    "followups": [
+      "Elastic Net 为什么适合成组相关特征？",
+      "标准化为什么重要？"
+    ],
+    "pitfalls": [
+      "说“Lasso 一定比 Ridge 更可解释”。"
+    ],
+    "interview": "量化语境补一句：稳定性往往比稀疏性更重要，因此要做 selection stability。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q017-Ridge-与-Lasso-的本质区别.md",
+    "advanced_note": "高维强共线场景下，regularization path 与 selection stability 比单次系数更重要；Elastic Net 是常见折中。"
+  },
+  {
+    "n": 18,
+    "title": "Bootstrap 为什么不能直接 IID resample 金融时间序列？",
+    "diff": "★★☆",
+    "tags": "Bootstrap｜依赖｜block resampling",
+    "answer": "普通 bootstrap 会打乱时间次序并破坏 autocorrelation/volatility clustering。对依赖序列更常用 moving block、circular block 或 stationary bootstrap。",
+    "derivation": "block length 是 bias-variance 权衡：太短保不住依赖，太长有效样本数又太少。",
+    "followups": [
+      "如何 bootstrap Sharpe ratio？",
+      "cluster bootstrap 适合什么面板数据？"
+    ],
+    "pitfalls": [
+      "对每日收益逐点随机抽样后声称保留了时间结构。"
+    ],
+    "interview": "先说明“resampling unit 必须匹配依赖单位”，这句话可泛化到很多数据。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q018-Bootstrap-为什么不能直接-IID-resample-金融时间序列.md",
+    "advanced_note": "Block bootstrap 的 block length 是关键超参数；过短会破坏依赖，过长又降低有效独立块数量。"
+  },
+  {
+    "n": 19,
+    "title": "Mean、Median、Trimmed Mean 在异常值下如何权衡？",
+    "diff": "★☆☆",
+    "tags": "Robust statistics｜异常值",
+    "answer": "Mean 对极端值敏感，median 的 breakdown point 可达 50%；trimmed mean 在鲁棒性与 Gaussian efficiency 间折中。",
+    "derivation": "没有“永远最优”的中心估计：若近似正态且无污染，mean 效率高；若 heavy-tailed/outliers 明显，robust estimator 往往更稳。",
+    "followups": [
+      "Huber estimator 的直觉？",
+      "winsorization 与 trimming 区别？"
+    ],
+    "pitfalls": [
+      "看到 outlier 就无脑删除。"
+    ],
+    "interview": "重点是先判断数据生成机制，再选择 estimator，而不是按习惯 winsorize。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q019-Mean-Median-Trimmed-Mean-在异常值下如何权衡.md",
+    "advanced_note": "Robust estimator 的核心是 influence function 与 breakdown point；“异常值”也可能是真实尾部风险，不能只因难看就删除。"
+  },
+  {
+    "n": 20,
+    "title": "95% Confidence Interval 的正确频率学解释是什么？",
+    "diff": "★★☆",
+    "tags": "置信区间｜coverage｜calibration",
+    "answer": "参数在频率学派中是固定的。95% CI 的含义是：若重复采样并重复构造区间，长期约 95% 的区间覆盖真实参数。",
+    "derivation": "单次实验生成后，区间要么覆盖、要么不覆盖；“参数有 95% 概率位于这个已经生成的区间”是贝叶斯式表述，需要先验才能严谨成立。",
+    "followups": [
+      "prediction interval 与 confidence interval 区别？",
+      "bootstrap CI 有哪些形式？"
+    ],
+    "pitfalls": [
+      "把 coverage 与 posterior probability 混为一谈。"
+    ],
+    "interview": "一句话说清“随机的是区间，不是固定参数”，就抓住核心。",
+    "chapter": "B",
+    "chapter_name": "数理统计与统计推断",
+    "markdown_path": "questions/02-statistical-inference/q020-95%-Confidence-Interval-的正确频率学解释是什么.md",
+    "advanced_note": "置信区间的 coverage 是 procedure-level 性质；若研究流程经过筛选或 stopping，名义 95% coverage 可能被破坏。"
+  },
+  {
+    "n": 21,
+    "title": "Brownian Motion 的核心性质是什么？",
+    "diff": "★★☆",
+    "tags": "随机过程｜Brownian Motion",
+    "answer": "W0=0；独立、平稳增量；W_t-W_s~N(0,t-s)；样本路径连续。其 covariance 为 Cov(W_s,W_t)=min(s,t)。",
+    "derivation": "从增量结构即可得到 Var(W_t)=t。它是连续时间随机模型的基准噪声过程，也是 Itô calculus 的基础。",
+    "followups": [
+      "为什么是 Markov process？",
+      "为什么又是 martingale？",
+      "quadratic variation 是多少？"
+    ],
+    "pitfalls": [
+      "把“连续路径”误认为“可微”。"
+    ],
+    "interview": "按初值、增量分布、独立性、连续性四条定义回答最完整。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q021-Brownian-Motion-的核心性质是什么.md",
+    "advanced_note": "Brownian motion 同时是 Gaussian、Markov、martingale，但这些性质来自不同结构；面试中能区分它们比背定义更重要。"
+  },
+  {
+    "n": 22,
+    "title": "为什么 Brownian Motion 几乎处处不可微？",
+    "diff": "★★★",
+    "tags": "尺度分析｜quadratic variation｜Itô 直觉",
+    "answer": "小时间间隔 h 上增量尺度约 sqrt(h)，差商尺度约 sqrt(h)/h=1/sqrt(h)，随 h→0 不稳定，因此不能像平滑函数那样微分。",
+    "derivation": "更深层地，Brownian path 有非零 quadratic variation，而有限变差光滑路径的二次变差为 0。这导致 Itô 公式多出 1/2 f″ 项。",
+    "followups": [
+      "dW²=dt 的直觉是什么？",
+      "为什么 ordinary chain rule 失效？"
+    ],
+    "pitfalls": [
+      "只说“它很抖”而不给尺度解释。"
+    ],
+    "interview": "用 O(sqrt(h)) 对 O(h) 的尺度比值，是最短也最有说服力的回答。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q022-为什么-Brownian-Motion-几乎处处不可微.md",
+    "advanced_note": "非零 quadratic variation 是 Itô calculus 的关键；dW 的量级是 sqrt(dt)，因此二阶项 dW² 与 dt 同阶不能忽略。"
+  },
+  {
+    "n": 23,
+    "title": "什么是 Martingale？",
+    "diff": "★★☆",
+    "tags": "条件期望｜公平游戏｜过滤",
+    "answer": "相对 filtration F_t，可积过程 X_t 若满足 E[X_{t+1}|F_t]=X_t（连续时间相应定义），则为 martingale。",
+    "derivation": "它表达“给定当前全部可用信息，下一步条件均值不变”。martingale 可以高度波动，也不要求独立增量。",
+    "followups": [
+      "submartingale/supermartingale？",
+      "W_t²-t 为什么是 martingale？"
+    ],
+    "pitfalls": [
+      "把 martingale 说成“未来与现在独立”。"
+    ],
+    "interview": "一定带上 filtration，否则定义不完整。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q023-什么是-Martingale.md",
+    "advanced_note": "Martingale 是相对于信息流 filtration 定义的；改变信息集可能改变某过程是否为 martingale。"
+  },
+  {
+    "n": 24,
+    "title": "Optional Stopping Theorem 为什么不能随便套？",
+    "diff": "★★★",
+    "tags": "Stopping time｜martingale｜条件",
+    "answer": "E[M_τ]=E[M_0] 需要额外条件，如 τ 有界、过程有界、或适当的一致可积性。任意 stopping time 下结论可能失败。",
+    "derivation": "直觉：如果允许无限拖延并利用极端尾部，期望与极限交换可能出问题。经典“翻倍直到赢”的直觉错误就来自忽略尾部和资本约束。",
+    "followups": [
+      "给一个不满足条件的反例思路。",
+      "uniform integrability 为什么有用？"
+    ],
+    "pitfalls": [
+      "只要看到 martingale + stopping time 就直接等期望。"
+    ],
+    "interview": "先声明定理需要 regularity conditions，再讨论具体题满足哪一条。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q024-Optional-Stopping-Theorem-为什么不能随便套.md",
+    "advanced_note": "Optional stopping 的坑本质是极限交换与尾部控制；“公平过程 + 可选择停止”并不自动保持期望。"
+  },
+  {
+    "n": 25,
+    "title": "几何布朗运动为什么保持价格为正？",
+    "diff": "★★☆",
+    "tags": "SDE｜GBM｜Itô",
+    "answer": "dS=μSdt+σSdW 的解为 S_t=S_0 exp[(μ-σ²/2)t+σW_t]，指数始终为正。",
+    "derivation": "对 log S 应用 Itô 公式得到 d log S=(μ-σ²/2)dt+σdW，积分后再指数化。σ²/2 是 Itô correction。",
+    "followups": [
+      "E[S_t] 是什么？",
+      "median path 与 mean path 有何差异？"
+    ],
+    "pitfalls": [
+      "忘记 -σ²/2 correction。"
+    ],
+    "interview": "现场推导时从 f(S)=log S 开始，是标准路径。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q025-几何布朗运动为什么保持价格为正.md",
+    "advanced_note": "GBM 的 lognormal 结构带来正值但也带来过薄尾部和连续路径假设，这正是后续 jump/stochastic-vol 模型出现的原因。"
+  },
+  {
+    "n": 26,
+    "title": "Ornstein-Uhlenbeck Process 的长期均值是什么？",
+    "diff": "★★☆",
+    "tags": "Mean reversion｜OU｜SDE",
+    "answer": "对 dX=θ(μ-X)dt+σdW，条件均值为 E[X_t|X_0]=μ+(X_0-μ)e^{-θt}，θ>0 时长期趋于 μ。",
+    "derivation": "显式解还给出长期方差 σ²/(2θ)。e^{-θt} 显示 mean-reversion speed；half-life 为 ln2/θ。",
+    "followups": [
+      "如何离散化成 AR(1)？",
+      "θ<0 会怎样？",
+      "估计 half-life 的陷阱？"
+    ],
+    "pitfalls": [
+      "看到均值回归就默认可交易，忽略参数估计和非平稳。"
+    ],
+    "interview": "把长期均值、速度、长期方差三件事一起说，层次更完整。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q026-Ornstein-Uhlenbeck-Process-的长期均值是什么.md",
+    "advanced_note": "OU 的 half-life ln2/θ 是把连续时间参数转成业务直觉的桥梁，但参数估计若跨 regime 使用会非常脆弱。"
+  },
+  {
+    "n": 27,
+    "title": "Poisson Process 的 inter-arrival time 为什么是指数分布？",
+    "diff": "★★☆",
+    "tags": "Poisson｜Exponential｜memoryless",
+    "answer": "P(T>t)=P(N_t=0)=exp(-λt)，故 T~Exp(λ)。指数分布具有 memoryless property。",
+    "derivation": "反过来，独立同分布指数等待时间的计数过程就是 homogeneous Poisson process。",
+    "followups": [
+      "叠加两个 Poisson process 会怎样？",
+      "thinning 后速率是多少？"
+    ],
+    "pitfalls": [
+      "把 event count 与 waiting time 分布混淆。"
+    ],
+    "interview": "用 survival function 一步推导最简洁。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q027-Poisson-Process-的-inter-arrival-time-为什么是指数分布.md",
+    "advanced_note": "Poisson process 的 exponential waiting time 与 memoryless 是一体两面；若真实事件存在 self-excitation，应考虑更一般的 point process。"
+  },
+  {
+    "n": 28,
+    "title": "给定 Markov transition matrix，如何求 stationary distribution？",
+    "diff": "★★☆",
+    "tags": "Markov chain｜stationary｜ergodicity",
+    "answer": "求行向量 π 满足 πP=π、Σπ_i=1、π_i≥0。有限不可约链必有唯一 stationary distribution；若再非周期，则分布从任意初值收敛到它。",
+    "derivation": "“存在/唯一”和“从任意初态收敛”是不同层次：aperiodicity 主要影响收敛行为。",
+    "followups": [
+      "reversible chain 与 detailed balance？",
+      "eigenvalue 1 的意义？"
+    ],
+    "pitfalls": [
+      "把 stationary distribution 与某一步当前 distribution 混为一谈。"
+    ],
+    "interview": "回答时分开说 existence、uniqueness、convergence 三个问题。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q028-给定-Markov-transition-matrix-如何求-stationary-distribution.md",
+    "advanced_note": "stationary distribution 解决的是长期占比，不等于从任意初始状态都立即收敛；收敛还需要关注 irreducibility 与 periodicity。"
+  },
+  {
+    "n": 29,
+    "title": "Kalman Filter 的本质是什么？",
+    "diff": "★★★",
+    "tags": "State space｜Bayesian filtering｜线性高斯",
+    "answer": "在线性高斯状态空间模型下，Kalman filter 递归维护 latent state 的条件均值与协方差：先 prediction，再用 observation innovation update。",
+    "derivation": "Kalman gain K=P^-Cᵀ(CP^-Cᵀ+R)^-1 本质是在模型预测不确定性与观测噪声之间做权衡。R 大则更信模型，P^- 大则更信新观测。",
+    "followups": [
+      "innovation 应满足什么性质？",
+      "EKF/UKF 为什么出现？"
+    ],
+    "pitfalls": [
+      "只背矩阵公式，不解释 uncertainty weighting。"
+    ],
+    "interview": "把它讲成“在线 Bayesian Gaussian posterior update”，比背公式更高级。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q029-Kalman-Filter-的本质是什么.md",
+    "advanced_note": "Kalman filter 可以看成“先验预测 + 高斯似然更新”；Kalman gain 本质上根据模型不确定度和观测噪声自动分配信任。"
+  },
+  {
+    "n": 30,
+    "title": "HMM 与普通 Markov Chain 的区别？",
+    "diff": "★★☆",
+    "tags": "HMM｜latent state｜EM",
+    "answer": "Markov Chain 的状态本身可观测；HMM 的状态 Z_t 隐藏，观测 X_t 通过 emission distribution 由 Z_t 生成。",
+    "derivation": "典型问题：filtering/smoothing 用 forward-backward，最可能状态路径用 Viterbi，参数学习可用 Baum-Welch/EM。",
+    "followups": [
+      "regime-switching model 与 HMM 的关系？",
+      "identifiability 有什么问题？"
+    ],
+    "pitfalls": [
+      "把 Viterbi 与 forward-backward 的目标混淆。"
+    ],
+    "interview": "先画“latent state → observation”的图景，再说三类算法。",
+    "chapter": "C",
+    "chapter_name": "随机过程",
+    "markdown_path": "questions/03-stochastic-processes/q030-HMM-与普通-Markov-Chain-的区别.md",
+    "advanced_note": "HMM 把 regime 设为 latent state；EM/Baum-Welch 只保证局部改进，因此初始化、state identifiability 与过拟合都要审查。"
+  },
+  {
+    "n": 31,
+    "title": "什么叫弱平稳（weak stationarity）？",
+    "diff": "★☆☆",
+    "tags": "时间序列｜stationarity",
+    "answer": "均值 E[X_t]=μ 不随时间变；方差有限且恒定；Cov(X_t,X_{t-k}) 只依赖 lag k，不依赖绝对时间 t。",
+    "derivation": "弱平稳只约束一、二阶矩；严格平稳要求任意有限维联合分布对时间平移不变。高斯过程中二者关系更紧。",
+    "followups": [
+      "严格平稳一定弱平稳吗？",
+      "为什么趋势会破坏平稳？"
+    ],
+    "pitfalls": [
+      "只说“均值方差不变”，漏掉自协方差结构。"
+    ],
+    "interview": "定义题要完整列三条，并顺手区分 strict stationarity。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q031-什么叫弱平稳-weak-stationarity.md",
+    "advanced_note": "弱平稳是二阶矩意义上的稳定，不等于 strict stationarity；很多协方差方法只需要弱平稳。"
+  },
+  {
+    "n": 32,
+    "title": "AR(1) 什么时候平稳？长期方差和 ACF 是什么？",
+    "diff": "★★☆",
+    "tags": "AR(1)｜ACF｜稳定性",
+    "answer": "X_t=φX_{t-1}+ε_t 在 |φ|<1 时协方差平稳；若 Var(ε)=σ²，则 Var(X)=σ²/(1-φ²)，ρ(k)=φ^k。",
+    "derivation": "递归展开 X_t=Σ_{j≥0} φ^j ε_{t-j}，只有 |φ|<1 时平方可和，才得到稳定的无限 MA 表示。",
+    "followups": [
+      "φ≈1 时 finite sample 有什么问题？",
+      "φ<0 的 ACF 形状？"
+    ],
+    "pitfalls": [
+      "把 φ≤1 当作条件，漏掉负数绝对值。"
+    ],
+    "interview": "用 MA(∞) 展开解释 |φ|<1，比只背条件更扎实。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q032-AR-1-什么时候平稳-长期方差和-ACF-是什么.md",
+    "advanced_note": "AR(1) 的 |φ|<1 同时保证冲击衰减和有限长期方差；φ 越接近 1，有限样本中越容易与 unit root 混淆。"
+  },
+  {
+    "n": 33,
+    "title": "Random Walk 为什么 non-stationary？",
+    "diff": "★☆☆",
+    "tags": "Unit root｜随机游走",
+    "answer": "X_t=X_0+Σ_{i=1}^t ε_i，因此 Var(X_t)=tσ² 随 t 增长，自协方差也依赖绝对时间，不满足弱平稳。",
+    "derivation": "但一阶差分 ΔX_t=ε_t 可以是平稳的，所以 random walk 是 I(1) 的典型例子。",
+    "followups": [
+      "带 drift 的 random walk？",
+      "为什么 level 回归容易伪回归？"
+    ],
+    "pitfalls": [
+      "只说“它有趋势”，但随机游走并不一定有确定性趋势。"
+    ],
+    "interview": "用方差随时间增长这个一行证明最直接。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q033-Random-Walk-为什么-non-stationary.md",
+    "advanced_note": "Random walk 的方差随时间线性增长，因此“均值附近波动”直觉失效；差分后才得到平稳 innovation。"
+  },
+  {
+    "n": 34,
+    "title": "什么是 Unit Root？ADF test 在检验什么？",
+    "diff": "★★☆",
+    "tags": "ADF｜unit root｜检验方向",
+    "answer": "AR(1) 中 φ=1 是 unit root。ADF 的原假设 H0 是存在 unit root（非平稳）；只有显著拒绝 H0 才支持平稳/无 unit root。",
+    "derivation": "ADF 通过加入滞后差分吸收高阶序列相关；趋势项/截距规格选择会影响临界值和结论。",
+    "followups": [
+      "KPSS 与 ADF 的原假设为何相反？",
+      "结构突变为什么会影响 unit-root test？"
+    ],
+    "pitfalls": [
+      "p-value 大就宣布“平稳”。"
+    ],
+    "interview": "先明确 H0 的方向，是这题最重要的防错点。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q034-什么是-Unit-Root-ADF-test-在检验什么.md",
+    "advanced_note": "ADF 的原假设方向是高频面试坑；更高级的回答会补充 low power、结构突变和 deterministic terms 对检验的影响。"
+  },
+  {
+    "n": 35,
+    "title": "为什么两个独立 Random Walk 回归会产生 Spurious Regression？",
+    "diff": "★★☆",
+    "tags": "伪回归｜非平稳｜t-stat",
+    "answer": "非平稳 level 含有持续随机趋势，使标准 OLS 的经典渐近分布失效；即使两过程独立，也可能出现高 R² 和显著 t-stat。",
+    "derivation": "这不是“数据太少”，而是 stochastic trend 让回归残差结构不满足标准假设。差分或 cointegration framework 才是正确处理方向。",
+    "followups": [
+      "Durbin-Watson 会表现怎样？",
+      "为什么增加样本反而不自动解决？"
+    ],
+    "pitfalls": [
+      "看到高 R² 就相信经济关系。"
+    ],
+    "interview": "明确说“高 R² 可以纯粹来自共同的积分阶数”，体现计量意识。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q035-为什么两个独立-Random-Walk-回归会产生-Spurious-Regression.md",
+    "advanced_note": "Spurious regression 是“共享低频随机趋势 + 错误标准推断”的产物；高 R² 和显著 t-stat 不能替代残差平稳性检查。"
+  },
+  {
+    "n": 36,
+    "title": "什么是 Cointegration？",
+    "diff": "★★★",
+    "tags": "Cointegration｜ECM｜长期关系",
+    "answer": "若 X_t,Y_t 各自 I(1)，但存在 β 使 Y_t-βX_t 为 I(0)，则二者 cointegrated。",
+    "derivation": "它描述长期均衡误差是平稳的；误差修正模型 ECM 将短期变化与偏离长期均衡的误差项结合。高相关不等于 cointegration。",
+    "followups": [
+      "Engle-Granger 两步法？",
+      "Johansen 适合什么场景？"
+    ],
+    "pitfalls": [
+      "用 correlation 代替 cointegration test。"
+    ],
+    "interview": "回答里必须出现“非平稳序列的某个线性组合平稳”。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q036-什么是-Cointegration.md",
+    "advanced_note": "Cointegration 不是简单高相关，而是存在平稳误差组合；ECM 把短期变化与长期均衡偏离同时放进模型。"
+  },
+  {
+    "n": 37,
+    "title": "Granger Causality 是真正的因果吗？",
+    "diff": "★★☆",
+    "tags": "预测因果｜时序｜混杂",
+    "answer": "不是结构因果。它检验的是：在已有 Y 的过去信息后，加入 X 的过去是否显著提高对 Y 的预测。",
+    "derivation": "共同驱动因素、时间戳错位、异步采样和遗漏变量都可能制造 Granger relation。它是 incremental predictive information，不是干预意义的因果。",
+    "followups": [
+      "VAR 中如何做检验？",
+      "instantaneous causality 又是什么？"
+    ],
+    "pitfalls": [
+      "把“Granger causes”按日常语言直接解释成因果。"
+    ],
+    "interview": "最好主动加一句“prediction ≠ intervention”。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q037-Granger-Causality-是真正的因果吗.md",
+    "advanced_note": "Granger causality 是 predictive precedence，不是结构因果；同步误差、共同驱动和采样频率都能伪造 lead-lag。"
+  },
+  {
+    "n": 38,
+    "title": "为什么收益自相关低，但平方收益自相关高？",
+    "diff": "★★☆",
+    "tags": "Volatility clustering｜GARCH",
+    "answer": "市场方向可能接近不可预测，但波动强度具有持续性。于是 Corr(r_t,r_{t-k}) 小，而 Corr(r_t²,r_{t-k}²) 显著。",
+    "derivation": "GARCH(1,1): σ_t²=ω+αε_{t-1}²+βσ_{t-1}²，用过去 shock 与过去条件方差描述 volatility persistence。",
+    "followups": [
+      "α+β 接近 1 意味着什么？",
+      "为何 leverage effect 需要 EGARCH/GJR？"
+    ],
+    "pitfalls": [
+      "把“收益不可预测”误解为“波动也不可预测”。"
+    ],
+    "interview": "先拆 direction 与 magnitude 两类可预测性。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q038-为什么收益自相关低-但平方收益自相关高.md",
+    "advanced_note": "收益均值可能近似不可预测，但条件方差可预测；这解释了为什么 volatility model 与 return-direction model 是不同任务。"
+  },
+  {
+    "n": 39,
+    "title": "为什么金融时间序列不能随机 train/test split？",
+    "diff": "★☆☆",
+    "tags": "时间泄漏｜walk-forward｜validation",
+    "answer": "随机切分会让未来样本进入训练、过去样本进入测试，破坏实际部署时“只能用过去预测未来”的信息约束；overlapping labels/rolling features 时泄漏更严重。",
+    "derivation": "应使用 chronological split、rolling/expanding walk-forward；若标签跨时间区间，还要考虑 purge/embargo 思想以减少区间重叠。",
+    "followups": [
+      "validation set 如何滚动？",
+      "什么时候 random split 仍可用于某些 cross-sectional 问题？"
+    ],
+    "pitfalls": [
+      "“模型没直接看到 test label，所以没有 leakage”。"
+    ],
+    "interview": "先画时间轴，任何 split 设计都回到 information availability。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q039-为什么金融时间序列不能随机-train-test-split.md",
+    "advanced_note": "随机切分会让未来 regime、重叠标签或 rolling feature 信息渗入训练；时间序列验证必须把“可获得信息时间”写进 split。"
+  },
+  {
+    "n": 40,
+    "title": "Tick data 中两个资产的相关性如何估计？直接时间戳对齐有什么问题？",
+    "diff": "★★★",
+    "tags": "异步数据｜Epps effect｜sampling",
+    "answer": "高频成交异步，直接按事件一一对齐会混入 stale prices 和人工 lead-lag。常见处理包括 time bars、previous-tick interpolation、refresh time 等。",
+    "derivation": "采样过细时 microstructure noise 与异步性使相关性向低频不同，形成 Epps effect；采样过粗又丢失短时动态。频率选择本身就是 bias-variance tradeoff。",
+    "followups": [
+      "midquote 与 trade price 哪个更适合？",
+      "Hayashi-Yoshida estimator 的思想？"
+    ],
+    "pitfalls": [
+      "把“没有同一毫秒成交”当 missing value 随便填 0。"
+    ],
+    "interview": "先指出 asynchronous observations，再讨论同步化方法及其偏差。",
+    "chapter": "D",
+    "chapter_name": "时间序列与计量",
+    "markdown_path": "questions/04-time-series-econometrics/q040-Tick-data-中两个资产的相关性如何估计-直接时间戳对齐有什么问题.md",
+    "advanced_note": "高频相关估计的核心矛盾是 sampling resolution 与 microstructure noise；采样越细不一定越准确。"
+  },
+  {
+    "n": 41,
+    "title": "训练准确率 99%，测试 52%，你首先检查什么？",
+    "diff": "★★☆",
+    "tags": "Debugging｜leakage｜overfit",
+    "answer": "第一反应应是实验审计：数据泄漏、split、target leakage、preprocessing leakage、重复样本、标签定义，再考虑模型容量/正则化。",
+    "derivation": "量化研究中巨大 train-test gap 经常不是“神经网络太大”这么简单，而是时间结构或数据管道出错。先验证实验可信度，再优化模型。",
+    "followups": [
+      "如何构造 leakage checklist？",
+      "如何定位重复样本污染？"
+    ],
+    "pitfalls": [
+      "一上来调 dropout、learning rate。"
+    ],
+    "interview": "面试官通常喜欢“先怀疑数据和评估，再怀疑模型”的顺序。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q041-训练准确率-99%-测试-52%-你首先检查什么.md",
+    "advanced_note": "极端 train-test gap 首先是实验审计题：在金融场景中，leakage 和 split 错误的先验概率往往高于“模型真的学会了复杂规律”。"
+  },
+  {
+    "n": 42,
+    "title": "为什么线性模型在金融预测中仍然重要？",
+    "diff": "★★☆",
+    "tags": "Linear model｜inductive bias｜鲁棒性",
+    "answer": "低参数、低方差、易正则、易解释、训练快、监控简单，对低信噪比和强漂移环境非常有吸引力。",
+    "derivation": "复杂模型只有在足够数据、稳定非线性和可控部署约束下才应获得复杂度预算。baseline 的价值不仅是分数，也用于检测“复杂模型究竟学到了什么”。",
+    "followups": [
+      "何时非线性模型更合理？",
+      "如何用 residual analysis 判断线性不足？"
+    ],
+    "pitfalls": [
+      "把模型复杂度与研究成熟度画等号。"
+    ],
+    "interview": "先讲 statistical efficiency，再讲 engineering simplicity。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q042-为什么线性模型在金融预测中仍然重要.md",
+    "advanced_note": "线性模型的价值在于可诊断、稳定、低方差与低延迟；它还是任何复杂模型必须击败的强 baseline。"
+  },
+  {
+    "n": 43,
+    "title": "Random Forest 与 Gradient Boosting 的根本区别？",
+    "diff": "★★☆",
+    "tags": "Tree ensemble｜bagging｜boosting",
+    "answer": "RF 通过 bootstrap + feature randomness 并行训练多棵树，主要降低 variance；GBDT 顺序拟合当前 residual/negative gradient，逐步降低 bias。",
+    "derivation": "RF 相对稳健、易并行；boosting 更容易达到强预测性能，但对 learning rate、tree depth、early stopping 更敏感。",
+    "followups": [
+      "XGBoost 的二阶近似？",
+      "为什么 bagging 需要低相关基学习器？"
+    ],
+    "pitfalls": [
+      "说“RF 防过拟合，GBDT 会过拟合”这种绝对化。"
+    ],
+    "interview": "用“parallel variance reduction vs sequential residual fitting”概括。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q043-Random-Forest-与-Gradient-Boosting-的根本区别.md",
+    "advanced_note": "Bagging 通过平均降低方差，boosting 通过序列拟合残差降低偏差；二者对噪声、深度和学习率的敏感性完全不同。"
+  },
+  {
+    "n": 44,
+    "title": "Feature scaling 为什么会造成未来信息泄漏？",
+    "diff": "★☆☆",
+    "tags": "Preprocessing｜pipeline｜leakage",
+    "answer": "如果先在全量数据上 fit mean/std、PCA、imputer、winsorization threshold，再切 train/test，就把 test/future 的分布统计注入训练过程。",
+    "derivation": "正确做法是所有可学习预处理只在 train fit，然后冻结用于 validation/test；rolling/live 环境还要保证 fit window 不越过时点。",
+    "followups": [
+      "cross-validation 中 scaler 应放哪里？",
+      "quantile transform 有何额外风险？"
+    ],
+    "pitfalls": [
+      "认为“标准化没用 label，所以不算 leakage”。"
+    ],
+    "interview": "把 preprocessing 当模型的一部分进行 versioning 与 fit。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q044-Feature-scaling-为什么会造成未来信息泄漏.md",
+    "advanced_note": "任何从全量数据“学习参数”的预处理都会泄漏：不仅 scaler，还包括 PCA、winsorization 阈值、feature selection 与 imputation。"
+  },
+  {
+    "n": 45,
+    "title": "一个 feature 的 IC 很低，是否一定没有价值？",
+    "diff": "★★☆",
+    "tags": "Signal evaluation｜interaction｜nonlinearity",
+    "answer": "不一定。单变量线性相关可能低，但特征可能只在特定 regime、尾部、非线性区间或与其他特征交互时有用。",
+    "derivation": "同时也要警惕反方向：高 in-sample IC 可能来自 leakage/overfit。应做 rank IC、conditional analysis、mutual information、ablation、OOS utility 等多视角评估。",
+    "followups": [
+      "IC stability 如何看？",
+      "横截面 IC 与时序相关如何区分？"
+    ],
+    "pitfalls": [
+      "把单个 Pearson correlation 当最终 feature verdict。"
+    ],
+    "interview": "回答“低 IC 只是低线性边际关系，不等于低条件/联合信息量”。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q045-一个-feature-的-IC-很低-是否一定没有价值.md",
+    "advanced_note": "低单变量 IC 的特征可能通过 interaction、conditional regime 或非线性贡献价值；但必须防止用复杂模型把纯噪声“解释”出来。"
+  },
+  {
+    "n": 46,
+    "title": "如何判断分类概率是否 calibrated？",
+    "diff": "★★☆",
+    "tags": "Calibration｜Brier｜reliability",
+    "answer": "把预测概率分桶，看预测 0.7 的样本是否约 70% 为正；可用 reliability diagram、Brier score、ECE。",
+    "derivation": "若排序能力好但 calibration 差，可用 Platt scaling、isotonic regression、temperature scaling 等后处理；校准必须在独立 validation 上做。",
+    "followups": [
+      "AUC 很高但 calibration 很差可能吗？",
+      "Brier score 如何分解？"
+    ],
+    "pitfalls": [
+      "把 classification accuracy 当 calibration。"
+    ],
+    "interview": "先明确 discrimination 与 calibration 是两个维度。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q046-如何判断分类概率是否-calibrated.md",
+    "advanced_note": "好的概率模型应同时看 discrimination 与 calibration；AUC 高不代表概率数值可直接用于下游期望或风险计算。"
+  },
+  {
+    "n": 47,
+    "title": "Finance 中为什么 accuracy 往往不是好指标？",
+    "diff": "★☆☆",
+    "tags": "Imbalanced data｜metric｜utility",
+    "answer": "类别不平衡时 accuracy 可被 majority class 轻易“刷高”；更关键的是业务损失/收益通常不对称，分类对错的价值并不相同。",
+    "derivation": "应根据任务选 PR-AUC、log loss、Brier、rank metrics、cost-sensitive metric 或更贴近预测任务的 utility proxy。",
+    "followups": [
+      "何时 ROC-AUC 会误导？",
+      "阈值选择如何依赖成本矩阵？"
+    ],
+    "pitfalls": [
+      "默认用 accuracy 比所有模型。"
+    ],
+    "interview": "先问“错误的代价是否对称、基准率多少”，再选 metric。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q047-Finance-中为什么-accuracy-往往不是好指标.md",
+    "advanced_note": "指标必须和真实决策目标对齐；类别不平衡时 accuracy 可能被多数类支配，排序问题、概率问题和效用问题应使用不同 metric。"
+  },
+  {
+    "n": 48,
+    "title": "什么时候 Transformer 可能优于传统时间序列模型？",
+    "diff": "★★★",
+    "tags": "Transformer｜长序列｜多变量",
+    "answer": "当数据规模足够、存在长程依赖、多变量/多模态交互强，且 latency/compute 允许时，attention 模型可能有优势。",
+    "derivation": "但它也带来参数量、过拟合、非平稳、显存、部署延迟和解释性成本。应与 linear/GBDT/RNN/state-space 等强基线在严格 walk-forward 上比较。",
+    "followups": [
+      "因果 masking 如何做？",
+      "positional encoding 对 irregular time 有何问题？",
+      "context length 增长的成本？"
+    ],
+    "pitfalls": [
+      "“Transformer 更先进，所以一定更好”。"
+    ],
+    "interview": "面试官更喜欢条件化判断：数据、结构、预算满足什么条件时值得用。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q048-什么时候-Transformer-可能优于传统时间序列模型.md",
+    "advanced_note": "Transformer 的优势来自长依赖和跨变量交互，但金融数据量、非平稳与成本约束常使更简单模型更具优势；应以 controlled ablation 证明必要性。"
+  },
+  {
+    "n": 49,
+    "title": "什么是 Concept Drift？",
+    "diff": "★★☆",
+    "tags": "Distribution shift｜drift｜monitoring",
+    "answer": "可区分 P(X) 改变的 covariate shift、P(Y) 改变的 label shift，以及更关键的 P(Y|X) 改变，即 concept drift。",
+    "derivation": "金融环境制度、参与者、微观结构和宏观 regime 都可让关系发生漂移。监控不仅看 feature drift，也要看 residual、calibration 与 segment performance。",
+    "followups": [
+      "如何区分 covariate shift 和 concept drift？",
+      "retraining cadence 怎么决定？"
+    ],
+    "pitfalls": [
+      "只监控输入均值方差。"
+    ],
+    "interview": "用概率分布分解 P(X,Y)=P(Y|X)P(X) 回答最清楚。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q049-什么是-Concept-Drift.md",
+    "advanced_note": "Concept drift 的难点是“变化发生在 P(X)、P(Y) 还是 P(Y|X)”；不同类型需要不同监控和响应策略。"
+  },
+  {
+    "n": 50,
+    "title": "模型 offline 很好，上线立即下降，如何系统排查？",
+    "diff": "★★★",
+    "tags": "Research-to-production｜debug｜MLOps",
+    "answer": "按 Data→Feature→Model→Inference→Evaluation→Environment 分层核对：timestamp、schema、null、feature version、checkpoint、feature order、precision、latency、online metric 定义。",
+    "derivation": "最好做 same-input parity test：把同一批原始事件同时送入 research pipeline 与 production pipeline，逐层比较中间产物，定位第一处分叉。",
+    "followups": [
+      "如何设计 shadow deployment？",
+      "如何监控 feature freshness？"
+    ],
+    "pitfalls": [
+      "直接归因于“市场 regime 变了”。"
+    ],
+    "interview": "先排除实现差异，再讨论 distribution shift。",
+    "chapter": "E",
+    "chapter_name": "机器学习与 Financial ML",
+    "markdown_path": "questions/05-financial-ml/q050-模型-offline-很好-上线立即下降-如何系统排查.md",
+    "advanced_note": "offline-live gap 必须逐层做 parity：输入、特征、模型、后处理、延迟、执行和分布；不要一开始就归因于“市场变了”。"
+  },
+  {
+    "n": 51,
+    "title": "Bid、Ask、Mid、Spread 分别是什么？为什么 last price 可能不如 mid？",
+    "diff": "★☆☆",
+    "tags": "Microstructure｜quote｜price",
+    "answer": "Mid=(Bid+Ask)/2，Spread=Ask-Bid。last trade 可能 stale 且受 bid-ask bounce 影响；mid 更接近当前双边报价状态，但也不代表可无成本成交。",
+    "derivation": "进一步可区分 quoted spread、effective spread 与 realized spread，它们对应不同微观结构含义。",
+    "followups": [
+      "locked/crossed market 怎么理解？",
+      "mid 在单边盘口很薄时有什么问题？"
+    ],
+    "pitfalls": [
+      "把 mid 当作无摩擦可成交价格。"
+    ],
+    "interview": "先把四个定义说清，再强调 quote state 与 trade print 的信息差。",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q051-Bid-Ask-Mid-Spread-分别是什么-为什么-last-price-可能不如-mid.md",
+    "advanced_note": "Mid 是报价状态的几何中心，不是无条件“真实价值”；在不对称流动性或高速市场中，还需结合 depth、queue 与事件流。"
+  },
+  {
+    "n": 52,
+    "title": "什么是 Bid-Ask Bounce？",
+    "diff": "★★☆",
+    "tags": "Microstructure noise｜短期自相关",
+    "answer": "即使 latent value 不变，交易价也可能在 bid 与 ask 间交替，制造机械的高频价格变化和短期负自相关。",
+    "derivation": "因此用 trade-to-trade return 估计极短周期波动/相关性会被微观结构噪声污染，midquote return 往往更适合某些研究问题。",
+    "followups": [
+      "Roll spread estimator 的直觉？",
+      "采样频率升高为什么噪声占比更大？"
+    ],
+    "pitfalls": [
+      "把每个价格跳动都解释成基本面信息。"
+    ],
+    "interview": "强调“observed trade price = latent price + microstructure component”。",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q052-什么是-Bid-Ask-Bounce.md",
+    "advanced_note": "Bid-ask bounce 能在没有真实价值变化时制造负一阶自相关，是高频 return 统计中最基本的 microstructure noise 来源。"
+  },
+  {
+    "n": 53,
+    "title": "什么是 Adverse Selection？",
+    "diff": "★★☆",
+    "tags": "Conditional probability｜information｜microstructure",
+    "answer": "成交事件本身可能携带对手方信息，因此成交条件下的未来价格分布可能不同于无条件分布：P(future|trade)≠P(future)。",
+    "derivation": "这解释了为什么仅用当前 mid/spread 评估被动报价风险是不够的；需要看 order flow、trade direction、state transition 等条件信息。",
+    "followups": [
+      "如何从 realized spread 看 adverse selection？",
+      "为什么大单/快单可能更有信息？"
+    ],
+    "pitfalls": [
+      "把所有成交对手都视为随机无信息流。"
+    ],
+    "interview": "用 Bayes/conditional distribution 语言描述，比只说“被聪明钱打”更专业。",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q053-什么是-Adverse-Selection.md",
+    "advanced_note": "Adverse selection 的概率语言是“成交事件改变了对未来状态的条件分布”，因此 execution data 本身是信息。"
+  },
+  {
+    "n": 54,
+    "title": "Order Book Imbalance 如何定义？为什么不能把它当永恒预测信号？",
+    "diff": "★★☆",
+    "tags": "LOB｜imbalance｜state feature",
+    "answer": "简单一档 imbalance 可写 I=(V_bid-V_ask)/(V_bid+V_ask)。它只是 state summary，预测关系受 cancellation、hidden liquidity、tick size、horizon 和事件类型影响。",
+    "derivation": "更稳妥研究会比较多档 depth、queue changes、event-time dynamics，并做跨日/跨品种/跨 regime 的 OOS 稳定性检验。",
+    "followups": [
+      "多档 imbalance 怎么聚合？",
+      "event time 与 clock time 差别？"
+    ],
+    "pitfalls": [
+      "把某篇论文里的单一公式直接当通用 alpha。"
+    ],
+    "interview": "面试题答“定义 + 条件化 + 验证”，避免把 feature 讲成策略。",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q054-Order-Book-Imbalance-如何定义-为什么不能把它当永恒预测信号.md",
+    "advanced_note": "LOB imbalance 是 state feature 而不是定律；其有效性依赖 horizon、tick、venue、queue dynamics 和 event conditioning。"
+  },
+  {
+    "n": 55,
+    "title": "Price-Time Priority 是什么？",
+    "diff": "★☆☆",
+    "tags": "Matching engine｜queue｜priority",
+    "answer": "通常先按价格优先，再在同价位按进入时间排序。因而同一 best price 上，不同订单的 queue position 会影响 fill probability。",
+    "derivation": "研究中只看到 top-of-book price/size 不足以重构个人订单成交，需要追踪 order arrivals、cancellations、executions 与自身队列位置。",
+    "followups": [
+      "pro-rata matching 与 price-time 有何区别？",
+      "replace order 会不会丢 priority？"
+    ],
+    "pitfalls": [
+      "把“价格触及”当“自己的订单一定成交”。"
+    ],
+    "interview": "把 matching rule 与 simulation bias 联系起来。",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q055-Price-Time-Priority-是什么.md",
+    "advanced_note": "Price-time priority 使“同价订单”并不等价；成交概率必须知道 queue ahead，而不是只知道 best price。"
+  },
+  {
+    "n": 56,
+    "title": "为什么 Fill Probability 是 execution simulation 的关键？",
+    "diff": "★★☆",
+    "tags": "Execution model｜queue｜simulation bias",
+    "answer": "价格到达你的限价不代表订单必然成交；前方 queue、trade size、cancel、latency、partial fill 都决定实际 fill。",
+    "derivation": "若回测假设“touch=full fill”，会系统性高估 execution quality。研究应明确 fill model 的可观察状态、假设与校准方式。",
+    "followups": [
+      "如何用历史 order-level data 校准？",
+      "没有 L3 数据时如何做敏感性分析？"
+    ],
+    "pitfalls": [
+      "用 mid-price signal 回测，却忽略 execution layer。"
+    ],
+    "interview": "先指出“price path ≠ fill path”。",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q056-为什么-Fill-Probability-是-execution-simulation-的关键.md",
+    "advanced_note": "若回测用“touch=fill”，会系统性高估执行；真实 fill 取决于队列位置、到达/撤单过程、延迟和成交量。"
+  },
+  {
+    "n": 57,
+    "title": "Market Impact 的 temporary 与 permanent 如何理解？",
+    "diff": "★★☆",
+    "tags": "Impact｜execution cost｜information",
+    "answer": "temporary impact 随交易结束后部分回撤，更多反映流动性供需；permanent component 反映信息或持久的价格重估。",
+    "derivation": "真实估计很难，因为自然价格变化与自家交易影响纠缠，存在 selection bias；需要控制订单条件、市场状态及 post-trade horizon。",
+    "followups": [
+      "平方根 impact law 是经验规律还是定律？",
+      "怎么区分 impact 与 alpha？"
+    ],
+    "pitfalls": [
+      "把所有 post-trade move 都归因于自己的交易。"
+    ],
+    "interview": "答题重点是 identification problem，而不是背一个 impact 公式。",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q057-Market-Impact-的-temporary-与-permanent-如何理解.md",
+    "advanced_note": "Temporary impact 更像流动性消耗，permanent impact 更像信息进入价格；二者的估计对执行成本模型和策略容量判断都重要。"
+  },
+  {
+    "n": 58,
+    "title": "Tick Size 为什么会改变市场行为？",
+    "diff": "★★☆",
+    "tags": "Tick size｜queue competition｜liquidity",
+    "answer": "tick 大时 spread 更容易被最小跳动约束、同价位 queue 竞争更强；tick 小时价格改善更细、quote 更新可能更频繁。",
+    "derivation": "因此 feature 分布、queue dynamics、spread statistics 和模型参数都可能随 tick regime 改变，跨市场迁移要重新校准。",
+    "followups": [
+      "tick/price ratio 为什么更重要？",
+      "tick change 的 natural experiment 如何研究？"
+    ],
+    "pitfalls": [
+      "认为盘口模型只需做 price normalization 就可跨品种复用。"
+    ],
+    "interview": "从离散价格网格对行为的约束讲起。",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q058-Tick-Size-为什么会改变市场行为.md",
+    "advanced_note": "Tick size 是离散化约束，会改变 spread floor、queue competition 与 price improvement，从而改变同一 signal 的可交易性。"
+  },
+  {
+    "n": 59,
+    "title": "什么是 Microprice？为什么可能不同于 Mid？",
+    "diff": "★★☆",
+    "tags": "Microprice｜imbalance｜short-horizon state",
+    "answer": "常见定义用对侧 depth 对 bid/ask 加权，例如 (Ask*V_bid+Bid*V_ask)/(V_bid+V_ask)。盘口不平衡时会偏离简单 mid。",
+    "derivation": "它表达“当前双边 depth 对短期下一步价格状态的非对称性”的一种启发式 summary，并非普适 fair value。",
+    "followups": [
+      "为何权重要用对侧 volume？",
+      "如何扩展到多档 order book？"
+    ],
+    "pitfalls": [
+      "把 microprice 当确定的未来价格。"
+    ],
+    "interview": "说清它是 state-dependent estimator，而不是无套利价格。",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q059-什么是-Microprice-为什么可能不同于-Mid.md",
+    "advanced_note": "Microprice 是用 order-book asymmetry 对 mid 做短期状态修正；公式只是一种实现，关键是理解它在估计条件期望。"
+  },
+  {
+    "n": 60,
+    "title": "Latency 为什么既是系统问题，也是统计问题？",
+    "diff": "★★☆",
+    "tags": "Latency｜signal decay｜distribution",
+    "answer": "模型基于 X_t 做出决策，但实际作用于市场是 t+Δ；Δ 越大，state 可能变化、queue 可能重排、signal 可能衰减，因而 P(Y|X,Δ) 也变化。",
+    "derivation": "所以 backtest 应使用 end-to-end latency distribution，而非只给固定延迟；研究模型和系统性能要联合评估。",
+    "followups": [
+      "如何测 signal half-life？",
+      "随机 latency jitter 怎么模拟？"
+    ],
+    "pitfalls": [
+      "把 latency 仅视为工程 SLA，与模型独立。"
+    ],
+    "interview": "一句话：“latency changes the conditioning information set.”",
+    "chapter": "F",
+    "chapter_name": "市场微观结构",
+    "markdown_path": "questions/06-market-microstructure/q060-Latency-为什么既是系统问题-也是统计问题.md",
+    "advanced_note": "Latency 会让你使用“过期状态”做决策，因此不仅影响系统时延，还直接改变 X 到 Y 的统计映射与 signal decay。"
+  },
+  {
+    "n": 61,
+    "title": "什么是 Look-Ahead Bias？",
+    "diff": "★☆☆",
+    "tags": "Backtest｜leakage｜timestamp",
+    "answer": "在历史时点 t 的决策中使用了实际只能在 t 之后获得的信息。它可以来自 label、数据发布时间、修订值、全样本预处理或错误对齐。",
+    "derivation": "防线是 point-in-time feature construction：每个 feature 都应有 event time、available time/knowledge time，回放时只允许 available_time≤decision_time。",
+    "followups": [
+      "财报数据发布日期与报告期末的区别？",
+      "延迟 vendor feed 怎么处理？"
+    ],
+    "pitfalls": [
+      "用数据行上的“日期”代替真正可获得时间。"
+    ],
+    "interview": "问自己：这一列在历史那一刻真的已经知道了吗？",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q061-什么是-Look-Ahead-Bias.md",
+    "advanced_note": "Look-ahead bias 的判定标准不是“代码有没有未来索引”，而是该字段在决策时刻是否真实可获得。"
+  },
+  {
+    "n": 62,
+    "title": "什么是 Survivorship Bias？",
+    "diff": "★☆☆",
+    "tags": "Universe｜delisting｜历史数据",
+    "answer": "若用今天仍存在的资产列表回看历史，就会系统性遗漏退市、破产、并购等消失样本，使过去的可选 universe 被“幸存者”污染。",
+    "derivation": "正确回测需要 point-in-time membership、delisting returns、symbol mapping 等历史主数据。",
+    "followups": [
+      "指数成分股回测如何避免？",
+      "基金数据库中的 survivorship bias？"
+    ],
+    "pitfalls": [
+      "认为 price series 完整就等于 universe 完整。"
+    ],
+    "interview": "先区分“历史数据”与“历史当时可投资集合”。",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q062-什么是-Survivorship-Bias.md",
+    "advanced_note": "Survivorship bias 是 universe definition 的时间问题；正确回测必须使用当时可交易、包含退市/并购路径的历史成分。"
+  },
+  {
+    "n": 63,
+    "title": "Corporate Actions 为什么会把回测搞坏？",
+    "diff": "★★☆",
+    "tags": "Adjusted data｜split｜dividend",
+    "answer": "split、dividend、merger、spin-off、symbol change 会改变价格/股数/现金流。若不按研究目标正确调整，收益、volume、position accounting 都会出现假跳变。",
+    "derivation": "例如 2-for-1 split 的原始价格约减半，但这不是 -50% 经济损失。应明确使用 raw、price-adjusted 还是 total-return series。",
+    "followups": [
+      "volume 如何随 split 调整？",
+      "dividend 在 close-to-close return 中怎么处理？"
+    ],
+    "pitfalls": [
+      "只调整价格，不调整份额/volume。"
+    ],
+    "interview": "先明确“研究变量的经济含义”，再选 adjustment convention。",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q063-Corporate-Actions-为什么会把回测搞坏.md",
+    "advanced_note": "Corporate actions 会改变价格、股本、现金流和 ticker lineage；数据供应商的 adjustment convention 必须与 label/return 定义一致。"
+  },
+  {
+    "n": 64,
+    "title": "Point-in-Time Data 是什么？",
+    "diff": "★★☆",
+    "tags": "PIT｜revision｜data lineage",
+    "answer": "指在历史时点真正可获得的那一版数据，而不是今天数据库回填/修订后的最终历史。",
+    "derivation": "宏观数据、基本面、评级、指数成分等都可能 revision。理想数据模型至少区分 event/effective time 与 knowledge/ingestion time，实现 bitemporal lineage。",
+    "followups": [
+      "vintage data 为什么重要？",
+      "如何存储 restatement？"
+    ],
+    "pitfalls": [
+      "直接用“最新数据库的历史列”。"
+    ],
+    "interview": "量化数据工程的核心：事实发生时间与我们知道事实的时间是两条轴。",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q064-Point-in-Time-Data-是什么.md",
+    "advanced_note": "Point-in-time data 要同时记录 effective time、release time、ingestion time 和 revision；“今天看到的历史值”未必是过去当时看到的值。"
+  },
+  {
+    "n": 65,
+    "title": "为什么 transaction cost 不能简单固定减 1bp？",
+    "diff": "★★☆",
+    "tags": "Cost model｜spread｜impact",
+    "answer": "真实成本依赖 spread、size、liquidity、volatility、participation、latency、execution style 和 market state；固定常数只适合粗略 stress baseline。",
+    "derivation": "更专业做法是将 quoted/effective spread、fees、slippage、impact 分层建模，并做参数敏感性测试。",
+    "followups": [
+      "cost model 应如何 OOS 校准？",
+      "为什么 turnover 不是成本的充分统计量？"
+    ],
+    "pitfalls": [
+      "把 cost 当模型外的固定后处理项。"
+    ],
+    "interview": "一句话：“cost model itself is a predictive model.”",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q065-为什么-transaction-cost-不能简单固定减-1bp.md",
+    "advanced_note": "成本函数通常随 spread、size、vol、liquidity、participation 和 latency 非线性变化；固定 1bp 只是粗糙 sanity baseline。"
+  },
+  {
+    "n": 66,
+    "title": "一个 backtest Sharpe=3，你信吗？第一步做什么？",
+    "diff": "★★★",
+    "tags": "Research skepticism｜audit｜Sharpe",
+    "answer": "先审计，不先兴奋：leakage、timestamp、costs、multiple testing、survivorship、overlap、concentration、regime、capacity、implementation bug。",
+    "derivation": "随后做 OOS、subperiod、universe、parameter perturbation、feature ablation、placebo、独立复现。极高结果首先提高“数据/研究错误”的先验概率。",
+    "followups": [
+      "Sharpe 的 standard error 如何估？",
+      "非正态/自相关下 Sharpe inference？"
+    ],
+    "pitfalls": [
+      "只做一次 train/test split 就宣布可复制。"
+    ],
+    "interview": "面试官在听的是研究品格：异常好结果应触发更严格审计。",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q066-一个-backtest-Sharpe=3-你信吗-第一步做什么.md",
+    "advanced_note": "超高 Sharpe 是“审计触发器”；优秀研究者会先寻找泄漏、成本缺失和选择偏差，再讨论经济解释。"
+  },
+  {
+    "n": 67,
+    "title": "Walk-Forward Validation 怎么做？",
+    "diff": "★★☆",
+    "tags": "OOS｜rolling｜expanding",
+    "answer": "保持严格时间顺序：用过去训练、紧接着的未来验证；可 expanding window 或 fixed rolling window，多个 period 连续滚动。",
+    "derivation": "hyperparameter tuning 也必须嵌套在当期训练窗口内，不能用最终 test period 反复调参。样本重叠时应额外处理 purge/embargo。",
+    "followups": [
+      "rolling vs expanding 何时选？",
+      "regime drift 下窗口多长？"
+    ],
+    "pitfalls": [
+      "每次都看 test 再改模型，导致 test 变训练集。"
+    ],
+    "interview": "画一条时间轴，比口头描述更不容易错。",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q067-Walk-Forward-Validation-怎么做.md",
+    "advanced_note": "Walk-forward 的本质是模拟真实研究-部署节奏；超参数选择也必须嵌套在历史可用数据内，而不是偷看未来。"
+  },
+  {
+    "n": 68,
+    "title": "Alternative Data 有大量 missing values，怎么处理？",
+    "diff": "★★☆",
+    "tags": "Missingness｜MNAR｜数据质量",
+    "answer": "先判断 missing mechanism 和业务过程：MCAR/MAR/MNAR。缺失可能本身携带信息，不能默认 fillna(0)；更不能用未来值回填。",
+    "derivation": "可增加 missing indicator、按可获得历史做 forward-fill、模型化缺失、分群处理，并检查 vendor coverage 变化是否制造伪 signal。",
+    "followups": [
+      "forward-fill 最大允许间隔？",
+      "coverage expansion 如何造成 backtest bias？"
+    ],
+    "pitfalls": [
+      "缺失=0、缺失=均值的机械处理。"
+    ],
+    "interview": "先问“为什么缺失”，再问“怎么填”。",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q068-Alternative-Data-有大量-missing-values-怎么处理.md",
+    "advanced_note": "Missingness 可能是信号本身；先识别 MCAR/MAR/MNAR，再决定插补、missing indicator、模型原生处理或样本过滤。"
+  },
+  {
+    "n": 69,
+    "title": "如何判断 improvement 是真 signal 还是 research overfitting？",
+    "diff": "★★★",
+    "tags": "OOS｜ablation｜robustness",
+    "answer": "使用 untouched holdout、walk-forward、parameter stability、subsample/universe/regime checks、multiple-testing control、ablation、placebo、独立实现。",
+    "derivation": "一个稳健 signal 应对合理的细节扰动“渐变”而非“悬崖式消失”。同时要记录所有实验尝试，避免只看赢家。",
+    "followups": [
+      "deflated Sharpe 的思想？",
+      "怎样设计 placebo feature？"
+    ],
+    "pitfalls": [
+      "通过更多调参把 holdout 调好。"
+    ],
+    "interview": "把“可证伪性”和“稳定性”作为研究质量标准。",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q069-如何判断-improvement-是真-signal-还是-research-overfitting.md",
+    "advanced_note": "稳健的 signal 应在样本区间、universe、参数、成本假设和实现方式变化下保持方向性；单一 holdout 仍可能被研究过程耗尽。"
+  },
+  {
+    "n": 70,
+    "title": "一个可复现 Quant Research Experiment 应保存什么？",
+    "diff": "★★☆",
+    "tags": "Reproducibility｜lineage｜MLOps",
+    "answer": "至少保存 dataset/universe/version、timestamps、feature code commit、label、split、model config、seed、cost model、metrics、environment、artifacts。",
+    "derivation": "更成熟系统应做到从任何结果反向追踪到原始数据快照与代码，支持“同输入同版本确定性重放”。",
+    "followups": [
+      "随机 GPU 算子怎么做可复现？",
+      "数据 revision 后如何对比？"
+    ],
+    "pitfalls": [
+      "只保存 notebook 和最终 CSV。"
+    ],
+    "interview": "提出“research lineage + immutable manifest”会很加分。",
+    "chapter": "G",
+    "chapter_name": "数据、回测与研究方法论",
+    "markdown_path": "questions/07-backtesting-research-methodology/q070-一个可复现-Quant-Research-Experiment-应保存什么.md",
+    "advanced_note": "可复现研究需要把数据版本、时间口径、代码 commit、环境、随机种子、split、成本模型和 artifacts 一起固化。"
+  },
+  {
+    "n": 71,
+    "title": "推导 Minimum-Variance Portfolio。",
+    "diff": "★★★",
+    "tags": "Portfolio optimization｜Lagrange",
+    "answer": "求 min_w wᵀΣw s.t. 1ᵀw=1。Lagrange 一阶条件 2Σw-λ1=0，得到 w*=Σ^-1 1/(1ᵀΣ^-1 1)。",
+    "derivation": "若再加目标收益约束 wᵀμ=μ0，则引入第二个 multiplier，得到经典 efficient frontier。",
+    "followups": [
+      "Σ singular 怎么办？",
+      "允许 cash/risk-free asset 后如何变化？"
+    ],
+    "pitfalls": [
+      "忘记 covariance matrix 必须可逆/需正则化。"
+    ],
+    "interview": "先写优化问题与约束，再推一阶条件。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q071-推导-Minimum-Variance-Portfolio.md",
+    "advanced_note": "最小方差组合的闭式解暴露了 Σ^{-1} 的中心地位，也暴露了它对 covariance estimation error 的敏感性。"
+  },
+  {
+    "n": 72,
+    "title": "为什么直接使用 sample covariance matrix 很危险？",
+    "diff": "★★☆",
+    "tags": "Covariance｜high-dimensional｜conditioning",
+    "answer": "当维度 p 与样本 n 同量级时，样本协方差特征值噪声大、condition number 高；求逆会进一步放大 estimation error。",
+    "derivation": "常用 shrinkage、factor covariance、PCA、regularized inverse 等。优化器对 Σ^-1 敏感，所以 covariance estimation 往往比优化算法本身更重要。",
+    "followups": [
+      "p>n 时 rank 是多少？",
+      "Ledoit-Wolf shrinkage 的目标？"
+    ],
+    "pitfalls": [
+      "认为更多资产只会带来更多 diversification。"
+    ],
+    "interview": "强调“inverse amplifies noise”。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q072-为什么直接使用-sample-covariance-matrix-很危险.md",
+    "advanced_note": "当 p/n 不小，sample covariance 的特征值会被噪声严重扭曲；矩阵求逆会进一步放大最小特征方向的误差。"
+  },
+  {
+    "n": 73,
+    "title": "什么是 Covariance Shrinkage？",
+    "diff": "★★☆",
+    "tags": "Shrinkage｜bias-variance｜risk model",
+    "answer": "将 noisy sample S 与结构 target F 混合：Σ_hat=(1-λ)S+λF。牺牲少量 bias，换取显著 variance/conditioning 改善。",
+    "derivation": "target 可是 diagonal、constant-correlation、factor-based 等；λ 不应拍脑袋，可用解析估计或 CV/utility 选择。",
+    "followups": [
+      "λ=0/1 分别意味着什么？",
+      "precision matrix 如何正则？"
+    ],
+    "pitfalls": [
+      "把 shrinkage 理解为“把所有 correlation 调低”。"
+    ],
+    "interview": "用 bias-variance 语言解释而不是只给公式。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q073-什么是-Covariance-Shrinkage.md",
+    "advanced_note": "Shrinkage 用少量 bias 换大量 variance reduction；真正问题不是“要不要 shrink”，而是 target 与 λ 如何选择。"
+  },
+  {
+    "n": 74,
+    "title": "PCA 在风险模型里是什么意思？",
+    "diff": "★★☆",
+    "tags": "PCA｜eigenportfolio｜factor",
+    "answer": "对 covariance/equivalent correlation matrix 做特征分解，主要 eigenvectors 描述解释最多共同方差的正交方向，可视作统计因子。",
+    "derivation": "第一主成分常近似 broad common mode，但 PCA 因子是样本统计对象，符号/旋转/稳定性都需检验，不保证天然有经济含义。",
+    "followups": [
+      "标准化前后 PCA 有何差异？",
+      "rolling PCA 的 factor identity 怎么对齐？"
+    ],
+    "pitfalls": [
+      "直接把 PC1 命名为“市场因子”而不验证。"
+    ],
+    "interview": "区分“variance explanation”与“economic interpretation”。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q074-PCA-在风险模型里是什么意思.md",
+    "advanced_note": "PCA 找到的是方差最大的正交方向，不保证是可解释经济因子；稳定性、窗口和标准化方式都可能改变 PC。"
+  },
+  {
+    "n": 75,
+    "title": "VaR 与 Expected Shortfall 有什么区别？",
+    "diff": "★★☆",
+    "tags": "Tail risk｜VaR｜ES",
+    "answer": "VaR_α 是损失分布的 α 分位数；ES_α 是超越 VaR 尾部条件下的平均损失，更刻画 tail severity。",
+    "derivation": "VaR 不告诉你阈值之后有多糟；ES 在常见条件下具有更好的 coherent risk measure 性质。估计两者都高度依赖尾部分布与样本量。",
+    "followups": [
+      "正态分布下 VaR/ES 闭式？",
+      "backtesting tail risk 有何困难？"
+    ],
+    "pitfalls": [
+      "把 99% VaR 解读为“最大损失”。"
+    ],
+    "interview": "明确“quantile vs conditional tail mean”。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q075-VaR-与-Expected-Shortfall-有什么区别.md",
+    "advanced_note": "VaR 只给分位阈值，ES 关注越过阈值后的平均损失；尾部分布估计误差会同时影响二者。"
+  },
+  {
+    "n": 76,
+    "title": "为什么 Volatility Targeting 不等于风险恒定？",
+    "diff": "★★☆",
+    "tags": "Vol targeting｜estimation lag｜risk",
+    "answer": "它只根据估计 volatility 调整 exposure，但估计有 lag/error；jumps、correlation shifts、liquidity、tail risk 都不被单一 σ 完整捕获。",
+    "derivation": "当 volatility 突增时，基于过去窗口的 target 反应可能滞后；如果所有参与者同步去杠杆，还可能出现反馈效应。",
+    "followups": [
+      "EWMA vs rolling std？",
+      "vol estimator half-life 怎么影响响应？"
+    ],
+    "pitfalls": [
+      "把 realized/forecast vol 当确定值。"
+    ],
+    "interview": "“target estimated risk, not true future risk”是核心。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q076-为什么-Volatility-Targeting-不等于风险恒定.md",
+    "advanced_note": "Vol targeting 使用的是估计波动而非未来真实波动；估计滞后、跳跃和相关性突变都会让风险在压力期迅速偏离目标。"
+  },
+  {
+    "n": 77,
+    "title": "什么是 Marginal Contribution to Risk？",
+    "diff": "★★☆",
+    "tags": "Risk decomposition｜gradient",
+    "answer": "σ_p=sqrt(wᵀΣw)，边际风险 ∂σ_p/∂w_i=(Σw)_i/σ_p；component risk contribution 为 RC_i=w_i(Σw)_i/σ_p。",
+    "derivation": "Euler homogeneous property 下，Σ_i RC_i=σ_p。它用于理解某个 position 对组合总体风险的贡献，而不是单看 standalone volatility。",
+    "followups": [
+      "variance contribution 版本怎么写？",
+      "risk parity 的条件？"
+    ],
+    "pitfalls": [
+      "把风险贡献等同于权重乘单资产波动率。"
+    ],
+    "interview": "先算 gradient，再乘 position，逻辑最清晰。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q077-什么是-Marginal-Contribution-to-Risk.md",
+    "advanced_note": "Risk contribution 是对 portfolio volatility 的梯度分解；它把“总风险”拆成各头寸边际贡献，便于约束和归因。"
+  },
+  {
+    "n": 78,
+    "title": "为什么 Portfolio Optimization 容易产生极端权重？",
+    "diff": "★★☆",
+    "tags": "Estimation error｜inverse problem｜constraints",
+    "answer": "经典解常含 Σ^-1 μ。μ 与 Σ 的微小估计误差经过逆矩阵和线性优化会被放大，优化器会“利用噪声”给出极端 long/short 权重。",
+    "derivation": "常见稳定化：shrinkage、L1/L2、box/gross constraints、turnover penalty、robust optimization。",
+    "followups": [
+      "为什么 expected return estimation 比 covariance 更难？",
+      "constraint 会引入什么 bias？"
+    ],
+    "pitfalls": [
+      "认为极端权重说明“模型有强 conviction”。"
+    ],
+    "interview": "说“optimizer is an error maximizer if inputs are noisy”很形象。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q078-为什么-Portfolio-Optimization-容易产生极端权重.md",
+    "advanced_note": "优化器会利用最微小的预期收益/协方差差异并把它们放大成极端权重；constraints 与 regularization 是估计误差的防火墙。"
+  },
+  {
+    "n": 79,
+    "title": "如何把 turnover/transaction-cost penalty 放入优化？",
+    "diff": "★★☆",
+    "tags": "Convex optimization｜turnover｜regularization",
+    "answer": "可写 max_w wᵀμ - λ wᵀΣw - γ||w-w_old||_1；L1 更接近线性换手成本并产生 no-trade region，L2 更平滑易优化。",
+    "derivation": "真实成本可能是 piecewise/nonlinear，需根据 spread/impact model 扩展。penalty 系数应通过 OOS utility 与 cost calibration 决定。",
+    "followups": [
+      "L1 非光滑怎么解？",
+      "约束与 penalty 有何等价关系？"
+    ],
+    "pitfalls": [
+      "只对最终结果事后减成本，不在优化中考虑。"
+    ],
+    "interview": "把成本放进 objective，体现“预测和执行联合优化”。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q079-如何把-turnover-transaction-cost-penalty-放入优化.md",
+    "advanced_note": "Turnover penalty 把“换仓成本”直接纳入目标，使静态最优变成相对旧组合的动态优化；L1 更接近线性交易成本。"
+  },
+  {
+    "n": 80,
+    "title": "Factor Neutralization 怎么理解？",
+    "diff": "★★☆",
+    "tags": "Residualization｜exposure｜confounding",
+    "answer": "若 signal x 含已知 exposure F，可回归 x=Fβ+ε，取 residual ε 作为 neutralized signal；也可直接在优化约束中要求 Fᵀw=0。",
+    "derivation": "neutralization 删除的是与 F 线性可解释的部分。若真实 signal 本来就通过该 factor 表现，过度 neutralize 会同时删除价值。",
+    "followups": [
+      "按行业/市值做横截面 neutralization？",
+      "residualization 的 look-ahead 风险？"
+    ],
+    "pitfalls": [
+      "把 neutralization 当无损预处理。"
+    ],
+    "interview": "先问“想控制的是风险暴露还是预测信息？”再决定做法。",
+    "chapter": "H",
+    "chapter_name": "组合、风险与优化",
+    "markdown_path": "questions/08-portfolio-risk-optimization/q080-Factor-Neutralization-怎么理解.md",
+    "advanced_note": "Neutralization 是投影/残差化；它减少已知 exposure，但若因子与真实 signal 共线，也会一起删除有效信息。"
+  },
+  {
+    "n": 81,
+    "title": "Put-Call Parity 是什么？如何从无套利推导？",
+    "diff": "★★☆",
+    "tags": "Options｜no-arbitrage｜parity",
+    "answer": "无股息欧式期权：C-P=S_0-Ke^{-rT}。比较组合 A：long call + PV(K) 与组合 B：long put + stock；到期两者 payoff 都是 max(S_T,K)。",
+    "derivation": "若当前价格不相等，则可构造初始净现金流并在到期得到同一 payoff，违背无套利。",
+    "followups": [
+      "有连续股息 q 时怎么改？",
+      "American option parity 为什么变成不等式？"
+    ],
+    "pitfalls": [
+      "只背公式，不会画到期 payoff。"
+    ],
+    "interview": "无套利题先构造“到期 payoff 完全相同的两个组合”。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q081-Put-Call-Parity-是什么-如何从无套利推导.md",
+    "advanced_note": "Put-call parity 是复制组合等价关系；任何偏离都应先检查现金流、carry、dividend、exercise style 和交易约束。"
+  },
+  {
+    "n": 82,
+    "title": "Black-Scholes 的核心假设是什么？哪些明显不现实？",
+    "diff": "★★☆",
+    "tags": "Black-Scholes｜assumptions｜model risk",
+    "answer": "经典模型假设 GBM、常数 σ/r、连续交易、无摩擦、可连续对冲、无套利、欧式行权等。现实存在 smile/skew、jumps、stochastic vol、离散对冲、交易成本和流动性约束。",
+    "derivation": "面试更关注“假设-结果”映射：哪个假设被破坏，会影响哪部分定价/对冲结论。",
+    "followups": [
+      "local vol/stochastic vol 分别放松什么？",
+      "jump diffusion 解决什么尾部特征？"
+    ],
+    "pitfalls": [
+      "把模型假设背成清单但不理解用途。"
+    ],
+    "interview": "列假设后至少举 2-3 个现实偏离与后果。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q082-Black-Scholes-的核心假设是什么-哪些明显不现实.md",
+    "advanced_note": "Black-Scholes 更重要的是“哪些风险被假设掉了”；vol smile、jump、交易成本和离散对冲都可视作 assumption failure 的后果。"
+  },
+  {
+    "n": 83,
+    "title": "为什么 Black-Scholes PDE 中真实 drift μ 消失？",
+    "diff": "★★★",
+    "tags": "Risk-neutral pricing｜delta hedge｜PDE",
+    "answer": "对 V(S,t) 用 Itô，构造 delta-hedged portfolio 消去 dW 风险；局部无风险组合在无套利下只能赚 r，因此 PDE 中出现 r 而非真实世界 μ。",
+    "derivation": "这展示了完整市场中的复制定价：价格由可复制现金流和无套利决定，不需要投资者对 underlying 的真实 drift 预测。",
+    "followups": [
+      "risk-neutral measure 如何与 PDE 对应？",
+      "不完备市场为什么不唯一？"
+    ],
+    "pitfalls": [
+      "说“因为假设 μ=r”。这不是推导的本质。"
+    ],
+    "interview": "关键词：hedge out diffusion risk → riskless portfolio → earn r。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q083-为什么-Black-Scholes-PDE-中真实-drift-μ-消失.md",
+    "advanced_note": "真实 drift 消失是因为通过自融资 delta hedge 构造了瞬时无风险组合；定价由无套利与可复制性而不是投资者预期收益决定。"
+  },
+  {
+    "n": 84,
+    "title": "Delta 是什么？它是不是“期权上涨概率”？",
+    "diff": "★★☆",
+    "tags": "Greeks｜Delta｜sensitivity",
+    "answer": "Delta=∂V/∂S，是 option value 对 underlying 小变化的一阶敏感度，也是连续复制中的 hedge ratio。它不应普遍直接解释成“上涨概率”。",
+    "derivation": "在特定 Black-Scholes 表达中 N(d1)、N(d2) 各自有不同数学/风险中性解释，不能混为一谈。",
+    "followups": [
+      "call delta 的范围？",
+      "cash-or-nothing digital 的 delta 行为？"
+    ],
+    "pitfalls": [
+      "把 N(d1) 或 delta 直接等同 exercise probability。"
+    ],
+    "interview": "先把 sensitivity/hedge ratio 讲清，再讨论模型特定概率解释。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q084-Delta-是什么-它是不是“期权上涨概率”.md",
+    "advanced_note": "Delta 是局部一阶敏感度，不是普遍意义的上涨概率；任何概率解释都依赖具体 measure、模型与 payoff。"
+  },
+  {
+    "n": 85,
+    "title": "Gamma 为什么重要？",
+    "diff": "★★☆",
+    "tags": "Greeks｜convexity｜hedging error",
+    "answer": "Gamma=∂²V/∂S²，描述 delta 对 S 的变化，也即 payoff/value 的局部 convexity。二阶近似 ΔV≈Delta*ΔS+0.5*Gamma*(ΔS)²。",
+    "derivation": "高 gamma 意味着 delta 变化快，离散对冲误差和再平衡频率更敏感；near-expiry ATM option 常见 gamma 集中。",
+    "followups": [
+      "gamma 与 theta 的 BS 关系？",
+      "long gamma 为什么通常 long convexity？"
+    ],
+    "pitfalls": [
+      "只说“gamma 是二阶导数”而不连接动态 hedging。"
+    ],
+    "interview": "把数学敏感度与 hedge stability 联系起来。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q085-Gamma-为什么重要.md",
+    "advanced_note": "Gamma 控制 delta 对标的变化的速度，也是离散对冲误差与 convexity exposure 的核心二阶项。"
+  },
+  {
+    "n": 86,
+    "title": "Vega 是什么？为什么 vanilla option 通常 Vega>0？",
+    "diff": "★★☆",
+    "tags": "Greeks｜volatility｜convexity",
+    "answer": "Vega=∂V/∂σ。对普通欧式 vanilla，增加不确定性会扩大终值分布，而凸性 payoff 受益，所以 vega 通常为正。",
+    "derivation": "严格说是模型参数敏感度，不是 realized vol 本身。不同期限/执行价的 vega 形成 volatility surface risk。",
+    "followups": [
+      "vega 最大大致在哪？",
+      "volga/vomma 是什么？"
+    ],
+    "pitfalls": [
+      "把 implied vol 上升与 realized vol 上升视为同一件事。"
+    ],
+    "interview": "用 convexity + risk-neutral expectation 解释正 vega。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q086-Vega-是什么-为什么-vanilla-option-通常-Vega-0.md",
+    "advanced_note": "Vanilla option 对更高波动通常受益于 payoff convexity；但组合层面的 vega 可以正负混合，且 surface move 不是单参数 σ 变化。"
+  },
+  {
+    "n": 87,
+    "title": "Implied Volatility 如何从期权价格反求？",
+    "diff": "★★☆",
+    "tags": "Numerical methods｜IV｜root finding",
+    "answer": "求 σ 使 C_BS(σ)=C_market。通常无闭式反解，可用 bisection/Brent；Newton 利用 vega 作导数但在 vega 很小时可能不稳。",
+    "derivation": "实现还需检查 no-arbitrage price bounds、初值、极短期限和深度 ITM/OTM 数值稳定性。",
+    "followups": [
+      "Newton update 公式？",
+      "为什么 bisection 更稳但慢？"
+    ],
+    "pitfalls": [
+      "对不满足价格上下界的 market price 仍强求 IV。"
+    ],
+    "interview": "先做 bounds，再 root-finding，是 production-grade 思路。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q087-Implied-Volatility-如何从期权价格反求.md",
+    "advanced_note": "IV inversion 是数值 root-finding 问题；Newton 快但依赖 vega 和初值，bisection/Brent 更稳健。"
+  },
+  {
+    "n": 88,
+    "title": "为什么存在 Volatility Smile/Skew？",
+    "diff": "★★☆",
+    "tags": "Vol surface｜fat tails｜model misspecification",
+    "answer": "真实收益不是 constant-vol lognormal；jumps、stochastic vol、leverage effect、fat tails 及供需共同使不同 strike/maturity 的 BS implied vol 不同。",
+    "derivation": "所以 implied volatility 是把市场价格映射回 BS 参数空间的“报价坐标”，不是某个真正恒定 σ 的直接观测。",
+    "followups": [
+      "smile 与 skew 的区别？",
+      "term structure 说明什么？"
+    ],
+    "pitfalls": [
+      "看到 smile 就简单说“市场错定价”。"
+    ],
+    "interview": "把 IV surface 视为“model-implied coordinate system”。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q088-为什么存在-Volatility-Smile-Skew.md",
+    "advanced_note": "Smile/skew 是市场对非 lognormal 尾部、jump、stochastic vol 和供需风险的综合反映；它本质上是模型错配的价格化。"
+  },
+  {
+    "n": 89,
+    "title": "American 与 European Option 最大区别是什么？",
+    "diff": "★★☆",
+    "tags": "Early exercise｜optimal stopping",
+    "answer": "American 可在到期前任意允许时点行权，因此是 optimal stopping problem，价值至少不低于对应 European。",
+    "derivation": "提前行权价值取决于 carry/dividend/interest 等。数值方法常见 binomial tree、finite difference、Longstaff-Schwartz。",
+    "followups": [
+      "无股息 American call 为何通常不应提前行权？",
+      "free boundary 是什么？"
+    ],
+    "pitfalls": [
+      "只说“American 更贵”，忽略某些情形价值可相同。"
+    ],
+    "interview": "关键词：exercise flexibility → stopping option。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q089-American-与-European-Option-最大区别是什么.md",
+    "advanced_note": "American option 引入 early-exercise boundary，问题从闭式期望变成 optimal stopping；是否提前行权取决于 carry 与现金流结构。"
+  },
+  {
+    "n": 90,
+    "title": "为什么离散 Delta Hedging 不能完全复制连续理论？",
+    "diff": "★★★",
+    "tags": "Discrete hedging｜model risk｜P&L",
+    "answer": "连续复制假设可无限频繁、无成本交易，真实世界存在离散时间、交易成本、jump、vol misspecification 和 latency，因此会出现 hedging error。",
+    "derivation": "在小步长近似下，gamma、realized vs implied variance、rebalancing interval 等共同决定误差结构。交易更频繁可降离散误差，却提高成本。",
+    "followups": [
+      "hedging frequency 如何权衡？",
+      "jump risk 为什么无法用连续 delta 完全对冲？"
+    ],
+    "pitfalls": [
+      "认为提高频率必然越好。"
+    ],
+    "interview": "把“discretization error vs transaction cost”作为核心 trade-off。",
+    "chapter": "I",
+    "chapter_name": "衍生品与定价",
+    "markdown_path": "questions/09-derivatives-pricing/q090-为什么离散-Delta-Hedging-不能完全复制连续理论.md",
+    "advanced_note": "连续复制在现实中被离散时间、交易成本、跳跃和参数变化打破；hedging P&L 是模型假设与执行误差共同作用的结果。"
+  },
+  {
+    "n": 91,
+    "title": "长度 N 的序列，如何 O(N) 计算 rolling mean？",
+    "diff": "★☆☆",
+    "tags": "Sliding window｜算法｜streaming",
+    "answer": "维护窗口和 S_t=S_{t-1}+x_t-x_{t-W}，每步 O(1)，总 O(N)，空间可做到 O(W) 或若只需均值则视输入结构更低。",
+    "derivation": "数值实现应考虑浮点累计误差、NaN、窗口启动阶段和并行/分块边界。",
+    "followups": [
+      "rolling variance 如何 O(N)？",
+      "Welford algorithm 适合什么场景？"
+    ],
+    "pitfalls": [
+      "每个窗口重新 sum，做成 O(NW)。"
+    ],
+    "interview": "先说“reuse overlapping work”，再给递推式。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q091-长度-N-的序列-如何-O-N-计算-rolling-mean.md",
+    "advanced_note": "Sliding window 的核心是不重复计算；同一思想可扩展到 rolling variance、deque-based rolling max/min 等流式统计。"
+  },
+  {
+    "n": 92,
+    "title": "Streaming 数据中实时维护 median 怎么做？",
+    "diff": "★★☆",
+    "tags": "Heap｜streaming median｜DSA",
+    "answer": "两个堆：max-heap 保存 lower half，min-heap 保存 upper half，维持 size 差≤1 且 max(lower)≤min(upper)。插入 O(log N)，查询 median O(1)。",
+    "derivation": "若题目变成 sliding-window median，需要额外支持删除旧元素，可用 balanced BST/multiset、indexed heap 或 lazy deletion。",
+    "followups": [
+      "如何处理重复值？",
+      "滑动窗口版本复杂度？"
+    ],
+    "pitfalls": [
+      "只回答“排序后取中位数”，每次 O(N log N)。"
+    ],
+    "interview": "先区分 append-only streaming 和 sliding window，这是常见追问分叉。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q092-Streaming-数据中实时维护-median-怎么做.md",
+    "advanced_note": "双堆解决的是插入流的中位数；如果还要支持滑窗删除，需要 lazy deletion 或可删除平衡树。"
+  },
+  {
+    "n": 93,
+    "title": "十亿行数据只找最大的 1000 个元素，如何做？",
+    "diff": "★☆☆",
+    "tags": "Top-K｜heap｜large data",
+    "answer": "维护 size k=1000 的 min-heap。遍历元素：若堆未满 push；否则只在 x>heap_min 时替换。复杂度 O(N log k)，空间 O(k)。",
+    "derivation": "若数据分布式，可先每个 shard 求 local top-k，再对所有 local top-k 做一次 global top-k。",
+    "followups": [
+      "若 k 很接近 N 呢？",
+      "Quickselect 的平均复杂度？"
+    ],
+    "pitfalls": [
+      "完整排序 O(N log N)。"
+    ],
+    "interview": "把 memory constraint 与 distributed merge 一起说，体现工程感。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q093-十亿行数据只找最大的-1000-个元素-如何做.md",
+    "advanced_note": "Top-K 的关键是让复杂度依赖 k 而不是 N；若数据分布和硬件允许，也可讨论 selection algorithm、distributed top-k。"
+  },
+  {
+    "n": 94,
+    "title": "如何实现 event-driven order-book reconstruction？",
+    "diff": "★★★",
+    "tags": "State machine｜hash map｜ordered map",
+    "answer": "维护 order_id→订单元数据，价格档→队列/聚合量；按 sequence 处理 ADD/CANCEL/MODIFY/EXECUTE，更新状态并验证不变量。",
+    "derivation": "生产级要处理 duplicate/missing/out-of-order messages、snapshot recovery、sequence gap、不同 matching rules。数据结构选择受 L2/L3 需求和延迟预算影响。",
+    "followups": [
+      "为什么只用 price→size 不够重建 L3？",
+      "如何检测负 size/未知 order cancel？"
+    ],
+    "pitfalls": [
+      "忽略 sequence gap 仍继续更新状态。"
+    ],
+    "interview": "把它讲成 deterministic replayable state machine。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q094-如何实现-event-driven-order-book-reconstruction.md",
+    "advanced_note": "Order-book reconstruction 是确定性状态机问题；正确性优先于“快”，必须处理序号缺口、重放、snapshot 与幂等。"
+  },
+  {
+    "n": 95,
+    "title": "给无序 trade events，如何检测 timestamp 问题？",
+    "diff": "★★☆",
+    "tags": "Timestamp｜clock｜data QA",
+    "answer": "首先区分 exchange/event timestamp、receive timestamp、local processing timestamp；分别检查单调性、延迟分布、负延迟、不可能的顺序、跨源 clock skew。",
+    "derivation": "事件无序可能来自 packet reorder、batching、多通道、clock synchronization，并非简单 sort 一次就能解决；sort 可能掩盖真实 causal order。",
+    "followups": [
+      "sequence number 与 timestamp 冲突时信谁？",
+      "如何估计 clock offset？"
+    ],
+    "pitfalls": [
+      "看到乱序就按 timestamp 排序后当作真相。"
+    ],
+    "interview": "先梳理每种时间的语义，再做 QA。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q095-给无序-trade-events-如何检测-timestamp-问题.md",
+    "advanced_note": "Timestamp QA 要先区分 exchange/receive/process clock；乱序不一定是脏数据，也可能是网络与多源时钟的自然结果。"
+  },
+  {
+    "n": 96,
+    "title": "SQL 中如何做 As-Of Join？",
+    "diff": "★★☆",
+    "tags": "SQL｜time series join｜point-in-time",
+    "answer": "对每个左表时点 t，找右表满足 q_time≤t 的最近一条记录，即 argmax q_time。可用 lateral join/correlated subquery/window 或时序数据库原生 asof join。",
+    "derivation": "必须明确 partition key（如 symbol）和 tolerance，否则可能把很久以前的 stale quote 错配给 trade。",
+    "followups": [
+      "forward as-of 与 backward as-of？",
+      "如何避免 cross-symbol join？"
+    ],
+    "pitfalls": [
+      "ordinary equality join 导致大量 missing；或不加 ≤t 条件造成未来泄漏。"
+    ],
+    "interview": "把“same key + latest timestamp not after decision time”说清。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q096-SQL-中如何做-As-Of-Join.md",
+    "advanced_note": "As-of join 的语义是“最近且不晚于当前事件”，本质是 point-in-time correctness；方向写反会直接制造未来信息。"
+  },
+  {
+    "n": 97,
+    "title": "为什么 NumPy 通常比 Python for-loop 快？",
+    "diff": "★★☆",
+    "tags": "Vectorization｜memory｜Python runtime",
+    "answer": "核心不是语法，而是把循环放入编译后的连续内存内核，减少 Python interpreter/object overhead，并利用 SIMD/cache-friendly access。",
+    "derivation": "但 vectorization 会创建巨大 temporary arrays 时可能内存带宽受限；某些操作用 numba/Cython/分块更好。",
+    "followups": [
+      "broadcasting 为什么可能爆内存？",
+      "contiguous vs strided array？"
+    ],
+    "pitfalls": [
+      "回答“因为 NumPy 是 C 写的”就结束。"
+    ],
+    "interview": "从 interpreter overhead、memory layout、SIMD 三层解释。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q097-为什么-NumPy-通常比-Python-for-loop-快.md",
+    "advanced_note": "NumPy 快来自把循环下沉到编译代码、连续内存和 SIMD；但 temporary arrays、strides 与 cache miss 仍可能让向量化变慢。"
+  },
+  {
+    "n": 98,
+    "title": "C++ Quant/HFT 面试为什么常问 cache locality？",
+    "diff": "★★☆",
+    "tags": "CPU cache｜data layout｜latency",
+    "answer": "Big-O 相同不代表实际延迟相同。连续 array/vector 能更好利用 cache line 与 prefetch；linked list 的 pointer chasing 容易造成 cache miss。",
+    "derivation": "高吞吐/低延迟场景还关心 branch prediction、allocation、NUMA、false sharing、memory bandwidth。",
+    "followups": [
+      "AoS vs SoA？",
+      "为什么 unordered_map 也可能 cache-unfriendly？"
+    ],
+    "pitfalls": [
+      "只用渐近复杂度判断性能。"
+    ],
+    "interview": "强调“modern performance is often memory-bound, not arithmetic-bound”。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q098-C++-Quant-HFT-面试为什么常问-cache-locality.md",
+    "advanced_note": "Big-O 忽略内存层次；HFT 里 contiguous layout、branch predictability、allocation 与 cache miss 往往比抽象复杂度更决定延迟。"
+  },
+  {
+    "n": 99,
+    "title": "Research code 与 production code 最大区别是什么？",
+    "diff": "★★☆",
+    "tags": "Software engineering｜research-to-prod",
+    "answer": "research 优先迭代速度与可探索性；production 优先 correctness、determinism、latency、observability、fault tolerance、versioning、tests。",
+    "derivation": "理想流程是 idea→experiment→validation→specification→production parity→monitoring，而不是把 notebook 直接部署。研究代码也应尽量形成可复用、可测试的 feature/label library。",
+    "followups": [
+      "如何做 offline-online feature parity？",
+      "什么应写 unit test / property test？"
+    ],
+    "pitfalls": [
+      "把 production 化理解成“把 Python 改成 C++”。"
+    ],
+    "interview": "强调 correctness/reproducibility 比语言更本质。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q099-Research-code-与-production-code-最大区别是什么.md",
+    "advanced_note": "Research code 优化迭代速度，production code 优化正确性、可观测性和稳定性；成熟流程需要明确 parity tests 把两者连接起来。"
+  },
+  {
+    "n": 100,
+    "title": "压轴：Backtest 与 Live 表现差异巨大，如何系统定位？",
+    "diff": "★★★",
+    "tags": "系统诊断｜research parity｜distribution shift",
+    "answer": "构建差异树：Data → Feature/Model → Simulation/Execution → Code/Infra → Distribution。先用 same-input replay 找 research 与 production 的第一处分叉；前四层排除后再讨论 regime/concept drift。",
+    "derivation": "Data 查 timestamp/version/PIT；Model 查 checkpoint/preprocessing/feature order；Simulation 查 fill/cost/latency/impact；Code 查数值、状态、event ordering；最后才比较 P_live(X,Y) 与 P_hist(X,Y)。",
+    "followups": [
+      "如何设计 golden replay dataset？",
+      "如何区分 execution miss 与 predictive decay？",
+      "如何把诊断自动化成监控？"
+    ],
+    "pitfalls": [
+      "一上来归因“市场变了”。",
+      "只对最终 PnL，不比较中间 state。"
+    ],
+    "interview": "这是高级面试最看重的结构化能力：先证明系统一致，再解释市场变化。",
+    "chapter": "J",
+    "chapter_name": "Coding、算法与量化系统",
+    "markdown_path": "questions/10-coding-quant-systems/q100-压轴-Backtest-与-Live-表现差异巨大-如何系统定位.md",
+    "advanced_note": "定位 live-backtest gap 应采用层级归因：数据 → 特征 → 模型 → 仿真/执行 → 系统 → 分布；只有前面 parity 通过后才讨论 regime shift。"
+  }
+]

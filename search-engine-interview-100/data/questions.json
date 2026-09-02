@@ -1,0 +1,1556 @@
+[
+  {
+    "id": "Q001",
+    "title": "完整讲一下搜索引擎的端到端 Pipeline",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "通用 / 搜索架构",
+    "path": "docs/questions/01-search-architecture/Q001-search-engine-end-to-end-pipeline.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q002",
+    "title": "搜索系统与推荐系统的本质区别是什么？",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 2,
+    "frequency": "A",
+    "roles": "搜索 / 推荐交叉",
+    "path": "docs/questions/01-search-architecture/Q002-search-vs-recommendation.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q003",
+    "title": "为什么搜索一定要有候选召回阶段？",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "搜索 / RAG",
+    "path": "docs/questions/01-search-architecture/Q003-why-candidate-retrieval.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q004",
+    "title": "召回、粗排、精排、重排分别优化什么？",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "排序架构",
+    "path": "docs/questions/01-search-architecture/Q004-recall-prerank-rank-rerank.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q005",
+    "title": "为什么不能用数据库 LIKE 代替搜索引擎？",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 2,
+    "frequency": "A",
+    "roles": "搜索基础",
+    "path": "docs/questions/01-search-architecture/Q005-database-like-vs-search.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q006",
+    "title": "一次搜索请求从键盘到 SERP 发生了什么？",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "搜索架构",
+    "path": "docs/questions/01-search-architecture/Q006-query-to-serp-request-lifecycle.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q007",
+    "title": "为什么现代搜索几乎都是 Multi-stage Ranking？",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "排序架构",
+    "path": "docs/questions/01-search-architecture/Q007-why-multi-stage-ranking.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q008",
+    "title": "搜索系统的目标函数为什么是多目标的？",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "排序 / 业务",
+    "path": "docs/questions/01-search-architecture/Q008-multi-objective-search-ranking.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q009",
+    "title": "为什么搜索结果不能直接按 CTR 排？",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "LTR / 用户行为",
+    "path": "docs/questions/01-search-architecture/Q009-why-not-rank-by-ctr.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q010",
+    "title": "传统 Search 与 RAG Retrieval 的目标有什么不同？",
+    "chapter": 1,
+    "chapter_title": "搜索引擎全局架构",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "RAG / 搜索",
+    "path": "docs/questions/01-search-architecture/Q010-search-vs-rag-retrieval.md",
+    "tags": [
+      "search-architecture",
+      "retrieval",
+      "ranking",
+      "trie",
+      "rag"
+    ]
+  },
+  {
+    "id": "Q011",
+    "title": "什么是倒排索引？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 2,
+    "frequency": "S",
+    "roles": "IR 基础",
+    "path": "docs/questions/02-inverted-index-lucene/Q011-inverted-index.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing"
+    ]
+  },
+  {
+    "id": "Q012",
+    "title": "为什么叫“倒排”？正排索引还有什么用？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 1,
+    "frequency": "B",
+    "roles": "IR 基础",
+    "path": "docs/questions/02-inverted-index-lucene/Q012-inverted-vs-forward-index.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing"
+    ]
+  },
+  {
+    "id": "Q013",
+    "title": "Posting List 中一般存哪些信息？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "Lucene / IR",
+    "path": "docs/questions/02-inverted-index-lucene/Q013-posting-list-contents.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing",
+      "posting-list"
+    ]
+  },
+  {
+    "id": "Q014",
+    "title": "两个有序 Posting List 的 AND 查询怎么做？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 2,
+    "frequency": "S",
+    "roles": "算法手撕",
+    "path": "docs/questions/02-inverted-index-lucene/Q014-posting-list-intersection.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing",
+      "posting-list"
+    ]
+  },
+  {
+    "id": "Q015",
+    "title": "Posting List 很长时，WAND / Block-Max WAND 在做什么？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 5,
+    "frequency": "A",
+    "roles": "搜索性能",
+    "path": "docs/questions/02-inverted-index-lucene/Q015-wand-block-max-wand.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing",
+      "posting-list"
+    ]
+  },
+  {
+    "id": "Q016",
+    "title": "为什么 DocID 常用 gap/delta 编码？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "索引压缩",
+    "path": "docs/questions/02-inverted-index-lucene/Q016-docid-gap-delta-encoding.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing"
+    ]
+  },
+  {
+    "id": "Q017",
+    "title": "Term Dictionary 为什么常用 FST，而不只是 HashMap？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "Lucene",
+    "path": "docs/questions/02-inverted-index-lucene/Q017-term-dictionary-fst.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing",
+      "fst",
+      "map"
+    ]
+  },
+  {
+    "id": "Q018",
+    "title": "Trie 为什么适合做 Search Autocomplete？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 2,
+    "frequency": "A",
+    "roles": "Query Suggest",
+    "path": "docs/questions/02-inverted-index-lucene/Q018-trie-autocomplete.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing",
+      "trie",
+      "autocomplete"
+    ]
+  },
+  {
+    "id": "Q019",
+    "title": "Lucene Segment 为什么设计成 immutable？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "Lucene / 系统",
+    "path": "docs/questions/02-inverted-index-lucene/Q019-lucene-immutable-segment.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing"
+    ]
+  },
+  {
+    "id": "Q020",
+    "title": "Segment Merge 为什么既重要又危险？",
+    "chapter": 2,
+    "chapter_title": "倒排索引与 Lucene 内核",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "Lucene / 性能",
+    "path": "docs/questions/02-inverted-index-lucene/Q020-segment-merge-tradeoffs.md",
+    "tags": [
+      "inverted-index",
+      "lucene",
+      "indexing"
+    ]
+  },
+  {
+    "id": "Q021",
+    "title": "TF-IDF 的核心直觉是什么？",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 2,
+    "frequency": "S",
+    "roles": "IR 基础",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q021-tf-idf-intuition.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval",
+      "tf-idf"
+    ]
+  },
+  {
+    "id": "Q022",
+    "title": "为什么 IDF 能衡量一个词的“辨识度”？",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 2,
+    "frequency": "A",
+    "roles": "IR 基础",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q022-idf-discriminativeness.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval"
+    ]
+  },
+  {
+    "id": "Q023",
+    "title": "TF-IDF 的主要问题是什么？",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "IR 基础",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q023-tf-idf-limitations.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval",
+      "tf-idf"
+    ]
+  },
+  {
+    "id": "Q024",
+    "title": "写出 BM25，并解释每一项的意义",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "IR / Lucene",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q024-bm25-formula.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval"
+    ]
+  },
+  {
+    "id": "Q025",
+    "title": "BM25 相比 TF-IDF 到底改进了什么？",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "IR",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q025-bm25-vs-tf-idf.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval",
+      "tf-idf"
+    ]
+  },
+  {
+    "id": "Q026",
+    "title": "BM25 中 k1 控制什么？如何调？",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "IR 调参",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q026-bm25-k1.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval"
+    ]
+  },
+  {
+    "id": "Q027",
+    "title": "BM25 中 b 控制什么？如何理解 b=0 和 b=1？",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "IR 调参",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q027-bm25-b.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval"
+    ]
+  },
+  {
+    "id": "Q028",
+    "title": "Title 和 Body 应该如何联合打分？什么是 BM25F 思想？",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "多字段检索",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q028-bm25f-title-body.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval"
+    ]
+  },
+  {
+    "id": "Q029",
+    "title": "BM25 会在哪些场景失败？",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "IR / Dense",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q029-bm25-failure-modes.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval"
+    ]
+  },
+  {
+    "id": "Q030",
+    "title": "为什么 BM25 在 2026 年仍然非常强？",
+    "chapter": 3,
+    "chapter_title": "TF-IDF、BM25 与词法检索",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "IR / Hybrid",
+    "path": "docs/questions/03-bm25-lexical-retrieval/Q030-why-bm25-still-strong.md",
+    "tags": [
+      "bm25",
+      "lexical-retrieval",
+      "information-retrieval"
+    ]
+  },
+  {
+    "id": "Q031",
+    "title": "Query Understanding 通常包括哪些任务？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Query / NLP",
+    "path": "docs/questions/04-query-understanding/Q031-query-understanding-tasks.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp"
+    ]
+  },
+  {
+    "id": "Q032",
+    "title": "中文搜索分词为什么比英文更难？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 2,
+    "frequency": "A",
+    "roles": "中文搜索",
+    "path": "docs/questions/04-query-understanding/Q032-chinese-tokenization.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp"
+    ]
+  },
+  {
+    "id": "Q033",
+    "title": "搜索分词是不是越细越好？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "中文搜索",
+    "path": "docs/questions/04-query-understanding/Q033-search-tokenization-granularity.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp"
+    ]
+  },
+  {
+    "id": "Q034",
+    "title": "拼写纠错如何设计 Candidate Generation 与 Ranking？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "Query / NLP",
+    "path": "docs/questions/04-query-understanding/Q034-spelling-correction-candidate-ranking.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp"
+    ]
+  },
+  {
+    "id": "Q035",
+    "title": "“苹果”这样的 Query 为什么难？如何做意图消歧？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "Intent / Entity",
+    "path": "docs/questions/04-query-understanding/Q035-query-intent-disambiguation-apple.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp"
+    ]
+  },
+  {
+    "id": "Q036",
+    "title": "什么是 Query Expansion？为什么会同时提升 Recall 和伤害 Precision？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "Query Rewrite",
+    "path": "docs/questions/04-query-understanding/Q036-query-expansion-recall-precision.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp"
+    ]
+  },
+  {
+    "id": "Q037",
+    "title": "Synonym、Query Rewrite、Query Expansion 有什么区别？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 2,
+    "frequency": "A",
+    "roles": "Query",
+    "path": "docs/questions/04-query-understanding/Q037-synonym-rewrite-expansion.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp"
+    ]
+  },
+  {
+    "id": "Q038",
+    "title": "LLM 如何用于 Query Rewrite？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "LLM Search",
+    "path": "docs/questions/04-query-understanding/Q038-llm-query-rewrite.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp"
+    ]
+  },
+  {
+    "id": "Q039",
+    "title": "LLM Query Rewrite 最大的风险是什么？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "LLM Search",
+    "path": "docs/questions/04-query-understanding/Q039-llm-query-rewrite-risks.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp"
+    ]
+  },
+  {
+    "id": "Q040",
+    "title": "如何设计 Search Autocomplete / Query Suggest？",
+    "chapter": 4,
+    "chapter_title": "Query Understanding 与 Query Rewrite",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "Query Suggest / 系统",
+    "path": "docs/questions/04-query-understanding/Q040-search-autocomplete-query-suggest.md",
+    "tags": [
+      "query-understanding",
+      "query-rewrite",
+      "nlp",
+      "autocomplete"
+    ]
+  },
+  {
+    "id": "Q041",
+    "title": "为什么需要 Learning to Rank？BM25 不够吗？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "LTR",
+    "path": "docs/questions/05-learning-to-rank/Q041-why-learning-to-rank.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking",
+      "bm25"
+    ]
+  },
+  {
+    "id": "Q042",
+    "title": "Pointwise Ranking 是什么？优缺点？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 2,
+    "frequency": "S",
+    "roles": "LTR",
+    "path": "docs/questions/05-learning-to-rank/Q042-pointwise-ranking.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q043",
+    "title": "Pairwise Ranking 是什么？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "LTR",
+    "path": "docs/questions/05-learning-to-rank/Q043-pairwise-ranking.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q044",
+    "title": "Listwise Ranking 是什么？为什么更贴近 NDCG？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "LTR",
+    "path": "docs/questions/05-learning-to-rank/Q044-listwise-ranking.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking",
+      "ndcg"
+    ]
+  },
+  {
+    "id": "Q045",
+    "title": "RankNet 的核心公式和直觉是什么？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "LTR",
+    "path": "docs/questions/05-learning-to-rank/Q045-ranknet.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking",
+      "ranknet"
+    ]
+  },
+  {
+    "id": "Q046",
+    "title": "LambdaRank 为什么出现？Lambda 到底是什么？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "LTR",
+    "path": "docs/questions/05-learning-to-rank/Q046-lambdarank.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking",
+      "lambdarank"
+    ]
+  },
+  {
+    "id": "Q047",
+    "title": "LambdaMART 是什么？为什么经典？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "LTR",
+    "path": "docs/questions/05-learning-to-rank/Q047-lambdamart.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q048",
+    "title": "深度学习时代，为什么 LambdaMART 仍然常见？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "LTR / 工业",
+    "path": "docs/questions/05-learning-to-rank/Q048-why-lambdamart-still-used.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q049",
+    "title": "搜索 Ranker 常见特征有哪些？如何分类？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "LTR",
+    "path": "docs/questions/05-learning-to-rank/Q049-search-ranker-features.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q050",
+    "title": "什么是 Query-independent Feature？为什么有价值？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 2,
+    "frequency": "A",
+    "roles": "LTR",
+    "path": "docs/questions/05-learning-to-rank/Q050-query-independent-features.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q051",
+    "title": "搜索排序中的 Feature Leakage 是什么？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "LTR / 数据",
+    "path": "docs/questions/05-learning-to-rank/Q051-feature-leakage.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q052",
+    "title": "Ranker 为什么有时需要 Calibration？",
+    "chapter": 5,
+    "chapter_title": "Learning to Rank：从 RankNet 到 LambdaMART",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "Ranking / 多目标",
+    "path": "docs/questions/05-learning-to-rank/Q052-ranker-calibration.md",
+    "tags": [
+      "learning-to-rank",
+      "lambdamart",
+      "ranking"
+    ]
+  },
+  {
+    "id": "Q053",
+    "title": "Precision@K 与 Recall@K 分别衡量什么？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 2,
+    "frequency": "S",
+    "roles": "评估",
+    "path": "docs/questions/06-evaluation-click-ab/Q053-precision-recall-at-k.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing"
+    ]
+  },
+  {
+    "id": "Q054",
+    "title": "MRR 是什么？适合什么场景？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 2,
+    "frequency": "S",
+    "roles": "评估",
+    "path": "docs/questions/06-evaluation-click-ab/Q054-mrr.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing",
+      "mrr"
+    ]
+  },
+  {
+    "id": "Q055",
+    "title": "MAP 是什么？与 MRR 有何不同？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "评估",
+    "path": "docs/questions/06-evaluation-click-ab/Q055-map-average-precision.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing",
+      "mrr",
+      "map"
+    ]
+  },
+  {
+    "id": "Q056",
+    "title": "NDCG 是什么？为什么是搜索面试必考？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "评估 / LTR",
+    "path": "docs/questions/06-evaluation-click-ab/Q056-ndcg.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing",
+      "ndcg"
+    ]
+  },
+  {
+    "id": "Q057",
+    "title": "为什么 NDCG 比 Accuracy 更适合 Search？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 2,
+    "frequency": "A",
+    "roles": "评估",
+    "path": "docs/questions/06-evaluation-click-ab/Q057-why-ndcg-not-accuracy.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing",
+      "ndcg"
+    ]
+  },
+  {
+    "id": "Q058",
+    "title": "Recall@1000 提升但 NDCG@10 下降，怎么解释？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "诊断",
+    "path": "docs/questions/06-evaluation-click-ab/Q058-recall-up-ndcg-down.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing",
+      "ndcg"
+    ]
+  },
+  {
+    "id": "Q059",
+    "title": "为什么 Click 不能直接当 Relevance Label？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "Click / LTR",
+    "path": "docs/questions/06-evaluation-click-ab/Q059-clicks-vs-relevance-labels.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing"
+    ]
+  },
+  {
+    "id": "Q060",
+    "title": "如何处理 Position Bias？什么是 IPS？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "Unbiased LTR",
+    "path": "docs/questions/06-evaluation-click-ab/Q060-position-bias-ips.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing",
+      "ips"
+    ]
+  },
+  {
+    "id": "Q061",
+    "title": "Offline 指标涨了，Online CTR/满意度为什么可能下降？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "实验",
+    "path": "docs/questions/06-evaluation-click-ab/Q061-offline-up-online-down.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing"
+    ]
+  },
+  {
+    "id": "Q062",
+    "title": "搜索 A/B Test 应如何设计？",
+    "chapter": 6,
+    "chapter_title": "搜索指标、点击偏差与实验",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "实验 / 产品",
+    "path": "docs/questions/06-evaluation-click-ab/Q062-search-ab-testing.md",
+    "tags": [
+      "evaluation",
+      "click-bias",
+      "ab-testing"
+    ]
+  },
+  {
+    "id": "Q063",
+    "title": "Dense Retrieval 与 BM25 的本质区别是什么？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Dense Retrieval",
+    "path": "docs/questions/07-dense-retrieval-ann/Q063-dense-retrieval-vs-bm25.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search",
+      "bm25",
+      "trie"
+    ]
+  },
+  {
+    "id": "Q064",
+    "title": "为什么 Dual Encoder 适合召回？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Dense Retrieval",
+    "path": "docs/questions/07-dense-retrieval-ann/Q064-dual-encoder-retrieval.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search",
+      "dual-encoder"
+    ]
+  },
+  {
+    "id": "Q065",
+    "title": "双塔检索模型通常怎么训练？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "Dense Training",
+    "path": "docs/questions/07-dense-retrieval-ann/Q065-dual-encoder-training.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search"
+    ]
+  },
+  {
+    "id": "Q066",
+    "title": "为什么 Hard Negative 对 Dense Retrieval 至关重要？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "Dense Training",
+    "path": "docs/questions/07-dense-retrieval-ann/Q066-hard-negatives.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search",
+      "trie",
+      "hard-negative"
+    ]
+  },
+  {
+    "id": "Q067",
+    "title": "什么是 In-batch Negative？有什么坑？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Dense Training",
+    "path": "docs/questions/07-dense-retrieval-ann/Q067-in-batch-negatives.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search"
+    ]
+  },
+  {
+    "id": "Q068",
+    "title": "Cosine、Inner Product、L2 在归一化向量下有什么关系？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "ANN 数学",
+    "path": "docs/questions/07-dense-retrieval-ann/Q068-cosine-dot-l2.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search"
+    ]
+  },
+  {
+    "id": "Q069",
+    "title": "为什么十亿向量不能直接暴力扫描？如何算量？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "ANN / 系统",
+    "path": "docs/questions/07-dense-retrieval-ann/Q069-why-ann-not-bruteforce.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search"
+    ]
+  },
+  {
+    "id": "Q070",
+    "title": "IVF 的原理是什么？nlist 与 nprobe 如何影响效果？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "ANN / Faiss",
+    "path": "docs/questions/07-dense-retrieval-ann/Q070-ivf-index.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search",
+      "ivf"
+    ]
+  },
+  {
+    "id": "Q071",
+    "title": "Product Quantization（PQ）是什么？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "ANN / 压缩",
+    "path": "docs/questions/07-dense-retrieval-ann/Q071-product-quantization.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search",
+      "pq"
+    ]
+  },
+  {
+    "id": "Q072",
+    "title": "HNSW 的原理是什么？为什么分层？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "ANN / HNSW",
+    "path": "docs/questions/07-dense-retrieval-ann/Q072-hnsw-principles.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search",
+      "hnsw"
+    ]
+  },
+  {
+    "id": "Q073",
+    "title": "HNSW 的 M、efConstruction、efSearch 分别控制什么？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "ANN 调参",
+    "path": "docs/questions/07-dense-retrieval-ann/Q073-hnsw-parameters.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search",
+      "hnsw"
+    ]
+  },
+  {
+    "id": "Q074",
+    "title": "HNSW 与 IVF-PQ 如何选？",
+    "chapter": 7,
+    "chapter_title": "Dense Retrieval 与 ANN",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "ANN 系统设计",
+    "path": "docs/questions/07-dense-retrieval-ann/Q074-hnsw-vs-ivf-pq.md",
+    "tags": [
+      "dense-retrieval",
+      "ann",
+      "vector-search",
+      "ivf",
+      "hnsw"
+    ]
+  },
+  {
+    "id": "Q075",
+    "title": "为什么 Hybrid Search 往往比纯 BM25 或纯 Dense 更稳？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Hybrid",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q075-why-hybrid-search.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag",
+      "bm25",
+      "dense-retrieval"
+    ]
+  },
+  {
+    "id": "Q076",
+    "title": "BM25 Score 与 Dense Cosine 能直接相加吗？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Hybrid Fusion",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q076-bm25-dense-score-fusion.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag",
+      "bm25",
+      "dense-retrieval"
+    ]
+  },
+  {
+    "id": "Q077",
+    "title": "什么是 Reciprocal Rank Fusion（RRF）？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Hybrid Fusion",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q077-reciprocal-rank-fusion.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag",
+      "rrf"
+    ]
+  },
+  {
+    "id": "Q078",
+    "title": "SPLADE 这类 Learned Sparse Retrieval 在做什么？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 5,
+    "frequency": "A",
+    "roles": "Neural IR",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q078-splade-sparse-neural-retrieval.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag",
+      "trie",
+      "splade"
+    ]
+  },
+  {
+    "id": "Q079",
+    "title": "为什么 Cross-Encoder 适合 Rerank，而不适合全库召回？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Neural Ranking",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q079-cross-encoder-reranking.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag"
+    ]
+  },
+  {
+    "id": "Q080",
+    "title": "Dual Encoder 与 Cross-Encoder 的经典 Trade-off 是什么？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 2,
+    "frequency": "S",
+    "roles": "Neural Ranking",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q080-dual-vs-cross-encoder.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag",
+      "dual-encoder"
+    ]
+  },
+  {
+    "id": "Q081",
+    "title": "ColBERT 的 Late Interaction 为什么重要？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 5,
+    "frequency": "A",
+    "roles": "Neural IR",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q081-colbert-late-interaction.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag",
+      "colbert"
+    ]
+  },
+  {
+    "id": "Q082",
+    "title": "RAG 的 Chunk Size 应该怎么选？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "RAG Retrieval",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q082-rag-chunk-size.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag"
+    ]
+  },
+  {
+    "id": "Q083",
+    "title": "Retrieval Recall 很高，为什么 RAG 仍会答错？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "RAG 诊断",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q083-high-recall-rag-still-wrong.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag",
+      "trie"
+    ]
+  },
+  {
+    "id": "Q084",
+    "title": "什么是 Agentic / Iterative Search？",
+    "chapter": 8,
+    "chapter_title": "Hybrid Search、Neural Reranking 与 RAG",
+    "difficulty": 5,
+    "frequency": "A",
+    "roles": "LLM Search",
+    "path": "docs/questions/08-hybrid-rag-rerank/Q084-agentic-search.md",
+    "tags": [
+      "hybrid-search",
+      "reranking",
+      "rag",
+      "agentic-search"
+    ]
+  },
+  {
+    "id": "Q085",
+    "title": "为什么 Search Index 要做 Sharding？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 2,
+    "frequency": "S",
+    "roles": "分布式搜索",
+    "path": "docs/questions/09-search-infrastructure/Q085-search-index-sharding.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency",
+      "sharding"
+    ]
+  },
+  {
+    "id": "Q086",
+    "title": "分布式 Search Query 的 Scatter-Gather 怎么工作？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "分布式搜索",
+    "path": "docs/questions/09-search-infrastructure/Q086-scatter-gather-search.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency"
+    ]
+  },
+  {
+    "id": "Q087",
+    "title": "为什么每个 Shard 只返回 Local TopK 可能有问题？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 4,
+    "frequency": "A",
+    "roles": "分布式排序",
+    "path": "docs/questions/09-search-infrastructure/Q087-distributed-topk-pitfalls.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency",
+      "sharding"
+    ]
+  },
+  {
+    "id": "Q088",
+    "title": "Primary Shard 与 Replica 的区别是什么？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 2,
+    "frequency": "A",
+    "roles": "分布式搜索",
+    "path": "docs/questions/09-search-infrastructure/Q088-primary-vs-replica-shard.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency",
+      "sharding"
+    ]
+  },
+  {
+    "id": "Q089",
+    "title": "Shard 越多是不是查询越快？什么是 Over-sharding？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "分布式性能",
+    "path": "docs/questions/09-search-infrastructure/Q089-over-sharding.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency",
+      "sharding"
+    ]
+  },
+  {
+    "id": "Q090",
+    "title": "什么是 Near Real-Time（NRT）Search？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Lucene / 系统",
+    "path": "docs/questions/09-search-infrastructure/Q090-near-real-time-search.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency"
+    ]
+  },
+  {
+    "id": "Q091",
+    "title": "Refresh Interval 为什么存在 Freshness-Throughput Trade-off？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 3,
+    "frequency": "S",
+    "roles": "Lucene / 系统",
+    "path": "docs/questions/09-search-infrastructure/Q091-refresh-interval-tradeoff.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency"
+    ]
+  },
+  {
+    "id": "Q092",
+    "title": "搜索索引如何与 MySQL/业务数据库保持同步？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 4,
+    "frequency": "S",
+    "roles": "数据一致性",
+    "path": "docs/questions/09-search-infrastructure/Q092-mysql-search-cdc-sync.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency"
+    ]
+  },
+  {
+    "id": "Q093",
+    "title": "搜索系统有哪些 Cache？为什么 Query Result Cache 不一定有效？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 3,
+    "frequency": "A",
+    "roles": "性能",
+    "path": "docs/questions/09-search-infrastructure/Q093-search-caching.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency",
+      "cache"
+    ]
+  },
+  {
+    "id": "Q094",
+    "title": "搜索延迟从 50ms 突然变成 2s，怎么系统排查？",
+    "chapter": 9,
+    "chapter_title": "分布式搜索与工程",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "性能诊断",
+    "path": "docs/questions/09-search-infrastructure/Q094-search-tail-latency-debugging.md",
+    "tags": [
+      "distributed-search",
+      "infra",
+      "latency"
+    ]
+  },
+  {
+    "id": "Q095",
+    "title": "系统设计：从 0 设计一个 Google-like Web Search",
+    "chapter": 10,
+    "chapter_title": "综合系统设计与 0→1 方法论",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "综合系统设计",
+    "path": "docs/questions/10-system-design/Q095-system-design-web-search.md",
+    "tags": [
+      "system-design",
+      "search-architecture",
+      "staff-interview"
+    ]
+  },
+  {
+    "id": "Q096",
+    "title": "系统设计：淘宝 / Amazon 商品搜索",
+    "chapter": 10,
+    "chapter_title": "综合系统设计与 0→1 方法论",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "电商搜索",
+    "path": "docs/questions/10-system-design/Q096-system-design-ecommerce-search.md",
+    "tags": [
+      "system-design",
+      "search-architecture",
+      "staff-interview"
+    ]
+  },
+  {
+    "id": "Q097",
+    "title": "系统设计：亿级 Query Autocomplete",
+    "chapter": 10,
+    "chapter_title": "综合系统设计与 0→1 方法论",
+    "difficulty": 5,
+    "frequency": "A",
+    "roles": "Query Suggest",
+    "path": "docs/questions/10-system-design/Q097-system-design-query-autocomplete.md",
+    "tags": [
+      "system-design",
+      "search-architecture",
+      "staff-interview",
+      "autocomplete"
+    ]
+  },
+  {
+    "id": "Q098",
+    "title": "系统设计：10 亿文档 Semantic Search",
+    "chapter": 10,
+    "chapter_title": "综合系统设计与 0→1 方法论",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "Vector Search",
+    "path": "docs/questions/10-system-design/Q098-system-design-billion-vector-search.md",
+    "tags": [
+      "system-design",
+      "search-architecture",
+      "staff-interview",
+      "semantic-search"
+    ]
+  },
+  {
+    "id": "Q099",
+    "title": "系统设计：现代 Hybrid Search Engine",
+    "chapter": 10,
+    "chapter_title": "综合系统设计与 0→1 方法论",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "Hybrid / RAG",
+    "path": "docs/questions/10-system-design/Q099-system-design-hybrid-search.md",
+    "tags": [
+      "system-design",
+      "search-architecture",
+      "staff-interview",
+      "hybrid-search"
+    ]
+  },
+  {
+    "id": "Q100",
+    "title": "终极题：如果让你从 0 到 1 提升一个搜索引擎，你会怎么做？",
+    "chapter": 10,
+    "chapter_title": "综合系统设计与 0→1 方法论",
+    "difficulty": 5,
+    "frequency": "S",
+    "roles": "综合 / Staff",
+    "path": "docs/questions/10-system-design/Q100-zero-to-one-search-improvement.md",
+    "tags": [
+      "system-design",
+      "search-architecture",
+      "staff-interview"
+    ]
+  }
+]

@@ -1,11 +1,11 @@
 # Engineer Interview 100 · 工程师面试系列知识库
 
-> **从算法、深度学习到 LLM 全链路面试题的体系化手册 · 9 大方向 · 900+ 道高频面试题**
-> 覆盖 **算法 / 推荐系统 / 深度学习 / Transformer / NLP·LLM / LLM 预训练 / LLM 后训练 / Memcached / Agent** 等方向，
+> **从算法、深度学习到 LLM 全链路面试题的体系化手册 · 15 大方向 · 1500+ 道高频面试题**
+> 覆盖 **算法 / 推荐系统 / 深度学习 / Transformer / NLP·LLM / LLM 预训练 / LLM 后训练 / LLM 推理 / Memcached / Agent / 计算机视觉 / 强化学习 / 具身智能 / 搜索引擎 / 金融量化** 等方向，
 > 每题一 Markdown，强调 **Know-What → Know-Why → Know-How → Trade-off → Production** 五层答题法。
 
-[![Collections](https://img.shields.io/badge/collections-9-blue)](#📁-仓库结构与目录)
-[![Questions](https://img.shields.io/badge/questions-900%2B-brightgreen)](#📁-仓库结构与目录)
+[![Collections](https://img.shields.io/badge/collections-15-blue)](#📁-仓库结构与目录)
+[![Questions](https://img.shields.io/badge/questions-1500%2B-brightgreen)](#📁-仓库结构与目录)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-MkDocs%20Material-8A2BE2)](#)
 
@@ -60,6 +60,12 @@
 | [`nlp-llm-interview-100`](nlp-llm-interview-100/) | NLP / LLM | 搜索 / RAG、质量模型训练、后训练、数据工程与 AI Infra |
 | [`recsys_interview_100_repo`](recsys_interview_100_repo/) | 推荐系统 | 召回、双塔、精排、序列、多任务、实验、偏差、冷启动 |
 | [`transformer-interview-100`](transformer-interview-100/) | Transformer | Attention、位置编码、LayerNorm、训练、推理优化 |
+| [`cv-algorithm-interview-handbook-v2`](cv-algorithm-interview-handbook-v2/) | 计算机视觉 (CV) | 检测、分割、图像理解、多模态视觉、工程实践 |
+| [`rl-interview-100-v2`](rl-interview-100-v2/) | 强化学习 (RL) | MDP、DQN / PPO、策略梯度、离线 RL、工程实战 |
+| [`embodied-ai-interview-100`](embodied-ai-interview-100/) | 具身智能 | 感知、规划、控制、VLA、多模态交互、仿真 |
+| [`llm-inference-interview-100`](llm-inference-interview-100/) | LLM 推理与部署 | 推理优化、量化、KV Cache、服务化、成本与延迟 |
+| [`search-engine-interview-100`](search-engine-interview-100/) | 搜索引擎 | 检索、排序、索引、相关性、搜索工程 |
+| [`JianZhi-Quant-Offer`](JianZhi-Quant-Offer/) | 金融量化 (Quant) | 因子、回测、风控、Alpha、高频交易、量化工程 |
 
 ## 📌 快速开始
 

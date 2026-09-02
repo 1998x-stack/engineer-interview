@@ -9,6 +9,9 @@
 [![Website](https://img.shields.io/badge/live%20preview-%E2%86%97-12263a)](https://1998x-stack.github.io/engineer-interview/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+> 🔗 **立即在线阅读 (GitHub Pages)** → **https://1998x-stack.github.io/engineer-interview/**
+> 16 个教程概览 · 1,600+ 道题 · 站内题面解答 · LaTeX 公式 · 每套 PDF 在线阅读
+
 > **让候选人成功并不难；真正的工程能力，是让答案「可控地失败」——先给结论，再给推导，再给工程决策与失败边界。**
 
 本仓库把主流 **工程师 / 算法岗**的高频面试知识沉淀为 **16 个独立教程**，每个教程围绕一个方向组织出 **100 道核心题**，每题一 Markdown，并给出**可复述、可推导、可落地的参考答案**——而不是一张问题目录。

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么训练 FLOPs 常粗略写成 6ND？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q034</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q034</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q033.html">← Q033</a><a href="Q035.html">Q035 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">scaling-law</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 35 / 101</div>
+    <h1 class="qtitle">为什么训练 FLOPs 常粗略写成 6ND？</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>中</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">Scaling Law 与预算设计</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>这是预算、GPU-hours 和 scaling law 的基础手算。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>约束优化</strong>：到底固定的是 FLOPs、GPU-hours、成本还是推理预算？</li>
+<li><strong>外推</strong>：小规模曲线在哪些条件下可以外推？</li>
+<li><strong>等成本比较</strong>：Dense/MoE/不同数据 recipe 是否真的比较公平？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>6ND 是预算尺，不是 profiler。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>对于参数量 N、训练 token D 的 dense Transformer，单 token forward 中每个参数参与乘加可粗略记为约 2N FLOPs；backward 对 activation/weight gradient 的代价约为 forward 的两倍，因此训练总量常粗估为 6ND。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>这只是工程近似。Attention 的 S² 项、embedding、MoE 稀疏激活、activation recompute、optimizer/kernel overhead 都会造成偏差。</p>
+<h3 id="_2">核心公式</h3>
+<pre><code class="language-text">C_train ≈ 6ND
+</code></pre>
+<blockquote>
+<p>面试时不要只写公式。要逐个解释符号、shape/量纲，以及公式如何导出工程结论。</p>
+</blockquote>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="6nd">为什么常见 $6ND$</h3>
+<p>对 dense Transformer 做粗略预算：参数参与一次 forward matmul 约贡献 $2ND$ FLOPs（乘加按 2 FLOPs），反向的输入梯度与权重梯度通常再约 $4ND$，得到 $\sim6ND$。它是容量级估算，不包含所有 attention、embedding、重算、路由与系统开销。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：预算先用 6ND 给量级，再用 profiler/框架 FLOP counter 校正。</li>
+<li><strong>动作 2</strong>：GPU-hours 换算必须乘实际 MFU，而不是 peak FLOPs。</li>
+<li><strong>动作 3</strong>：MoE 要用 activated parameters/FLOPs，而不是 total params直接代入。</li>
+</ol>
+<h3 id="scaling-proxy">Scaling Proxy</h3>
+<p>用多个模型尺寸、Token 预算和 seed 构造 proxy grid，拟合 loss/compute 曲线，再用 hold-out 规模验证外推误差。</p>
+<ul>
+<li>拟合前确认数据 mixture 一致。</li>
+<li>报告置信区间/外推范围。</li>
+<li>区分训练 FLOPs optimum 与生命周期成本 optimum。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-backward-forward">追问 1：为什么 backward 约是 forward 两倍？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → 6ND 是预算尺，不是 profiler。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="2checkpointing-6nd">追问 2：checkpointing 会不会改变 6ND？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="3-6nd">追问 3：怎么从 6ND 估训练天数？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>把 6ND 当精确公式。</strong></li>
+<li>改进：回到“6ND 是预算尺，不是 profiler。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+<li>❌ <strong>直接用 GPU 峰值算 wall-clock，不乘利用率。</strong></li>
+<li>改进：回到“6ND 是预算尺，不是 profiler。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：6ND 是预算尺，不是 profiler。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>为什么 backward 约是 forward 两倍？</li>
+<li>checkpointing 会不会改变 6ND？</li>
+<li>怎么从 6ND 估训练天数？</li>
+<li>写出固定预算下的优化变量、约束和至少一个 proxy experiment。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>6ND 是预算尺，不是 profiler。</strong></p>
+</blockquote>
+<h3 id="_3">深挖关键点</h3>
+<p>面试手算要先给量级，再列出会偏离该近似的项。</p>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R5 · 论文</strong> — <a href="https://arxiv.org/abs/2203.15556">Hoffmann et al., Training Compute-Optimal Large Language Models (Chinchilla)</a></li>
+</ul>
+<h2 id="_4">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q033. 为什么今天很多模型会“过训练”更小的参数规模？</span></li>
+<li>→ <span class="srcref">Q035. 给定固定 GPU-hours，如何决定模型大小和 Token 数？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Word2Vec 为什么需要 Negative Sampling？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q026</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q026</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q025.html">← Q025</a><a href="Q027.html">Q027 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">representation-sequence</a><a href="#">word2vec</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 26 / 100</div>
+    <h1 class="qtitle">Word2Vec 为什么需要 Negative Sampling？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★  ·  <strong>频率</strong>：★★★★★  ·  <strong>标签</strong>：<code>representation-sequence</code>, <code>word2vec</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q026.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>词表几十万时，Skip-Gram full softmax 为什么昂贵？Negative Sampling 如何改写目标？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>理解从 full softmax 到二分类近似。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>先给训练目标或状态转移，再解释它解决上一代方法什么问题。</li>
+<li>理解梯度、表示与上下文依赖。</li>
+<li>能把历史模型与 Transformer 的演进关系讲清楚。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>full softmax 每次需对整个词表归一化。Negative Sampling 把一个正 word-context 对与 K 个 噪声负样本做二分类，使单步复杂度从 O(|V|) 降到 O(K)。</p>
+<h2 id="4">4. 白板核心公式</h2>
+<ul>
+<li>$\log\sigma(v_o^\top v_i)+\sum_{k=1}^K\log\sigma(-v_k^\top v_i)$</li>
+</ul>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：负样本分布经典做法与 unigram^0.75 有关。</li>
+<li><strong>PDF 基线要点</strong>：Negative Sampling 的目标不是精确估计语言模型概率，而是学习好 embedding。</li>
+<li><strong>PDF 基线要点</strong>：K 越大通常估计更好但计算更贵。</li>
+<li><strong>扩展理解</strong>：Negative Sampling 把大词表 softmax 近似成若干二分类，使每步复杂度从 O(|V|) 降到 O(K)。</li>
+<li><strong>扩展理解</strong>：负样本分布不是随便选，word2vec 使用 unigram^3/4 改善学习。</li>
+<li><strong>扩展理解</strong>：它学习的是有用表示，不是严格归一化语言模型概率。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="negative-sampling">Negative Sampling 把大词表问题改写成二分类</h3>
+<ul>
+<li>完整 Softmax 每个训练 pair 都要对 $|V|$ 个词归一化；Negative Sampling 只计算一个正 pair 和 K 个噪声负 pair，成本从词表级降到 $O(K)$。</li>
+<li>目标 $\log\sigma(v_c^Tv_w)+\sum_k\log\sigma(-v_{n_k}^Tv_w)$ 的含义是让真实共现 dot product 变大、噪声 pair 变小，而不是直接学习严格归一化的 $P(w|c)$。</li>
+<li>经典噪声分布使用 unigram$^{3/4}$：比原始 unigram 更平缓，避免最高频词垄断；比均匀采样又更容易得到“有信息的常见负例”。</li>
+</ul>
+<h3 id="_2">边界与工程</h3>
+<ul>
+<li>K 太少估计噪声大，太多计算线性上升且负例冗余；不是越多越好。</li>
+<li>高频词 subsampling 发生在正 pair 构造阶段，Negative Sampling 发生在输出训练阶段，面试时不要混为一谈。</li>
+<li>若任务需要真正的词概率而非 embedding 表示，Hierarchical/Adaptive/Full Softmax 的概率语义更直接。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>把表示学习与共现统计、上下文依赖和梯度路径联系起来。</li>
+<li>比较时同时讨论参数量、并行性、长期依赖和数据效率。</li>
+<li>用小型可控任务验证“长依赖/低频词/一词多义”等具体假设。</li>
+</ul>
+<h3 id="_3">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>误以为 negative sample 就是随机采句子。</li>
+<li>不知道正负样本分别优化什么。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>为什么高频词采样分布要平滑？</li>
+<li>与 Noise Contrastive Estimation 有何联系？</li>
+</ol>
+<h3 id="_4">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1301.3781">word2vec</a></li>
+<li><a href="https://aclanthology.org/D14-1162/">GloVe</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q025 CBOW 与 Skip‑Gram：输入输出正好相反吗？</span></li>
+<li><span class="srcref">Q027 Hierarchical Softmax 为什么是 O(log|V|)？</span></li>
+<li><span class="srcref">Q031 RNN 为什么梯度消失/爆炸？</span></li>
+<li><span class="srcref">Q034 Seq2Seq 为什么需要 Attention？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>Negative Sampling 把大词表问题改写成二分类</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

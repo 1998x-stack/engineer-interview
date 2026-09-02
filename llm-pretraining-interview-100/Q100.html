@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>你在预训练项目中真正解决的最难问题是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q100</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q100</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q099.html">← Q099</a><span></span></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">coding</a><a href="#">coding-system-project</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 101 / 101</div>
+    <h1 class="qtitle">你在预训练项目中真正解决的最难问题是什么？</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>难</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">手撕、系统设计与项目拷打</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>终局题：检验研究闭环、工程深度、所有权和量化结果。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>正确性</strong>：代码/公式/系统是否在边界条件下仍正确？</li>
+<li><strong>量化</strong>：参数、显存、吞吐、成本是否可手算/实测？</li>
+<li><strong>证明</strong>：项目贡献是否有对照实验和可归因结果？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>最强项目回答不是“我解决了什么”，而是“我怎样证明为什么它坏、为什么这个修复有效”。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>推荐用 Observation → Hypothesis → Experiment → Root Cause → Fix → Ablation → Quantitative Result 讲述。先给异常现象和业务/训练成本，再列 2-3 个竞争假设；说明你用什么 profile/replay/对照实验排除它们，最后给根因。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>修复后必须有回归：质量是否保持？tokens/s、MFU、显存、故障率改善多少？若只是“改了配置然后好了”，说明因果证据仍不够。</p>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="_2">项目拷打的黄金结构</h3>
+<p><strong>Observation → Hypothesis → Instrumentation/Experiment → Root Cause → Fix → Ablation → Quantitative Result → What I would do next</strong>。</p>
+<p>“难”不是故事性，而是因果链是否完整。最好准备至少一个算法问题和一个系统问题：前者体现研究判断，后者体现大规模训练工程能力。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：提前准备至少三个故事：数据、训练稳定性、系统性能各一个。</li>
+<li><strong>动作 2</strong>：每个故事控制在 3 分钟主线，追问时再展开技术细节。</li>
+<li><strong>动作 3</strong>：量化 before/after，并说明实验控制变量。</li>
+</ol>
+<h3 id="production">白板到 Production</h3>
+<p>要求答案同时包含正确性、复杂度、测试、边界条件、工程约束和量化结果。</p>
+<ul>
+<li>代码题写 shape/assert/unit test。</li>
+<li>设计题先声明约束。</li>
+<li>项目题必须给数字和对照。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-root-cause">追问 1：你如何证明这就是 root cause？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h3 id="2">追问 2：有没有更便宜的替代方案？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="3">追问 3：这个经验能迁移到更大模型吗？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>讲成流水账，没有竞争假设。</strong></li>
+<li>改进：回到“最强项目回答不是“我解决了什么”，而是“我怎样证明为什么它坏、为什么这个修复有效”。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+<li>❌ <strong>只有“结果更好”，没有等成本/回归实验。</strong></li>
+<li>改进：回到“最强项目回答不是“我解决了什么”，而是“我怎样证明为什么它坏、为什么这个修复有效”。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：最强项目回答不是“我解决了什么”，而是“我怎样证明为什么它坏、为什么这个修复有效”。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>你如何证明这就是 root cause？</li>
+<li>有没有更便宜的替代方案？</li>
+<li>这个经验能迁移到更大模型吗？</li>
+<li>把答案写成可运行代码/可核算公式/可量化项目复盘之一。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>最强项目回答不是“我解决了什么”，而是“我怎样证明为什么它坏、为什么这个修复有效”。</strong></p>
+</blockquote>
+<h3 id="_3">深挖关键点</h3>
+<p>建议把这一题录音练 10 次：任何“我们觉得/应该是”都替换成可观测证据或受控实验。</p>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<h2 id="_4">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q099. 面试官问“你真的从 0 预训练过模型吗？”怎样证明？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

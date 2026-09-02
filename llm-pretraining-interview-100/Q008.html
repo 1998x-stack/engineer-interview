@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么现代 LLM 很少使用原始绝对位置 Embedding？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q008</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q008</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★☆☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q007.html">← Q007</a><a href="Q009.html">Q009 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">position-encoding</a><a href="#">transformer-architecture</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 9 / 101</div>
+    <h1 class="qtitle">为什么现代 LLM 很少使用原始绝对位置 Embedding？</h1>
+    <blockquote>
+<p><strong>定位</strong>：B 类等价追问题 · 难度 <strong>中</strong> · 频率 <strong>★★★☆☆</strong>
+章节：<span class="srcref">Transformer 与模型架构</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>考察位置表示与长上下文扩展的设计取舍。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>数学尺度</strong>：公式是否解释了数值尺度、梯度和表示能力？</li>
+<li><strong>结构成本</strong>：参数量、FLOPs、KV Cache 与 kernel shape 如何变化？</li>
+<li><strong>生命周期</strong>：训练架构选择会如何影响推理成本？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>位置编码问题不是“有没有位置”，而是模型怎样表达相对距离并跨越训练长度泛化。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>可学习 absolute embedding 直接为每个位置存向量，简单但把位置绑定到训练长度，跨长度泛化弱；固定 sinusoidal 能外推到新索引，但 Attention 的两两相对关系并未被显式编码。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>RoPE、relative bias、ALiBi 等方法把相对关系更直接地作用到 attention score 或 Q/K 表示上，因此更适合长序列与跨长度泛化。但它们也都有自己的频率/偏置假设和外推边界。</p>
+<h2 id="4-production">4. 深度展开：从定义走向 Production</h2>
+<p>本题的深挖重点是：<strong>位置编码问题不是“有没有位置”，而是模型怎样表达相对距离并跨越训练长度泛化。</strong></p>
+<p>建议沿下面的因果链继续展开：</p>
+<ol>
+<li><strong>定义/状态语义</strong>：先把对象、tensor、数据分布或训练状态说准确；</li>
+<li><strong>机制</strong>：解释为什么该设计会改变 loss、memory、FLOPs、通信或稳定性；</li>
+<li><strong>代价</strong>：指出它牺牲了什么，不把工程 trick 说成“免费午餐”；</li>
+<li><strong>可验证性</strong>：说明你会用什么指标、profile 或 ablation 判断结论是否成立；</li>
+<li><strong>规模化边界</strong>：把 1 GPU/小模型结论推进到千卡、长序列或 MoE 场景。</li>
+</ol>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：比较方法时统一从“参数量、相对关系、训练长度外推、kernel 兼容”四维回答。</li>
+<li><strong>动作 2</strong>：不要把理论可外推等同于模型会利用长上下文。</li>
+<li><strong>动作 3</strong>：长上下文能力必须靠训练数据和评测验证。</li>
+</ol>
+<h3 id="ablation">架构 Ablation</h3>
+<p>固定训练 Token 与大部分 recipe，只改变目标组件；同时比较 validation loss、下游能力、训练稳定性、参数/FLOPs 与推理成本。</p>
+<ul>
+<li>不要只比较最终 benchmark；记录收敛速度。</li>
+<li>至少做等参数或等 FLOPs 对照。</li>
+<li>改变 head/hidden 等 shape 时同时检查 kernel efficiency。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1sinusoidal">追问 1：Sinusoidal 为什么理论上可表示任意位置？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → 位置编码问题不是“有没有位置”，而是模型怎样表达相对距离并跨越训练长度泛化。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="2alibi-rope-inductive-bias">追问 2：ALiBi 与 RoPE 的 inductive bias 有何不同？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="3-kv-cache">追问 3：位置编码会影响 KV Cache 吗？</h3>
+<p><strong>回答方向</strong>：先声明 dtype 与 batch/seq/layers/heads 等变量，再拆 weights、states、activation、buffer；最后说明分片轴。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>把“支持更大 position id”当成“有效长上下文”。</strong></li>
+<li>改进：回到“位置编码问题不是“有没有位置”，而是模型怎样表达相对距离并跨越训练长度泛化。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：位置编码问题不是“有没有位置”，而是模型怎样表达相对距离并跨越训练长度泛化。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>Sinusoidal 为什么理论上可表示任意位置？</li>
+<li>ALiBi 与 RoPE 的 inductive bias 有何不同？</li>
+<li>位置编码会影响 KV Cache 吗？</li>
+<li>画出相关 tensor shape，并估算参数量/FLOPs/KV 或 activation 的变化。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>位置编码问题不是“有没有位置”，而是模型怎样表达相对距离并跨越训练长度泛化。</strong></p>
+</blockquote>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>基于预训练岗位能力模型、技术报告与高频追问扩展出的等价深挖题；不宣称是某家公司逐字原题。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R2 · 论文</strong> — <a href="https://arxiv.org/abs/2104.09864">Su et al., RoFormer: Rotary Position Embedding</a></li>
+</ul>
+<h2 id="_2">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q007. RoPE 为什么能把相对位置信息写进 Attention？</span></li>
+<li>→ <span class="srcref">Q009. Embedding 与 LM Head 为什么要 Weight Tying？什么时候不 Tying？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

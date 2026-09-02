@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么 Transformer 常用 LayerNorm，而 CNN 传统上大量用 BatchNorm？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Deep Learning</a><i>∕</i><span>Q017</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q017</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">极高频</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">yes</span></div>
+    </div>
+    <div class="prevnext"><a href="Q016.html">← Q016</a><a href="Q018.html">Q018 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">deep-learning</a><a href="#">interview</a><a href="#">optimization</a><a href="#">transformer</a><a href="#">normalization</a><a href="#">cv</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      DEEP LEARNING · 17 / 100</div>
+    <h1 class="qtitle">为什么 Transformer 常用 LayerNorm，而 CNN 传统上大量用 BatchNorm？</h1>
+    <blockquote>
+<p><strong>章节：</strong> 优化器、归一化与正则化
+<strong>难度：</strong> ★★☆ ｜ <strong>频度：</strong> 极高频 ｜ <strong>优先级：</strong> S（Top 30）
+<strong>PDF 对应：</strong> 第 15 页附近</p>
+</blockquote>
+<h2 id="_1">面试官在考什么</h2>
+<p>考察归一化维度与序列任务特点。</p>
+<p><strong>高质量回答标准：</strong> 能写更新/归一化公式；能解释统计维度或优化动力学；能说明训练/推理差异和超参 trade-off。</p>
+<h2 id="_2">一句话结论</h2>
+<p>BN 的统计跨样本 batch 维，效果依赖 batch 大小和样本组成；LN 对单个样本/token 的 hidden dimension 归一化，不依赖其他样本，因此对变长序列、小 batch、逐 token 自回归推理更自然。</p>
+<h2 id="6090">60–90 秒面试回答</h2>
+<p>BN 的统计跨样本 batch 维，效果依赖 batch 大小和样本组成；LN 对单个样本/token 的 hidden dimension 归一化，不依赖其他样本，因此对变长序列、小 batch、逐 token 自回归推理更自然。</p>
+<h2 id="_3">深度解析</h2>
+<ul>
+<li>Transformer 的 token 维度和 batch/sequence 都会动态变化，LN 的局部统计更稳定。</li>
+<li>CNN 传统大 batch 训练中，BN 的归纳偏置与正则化效果很有效。</li>
+<li>ViT 也大量使用 LN，说明选择更取决于架构与数据组织，而非“视觉/文本”二分。</li>
+</ul>
+<h2 id="shape">数学、Shape 与复杂度</h2>
+<p>设 Transformer hidden 为 <code>[B,T,D]</code>。典型 LayerNorm 对最后一维 $D$ 做统计，因此每个 token 独立归一化；BatchNorm 则依赖跨样本统计。这一“统计轴”差异比模型属于 NLP 还是 CV 更本质。</p>
+<h2 id="pytorch">工程实现 / PyTorch 验证</h2>
+<h3 id="_4">推荐验证协议</h3>
+<p>对 <code>[B,T,D]</code> 明确写出 BN/LN 分别在哪些轴算 mean/var，并用 batch=1 验证差异。</p>
+<p><strong>最低验收标准：</strong> shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。</p>
+<h2 id="_5">工程实践与诊断视角</h2>
+<ul>
+<li>训练稳定性要同时看 <code>loss / lr / grad_norm / parameter_norm</code>，不要只看 loss 曲线。</li>
+<li>归一化问题必须区分训练态、推理态、micro-batch 大小和分布式统计是否同步。</li>
+</ul>
+<h3 id="_6">边界条件与反例</h3>
+<ul>
+<li>注意统计维度、训练/推理模式、epsilon、batch 太小以及分布式同步。</li>
+</ul>
+<h2 id="_7">面试官连续追问</h2>
+<ul>
+<li>GroupNorm 处于什么位置？</li>
+<li>LN 是沿哪些维度归一化？</li>
+<li>如果对 sequence 维归一化会怎样？</li>
+</ul>
+<h3 id="_8">推荐的追问回答结构</h3>
+<ol>
+<li><strong>先给结论</strong>：一句话直接回答，不绕定义。</li>
+<li><strong>再给机制</strong>：公式、shape、统计维度或系统路径。</li>
+<li><strong>说明 trade-off</strong>：速度、显存、泛化、稳定性或数据成本。</li>
+<li><strong>给失败边界</strong>：什么时候不成立、会退化或需要替代方案。</li>
+<li><strong>落到工程</strong>：如何验证、监控或排查。</li>
+</ol>
+<h2 id="_9">高频失分点</h2>
+<ul>
+<li><strong>易错：</strong> 只说“LN 不依赖 batch”而说不清具体统计维度。</li>
+</ul>
+<h3 id="3">3 分钟展开框架</h3>
+<ol>
+<li>写更新/归一化公式；</li>
+<li>指出状态量、统计维度和训练/推理差异；</li>
+<li>讨论超参数与稳定性；</li>
+<li>给出一个错误配置和对应症状。</li>
+</ol>
+<h2 id="_10">实战练习</h2>
+<ul>
+<li><strong>曲线</strong>：同时画 <code>loss / lr / grad_norm / param_norm</code>，练习从训练动力学读故障。</li>
+<li><strong>对照</strong>：只改一个变量（optimizer、norm 或 scheduler）做 controlled experiment。</li>
+<li><strong>边界</strong>：测试小 batch、极端 LR 或长训练下结论是否仍成立。</li>
+</ul>
+<h2 id="90">90 分深挖：从会背到能做设计</h2>
+<h3 id="_11">机制与定量抓手</h3>
+<p>BN 与 LN 的根本差别是归一化维度和统计依赖：LN 对单样本 hidden dimension 归一化，不依赖其他样本，适合变长序列与 autoregressive serving。</p>
+<h3 id="_12">工程与实验抓手</h3>
+<p>对 <code>[B,T,D]</code> 明确写出 BN/LN 分别在哪些轴算 mean/var，并用 batch=1 验证差异。</p>
+<h3 id="_13">失败边界 / 反例</h3>
+<p>‘CNN 用 BN、Transformer 用 LN’是经验主流而非物理定律；ConvNeXt 等视觉架构也大量使用 LN。</p>
+<h3 id="_14">白板专项练习</h3>
+<p>给 <code>[B,T,D]</code> 与 <code>[B,C,H,W]</code> 两种张量，现场圈出 BN/LN/GN 的统计轴。</p>
+<blockquote>
+<p><strong>本章 90 分标准：</strong> 优化与归一化题要区分公式层、统计层、训练动态与工程配置；避免把经验规律说成无条件结论。</p>
+</blockquote>
+<h2 id="_15">面试官评分拆解</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>40–50 分</td>
+<td>只会给定义或背结论，缺公式/机制，追问一层就断。</td>
+</tr>
+<tr>
+<td>60–70 分</td>
+<td>能解释主机制并写关键公式，但缺边界条件和工程证据。</td>
+</tr>
+<tr>
+<td>80–90 分</td>
+<td>能定量推导、比较替代方案，主动说明失败场景并给验证方法。</td>
+</tr>
+<tr>
+<td>90+ 分</td>
+<td>能把数学、实现、系统成本和项目决策串成完整证据链，并能反向设计实验验证假设。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_16">面试表达建议</h3>
+<p>建议用 <strong>结论 → 机制 → 定量 → trade-off → 边界 → 验证</strong> 六步法回答。先在 60–90 秒内给主线；只有面试官继续追问时再展开公式、代码或系统细节。这样既显示深度，也避免一上来堆知识点失去重点。</p>
+<h2 id="_17">项目化证据链：如何证明你真的做过</h2>
+<p>只讲原理只能证明“学过”，项目面试还要证明“做过、量过、复盘过”。针对本题，建议准备一张实验卡：<strong>问题/假设 → baseline → 改动 → 指标 → 结果 → 失败 slice → 结论</strong>。</p>
+<h3 id="_18">建议报告的指标</h3>
+<ul>
+<li><strong>核心观测：</strong> loss、grad norm、update/weight ratio、参数范数、ECE/稳定性、step time。</li>
+<li><strong>证据原则：</strong> 用 controlled ablation 比较优化或归一化方案，统一训练预算与 data order。</li>
+<li><strong>本题特定证据：</strong> 对 <code>[B,T,D]</code> 明确写出 BN/LN 分别在哪些轴算 mean/var，并用 batch=1 验证差异。</li>
+</ul>
+<h3 id="_19">方案选择与停止条件</h3>
+<p>当收益只存在于单一 benchmark、无法复现到多个 seed/slice、引入明显 latency/显存/维护成本，或触发本题的失败边界——<strong>‘CNN 用 BN、Transformer 用 LN’是经验主流而非物理定律；ConvNeXt 等视觉架构也大量使用 LN。</strong>——就不应继续用“模型更复杂”掩盖问题。面试中主动说出停止条件，通常比继续堆方案更像真实工程负责人。</p>
+<h2 id="5">5 分钟深挖路线</h2>
+<p>先写更新/统计公式 → 解释动态量 → 给可观测指标 → 比较替代方案 → 说明超参数与失败边界。</p>
+<p>如果面试官继续追问到第 3–4 层，建议把回答切换到白板：写公式、画 tensor/系统数据流，再给一个量化例子。不要继续只用口头名词解释名词。</p>
+<h2 id="_20">自测清单</h2>
+<ul>
+<li>[ ] 能在 60–90 秒内不看资料完整回答。</li>
+<li>[ ] 能写出本题最关键的公式 / shape / 复杂度关系。</li>
+<li>[ ] 能回答至少 3 个连续追问。</li>
+<li>[ ] 能说出至少 1 个失败场景或反例。</li>
+<li>[ ] 能给出一个可执行的 PyTorch 验证或工程排障方法。</li>
+<li>[ ] 能解释它与相邻技术的区别，而不是把概念混在一起。</li>
+</ul>
+<h2 id="_21">关联题目</h2>
+<ul>
+<li><span class="srcref">Q016 · BatchNorm 的训练与推理过程分别是什么？</span></li>
+<li><span class="srcref">Q018 · RMSNorm 与 LayerNorm 有什么区别？</span></li>
+<li><span class="srcref">Q015 · Cosine Learning Rate Scheduler 为什么常用？</span></li>
+<li><span class="srcref">Q019 · Pre-Norm 与 Post-Norm 的区别是什么？为什么 Pre-Norm 更易训练深层网络？</span></li>
+</ul>
+<h2 id="_22">参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1502.03167">Ioffe &amp; Szegedy, Batch Normalization</a></li>
+<li><a href="https://arxiv.org/abs/1706.03762">Vaswani et al., Attention Is All You Need</a></li>
+</ul>
+<blockquote>
+<p>题目来自公开候选人面经的高频问法归一化，并结合论文/官方文档扩展；不代表任何公司的官方题库或内部材料。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

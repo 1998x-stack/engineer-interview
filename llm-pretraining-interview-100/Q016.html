@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>预训练数据为什么不能简单追求“质量越高越好”？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q016</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q016</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q015.html">← Q015</a><a href="Q017.html">Q017 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">data</a><a href="#">tokenizer-data</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 17 / 101</div>
+    <h1 class="qtitle">预训练数据为什么不能简单追求“质量越高越好”？</h1>
+    <blockquote>
+<p><strong>定位</strong>：B 类等价追问题 · 难度 <strong>中</strong> · 频率 <strong>★★★★☆</strong>
+章节：<span class="srcref">Tokenizer 与预训练数据</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>考察 data diversity、coverage 与模型鲁棒性的统一认识。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>分布</strong>：每个过滤/采样动作怎样改变 p_train(x)？</li>
+<li><strong>信息密度</strong>：单位 Token 的新颖性、正确性和覆盖度怎样衡量？</li>
+<li><strong>可追溯</strong>：能否从训练异常追到具体 shard/domain/sample？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>数据过滤不是“把坏的都删掉”，而是找到最有训练价值的分布。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>单一“高质量”评分往往偏向规范、短、百科式文本；如果过度过滤，模型会失去对口语、长尾知识、真实网页噪声、不同风格和跨领域表达的覆盖。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>预训练目标通常是 quality × diversity × coverage × difficulty 的组合。高质量数据提高信号密度，多样性保证世界覆盖，难例和噪声分布则关系到模型在真实环境中的鲁棒性。</p>
+<h2 id="4-production">4. 深度展开：从定义走向 Production</h2>
+<p>本题的深挖重点是：<strong>数据过滤不是“把坏的都删掉”，而是找到最有训练价值的分布。</strong></p>
+<p>建议沿下面的因果链继续展开：</p>
+<ol>
+<li><strong>定义/状态语义</strong>：先把对象、tensor、数据分布或训练状态说准确；</li>
+<li><strong>机制</strong>：解释为什么该设计会改变 loss、memory、FLOPs、通信或稳定性；</li>
+<li><strong>代价</strong>：指出它牺牲了什么，不把工程 trick 说成“免费午餐”；</li>
+<li><strong>可验证性</strong>：说明你会用什么指标、profile 或 ablation 判断结论是否成立；</li>
+<li><strong>规模化边界</strong>：把 1 GPU/小模型结论推进到千卡、长序列或 MoE 场景。</li>
+</ol>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：按 domain/language/style 做分桶保留，而非一个全局阈值。</li>
+<li><strong>动作 2</strong>：用下游/held-out domain loss 验证过滤，而非只看 classifier AUROC。</li>
+<li><strong>动作 3</strong>：保留 raw pool 与 clean pool，支持不同阶段重新采样。</li>
+</ol>
+<h3 id="_2">数据闭环</h3>
+<p>从样本级 provenance 到 domain-level held-out loss 建立闭环：数据变更必须能追溯到采样率、重复率、污染率和能力变化。</p>
+<ul>
+<li>所有过滤规则可版本化。</li>
+<li>Mixture 调整用 proxy run 或受控消融。</li>
+<li>benchmark contamination 与训练质量评估分开。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1quality-classifier-bias">追问 1：quality classifier 会有哪些 bias？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="2">追问 2：极端高质量过滤为什么可能伤聊天能力？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → 数据过滤不是“把坏的都删掉”，而是找到最有训练价值的分布。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="3-diversity">追问 3：怎样量化 diversity？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>把质量分数当真值，不做模型闭环。</strong></li>
+<li>改进：回到“数据过滤不是“把坏的都删掉”，而是找到最有训练价值的分布。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：数据过滤不是“把坏的都删掉”，而是找到最有训练价值的分布。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>quality classifier 会有哪些 bias？</li>
+<li>极端高质量过滤为什么可能伤聊天能力？</li>
+<li>怎样量化 diversity？</li>
+<li>设计一个最小数据消融，说明你会记录哪些 provenance 与 domain metrics。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>数据过滤不是“把坏的都删掉”，而是找到最有训练价值的分布。</strong></p>
+</blockquote>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>基于预训练岗位能力模型、技术报告与高频追问扩展出的等价深挖题；不宣称是某家公司逐字原题。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<h2 id="_3">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q015. Exact Dedup、MinHash、SimHash、Semantic Dedup 分别解决什么？</span></li>
+<li>→ <span class="srcref">Q017. 预训练数据 Mixture 到底怎么调？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

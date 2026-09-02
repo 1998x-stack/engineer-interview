@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gaussian Blur 为什么能去噪？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Vision</a><i>∕</i><span>Q002</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q002</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">3</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">4</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q001.html">← Q001</a><a href="Q003.html">Q003 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">traditional-cv</a><a href="#">filtering</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      VISION · 2 / 100</div>
+    <h1 class="qtitle">Gaussian Blur 为什么能去噪？</h1>
+    <h2 id="_1">题目画像</h2>
+<ul>
+<li><strong>章节</strong>：传统图像处理与视觉基础</li>
+<li><strong>难度</strong>：★★★</li>
+<li><strong>面试频度</strong>：★★★★</li>
+<li><strong>来源标签</strong>：基础高频</li>
+<li><strong>一句话记忆</strong>：先分析噪声频谱，再决定是否平滑。</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p>Gaussian blur 是低通滤波，会衰减快速变化的高频；但边缘也是高频，因此存在去噪与保边 trade-off。</p>
+<p>如果只能再补一句：<strong>先分析噪声频谱，再决定是否平滑。</strong></p>
+<h2 id="_2">面试官真正想听什么</h2>
+<p>这题不是只检查名词记忆，而是在看你能否把<strong>机制、边界条件和工程后果</strong>连起来。一个高质量回答至少覆盖下面三个层次：</p>
+<ol>
+<li><strong>定义/结构</strong>：先说明对象是什么，避免一上来堆历史或模块名。</li>
+<li><strong>为什么有效</strong>：用关键公式或信息流解释机制，而不是只说“效果更好”。</li>
+<li><strong>什么时候会失效</strong>：主动给出 trade-off、数据条件与部署注意事项。</li>
+</ol>
+<h2 id="2-5">2-5 分钟标准回答</h2>
+<h3 id="1">1. 核心要点</h3>
+<p>G(x,y)=1/(2πσ²)exp(-(x²+y²)/(2σ²))，σ 越大平滑尺度越大</p>
+<p><strong>深入理解：</strong> 这一章的高级判断重点是：先把图像当作离散信号，再讨论采样、频率、几何与不变性。很多“深度学习问题”最终仍会回到这些基础假设，例如 resize 的采样误差、边缘保真、尺度空间与局部特征。</p>
+<h3 id="2">2. 核心要点</h3>
+<p>Gaussian 在频域仍是高斯，频率响应平滑，不易产生理想低通的 ringing</p>
+<p><strong>深入理解：</strong> 这一章的高级判断重点是：先把图像当作离散信号，再讨论采样、频率、几何与不变性。很多“深度学习问题”最终仍会回到这些基础假设，例如 resize 的采样误差、边缘保真、尺度空间与局部特征。</p>
+<h3 id="3">3. 核心要点</h3>
+<p>椒盐噪声常更适合 median filter，因为中值对极端点更鲁棒</p>
+<p><strong>深入理解：</strong> 生成模型回答要区分“训练时学什么”与“采样时怎么走”。同一训练好的网络可以使用不同 sampler/guidance；VAE、条件编码器和 denoiser 的误差也应分开分析。</p>
+<h2 id="_3">关键公式 / 数学口径</h2>
+<p>二维高斯核：</p>
+<p>$$
+G(x,y)=\frac{1}{2\pi\sigma^2}\exp\left(-\frac{x^2+y^2}{2\sigma^2}\right)
+$$</p>
+<p>工程上 kernel size 常取覆盖约 $\pm3\sigma$ 的奇数窗口，即可用 <code>2*ceil(3σ)+1</code> 作为经验起点。</p>
+<h2 id="_4">深入解析：从原理到工程</h2>
+<p>这一章的高级判断重点是：先把图像当作离散信号，再讨论采样、频率、几何与不变性。很多“深度学习问题”最终仍会回到这些基础假设，例如 resize 的采样误差、边缘保真、尺度空间与局部特征。</p>
+<p>对 <strong>Q002</strong> 尤其要注意：微小缺陷/文字任务中，过强平滑会直接伤 recall。 这不是附加知识，而是把理论答案变成“可上线判断”的关键一步。</p>
+<h3 id="_5">推荐的口述顺序</h3>
+<pre><code class="language-text">一句定义 → 关键公式/结构 → 设计动机 → 优势 → 局限/失败模式 → 工程验证
+</code></pre>
+<h2 id="_6">高频追问与参考答案</h2>
+<h3 id="1-kernel-size">追问 1：σ 与 kernel size 如何配合？</h3>
+<p>离散高斯通常让窗口覆盖约 ±3σ，既能覆盖绝大部分质量又避免窗口过大；更关键的是确保训练和部署使用相同边界与归一化实现。</p>
+<p><strong>回答加分点：</strong> 最后补一句它会如何改变指标、训练稳定性或部署成本；若答案依赖实现约定，先声明约定。</p>
+<h3 id="2gaussian-bilateral-filter">追问 2：Gaussian 与 bilateral filter 的差异？</h3>
+<p>Gaussian 只按空间距离加权；bilateral 同时按空间距离和像素/颜色差异加权，因此跨强边缘的权重会被压低，更能保边，但计算更贵且参数更敏感。</p>
+<p><strong>回答加分点：</strong> 最后补一句它会如何改变指标、训练稳定性或部署成本；若答案依赖实现约定，先声明约定。</p>
+<h2 id="_7">常见失分点</h2>
+<ul>
+<li>“高频=噪声”是错误的；纹理、边缘、细裂纹同样是高频。</li>
+<li>只背结论，不解释“为什么”，或没有指出结论成立的前提。</li>
+<li>论文/离线结论直接套到自己的数据，却没有给出切片实验或消融。</li>
+</ul>
+<h2 id="_8">工程 / 项目视角</h2>
+<p>微小缺陷/文字任务中，过强平滑会直接伤 recall。</p>
+<p>建议把自己的项目补成以下四个事实：</p>
+<ul>
+<li><strong>数据条件</strong>：这个机制在哪些尺寸/类别/光照/噪声/设备上最重要？</li>
+<li><strong>评价切片</strong>：不能只看总体均值，至少有一个与本题机制直接相关的 slice。</li>
+<li><strong>成本</strong>：训练显存、参数量、FLOPs、目标硬件 latency、前后处理成本至少知道一个。</li>
+<li><strong>回归</strong>：新增方案让哪些场景变差？上线前如何兜底？</li>
+</ul>
+<h2 id="v2">V2 专业深化</h2>
+<blockquote>
+<p>这一节是在 PDF/原题解基础上的<strong>专业扩展</strong>：用于把“会答”提升到“能推导、能诊断、能做工程决策”。其中的扩展内容属于通用计算机视觉与工程知识，不用于声称某家公司曾逐字问过这些内容。</p>
+</blockquote>
+<h3 id="1_1">1. 更精确的技术表述</h3>
+<ul>
+<li>Gaussian filter 是可分离卷积：二维核可拆成横向和纵向两个一维核，计算可从 $O(K^2HW)$ 降到约 $O(2KHW)$。</li>
+<li>高斯平滑对应频域中的高频衰减；$\sigma$ 越大，截止更低、平滑更强，同时边缘和纹理损失更明显。</li>
+<li>滤波器必须匹配噪声模型：Gaussian noise 常适合线性平滑；椒盐噪声更适合 median；需要保边时可考虑 bilateral/guided filter。</li>
+</ul>
+<h3 id="2_1">2. 回答时必须显式声明的前提</h3>
+<ul>
+<li>先声明图像是离散采样信号还是连续模型；空间域/频域结论的适用条件不同。</li>
+<li>区分线性/非线性算子、局部/全局处理，以及“数学性质”与“离散实现细节”。</li>
+<li>任何增强/滤波都要讨论保真与去噪的 trade-off，尤其是边缘、纹理和小目标。</li>
+</ul>
+<p>面试中尤其建议先把输入/输出、坐标或 tensor shape、训练/推理阶段以及评价口径说清楚。很多看似“知识点错误”的争论，本质是双方默认的实现约定不同。</p>
+<h3 id="3_1">3. 从“结论”推进到“机制”的推理链</h3>
+<p>针对 <strong>Gaussian Blur 为什么能去噪？</strong>，推荐强制自己完成以下链条：</p>
+<pre><code class="language-text">现象/任务约束
+  → 数学对象或网络中的信息流
+  → 为什么当前设计能改变梯度/表示/几何/搜索空间
+  → 得到什么收益
+  → 付出什么代价
+  → 哪些数据分布下会失效
+  → 用什么切片实验和 profiler 证明
+</code></pre>
+<p>不要把“论文上更好”当作最后一层证据。真正专业的答案需要把方法映射到<strong>具体 failure mode</strong>，再设计能证伪自己的实验。</p>
+<h3 id="4">4. 工程诊断矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>观察到的现象</th>
+<th>优先怀疑</th>
+<th>最小验证实验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输出过平滑/细节丢失</td>
+<td>滤波或下采样过强</td>
+<td>按频率/边缘强度切片并对比原图频谱与边缘响应</td>
+</tr>
+<tr>
+<td>伪影/锯齿</td>
+<td>采样、插值或边界处理不一致</td>
+<td>固定 resize/padding 实现并做像素级 regression</td>
+</tr>
+</tbody>
+</table>
+<p>如果这两行都无法解释项目中的真实失败，再继续向数据版本、标注协议、随机性、导出后端或线上流量结构扩展，而不是直接堆更多模型模块。</p>
+<h3 id="5">5. 建议做的最小消融</h3>
+<ul>
+<li><strong>Control</strong>：保留原 baseline 的训练预算、数据版本、输入尺寸和评测脚本，只改变与本题直接相关的一项。</li>
+<li><strong>Slice</strong>：至少增加一个与本题机制直接相关的子集指标；例如尺寸、遮挡、边界、长尾、噪声或设备域。</li>
+<li><strong>Cost</strong>：同时记录参数量/FLOPs 之外的真实成本：显存、wall-clock、目标硬件 latency、P95/P99 或后处理开销。</li>
+<li><strong>Regression</strong>：列出方案新增的 FP/FN 或退化场景，避免只展示改善样本。</li>
+<li><strong>Repeatability</strong>：若提升幅度较小，使用多随机种子或 bootstrap 置信区间，判断收益是否超出自然波动。</li>
+</ul>
+<h3 id="6">6. 专家级追问清单</h3>
+<ol>
+<li><strong>σ 与 kernel size 如何配合？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+<li><strong>Gaussian 与 bilateral filter 的差异？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+<li><strong>这个结论在频域里如何解释？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+<li><strong>离散实现中的 padding/采样/量化会在哪一步破坏理论性质？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+</ol>
+<h3 id="7">7. 面试表达升级模板</h3>
+<blockquote>
+<p>“我先明确这里的实现/评价口径。核心机制是 <strong>A</strong>，它通过 <strong>B</strong> 改变了 <strong>C</strong>，所以在 <strong>D 类数据</strong>上预期有效；代价是 <strong>E</strong>。如果这是我的项目，我会用 <strong>一个控制实验 + 一个关键切片 + 一个真实硬件/线上指标</strong> 来验证，而不是只看总体平均分。”</p>
+</blockquote>
+<p>把这个模板替换成当前题目的具体名词后，通常可以自然从 30 秒回答扩展到 3–5 分钟，并且给面试官留下继续追问的接口。</p>
+<h2 id="_9">自测清单</h2>
+<ul>
+<li>[ ] 能否不看资料，用 30 秒说出核心结论？</li>
+<li>[ ] 能否写出/解释本题最关键的公式、shape 或信息流？</li>
+<li>[ ] 能否主动指出一个失效条件或反例？</li>
+<li>[ ] 能否把答案迁移到自己的一个项目 failure case？</li>
+<li>[ ] 我能独立回答追问：σ 与 kernel size 如何配合？</li>
+<li>[ ] 我能独立回答追问：Gaussian 与 bilateral filter 的差异？</li>
+</ul>
+<h2 id="_10">关联题</h2>
+<ul>
+<li><span class="srcref">Q001 · 卷积在图像处理中到底做了什么？</span></li>
+<li><span class="srcref">Q003 · Sobel、Laplacian、Canny 有什么区别？</span></li>
+</ul>
+<h2 id="_11">资料来源</h2>
+<p>本题主体结构来自配套 PDF；公开依据与经典论文统一见 <span class="srcref"><code>references/papers.md</code></span>。</p>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

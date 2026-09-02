@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么两个独立 Random Walk 回归会产生 Spurious Regression？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Quant Finance</a><i>∕</i><span>q035</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q035</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q034.html">← q034</a><a href="q036.html">q036 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">伪回归</a><a href="#">非平稳</a><a href="#">t-stat</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      QUANTITATIVE · 36 / 101</div>
+    <h1 class="qtitle">为什么两个独立 Random Walk 回归会产生 Spurious Regression？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★☆<br />
+<strong>标签</strong>：伪回归｜非平稳｜t-stat<br />
+<strong>题型口径</strong>：高可信重构题型<br />
+<strong>所属模块</strong>：D. 时间序列与计量<br />
+<strong>本题能力主线</strong>：时间序列与计量</p>
+</blockquote>
+<h2 id="_1">题目</h2>
+<p>为什么两个独立 Random Walk 回归会产生 Spurious Regression？</p>
+<hr />
+<h2 id="1">1. 面试官到底在考什么</h2>
+<p>本题表面属于 <strong>伪回归, 非平稳, t-stat</strong>，但真正考察的是：你能否把口头问题迅速变成一个<strong>定义清楚、假设透明、可推导、可验证</strong>的模型。</p>
+<p>本章统一的高质量作答原则是：<strong>先判断平稳性和时间可用性，再讨论预测；把 serial dependence、heteroskedasticity、非同步采样和 regime change 视为一等公民。</strong></p>
+<p>面试官通常会观察四件事：</p>
+<ol>
+<li>你是否先明确随机变量 / 状态 / 时间信息集，而不是立即套公式；</li>
+<li>你是否知道结论依赖哪些假设，以及假设被破坏后会发生什么；</li>
+<li>你能否给出一条简洁主解，同时知道替代方法与扩展；</li>
+<li>你能否把数学结果翻译成量化研究或工程上的可验证结论。</li>
+</ol>
+<h2 id="2-30">2. 先给结论（30 秒版本）</h2>
+<p>非平稳 level 含有持续随机趋势，使标准 OLS 的经典渐近分布失效；即使两过程独立，也可能出现高 R² 和显著 t-stat。</p>
+<p><strong>推荐面试表达：</strong> 明确说“高 R² 可以纯粹来自共同的积分阶数”，体现计量意识。</p>
+<p>如果只有 30 秒，优先说清楚：<strong>定义 → 关键式子/算法 → 结论 → 一个最重要的坑</strong>。不要先铺背景。</p>
+<h2 id="3-formalization">3. Formalization：变量、假设与数学对象</h2>
+<p>独立随机游走共享强持久性，OLS 会把随机趋势误当稳定关系，经典 t-stat 的极限分布不再适用；$R^2$ 可很高而残差仍非平稳。关键诊断是回归残差是否 stationary，而不是系数显著。</p>
+<h3 id="_2">专业建模检查表</h3>
+<ol>
+<li>先锁定时间轴：feature timestamp、observation timestamp、label horizon 与数据发布时刻必须严格有序。</li>
+<li>检查 stationarity / integration order / structural break；对 non-stationary level 直接回归很容易产生伪回归。</li>
+<li>明确依赖结构：ACF/PACF、异方差、seasonality、overlapping labels 与 asynchronous sampling 都会改变标准误和验证方式。</li>
+<li>模型选择与超参数只能使用历史训练窗口；validation 必须保持 chronological order。</li>
+<li>任何“历史上稳定”的关系都要做 rolling parameter、subperiod 与 regime sensitivity 检查。</li>
+</ol>
+<h2 id="4">4. 标准推导：从第一原则得到答案</h2>
+<p>这不是“数据太少”，而是 stochastic trend 让回归残差结构不满足标准假设。差分或 cointegration framework 才是正确处理方向。</p>
+<h3 id="_3">第二视角：如何验证主解</h3>
+<p>解析时间序列模型之外，再做 rolling/expanding OOS；理论上的平稳参数如果在滚动窗口剧烈变化，就应把 structural break 当一等问题。</p>
+<p>对本题尤其值得继续追问的是：<strong>Spurious regression 是“共享低频随机趋势 + 错误标准推断”的产物；高 R² 和显著 t-stat 不能替代残差平稳性检查。</strong></p>
+<p>一个成熟回答应能说明：如果解析解、数值实验和经验数据三者不一致，优先检查哪一层假设，而不是简单选择“看起来最漂亮”的结果。</p>
+<h2 id="5-why">5. Why：为什么这个方法有效</h2>
+<p>Spurious regression 是“共享低频随机趋势 + 错误标准推断”的产物；高 R² 和显著 t-stat 不能替代残差平稳性检查。</p>
+<p>这一层是区分“会做题”和“理解题”的关键。面试官继续追问时，最常见的方向不是让你重复公式，而是问：<strong>为什么这个结构成立、什么情况下失效、能否推广</strong>。</p>
+<h3 id="_4">高级面试层：从答案到研究判断</h3>
+<ul>
+<li><strong>本题的高级抽象</strong>：Spurious regression 是“共享低频随机趋势 + 错误标准推断”的产物；高 R² 和显著 t-stat 不能替代残差平稳性检查。</li>
+<li><strong>最值得保留的原始面试表达</strong>：明确说“高 R² 可以纯粹来自共同的积分阶数”，体现计量意识。</li>
+<li><strong>研究者视角</strong>：不要只问“公式是否正确”，还要问“这个结论对哪些 perturbation 稳定、什么观测会证伪它、实现中哪一层最容易引入偏差”。</li>
+</ul>
+<h2 id="6">6. 量化金融 / 工程语境中的对应问题</h2>
+<p>任何跨资产 level regression 都应先问变量的 integration order。伪回归是“漂亮统计量不等于可信研究”的典型教材案例。</p>
+<p>把本题迁移到真实研究时，建议统一问四个问题：</p>
+<ol>
+<li><strong>Data generating process</strong>：数据是怎么产生的？</li>
+<li><strong>Information set</strong>：在决策时刻真正可用的信息是什么？</li>
+<li><strong>Estimator / algorithm</strong>：我们估计/计算的对象是什么？</li>
+<li><strong>Validation</strong>：用什么反事实、OOS、replay 或 simulation 能证伪它？</li>
+</ol>
+<h3 id="_5">实际落地检查清单</h3>
+<ul>
+<li>采用 chronological walk-forward，而不是随机切分。</li>
+<li>监控 rolling coefficients/ACF/volatility/regime stability。</li>
+<li>处理 timestamp alignment、publication lag 和 asynchronous sampling。</li>
+</ul>
+<h2 id="7">7. 边界条件、失效场景与模型风险</h2>
+<p>本题所在模块最容易出现以下系统性错误：</p>
+<ul>
+<li>先建模后检查 stationarity/PIT</li>
+<li>随机切分或忽略重叠窗口依赖</li>
+<li>把统计相关直接解释为稳定经济机制</li>
+</ul>
+<p>结合本题，还要特别注意原始题解中的这些陷阱：</p>
+<ul>
+<li><strong>错误 1</strong>：看到高 R² 就相信经济关系。</li>
+</ul>
+<p>一个专业回答不应该只说“答案是 X”，而应至少能补一句：<strong>“这个结论依赖于……；如果……不成立，我会改用……”</strong>。</p>
+<h2 id="8">8. 追问树：不只列问题，还要会接</h2>
+<h3 id="1durbin-watson">追问 1：Durbin-Watson 会表现怎样？</h3>
+<p><strong>回答方向：</strong> 伪回归中残差通常强正自相关，因此 Durbin–Watson 往往很低。</p>
+<h3 id="2">追问 2：为什么增加样本反而不自动解决？</h3>
+<p><strong>回答方向：</strong> unit-root 下标准 OLS 的极限理论本身就错误；增加样本会让随机趋势更充分地表现，不能靠更多数据自动恢复经典 t 分布。</p>
+<h3 id="_6">面试现场的追问策略</h3>
+<ul>
+<li>第一次追问：先给结论与关键理由，不要重新从头讲整题；</li>
+<li>第二次追问：主动指出新假设改变了哪一部分模型；</li>
+<li>开放追问：给一个 baseline，再给一个更严格/更工程化版本，并说明验证方式。</li>
+</ul>
+<h2 id="9">9. 高频错误：错误为什么会发生</h2>
+<ul>
+<li><strong>错误 1</strong>：看到高 R² 就相信经济关系。</li>
+</ul>
+<p>这些错误通常源于<strong>忽略时间顺序、非平稳性和相关误差</strong>；修复方法是先审计 timestamp/DGP，再选择模型和标准误。</p>
+<h2 id="10-3">10. 3 分钟专业回答模板</h2>
+<p>可以按下面顺序组织：</p>
+<blockquote>
+<p><strong>第一步，定义。</strong> 我先明确本题的变量/状态和信息条件。<br />
+<strong>第二步，主解。</strong> 用最短的推导得到核心结论：非平稳 level 含有持续随机趋势，使标准 OLS 的经典渐近分布失效；即使两过程独立，也可能出现高 R² 和显著 t-stat。<br />
+<strong>第三步，解释。</strong> 关键结构是：Spurious regression 是“共享低频随机趋势 + 错误标准推断”的产物；高 R² 和显著 t-stat 不能替代残差平稳性检查。<br />
+<strong>第四步，边界。</strong> 如果存在 unit root、structural break、异方差、overlap 或非同步采样，我会先修正 DGP/验证协议，再解释系数和显著性。<br />
+<strong>第五步，迁移。</strong> 迁移到真实时间序列时，我会先锁 timestamp 和 walk-forward protocol，再讨论 stationarity、预测增益与 regime robustness。</p>
+</blockquote>
+<p>这比“先堆术语、最后给答案”更符合顶级 Quant Research / Algorithm 面试的交流方式。</p>
+<h2 id="11">11. 自测与延伸练习</h2>
+<ol>
+<li>不看答案，用 30 秒给出本题结论与最重要假设。</li>
+<li>不看推导，重新写出关键等式 / 状态 / 目标函数。</li>
+<li>回答全部追问，并明确哪些答案是精确结论、哪些只是近似或建模选择。</li>
+<li>为本题设计一个最小 simulation / numerical check，验证主结论。</li>
+<li>说明一个真实量化场景中会导致本题假设失效的例子。</li>
+</ol>
+<h2 id="12">12. 关联题目</h2>
+<ul>
+<li><span class="srcref">034. 什么是 Unit Root？ADF test 在检验什么？</span></li>
+<li><span class="srcref">036. 什么是 Cointegration？</span></li>
+<li><span class="srcref">040. Tick data 中两个资产的相关性如何估计？直接时间戳对齐有什么问题？</span></li>
+</ul>
+<h2 id="13">13. 延伸阅读</h2>
+<ul>
+<li>Hamilton, <em>Time Series Analysis</em>；Tsay, <em>Analysis of Financial Time Series</em></li>
+<li><span class="srcref">本仓库知识地图</span></li>
+<li><span class="srcref">面试回答框架</span></li>
+<li><span class="srcref">官方题型与岗位能力依据</span></li>
+</ul>
+<h2 id="14">14. 来源与内容边界</h2>
+<ul>
+<li><strong>PDF 来源内容</strong>：本题题干、基础答案、原始推导、追问、高频错误与面试表达，来自仓库所附 Professional Edition PDF / <code>questions.json</code> 的结构化转录。</li>
+<li><strong>V2 扩展内容</strong>：Formalization、量化语境、追问回答方向、模型风险、工程验证与延伸阅读，是本次仓库专业化扩写；它们用于教学与面试训练，不应被误认为某家公司未公开的内部标准答案。</li>
+<li><code>source_type: 高可信重构题型</code> 只表示题目来源口径。</li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

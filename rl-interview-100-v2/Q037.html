@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TRPO 为什么需要 Trust Region？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Reinforcement Learning</a><i>∕</i><span>Q037</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q037</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q036.html">← Q036</a><a href="Q038.html">Q038 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">reinforcement-learning</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      REINFORCEMENT · 59 / 100</div>
+    <h1 class="qtitle">TRPO 为什么需要 Trust Region？</h1>
+    <blockquote>
+<p><strong>题型</strong>：核心演化 ｜ <strong>频率</strong>：★★★★☆ ｜ <strong>难度</strong>：★★★★☆ ｜ <strong>岗位</strong>：PPO/研究<br />
+<strong>来源层级</strong>：本页“PDF 原始要点”来自仓库内原版 PDF；“Repo 扩展解析”是在不改变原结论的前提下新增的理论、工程与面试组织内容。</p>
+</blockquote>
+<h2 id="1">1. 面试官真正想确认什么</h2>
+<p>这不是单纯的名词解释题。面试官通常会顺着 <strong>定义 → 数学对象 → 为什么有效 → 什么时候失效 → 如何实现/监控 → 如何迁移到项目</strong> 连续追问。</p>
+<p>Policy optimization 的本质是用采样数据估计当前策略的梯度。难点集中在三处：一是 return/advantage 的方差，二是新旧策略分布不一致，三是一次更新过大导致已有样本失效。REINFORCE、Actor-Critic、GAE、TRPO、PPO 可以看成沿这三条问题逐层加约束与方差控制，而不是互不相关的算法名词。</p>
+<h2 id="2-30-pdf">2. 30 秒回答（PDF 原始要点）</h2>
+<blockquote>
+<p>旧策略下采到的数据只能局部代表新策略；一步更新过大时 surrogate 不再可靠。TRPO 用 KL 约束限制策略分布移动。</p>
+</blockquote>
+<p>面试开场建议只讲这一层；如果面试官点头继续，再进入后面的推导与 failure mode。</p>
+<h2 id="3-pdf">3. 深入解析（PDF 原始要点）</h2>
+<ul>
+<li>理论出发点是 performance improvement lower bound。</li>
+<li>实际求解需要 natural gradient / Hessian-vector product / conjugate gradient / line search，工程复杂。</li>
+<li>PPO 保留“proximal update”思想，用 clip/penalty 做更易实现的近似。</li>
+</ul>
+<h2 id="4-repo">4. Repo 扩展解析：把概念放回统一框架</h2>
+<p>Policy optimization 的本质是用采样数据估计当前策略的梯度。难点集中在三处：一是 return/advantage 的方差，二是新旧策略分布不一致，三是一次更新过大导致已有样本失效。REINFORCE、Actor-Critic、GAE、TRPO、PPO 可以看成沿这三条问题逐层加约束与方差控制，而不是互不相关的算法名词。</p>
+<h3 id="41">4.1 推导/证明应该从哪里开始</h3>
+<p>建议在白板上先写“随机变量、条件、期望/采样分布、优化参数”四件事，再推公式；这样可以避免只记住最终等式却解释不了每一项。</p>
+<h3 id="42">4.2 关键公式</h3>
+<pre><code class="language-text">E_s[D_KL(π_old || π_new)] ≤ δ
+</code></pre>
+<h2 id="43-repo-v2">4.3 Repo v2 专业深化：从第一原则理解</h2>
+<p>TRPO 的 trust region 来自“旧策略数据只在新策略足够近时仍可靠”。它用平均 KL 约束近似保证 surrogate improvement 不被大步更新破坏。</p>
+<h3 id="_1">数学/推导抓手</h3>
+<p>maxθ E[rₜ(θ)Aₜ] s.t. E[KL(πold||πθ)]≤δ。二阶近似引出 Fisher/Hessian-vector product 与 conjugate gradient。</p>
+<blockquote>
+<p><strong>面试要求</strong>：这里的公式不是“背出来就结束”。需要能解释每个期望是对什么随机变量取、哪些量来自 rollout、哪些量是 learned estimate、哪些分支必须 stop-gradient。</p>
+</blockquote>
+<h3 id="_2">工程化检查点</h3>
+<ul>
+<li>TRPO 理论漂亮但实现复杂、吞吐不友好，PPO 因此更流行。</li>
+<li>区分采样策略、当前策略、reference/behavior。</li>
+<li>所有概率比优先在 log-space 计算。</li>
+<li>同时观察 advantage、ratio、KL、entropy、value，而不是只看 reward。</li>
+</ul>
+<h3 id="70-90">面试中如何把回答从 70 分提升到 90 分</h3>
+<ol>
+<li><strong>先给结论</strong>：一句话说明该方法解决的 failure mode。</li>
+<li><strong>再写公式</strong>：只写决定算法差异的那一项，不堆无关符号。</li>
+<li><strong>解释估计误差</strong>：指出 bias、variance、distribution shift 或 optimization instability 从哪里来。</li>
+<li><strong>给反例</strong>：说明算法在哪类数据/环境/系统条件下会失效。</li>
+<li><strong>落到日志</strong>：说清你会看哪些指标来验证判断，而不是“调参试试”。</li>
+</ol>
+<h2 id="5">5. 工程实现与训练观测</h2>
+<p>至少监控 advantage mean/std、ratio 分布、clip fraction、approx KL、entropy、value loss、explained variance 与 gradient norm。单看 reward 无法判断 PPO 是否健康。</p>
+<h3 id="_3">推荐观测项</h3>
+<ul>
+<li><strong>数据层</strong>：状态/动作/response mask 是否正确，terminal/truncation、policy version、reward component 是否可追踪。</li>
+<li><strong>统计层</strong>：均值之外同时看方差、分位数和按难度/长度/任务类型切片的分布。</li>
+<li><strong>优化层</strong>：loss、gradient norm、value/Q/advantage/ratio/KL/entropy 中与本题相关的量是否同步变化。</li>
+<li><strong>真实目标层</strong>：训练 reward 上升是否真的带来 held-out return / accuracy / pass@k / success rate 提升。</li>
+</ul>
+<h2 id="6">6. 常见失败模式与排查</h2>
+<ul>
+<li>advantage scale 异常导致 ratio/clip 失去可解释性</li>
+<li>旧 log-prob 与 rollout policy 不匹配</li>
+<li>KL、entropy、clipfrac 同时异常但只盯 reward</li>
+</ul>
+<p>排查原则：<strong>先证伪数据与实现 bug，再讨论算法超参；先看分布，再看平均值。</strong></p>
+<h2 id="7">7. 高频追问</h2>
+<ul>
+<li>KL 方向为什么重要？</li>
+<li>TRPO 单调改进保证有哪些近似条件？</li>
+</ul>
+<h3 id="_4">推荐追问回答结构</h3>
+<ol>
+<li>先给一句结论；</li>
+<li>写出最关键公式/数据分布；</li>
+<li>解释为什么该公式能解决上一层 failure mode；</li>
+<li>给一个反例或失效场景；</li>
+<li>最后落到工程监控或项目经验。</li>
+</ol>
+<h2 id="71">7.1 高频追问参考答法</h2>
+<h3 id="1kl">追问 1：KL 方向为什么重要？</h3>
+<p>TRPO 的 trust region 来自“旧策略数据只在新策略足够近时仍可靠”。它用平均 KL 约束近似保证 surrogate improvement 不被大步更新破坏。</p>
+<p>回答时继续补一层：先说明<strong>为什么</strong>，再指出一个<strong>边界条件/失败现象</strong>，最后给出一个可观测指标或实现检查点。</p>
+<h3 id="2trpo">追问 2：TRPO 单调改进保证有哪些近似条件？</h3>
+<p>TRPO 理论漂亮但实现复杂、吞吐不友好，PPO 因此更流行。</p>
+<p>回答时继续补一层：先说明<strong>为什么</strong>，再指出一个<strong>边界条件/失败现象</strong>，最后给出一个可观测指标或实现检查点。</p>
+<h2 id="8">8. 易错点</h2>
+<blockquote>
+<p>不要说 TRPO “严格保证深度网络一定单调变好”；实践算法本身做了多项近似。</p>
+</blockquote>
+<h2 id="9">9. 面试官评分标准</h2>
+<blockquote>
+<p>优秀回答应同时覆盖定义/公式、为什么成立、失败模式与项目迁移。</p>
+</blockquote>
+<p>可以进一步按四档自评：</p>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>及格</td>
+<td>能准确给定义和主公式</td>
+</tr>
+<tr>
+<td>良好</td>
+<td>能解释每一项、算法动机与典型优缺点</td>
+</tr>
+<tr>
+<td>优秀</td>
+<td>能说明 failure mode、边界条件和替代方案</td>
+</tr>
+<tr>
+<td>强工程/研究</td>
+<td>能从日志、数据分布、系统成本或项目迁移给出可验证判断</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10">10. 白板自测</h2>
+<p>在不看答案的情况下，尝试完成：</p>
+<ul>
+<li>用 <strong>3 句话</strong>重新回答本题；</li>
+<li>从第一原则推导/解释核心公式，而不是默写；</li>
+<li>给出一个“这个方法会失败”的具体环境或训练现象；</li>
+<li>说明你会记录哪 3 个指标来验证自己的判断。</li>
+</ul>
+<h2 id="11">11. 延伸阅读</h2>
+<ul>
+<li><a href="http://incompleteideas.net/book/the-book-2nd.html">Reinforcement Learning: An Introduction (2nd ed.)</a></li>
+<li><a href="https://arxiv.org/abs/1502.05477">Trust Region Policy Optimization</a></li>
+</ul>
+<h2 id="111-primary-source">11.1 Primary Source 精读建议</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1502.05477">Trust Region Policy Optimization</a></li>
+</ul>
+<p>阅读时不要只看摘要。建议至少定位：<strong>problem formulation → objective/algorithm box → ablation → failure/limitation</strong>。面试里真正有区分度的是能把论文中的设计选择与本题的 failure mode 对上。</p>
+<h2 id="12-90">12. 90 秒专业回答</h2>
+<blockquote>
+<p><strong>结论先行</strong>：旧策略下采到的数据只能局部代表新策略；一步更新过大时 surrogate 不再可靠。TRPO 用 KL 约束限制策略分布移动。</p>
+</blockquote>
+<p>继续展开时，先把它放回本章的统一问题框架：<strong>理论出发点是 performance improvement lower bound。；实际求解需要 natural gradient / Hessian-vector product / conjugate gradient / line search，工程复杂。</strong>。随后写出本题最关键的数学对象：<code>E_s[D_KL(π_old || π_new)] ≤ δ</code>。最后必须补一句工程判断：公式成立不代表实现健康，需要用本页列出的分布指标、边界条件和 failure mode 验证。</p>
+<p>一个高质量的 90 秒回答应满足：</p>
+<ul>
+<li><strong>前 15 秒</strong>：明确“这个方法解决什么问题”；</li>
+<li><strong>15–45 秒</strong>：给核心公式，并解释符号来自哪个数据分布；</li>
+<li><strong>45–70 秒</strong>：讲一个典型失败模式或 tradeoff；</li>
+<li><strong>70–90 秒</strong>：落到实现/日志，并说明如何验证。</li>
+</ul>
+<blockquote>
+<p><strong>不要这样答</strong>：只按论文顺序背名词。面试官通常更在意你能否从 failure mode 推回设计，再从设计推到可观测指标。</p>
+</blockquote>
+<h2 id="13">13. 最小可验证实验</h2>
+<p><strong>实验目标</strong>：不是做 leaderboard，而是把本题的核心机制变成可以 falsify 的小实验。</p>
+<ol>
+<li><strong>环境/数据</strong>：先用一个离散两动作 toy policy 手工设 old/new logits 与 advantage，再运行一批 PPO 数值测试。</li>
+<li><strong>记录与对照</strong>：打印 new/old logp、ratio、clipped ratio、sample objective、KL、entropy；再在小环境跑完整训练。</li>
+<li><strong>验收标准</strong>：先验证分段目标和梯度方向，再谈大规模训练稳定性。</li>
+</ol>
+<p>针对本题额外要求：把 <strong>“TRPO 为什么需要 Trust Region？”</strong> 对应的关键变量单独画分布或写断言；如果实验结果和理论预期相反，优先检查数据定义、mask/terminal、旧策略版本和归一化维度，再讨论超参数。</p>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

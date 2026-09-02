@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scaling Law 能否用于 Data Mixture 优化？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q040</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q040</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q039.html">← Q039</a><a href="Q041.html">Q041 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">data</a><a href="#">scaling-law</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 41 / 101</div>
+    <h1 class="qtitle">Scaling Law 能否用于 Data Mixture 优化？</h1>
+    <blockquote>
+<p><strong>定位</strong>：B 类等价追问题 · 难度 <strong>难</strong> · 频率 <strong>★★★★☆</strong>
+章节：<span class="srcref">Scaling Law 与预算设计</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>连接 scaling 与数据配方，是更偏研究型的开放题。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>约束优化</strong>：到底固定的是 FLOPs、GPU-hours、成本还是推理预算？</li>
+<li><strong>外推</strong>：小规模曲线在哪些条件下可以外推？</li>
+<li><strong>等成本比较</strong>：Dense/MoE/不同数据 recipe 是否真的比较公平？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>Data scaling 的终极问题不是“要多少数据”，而是“下一批 token 应来自哪里”。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>可以把验证 loss 看作 N、各域 token D_i 或采样比例 p_i 的函数，通过多组小模型 mixture experiments 拟合不同 domain 的边际收益与 transfer effect。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>难点在于不同域之间不是独立可加：代码可能促进 reasoning，数学数据可能影响通用语言；高重复域还会出现收益饱和。因此需要多维实验和受控简化，而不是简单为每个域拟合一条曲线。</p>
+<h2 id="4-production">4. 深度展开：从定义走向 Production</h2>
+<p>本题的深挖重点是：<strong>Data scaling 的终极问题不是“要多少数据”，而是“下一批 token 应来自哪里”。</strong></p>
+<p>建议沿下面的因果链继续展开：</p>
+<ol>
+<li><strong>定义/状态语义</strong>：先把对象、tensor、数据分布或训练状态说准确；</li>
+<li><strong>机制</strong>：解释为什么该设计会改变 loss、memory、FLOPs、通信或稳定性；</li>
+<li><strong>代价</strong>：指出它牺牲了什么，不把工程 trick 说成“免费午餐”；</li>
+<li><strong>可验证性</strong>：说明你会用什么指标、profile 或 ablation 判断结论是否成立；</li>
+<li><strong>规模化边界</strong>：把 1 GPU/小模型结论推进到千卡、长序列或 MoE 场景。</li>
+</ol>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：先选择 3-5 个高影响域做 mixture grid，避免维度爆炸。</li>
+<li><strong>动作 2</strong>：按 target capability 构造加权 validation objective。</li>
+<li><strong>动作 3</strong>：定期在训练阶段重新估计边际收益，支持 curriculum。</li>
+</ol>
+<h3 id="scaling-proxy">Scaling Proxy</h3>
+<p>用多个模型尺寸、Token 预算和 seed 构造 proxy grid，拟合 loss/compute 曲线，再用 hold-out 规模验证外推误差。</p>
+<ul>
+<li>拟合前确认数据 mixture 一致。</li>
+<li>报告置信区间/外推范围。</li>
+<li>区分训练 FLOPs optimum 与生命周期成本 optimum。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-domain-transfer">追问 1：如何处理 domain 间 transfer？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h3 id="2-scaling">追问 2：数据不足导致重复时 scaling 怎么变？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h3 id="3mixture-loss-benchmark">追问 3：mixture 优化目标是 loss 还是 benchmark？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>假设每个域完全独立。</strong></li>
+<li>改进：回到“Data scaling 的终极问题不是“要多少数据”，而是“下一批 token 应来自哪里”。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：Data scaling 的终极问题不是“要多少数据”，而是“下一批 token 应来自哪里”。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>如何处理 domain 间 transfer？</li>
+<li>数据不足导致重复时 scaling 怎么变？</li>
+<li>mixture 优化目标是 loss 还是 benchmark？</li>
+<li>写出固定预算下的优化变量、约束和至少一个 proxy experiment。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>Data scaling 的终极问题不是“要多少数据”，而是“下一批 token 应来自哪里”。</strong></p>
+</blockquote>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>基于预训练岗位能力模型、技术报告与高频追问扩展出的等价深挖题；不宣称是某家公司逐字原题。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R5 · 论文</strong> — <a href="https://arxiv.org/abs/2203.15556">Hoffmann et al., Training Compute-Optimal Large Language Models (Chinchilla)</a></li>
+</ul>
+<h2 id="_2">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q039. 同样 FLOPs 下，Dense 与 MoE 怎么公平比较？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

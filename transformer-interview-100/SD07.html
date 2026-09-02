@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD07 现代 Decoder-only Block 与 2017 原版的演化 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD07</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD07</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="SD06.html">← SD06</a><a href="SD08.html">SD08 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">architecture</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 107 / 110</div>
+    <h1 class="qtitle">SD07 现代 Decoder-only Block 与 2017 原版的演化</h1>
+    <h2 id="1-2017-transformer">1. 2017 原始 Transformer</h2>
+<p>经典 encoder-decoder，Decoder 子层：</p>
+<ol>
+<li>masked self-attention；</li>
+<li>cross-attention；</li>
+<li>ReLU FFN；</li>
+<li>Post-LayerNorm；</li>
+<li>sinusoidal position encoding。</li>
+</ol>
+<h2 id="2-decoder-only-block">2. 现代 Decoder-only 典型 block</h2>
+<pre><code class="language-text">Residual Stream
+  ↓
+RMSNorm / LayerNorm
+  ↓
+Q/K/V Projection
+  ↓
+RoPE(Q,K)
+  ↓
+MHA / GQA / MQA
+  ↓
+FlashAttention-class kernel
+  ↓
+Output Projection
+  ↓
+Residual Add
+  ↓
+RMSNorm
+  ↓
+SwiGLU MLP / MoE
+  ↓
+Residual Add
+</code></pre>
+<h2 id="3-decoder-only">3. 为什么 Decoder-only</h2>
+<p>统一 next-token objective、prompt/answer 同一序列、in-context learning 和 serving API 简洁。</p>
+<p>但 encoder-only / encoder-decoder 仍适合 representation、retrieval 和特定 seq2seq。</p>
+<h2 id="4-post-ln-pre-norm">4. Post-LN → Pre-Norm</h2>
+<p>主要目标：深层训练稳定性与 gradient path。</p>
+<h2 id="5-sinusoidalabsolute-rope">5. Sinusoidal/Absolute → RoPE</h2>
+<p>位置从 input embedding 层转向 query-key geometry，直接影响 pairwise score。</p>
+<h2 id="6-relugelu-swiglu">6. ReLU/GELU → SwiGLU</h2>
+<p>FFN 从单激活扩展为 learned gate，提升表达能力；参数预算需重新配平。</p>
+<h2 id="7-mha-gqamqa">7. MHA → GQA/MQA</h2>
+<p>主要由 autoregressive serving 的 KV cache / bandwidth 驱动，而不是训练参数本身。</p>
+<h2 id="8-attention-flashattention-kernel">8. Attention 数学 → FlashAttention Kernel</h2>
+<p>模型公式几乎不变，但实现从 materialize $T^2$ 中间矩阵变为 tiled online softmax，体现“算法与硬件协同”。</p>
+<h2 id="9-dense-ffn-moe">9. Dense FFN → MoE</h2>
+<p>解耦总参数容量与每 token active compute，但引入 routing/all-to-all。</p>
+<h2 id="10">10. 架构比较方法</h2>
+<p>任何现代变体都按以下 6 维比较：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Objective</td>
+<td>是否改变训练概率分解？</td>
+</tr>
+<tr>
+<td>Expressivity</td>
+<td>是否改变函数族/归纳偏置？</td>
+</tr>
+<tr>
+<td>Params</td>
+<td>总参数/激活参数？</td>
+</tr>
+<tr>
+<td>FLOPs</td>
+<td>train/prefill/decode 分别？</td>
+</tr>
+<tr>
+<td>Memory/IO</td>
+<td>activation/KV/HBM？</td>
+</tr>
+<tr>
+<td>Systems</td>
+<td>kernel/通信/调度是否成熟？</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11">11. 面试追问</h2>
+<p><strong>为什么现代 LLM 不是“2017 Transformer 放大版”？</strong> 因为训练稳定性、位置、FFN、KV、GPU IO、并行和 serving 都发生结构性变化。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

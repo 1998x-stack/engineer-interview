@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fine-Grained Experts 为什么可能优于少量大 Experts？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q067</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q067</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q066.html">← Q066</a><a href="Q068.html">Q068 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">moe</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 68 / 101</div>
+    <h1 class="qtitle">Fine-Grained Experts 为什么可能优于少量大 Experts？</h1>
+    <blockquote>
+<p><strong>定位</strong>：B 类等价追问题 · 难度 <strong>难</strong> · 频率 <strong>★★★★☆</strong>
+章节：<span class="srcref">Mixture-of-Experts</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>考察 expert granularity、组合表达与 kernel 效率。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>稀疏性</strong>：total params、active params 与 active FLOPs 如何区分？</li>
+<li><strong>路由学习</strong>：负载均衡如何与语义 specialization 共存？</li>
+<li><strong>通信</strong>：A2A 是否把算术节省吃掉？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>Fine-grained MoE 是“组合表达更强”与“小 GEMM/通信更差”的典型 trade-off。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>将一个大 FFN expert 拆成更多较小 experts，并在相同 active parameter budget 下选择多个，可提供更丰富的组合空间和 specialization granularity。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>代价是每个 expert GEMM 变小，GPU 利用率下降，routing metadata 与 All-to-All 更复杂。因此算法上的细粒度必须依靠 grouped GEMM、token batching 等系统优化才能兑现。</p>
+<h2 id="4-production">4. 深度展开：从定义走向 Production</h2>
+<p>本题的深挖重点是：<strong>Fine-grained MoE 是“组合表达更强”与“小 GEMM/通信更差”的典型 trade-off。</strong></p>
+<p>建议沿下面的因果链继续展开：</p>
+<ol>
+<li><strong>定义/状态语义</strong>：先把对象、tensor、数据分布或训练状态说准确；</li>
+<li><strong>机制</strong>：解释为什么该设计会改变 loss、memory、FLOPs、通信或稳定性；</li>
+<li><strong>代价</strong>：指出它牺牲了什么，不把工程 trick 说成“免费午餐”；</li>
+<li><strong>可验证性</strong>：说明你会用什么指标、profile 或 ablation 判断结论是否成立；</li>
+<li><strong>规模化边界</strong>：把 1 GPU/小模型结论推进到千卡、长序列或 MoE 场景。</li>
+</ol>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：对齐 active params 与 FLOPs做 granularity ablation。</li>
+<li><strong>动作 2</strong>：profile expert GEMM size 和 Tensor Core efficiency。</li>
+<li><strong>动作 3</strong>：监控 tokens/expert 是否足以形成大 batch。</li>
+</ol>
+<h3 id="moe">MoE 端到端实验</h3>
+<p>同时监控 routing entropy、expert load、dropped tokens、A2A 时间、expert GEMM 利用率和模型 loss。</p>
+<ul>
+<li>负载均衡不是唯一目标。</li>
+<li>按 activated FLOPs 和 wall-clock 做公平比较。</li>
+<li>检查跨节点 EP 的网络代价。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-expert-communication-bound">追问 1：为什么小 expert 更容易 communication-bound？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → Fine-grained MoE 是“组合表达更强”与“小 GEMM/通信更差”的典型 trade-off。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="2grouped-gemm">追问 2：Grouped GEMM 解决什么？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="3expert-router">追问 3：expert 数增大如何影响 router 参数？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>只谈“专家越多越专业”。</strong></li>
+<li>改进：回到“Fine-grained MoE 是“组合表达更强”与“小 GEMM/通信更差”的典型 trade-off。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：Fine-grained MoE 是“组合表达更强”与“小 GEMM/通信更差”的典型 trade-off。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>为什么小 expert 更容易 communication-bound？</li>
+<li>Grouped GEMM 解决什么？</li>
+<li>expert 数增大如何影响 router 参数？</li>
+<li>画 router→dispatch→expert→combine，列出三个 MoE telemetry。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>Fine-grained MoE 是“组合表达更强”与“小 GEMM/通信更差”的典型 trade-off。</strong></p>
+</blockquote>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>基于预训练岗位能力模型、技术报告与高频追问扩展出的等价深挖题；不宣称是某家公司逐字原题。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R10 · 技术报告</strong> — <a href="https://arxiv.org/abs/2412.19437">DeepSeek-AI, DeepSeek-V3 Technical Report</a></li>
+<li><strong>R9 · 官方文档</strong> — <a href="https://docs.nvidia.com/megatron-core/developer-guide/latest/">NVIDIA Megatron Core User Guide</a></li>
+<li><strong>R19 · 官方文档</strong> — <a href="https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/features/moe.html">NVIDIA Megatron Core — Mixture of Experts</a></li>
+</ul>
+<h2 id="_2">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q066. Shared Expert 的意义是什么？</span></li>
+<li>→ <span class="srcref">Q068. Expert Parallel 与 Tensor Parallel 如何相互影响？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QLoRA 为什么能在更小显存上微调大模型？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q068</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q068</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q067.html">← Q067</a><a href="Q069.html">Q069 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">alignment</a><a href="#">lora</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 68 / 100</div>
+    <h1 class="qtitle">QLoRA 为什么能在更小显存上微调大模型？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★★  ·  <strong>频率</strong>：★★★★★  ·  <strong>标签</strong>：<code>alignment</code>, <code>lora</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q068.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>QLoRA 的 NF4、double quantization、paged optimizer 分别解决什么？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>理解 4-bit base + 高精度 adapter 的组合。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>先区分数据、目标函数与在线/离线优化。</li>
+<li>能解释 reference/reward/preference 的角色。</li>
+<li>讨论稳定性、成本、reward hacking 与数据偏差。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>基座权重以 4-bit 量化存储并冻结，训练只更新 LoRA；NF4 针对近似正态权重设计码本，double quantization 进一步压缩量化尺度，paged optimizer 缓解显存峰值。</p>
+<h2 id="4">4. 白板核心结构</h2>
+<p>本题更强调概念结构与工程权衡。面试时优先画出数据流、状态转移或模块关系，再补充必要公式。</p>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：计算通常需要反量化到更高精度参与 matmul。</li>
+<li><strong>PDF 基线要点</strong>：“4-bit 训练”不意味着所有梯度/激活都是 4-bit。</li>
+<li><strong>PDF 基线要点</strong>：量化误差对不同层/任务敏感。</li>
+<li><strong>扩展理解</strong>：QLoRA 以 4-bit 量化 base weights + 高精度 LoRA 更新降低显存。</li>
+<li><strong>扩展理解</strong>：NF4 针对近似正态权重分布设计；double quantization 进一步压缩量化常数。</li>
+<li><strong>扩展理解</strong>：量化 base 通常冻结，梯度通过反量化计算流向 LoRA 参数。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="qlora-4-bit">QLoRA 省的是基础权重显存，不是把训练全变成 4-bit</h3>
+<ul>
+<li>QLoRA 将冻结的 base model 权重以 4-bit（经典 NF4）存储/计算路径加载，同时 LoRA 参数与梯度仍用 BF16/FP16 等较高精度训练。</li>
+<li>NF4 针对近似正态权重分布设计量化级别；Double Quantization 再压缩量化 scale 等元数据；Paged Optimizer 用于缓解显存峰值。</li>
+<li>因为基础权重不需要 optimizer state/gradient，4-bit 存储可把大模型 fine-tuning 门槛显著降低。</li>
+</ul>
+<h3 id="_2">边界与工程</h3>
+<ul>
+<li>4-bit base 不等于训练零质量损失；量化误差、compute kernel、dequant 开销和 target task 都会影响结果。</li>
+<li>QLoRA 主要解决微调显存，不代表推理一定采用同一种 quantization 格式。</li>
+<li>估算显存时要分别算 base weights、LoRA params/grad、optimizer state、activations，而不是只用“模型参数×0.5 byte”。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>先明确 demonstration、preference、reward、rollout 分别来自哪里。</li>
+<li>所有 reward/judge 都是代理目标，要讨论偏差、KL、reward hacking 和覆盖。</li>
+<li>比较方法时同时算训练稳定性、采样成本、显存和在线数据需求。</li>
+</ul>
+<h3 id="_3">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>把 QLoRA 与 GPTQ/AWQ 纯推理量化混为一谈。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>NF4 为什么适合正态分布权重？</li>
+<li>哪些模块通常保持更高精度？</li>
+</ol>
+<h3 id="_4">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2305.14314">QLoRA</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q067 LoRA 应该加 Q/V 还是加所有 Linear？</span></li>
+<li><span class="srcref">Q069 知识蒸馏有哪些层级？</span></li>
+<li><span class="srcref">Q066 LoRA 的低秩假设到底是什么？</span></li>
+<li><span class="srcref">Q070 RLHF 的经典 Pipeline 与 KL 约束</span></li>
+<li><span class="srcref">Q074 PPO、DPO、GRPO：什么时候选哪一个？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>QLoRA 省的是基础权重显存，不是把训练全变成 4-bit</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

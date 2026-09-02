@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>什么是 MFU？MFU 低应该怎样定位？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q060</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q060</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q059.html">← Q059</a><a href="Q061.html">Q061 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">memory-precision-performance</a><a href="#">performance</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 61 / 101</div>
+    <h1 class="qtitle">什么是 MFU？MFU 低应该怎样定位？</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>中</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">显存、数值精度与性能</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>训练系统日常指标，考察从症状到根因的能力。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>bytes</strong>：每种 state/activation 实际占多少字节？</li>
+<li><strong>IO</strong>：瓶颈是计算还是 HBM/网络搬运？</li>
+<li><strong>峰值</strong>：steady-state memory 与 transient peak 是否分开？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>MFU 是体检报告，不是诊断书；低 MFU 后面必须跟 profiler。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>Model FLOPs Utilization 用模型实际完成的理论 FLOPs/sec 除以加速器峰值 FLOPs/sec，反映端到端训练距离硬件计算上限有多远。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>MFU 低不是结论。可能来自通信、pipeline bubble、dataloader、small GEMM、recompute、MoE imbalance、CPU 同步或 kernel 不匹配。需要用 profiler 将 step time 分解。</p>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="mfu">MFU 定位树</h3>
+<pre><code class="language-text">MFU 低
+├─ GPU idle → dataloader / synchronization / pipeline bubble
+├─ GPU busy but low tensor-core → small GEMM / bad shapes / launch overhead
+├─ comm high → TP/EP/DP collective / topology / overlap
+├─ recompute high → checkpoint policy
+└─ MoE → load imbalance / A2A / grouped GEMM efficiency
+</code></pre>
+<p>MFU 只能告诉你“没有吃满理论算力”，不能直接告诉你为什么。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：先确保 FLOPs 口径与硬件峰值 dtype 对应。</li>
+<li><strong>动作 2</strong>：记录 tokens/s、GPU active、NCCL time、bubble、dataloader wait。</li>
+<li><strong>动作 3</strong>：从最大 time bucket 开始优化，避免为了 MFU 美化指标。</li>
+</ol>
+<h3 id="roofline-memory-accounting">Roofline / Memory Accounting</h3>
+<p>先做理论 bytes/FLOPs 预算，再用 profiler、memory snapshot 和 kernel trace 对账。</p>
+<ul>
+<li>把参数/梯度/优化器/activation/临时 buffer 分开。</li>
+<li>注明 dtype 与分片假设。</li>
+<li>区分理论峰值与可持续吞吐。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1mfu-hfu">追问 1：MFU 与 HFU 有什么差别？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="2-checkpointing-mfu">追问 2：为什么 checkpointing 可能让 MFU 定义看起来下降？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → MFU 是体检报告，不是诊断书；低 MFU 后面必须跟 profiler。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="3mfu">追问 3：MFU 高是否说明训练成本一定低？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>把 MFU 当 GPU utilization 百分比。</strong></li>
+<li>改进：回到“MFU 是体检报告，不是诊断书；低 MFU 后面必须跟 profiler。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：MFU 是体检报告，不是诊断书；低 MFU 后面必须跟 profiler。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>MFU 与 HFU 有什么差别？</li>
+<li>为什么 checkpointing 可能让 MFU 定义看起来下降？</li>
+<li>MFU 高是否说明训练成本一定低？</li>
+<li>做一次 bytes/FLOPs 手算，并说明 profiler 中你期望看到什么。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>MFU 是体检报告，不是诊断书；低 MFU 后面必须跟 profiler。</strong></p>
+</blockquote>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R9 · 官方文档</strong> — <a href="https://docs.nvidia.com/megatron-core/developer-guide/latest/">NVIDIA Megatron Core User Guide</a></li>
+</ul>
+<h2 id="_2">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q059. 为什么减少理论 FLOPs 不一定减少 Wall-Clock？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

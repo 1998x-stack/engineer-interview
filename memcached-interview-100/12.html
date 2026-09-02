@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>新 Item 在什么时候真正对 GET 可见？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Memcached</a><i>∕</i><span>12</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">12</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">P0</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">yes</span></div>
+    </div>
+    <div class="prevnext"><a href="11.html">← 11</a><a href="13.html">13 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      SOURCE · CACHING · 14 / 100</div>
+    <h1 class="qtitle">新 Item 在什么时候真正对 GET 可见？</h1>
+    <blockquote>
+<p><strong>必刷题</strong> · <strong>P0</strong> · ★★★★★ · Item 与 SET/GET 源码链路<br />
+本文是 PDF 对应题目的扩展版：保留原答案，并补充源码、复杂度、并发不变量、生产实践与实验。</p>
+</blockquote>
+<h2 id="_1">题目</h2>
+<p><strong>新 Item 在什么时候真正对 GET 可见？</strong></p>
+<h2 id="_2">面试官在考什么</h2>
+<p>这道题用于判断候选人是否真正理解 <strong>Item 生命周期、publication、refcount 与源码热路径</strong>。</p>
+<p>面试官通常不会满足于“术语定义”，而会沿着 <code>新 Item 在什么时候真正对 GET 可见？</code> 继续追问到：<strong>状态如何变化、哪个模块拥有这份状态、并发下怎样保持不变量、生产中用什么指标证明判断</strong>。优秀回答应先给 30 秒结论，再主动给出一个反例或故障场景。</p>
+<h2 id="30-90">30-90 秒标准回答</h2>
+<blockquote>
+<p>在成功 do_item_link/replace 并插入 assoc 后才可由新 GET 找到；此前虽有物理内存，但仍是 private object。</p>
+</blockquote>
+<p>面试时建议先讲上面这句话，再根据追问选择展开源码或生产侧影响，不要一开始就陷入函数细节。</p>
+<h2 id="_3">心智模型</h2>
+<p><strong>对象生命周期：</strong> 核心不变量是 construct-before-publish 与 unlink-before-free。Item 把 Hash 索引、LRU 生命周期、Slab 物理内存和并发引用连接起来。</p>
+<pre><code class="language-mermaid">flowchart TD
+  A[SET header] --&gt; B[item_alloc]
+  B --&gt; C[Slab chunk]
+  C --&gt; D[read value into ITEM_data]
+  D --&gt; E[store_item]
+  E --&gt; F[assoc_find old]
+  F --&gt; G[do_item_link / replace]
+  G --&gt; H[assoc_insert]
+  G --&gt; I[item_link_q]
+</code></pre>
+<h2 id="_4">深度机制</h2>
+<h3 id="1-slabyes-hashno-lruno">1. 构造阶段：Slab=YES, Hash=NO, LRU=NO。</h3>
+<p>Slab 的设计核心是 size class + page + fixed-size chunk。它通过复用 chunk 避免在请求热路径频繁进入通用 allocator，但也意味着对象尺寸分布会直接决定内存利用率。</p>
+<h3 id="2-item_linked-assoc_insert-item_link_q">2. 发布阶段：ITEM_LINKED + assoc_insert + item_link_q。</h3>
+<p>从“对象生命周期”看，这一结论的重点不是记住术语，而是明确职责边界和失败方式。核心不变量是 construct-before-publish 与 unlink-before-free。Item 把 Hash 索引、LRU 生命周期、Slab 物理内存和并发引用连接起来。</p>
+<h3 id="3-key-store-item-lock">3. 同一 key 的 store 决策在 item lock 范围内完成。</h3>
+<p>从“对象生命周期”看，这一结论的重点不是记住术语，而是明确职责边界和失败方式。核心不变量是 construct-before-publish 与 unlink-before-free。Item 把 Hash 索引、LRU 生命周期、Slab 物理内存和并发引用连接起来。</p>
+<h2 id="_5">系统不变量</h2>
+<ul>
+<li><strong>不变量 1：</strong> 未完整构造的 Item 不能被 Hash 发布。</li>
+<li><strong>不变量 2：</strong> 逻辑 unlink 后，只要 refcount 未归零就不能物理复用 chunk。</li>
+</ul>
+<p>这些不变量比记忆具体函数名更稳定。版本升级可能调整代码组织，但破坏这些约束通常意味着正确性或生命周期出现问题。</p>
+<h2 id="_6">复杂度与性能分析</h2>
+<ul>
+<li>单次操作通常很便宜，生产尾延迟更多由网络 RTT、序列化、锁等待和 miss 路径决定。</li>
+<li>面试回答要把“算法复杂度”和“系统成本模型”分开。</li>
+</ul>
+<p>进一步分析时要区分三个层面：<strong>算法复杂度</strong>（如 Hash 平均 O(1)）、<strong>微架构成本</strong>（cache miss、pointer chasing、cache-line bouncing）和 <strong>系统成本</strong>（RTT、序列化、回源）。高水平回答会主动指出这三者不是一回事。</p>
+<h2 id="_7">源码导航</h2>
+<blockquote>
+<p>PDF 源码锚点：<code>proto_text.c</code> / <code>proto_parser.c</code> → <code>items.c</code> → <code>slabs.c</code> → <code>assoc.c</code>。</p>
+</blockquote>
+<p>建议优先阅读以下 Memcached 1.6.45 文件：</p>
+<ul>
+<li><a href="https://github.com/memcached/memcached/blob/1.6.45/memcached.h"><code>memcached.h</code></a></li>
+<li><a href="https://github.com/memcached/memcached/blob/1.6.45/proto_text.c"><code>proto_text.c</code></a></li>
+<li><a href="https://github.com/memcached/memcached/blob/1.6.45/proto_parser.c"><code>proto_parser.c</code></a></li>
+<li><a href="https://github.com/memcached/memcached/blob/1.6.45/items.c"><code>items.c</code></a></li>
+<li><a href="https://github.com/memcached/memcached/blob/1.6.45/assoc.c"><code>assoc.c</code></a></li>
+<li><a href="https://github.com/memcached/memcached/blob/1.6.45/slabs.c"><code>slabs.c</code></a></li>
+<li><a href="https://github.com/memcached/memcached/blob/1.6.45/thread.c"><code>thread.c</code></a></li>
+</ul>
+<p>源码阅读方法：先定位入口函数，再跟踪 <strong>Item 指针如何变化、何时加锁、何时 publication/unlink、何时释放引用</strong>。不要按文件从第一行顺序阅读。</p>
+<h2 id="_8">工程与生产实践</h2>
+<ol>
+<li><strong>先确认语义边界：</strong> 本题讨论的是 Item 生命周期、publication、refcount 与源码热路径，先区分 server 内部机制、客户端路由和应用回源三层，避免跨层归因。</li>
+<li><strong>把关键路径画出来：</strong> 对 <code>新 Item 在什么时候真正对 GET 可见？</code> 至少能指出输入、关键状态、输出以及失败路径；如果涉及 Item，要明确 Hash/LRU/Slab/refcount 中哪些会变化。</li>
+<li><strong>用指标证伪：</strong> 用并发 GET 在 SET body 分片延迟发送期间持续读取，验证 link 前始终 MISS/旧值，完成后才切换。</li>
+<li><strong>准备一个故障反例：</strong> 若错误地在 value 完成前 assoc_insert，另一个线程可能读到未完成对象；construct-before-publish 正是防止这种读写撕裂。</li>
+<li><strong>版本意识：</strong> 本仓库源码锚定 Memcached <code>1.6.45</code>；默认参数与现代特性应以该版本官方源码/文档为准。</li>
+</ol>
+<h2 id="_9">常见易错点</h2>
+<blockquote>
+<p>不要把“拿到 slab chunk”误认为“已经写入缓存”。</p>
+</blockquote>
+<p>再补充两个通用陷阱：</p>
+<ul>
+<li>把“默认值”说成“协议永远固定值”；例如 item size、线程数等都应区分默认配置与不可变约束。</li>
+<li>把“当前实现细节”说成“KV cache 必然原理”；面试中应先讲不变量，再讲 Memcached 的具体实现。</li>
+</ul>
+<h2 id="_10">高频追问</h2>
+<h3 id="1">追问 1：为什么这是类似“提交点”的概念？</h3>
+<p><strong>回答提示：</strong> 先复述边界，再用本题核心机制回答：在成功 do_item_link/replace 并插入 assoc 后才可由新 GET 找到；此前虽有物理内存，但仍是 private object。 最后补充一个生产后果或失败场景，避免只给术语。</p>
+<h3 id="2hash-lru">追问 2：Hash 先插还是 LRU 先插有什么影响？</h3>
+<p><strong>回答提示：</strong> 先复述边界，再用本题核心机制回答：在成功 do_item_link/replace 并插入 assoc 后才可由新 GET 找到；此前虽有物理内存，但仍是 private object。 最后补充一个生产后果或失败场景，避免只给术语。</p>
+<h2 id="_11">动手验证</h2>
+<pre><code class="language-bash"># 在 Memcached 源码目录定位主调用链
+git grep -n &quot;process_update_command&quot;
+git grep -n &quot;do_item_alloc&quot;
+git grep -n &quot;do_item_link&quot;
+git grep -n &quot;assoc_insert&quot;
+git grep -n &quot;item_link_q&quot;
+</code></pre>
+<p>建议用调试构建在这些函数打断点，对一次 <code>set foo</code> 记录 item 指针、refcount、<code>h_next/next/prev</code> 的变化。</p>
+<p>完成实验后，至少记录：<strong>预期 → 实际 → 为什么 → 对生产设计有什么影响</strong>。只跑通命令而没有解释，不算真正掌握。</p>
+<h2 id="_12">面试表达模板</h2>
+<blockquote>
+<p><strong>第一句给结论：</strong> 在成功 do_item_link/replace 并插入 assoc 后才可由新 GET 找到；此前虽有物理内存，但仍是 private object。<br />
+<strong>第二层讲机制：</strong> 用 1 张状态/调用链图说明“谁维护什么状态、何时改变”。<br />
+<strong>第三层讲边界：</strong> publication 不是数据库事务提交：Memcached 不提供跨 key 原子性，也不对数据库状态做一致性承诺。<br />
+<strong>第四层落生产：</strong> 给出一个指标或算式，例如：用并发 GET 在 SET body 分片延迟发送期间持续读取，验证 link 前始终 MISS/旧值，完成后才切换。</p>
+</blockquote>
+<h2 id="v2">专家级展开（V2）</h2>
+<h3 id="a">A. 从第一性原理推导</h3>
+<p>新 Item 对 GET 可见的关键是进入 assoc，而不是“内存已写完”。do_item_link 把构造完成的对象发布到 Hash，并把它接入 LRU；这是逻辑可见性边界。</p>
+<p>这道题建议使用“<strong>状态 → 所有者 → 转移条件 → 失败后果</strong>”四步法推导，而不是背结论。先确定哪份状态是核心，再问由哪个模块维护，随后说明状态何时迁移，最后指出违反不变量会表现为什么 bug 或性能问题。</p>
+<h3 id="b">B. 关键源码符号与阅读顺序</h3>
+<ul>
+<li><code>do_item_link</code></li>
+<li><code>ITEM_LINKED</code></li>
+<li><code>assoc_insert</code></li>
+<li><code>item_link_q</code></li>
+<li><code>refcount_incr</code></li>
+</ul>
+<p>建议在 <code>memcached-1.6.45</code> 源码树中用下面的方式定位，而不是按文件顺序从头读：</p>
+<pre><code class="language-bash">git grep -n &quot;\bdo_item_link\b&quot; -- proto_text.c proto_parser.c items.c thread.c assoc.c slabs.c
+git grep -n &quot;\bITEM_LINKED\b&quot; -- proto_text.c proto_parser.c items.c thread.c assoc.c slabs.c
+git grep -n &quot;\bassoc_insert\b&quot; -- proto_text.c proto_parser.c items.c thread.c assoc.c slabs.c
+git grep -n &quot;\bitem_link_q\b&quot; -- proto_text.c proto_parser.c items.c thread.c assoc.c slabs.c
+git grep -n &quot;\brefcount_incr\b&quot; -- proto_text.c proto_parser.c items.c thread.c assoc.c slabs.c
+</code></pre>
+<p>阅读函数时至少记录 5 个问题：<strong>入参中的 key/hash/item 是谁创建的、当前持有哪些锁、item 是否已 <code>ITEM_LINKED</code>、refcount 谁持有、失败路径最终由谁释放资源</strong>。</p>
+<h3 id="c">C. 边界条件与反例</h3>
+<p>publication 不是数据库事务提交：Memcached 不提供跨 key 原子性，也不对数据库状态做一致性承诺。</p>
+<p>面试中主动讲边界条件很加分，因为它能证明你区分了“默认实现”“协议语义”“架构经验”和“数学近似”。尤其要避免把平均 O(1)、默认 1MB、client-side hashing 等表述成无条件真理。</p>
+<h3 id="d">D. 生产故障推演</h3>
+<p>若错误地在 value 完成前 assoc_insert，另一个线程可能读到未完成对象；construct-before-publish 正是防止这种读写撕裂。</p>
+<p>遇到这类问题时，建议把故障链写成：</p>
+<pre><code class="language-text">触发条件 → Memcached 内部状态变化 → HIT/MISS/P99 变化 → origin/网络/CPU 后果 → 保护或恢复动作
+</code></pre>
+<p>这样回答能自然从源码层过渡到生产系统，而不是把“源码题”和“系统设计题”割裂开。</p>
+<h3 id="e">E. 定量分析 / 可验证指标</h3>
+<p>用并发 GET 在 SET body 分片延迟发送期间持续读取，验证 link 前始终 MISS/旧值，完成后才切换。</p>
+<p>工程上至少给出一个可以<strong>测量或计算</strong>的量。没有数字的“性能更好”“内存更省”“更稳定”通常无法指导容量规划，也很难在故障现场验证。</p>
+<h2 id="_13">关联题目</h2>
+<ul>
+<li><span class="srcref">012. 从 set foo bar 开始，说出核心源码调用链。</span></li>
+<li><span class="srcref">013. 为什么 Memcached 先分配 Item，再读取 value？</span></li>
+<li><span class="srcref">015. Item 为什么需要 refcount？</span></li>
+<li><span class="srcref">016. 第二次 set foo newValue 是直接覆盖旧内存吗？</span></li>
+</ul>
+<h2 id="_14">官方参考</h2>
+<ul>
+<li><strong>S5</strong> <a href="https://github.com/memcached/memcached/blob/1.6.45/memcached.h">memcached.h @ 1.6.45</a> — struct item、conn、flags、配置结构。</li>
+<li><strong>S6</strong> <a href="https://github.com/memcached/memcached/blob/1.6.45/items.c">items.c @ 1.6.45</a> — Item alloc/link/unlink、LRU 与生命周期。</li>
+<li><strong>S7</strong> <a href="https://github.com/memcached/memcached/blob/1.6.45/assoc.c">assoc.c @ 1.6.45</a> — 本地 HashTable、find/insert/delete、rehash。</li>
+<li><strong>S8</strong> <a href="https://github.com/memcached/memcached/blob/1.6.45/slabs.c">slabs.c @ 1.6.45</a> — Slab class、page、chunk、freelist 与 reassign。</li>
+<li><strong>S9</strong> <a href="https://github.com/memcached/memcached/blob/1.6.45/thread.c">thread.c @ 1.6.45</a> — Worker、item locks、LRU locks 与线程调度。</li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GRPO 中 KL 怎么加？与 PPO reference KL 的关系？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Reinforcement Learning</a><i>∕</i><span>Q088</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q088</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q087.html">← Q087</a><a href="Q089.html">Q089 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">ppo</a><a href="#">policy-gradient</a><a href="#">importance-sampling</a><a href="#">grpo</a><a href="#">llm-rl</a><a href="#">group-baseline</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      REINFORCEMENT · 88 / 100</div>
+    <h1 class="qtitle">GRPO 中 KL 怎么加？与 PPO reference KL 的关系？</h1>
+    <blockquote>
+<p><strong>题型</strong>：2026 真题 ｜ <strong>频率</strong>：★★★★★ ｜ <strong>难度</strong>：★★★★☆ ｜ <strong>岗位</strong>：LLM Reasoning<br />
+<strong>来源层级</strong>：本页“PDF 原始要点”来自仓库内原版 PDF；“Repo 扩展解析”是在不改变原结论的前提下新增的理论、工程与面试组织内容。</p>
+</blockquote>
+<h2 id="1">1. 面试官真正想确认什么</h2>
+<p>这不是单纯的名词解释题。面试官通常会顺着 <strong>定义 → 数学对象 → 为什么有效 → 什么时候失效 → 如何实现/监控 → 如何迁移到项目</strong> 连续追问。</p>
+<p>LLM 后训练可以看成超大离散动作空间上的 policy optimization。一个 response 是长序列，reward 往往是 sequence-level，而训练更新发生在 token-level 参数上，因此 <strong>credit assignment、importance ratio 粒度、KL、采样成本与 verifier 可靠性</strong> 同时成为一等问题。回答 2026 面试题时，应把算法公式与 rollout 系统、显存占用、长尾序列和 reward pipeline 一起讲。</p>
+<h2 id="2-30-pdf">2. 30 秒回答（PDF 原始要点）</h2>
+<blockquote>
+<p>GRPO 仍可对 policy 与 reference 计算 token/sequence KL 作为正则或 reward penalty；它去掉的是 critic，不是 reference 约束。</p>
+</blockquote>
+<p>面试开场建议只讲这一层；如果面试官点头继续，再进入后面的推导与 failure mode。</p>
+<h2 id="3-pdf">3. 深入解析（PDF 原始要点）</h2>
+<ul>
+<li>常见实现用 sampled log-ratio 近似 KL penalty。</li>
+<li>β 控制 reward exploitation 与语言先验保持。</li>
+<li>如果 reference 随训练阶段更新，KL 的“锚”也在移动。</li>
+</ul>
+<h2 id="4-repo">4. Repo 扩展解析：把概念放回统一框架</h2>
+<p>LLM 后训练可以看成超大离散动作空间上的 policy optimization。一个 response 是长序列，reward 往往是 sequence-level，而训练更新发生在 token-level 参数上，因此 <strong>credit assignment、importance ratio 粒度、KL、采样成本与 verifier 可靠性</strong> 同时成为一等问题。回答 2026 面试题时，应把算法公式与 rollout 系统、显存占用、长尾序列和 reward pipeline 一起讲。</p>
+<h3 id="41">4.1 推导/证明应该从哪里开始</h3>
+<p>先按同一 prompt 采样 G 个 response，计算组内 reward 的中心化/标准化，把它作为无显式 critic 的相对 advantage，再接 PPO-style ratio/clip。</p>
+<h3 id="42">4.2 关键公式</h3>
+<pre><code class="language-text">r̃ = r_task - β·KL(πθ || πref)
+</code></pre>
+<h2 id="43-repo-v2">4.3 Repo v2 专业深化：从第一原则理解</h2>
+<p>GRPO 的 KL 通常仍是 policy 对 reference policy 的正则，它与“old policy ratio 用于 PPO-style update”是两个不同参照关系：old 控制本轮更新，reference 控制长期偏离。</p>
+<h3 id="_1">数学/推导抓手</h3>
+<p>可写 objective≈L_clip−β KL(πθ||πref)；old_logp 出现在 ratio，ref_logp 出现在 KL。</p>
+<blockquote>
+<p><strong>面试要求</strong>：这里的公式不是“背出来就结束”。需要能解释每个期望是对什么随机变量取、哪些量来自 rollout、哪些量是 learned estimate、哪些分支必须 stop-gradient。</p>
+</blockquote>
+<h3 id="_2">工程化检查点</h3>
+<ul>
+<li>日志中分别保存 old_logp 与 ref_logp，混用会产生很隐蔽的训练错误。</li>
+<li>KL 的 token 聚合/sequence 归一化会影响长度偏置。</li>
+<li>明确 prompt、sequence、token 三种粒度。</li>
+<li>明确 old policy、current policy、reference policy 三个角色。</li>
+<li>记录 rollout policy version、response mask、reward components、KL/entropy/length。</li>
+</ul>
+<h3 id="70-90">面试中如何把回答从 70 分提升到 90 分</h3>
+<ol>
+<li><strong>先给结论</strong>：一句话说明该方法解决的 failure mode。</li>
+<li><strong>再写公式</strong>：只写决定算法差异的那一项，不堆无关符号。</li>
+<li><strong>解释估计误差</strong>：指出 bias、variance、distribution shift 或 optimization instability 从哪里来。</li>
+<li><strong>给反例</strong>：说明算法在哪类数据/环境/系统条件下会失效。</li>
+<li><strong>落到日志</strong>：说清你会看哪些指标来验证判断，而不是“调参试试”。</li>
+</ol>
+<h2 id="5">5. 工程实现与训练观测</h2>
+<p>工程实现时建议把“数据形状、mask、旧策略版本、target/stop-gradient 边界、归一化维度”写在代码旁边。RL 中大量 bug 不会报错，而会以训练慢、KL 异常、value 爆炸或 reward 假提升的形式出现。</p>
+<blockquote>
+<p>配套代码：<a href="code/grpo_core.py"><code>code/grpo_core.py</code></a>。先自己手写，再对照仓库版本。</p>
+</blockquote>
+<h3 id="_3">推荐观测项</h3>
+<ul>
+<li><strong>数据层</strong>：状态/动作/response mask 是否正确，terminal/truncation、policy version、reward component 是否可追踪。</li>
+<li><strong>统计层</strong>：均值之外同时看方差、分位数和按难度/长度/任务类型切片的分布。</li>
+<li><strong>优化层</strong>：loss、gradient norm、value/Q/advantage/ratio/KL/entropy 中与本题相关的量是否同步变化。</li>
+<li><strong>真实目标层</strong>：训练 reward 上升是否真的带来 held-out return / accuracy / pass@k / success rate 提升。</li>
+</ul>
+<h2 id="6">6. 常见失败模式与排查</h2>
+<ul>
+<li>group reward 方差接近 0，relative advantage 没有区分信号</li>
+<li>长序列造成 ratio/KL/长度权重的粒度错配</li>
+<li>rollout policy、reference、old logp 版本不一致</li>
+</ul>
+<p>排查原则：<strong>先证伪数据与实现 bug，再讨论算法超参；先看分布，再看平均值。</strong></p>
+<h2 id="7">7. 高频追问</h2>
+<ul>
+<li>KL penalty 放 reward 还是 loss 有区别吗？</li>
+<li>reference refresh 会怎样影响探索？</li>
+</ul>
+<h3 id="_4">推荐追问回答结构</h3>
+<ol>
+<li>先给一句结论；</li>
+<li>写出最关键公式/数据分布；</li>
+<li>解释为什么该公式能解决上一层 failure mode；</li>
+<li>给一个反例或失效场景；</li>
+<li>最后落到工程监控或项目经验。</li>
+</ol>
+<h2 id="71">7.1 高频追问参考答法</h2>
+<h3 id="1kl-penalty-reward-loss">追问 1：KL penalty 放 reward 还是 loss 有区别吗？</h3>
+<p>GRPO 的 KL 通常仍是 policy 对 reference policy 的正则，它与“old policy ratio 用于 PPO-style update”是两个不同参照关系：old 控制本轮更新，reference 控制长期偏离。</p>
+<p>回答时继续补一层：先说明<strong>为什么</strong>，再指出一个<strong>边界条件/失败现象</strong>，最后给出一个可观测指标或实现检查点。</p>
+<h3 id="2reference-refresh">追问 2：reference refresh 会怎样影响探索？</h3>
+<p>日志中分别保存 old_logp 与 ref_logp，混用会产生很隐蔽的训练错误。</p>
+<p>回答时继续补一层：先说明<strong>为什么</strong>，再指出一个<strong>边界条件/失败现象</strong>，最后给出一个可观测指标或实现检查点。</p>
+<h2 id="8">8. 易错点</h2>
+<blockquote>
+<p>“GRPO 不需要 KL”是错误结论。</p>
+</blockquote>
+<h2 id="9">9. 面试官评分标准</h2>
+<blockquote>
+<p>优秀回答应同时覆盖定义/公式、为什么成立、失败模式与项目迁移。</p>
+</blockquote>
+<p>可以进一步按四档自评：</p>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>及格</td>
+<td>能准确给定义和主公式</td>
+</tr>
+<tr>
+<td>良好</td>
+<td>能解释每一项、算法动机与典型优缺点</td>
+</tr>
+<tr>
+<td>优秀</td>
+<td>能说明 failure mode、边界条件和替代方案</td>
+</tr>
+<tr>
+<td>强工程/研究</td>
+<td>能从日志、数据分布、系统成本或项目迁移给出可验证判断</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10">10. 白板自测</h2>
+<p>在不看答案的情况下，尝试完成：</p>
+<ul>
+<li>用 <strong>3 句话</strong>重新回答本题；</li>
+<li>从第一原则推导/解释核心公式，而不是默写；</li>
+<li>给出一个“这个方法会失败”的具体环境或训练现象；</li>
+<li>说明你会记录哪 3 个指标来验证自己的判断。</li>
+</ul>
+<h2 id="11">11. 延伸阅读</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2203.02155">Training language models to follow instructions with human feedback</a></li>
+<li><a href="https://arxiv.org/abs/2402.03300">DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models</a></li>
+<li><a href="https://www.nature.com/articles/s41586-025-09422-z">DeepSeek-R1 incentivizes reasoning in LLMs through reinforcement learning</a></li>
+</ul>
+<h2 id="111-primary-source">11.1 Primary Source 精读建议</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2402.03300">DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models</a></li>
+</ul>
+<p>阅读时不要只看摘要。建议至少定位：<strong>problem formulation → objective/algorithm box → ablation → failure/limitation</strong>。面试里真正有区分度的是能把论文中的设计选择与本题的 failure mode 对上。</p>
+<h2 id="12-90">12. 90 秒专业回答</h2>
+<blockquote>
+<p><strong>结论先行</strong>：GRPO 仍可对 policy 与 reference 计算 token/sequence KL 作为正则或 reward penalty；它去掉的是 critic，不是 reference 约束。</p>
+</blockquote>
+<p>继续展开时，先把它放回本章的统一问题框架：<strong>常见实现用 sampled log-ratio 近似 KL penalty。；β 控制 reward exploitation 与语言先验保持。</strong>。随后写出本题最关键的数学对象：<code>r̃ = r_task - β·KL(πθ || πref)</code>。最后必须补一句工程判断：公式成立不代表实现健康，需要用本页列出的分布指标、边界条件和 failure mode 验证。</p>
+<p>一个高质量的 90 秒回答应满足：</p>
+<ul>
+<li><strong>前 15 秒</strong>：明确“这个方法解决什么问题”；</li>
+<li><strong>15–45 秒</strong>：给核心公式，并解释符号来自哪个数据分布；</li>
+<li><strong>45–70 秒</strong>：讲一个典型失败模式或 tradeoff；</li>
+<li><strong>70–90 秒</strong>：落到实现/日志，并说明如何验证。</li>
+</ul>
+<blockquote>
+<p><strong>不要这样答</strong>：只按论文顺序背名词。面试官通常更在意你能否从 failure mode 推回设计，再从设计推到可观测指标。</p>
+</blockquote>
+<h2 id="13">13. 最小可验证实验</h2>
+<p><strong>实验目标</strong>：不是做 leaderboard，而是把本题的核心机制变成可以 falsify 的小实验。</p>
+<ol>
+<li><strong>环境/数据</strong>：用少量 prompt，每个 prompt 采 G 个短 completion，并使用可重复的 toy verifier/reward。</li>
+<li><strong>记录与对照</strong>：保存 prompt/response mask、old/ref/new logp、group reward、advantage、ratio、KL、entropy、length。</li>
+<li><strong>验收标准</strong>：先在极小 batch 上逐元素核对 loss，再扩到真实 rollout；这能捕获绝大多数 silent bug。</li>
+</ol>
+<p>针对本题额外要求：把 <strong>“GRPO 中 KL 怎么加？与 PPO reference KL 的关系？”</strong> 对应的关键变量单独画分布或写断言；如果实验结果和理论预期相反，优先检查数据定义、mask/terminal、旧策略版本和归一化维度，再讨论超参数。</p>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

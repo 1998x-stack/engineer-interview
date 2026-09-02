@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checkpoint 应该保存什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Agent Engineer</a><i>∕</i><span>q062</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q062</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">必考</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q061.html">← q061</a><a href="q063.html">q063 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">durable-execution</a><a href="#">checkpoint</a><a href="#">retry</a><a href="#">saga</a><a href="#">必考</a><a href="#">中</a><a href="#">production-agent</a><a href="#">reliability</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      AGENT RELIABILITY · 62 / 100</div>
+    <h1 class="qtitle">Checkpoint 应该保存什么？</h1>
+    <blockquote>
+<p><strong>能力轴</strong>：Durable Execution 与 Fault Tolerance<br />
+<strong>GitHub Edition</strong>：Expanded Professional Version<br />
+<strong>训练目标</strong>：能给出 30 秒结论、3 分钟工程展开，并承受连续系统追问。</p>
+</blockquote>
+<h2 id="_1">题目定位</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>面试层级</td>
+<td>Senior / Staff 倾向</td>
+</tr>
+<tr>
+<td>失败类别</td>
+<td>Runtime / Recovery</td>
+</tr>
+<tr>
+<td>风险等级</td>
+<td>中高</td>
+</tr>
+<tr>
+<td>核心 Invariant</td>
+<td>checkpoint 保存可恢复执行所需的最小完整状态，并带 schema/code version。</td>
+</tr>
+<tr>
+<td>面试频率</td>
+<td>必考</td>
+</tr>
+<tr>
+<td>难度</td>
+<td>中</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官在考什么</h2>
+<p>恢复需要知道‘世界已经发生了什么’，而不只是模型看过什么。</p>
+<p>这道题表面在问一个局部技术点，实际上通常同时检查以下三层能力：</p>
+<ul>
+<li>关键是足够恢复且可版本化。</li>
+<li>大 artifact 存引用，不必内嵌。</li>
+<li>checkpoint 要原子写入或可判定状态。</li>
+<li>把 crash 当常态设计，而不是异常路径</li>
+<li>checkpoint 解决本地状态恢复，idempotency 解决外部副作用重复</li>
+</ul>
+<blockquote>
+<p><strong>判断高级答案的标志</strong>：不仅告诉面试官“用什么机制”，还能说明 <strong>为什么需要它、它保护哪个 invariant、失败时怎么恢复、怎么证明方案有效</strong>。</p>
+</blockquote>
+<h2 id="30">30 秒回答</h2>
+<p>至少保存可恢复所需的 control state、business state 引用、已完成步骤、pending action、工具结果/operation id、计划版本、预算和 schema version。不是简单 dump 全部 prompt。</p>
+<h2 id="_3">深挖解析</h2>
+<blockquote>
+<p>下面先逐条展开 PDF 原始深挖点；这些是本题最应该讲清的技术机制。</p>
+</blockquote>
+<h3 id="1">1. 关键是足够恢复且可版本化。</h3>
+<p>把这个点放进 crash/replay 模型：假设进程在任意两行代码之间崩溃，检查恢复是否会丢状态或重复副作用。</p>
+<h3 id="2-artifact">2. 大 artifact 存引用，不必内嵌。</h3>
+<p>把这个点放进 crash/replay 模型：假设进程在任意两行代码之间崩溃，检查恢复是否会丢状态或重复副作用。</p>
+<h3 id="3-checkpoint">3. checkpoint 要原子写入或可判定状态。</h3>
+<p>Checkpoint 只解决“本地执行状态从哪里恢复”。如果步骤已经对外产生副作用，仍需要额外的 idempotency/reconciliation 机制；否则从旧 checkpoint 重放会重复执行外部动作。</p>
+<h3 id="_4">从机制到系统</h3>
+<p>把上面几点合起来，本题不能只用一个局部 API 或 Prompt 技巧解决。需要把 <strong><code>定义 checkpoint schema；事件流记录每次 transition，checkpoint 保存最近可恢复快照，两者结合 replay。</code></strong> 变成 runtime 中可测试的状态迁移，并给关键 transition 设计失败分支。</p>
+<h2 id="3">3 分钟专业展开</h2>
+<p>先把问题抽象成一个工程约束：<strong>checkpoint 保存可恢复执行所需的最小完整状态，并带 schema/code version。</strong>。然后按下面四层回答：</p>
+<ol>
+<li><strong>语义层</strong>：先定义“成功 / 失败 / 完成 / 重试 / 授权”等词在这个场景中的准确含义，避免把 HTTP、LLM 或消息状态误当业务状态。</li>
+<li><strong>状态层</strong>：指出哪些事实必须结构化、持久化、带版本或 operation identity；不要只依赖聊天历史或自然语言总结。</li>
+<li><strong>控制层</strong>：明确模型可以提出什么、runtime/策略引擎必须强制什么，以及异常时走 retry、replan、fallback、HITL 还是 fail-safe。</li>
+<li><strong>验证层</strong>：给出 trace / metric / eval，证明机制既能挡住已知 failure mode，又不会产生不可接受的延迟、成本或误拦截。</li>
+</ol>
+<h3 id="_5">核心机制</h3>
+<ul>
+<li><strong>关键是足够恢复且可版本化。</strong></li>
+<li><strong>大 artifact 存引用，不必内嵌。</strong></li>
+<li><strong>checkpoint 要原子写入或可判定状态。</strong></li>
+<li>把 crash 当常态设计，而不是异常路径</li>
+<li>checkpoint 解决本地状态恢复，idempotency 解决外部副作用重复</li>
+<li>retry 必须建立在 error taxonomy、deadline 和 retry budget 上</li>
+</ul>
+<h3 id="_6">关键设计决策</h3>
+<ul>
+<li>失败点之前哪些动作已产生副作用？</li>
+<li>最近一致 checkpoint 在哪？</li>
+<li>错误可重试吗？</li>
+<li>恢复需要 reconcile、compensate 还是人工介入？</li>
+</ul>
+<h2 id="_7">参考架构 / 控制流</h2>
+<pre><code class="language-mermaid">flowchart LR
+  R[Run] --&gt; C1[(Checkpoint N)]
+  C1 --&gt; S[Step]
+  S --&gt; X[External Side Effect]
+  X --&gt; C2[(Checkpoint N+1)]
+  S -. crash .-&gt; F[Failure]
+  F --&gt; L[Load Last Checkpoint]
+  L --&gt; RE[Reconcile / Resume]
+  RE --&gt; S
+</code></pre>
+<p>这张图强调本章的可信边界：进程可随时崩溃，任务仍能从一致状态恢复且不重复产生副作用。面试时先讲数据/控制流，再讲每个边界上的校验与恢复。</p>
+<h2 id="_8">状态与接口设计</h2>
+<p>面试中建议显式说出“<strong>哪些字段需要存在</strong>”，这样比只说框架名更有工程可信度。一个最小设计通常包括：</p>
+<ul>
+<li><code>run_id / task_id / step_id</code>：把一次执行和子任务串起来。</li>
+<li><code>attempt / version / deadline</code>：区分重试、版本与剩余时间。</li>
+<li><code>status</code>：使用有限状态机，而不是自由文本表示执行状态。</li>
+<li><code>input_ref / output_ref / artifact_ref</code>：大对象保存为引用，避免在 context/消息中复制。</li>
+<li><code>trace_id / correlation_id</code>：跨模型、工具、Agent 和异步任务关联。</li>
+<li>对副作用步骤再加入 <code>operation_id / idempotency_key / approval_id</code>；对知识步骤加入 <code>source / provenance / freshness</code>。</li>
+</ul>
+<h2 id="_9">实现骨架 / 伪代码</h2>
+<pre><code class="language-python">state = checkpoint_store.load(run_id)
+for step in state.pending_steps:
+    status = reconcile_external_state(step.operation_id)
+    if status == &quot;committed&quot;:
+        state.mark_done(step, status.result)
+    elif retry_policy.allows(step.error, deadline):
+        execute_with_same_operation_id(step)
+checkpoint_store.save(state)
+</code></pre>
+<h2 id="_10">典型生产场景</h2>
+<p>任务在调用外部工单系统后 crash。恢复时从 checkpoint 发现该 step 处于 IN_FLIGHT，先查询 operation_id，再决定标 DONE 或补发。</p>
+<h2 id="failure-modes">Failure Modes：方案最容易坏在哪里</h2>
+<ul>
+<li><strong>checkpoint 与外部副作用不一致</strong></li>
+<li><strong>盲目 retry 放大故障</strong></li>
+<li><strong>版本升级后旧状态无法反序列化</strong></li>
+</ul>
+<p>遇到异常时，不要立即跳到“重试”。建议统一使用：</p>
+<p><code>Detect → Classify → Contain → Recover → Preserve → Verify</code></p>
+<p>本题最重要的 Preserve 对象是：<strong>checkpoint 保存可恢复执行所需的最小完整状态，并带 schema/code version。</strong>。</p>
+<h2 id="trade-off">Trade-off：为什么不能只有一个标准答案</h2>
+<ul>
+<li><strong>Checkpoint 频率 vs 开销</strong>：更频繁 checkpoint 缩短重放窗口，但增加存储/序列化成本；副作用一致性仍需幂等。</li>
+<li><strong>自动 retry vs 故障放大</strong>：retry budget 应和 deadline、错误类型、下游健康联动。</li>
+</ul>
+<p>面试时最好给出一个“默认选择 + 改变选择的条件”，而不是绝对化表达。例如：默认用更简单的单 Agent/同步/低并发方案，只有当评估数据证明瓶颈来自专业化、并行或长任务时再增加复杂度。</p>
+<h2 id="_11">可观测性与关键指标</h2>
+<p>恢复系统要做故障注入；只在正常路径统计成功率无法证明 durable。 建议至少记录：</p>
+<ul>
+<li><code>resume_success_rate</code></li>
+<li><code>checkpoint_age</code></li>
+<li><code>retry_success_rate</code></li>
+<li><code>duplicate_operation_rate</code></li>
+<li><code>recovery_time</code></li>
+<li><code>dead_letter_rate</code></li>
+</ul>
+<p>此外所有指标都应该按 <code>workflow_version / model / tool / tenant / task_type / failure_class</code> 等维度切片，否则总体平均值很容易掩盖局部事故。</p>
+<h2 id="_12">连续追问</h2>
+<h3 id="1-hidden-reasoning">1. 保存模型 hidden reasoning 吗？</h3>
+<p><strong>回答方向</strong>：先以“关键是足够恢复且可版本化。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h3 id="2-checkpoint-event-log">2. Checkpoint 和 event log 有什么区别？</h3>
+<p><strong>回答方向</strong>：先以“关键是足够恢复且可版本化。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h2 id="_13">易错回答</h2>
+<blockquote>
+<p>把聊天历史序列化就叫 checkpoint。</p>
+</blockquote>
+<p>为什么这是低质量答案：它通常只描述 happy path，没有说明失败语义、状态所有权或可信边界，也没有给出验证手段。高级回答要把“模型可能错、网络可能断、进程可能崩、消息可能重复、知识可能过期”当作设计前提。</p>
+<h2 id="know-why">Know-Why</h2>
+<p>恢复需要知道‘世界已经发生了什么’，而不只是模型看过什么。</p>
+<p>更深一层看，本题的本质是保护这个系统 invariant：<strong>checkpoint 保存可恢复执行所需的最小完整状态，并带 schema/code version。</strong>。Agent 引入的是概率决策，因此工程层需要把不可违反的规则外置为 deterministic guardrails/state machines，并给非确定路径准备恢复机制。</p>
+<h2 id="know-how">Know-How</h2>
+<p>定义 checkpoint schema；事件流记录每次 transition，checkpoint 保存最近可恢复快照，两者结合 replay。</p>
+<h3 id="_14">落地步骤</h3>
+<ol>
+<li>先写出业务 invariant 和明确的完成/失败定义。</li>
+<li>建立结构化 state，给每个关键字段确定 owner、版本与持久化周期。</li>
+<li>在可信 runtime / gateway 中实现校验、权限、预算和异常策略，不只依赖 prompt。</li>
+<li>为关键 transition 添加 trace、state diff 和可聚合 error code。</li>
+<li>构造至少 3 个故障注入案例：超时/重复/崩溃（或本题等价异常）。</li>
+<li>用 regression eval + 线上指标确认修复没有把问题转移到成本、时延或误拦截。</li>
+</ol>
+<h2 id="production-checklist">Production Checklist</h2>
+<ul>
+<li>[ ] 核心 invariant 已写成可验证条件：checkpoint 保存可恢复执行所需的最小完整状态，并带 schema/code version。</li>
+<li>[ ] 关键状态不只存在于 prompt/messages 中。</li>
+<li>[ ] 存在明确 timeout / retry / stop / fallback / HITL 策略。</li>
+<li>[ ] 所有高风险副作用经过资源侧授权与审计。</li>
+<li>[ ] Trace 能定位到发生错误的具体 transition。</li>
+<li>[ ] 变更有离线 regression，关键路径有线上 SLO/告警。</li>
+</ul>
+<h2 id="_15">面试自测</h2>
+<ul>
+<li>[ ] 我能在 <strong>30 秒</strong>内讲清核心结论，不报框架名堆术语。</li>
+<li>[ ] 我能在 <strong>3 分钟</strong>内说明状态、控制边界、失败恢复和指标。</li>
+<li>[ ] 我能画出上面的控制流，并解释每个箭头的失败语义。</li>
+<li>[ ] 面试官换成“网络断了 / Worker crash / 重复消息 / 权限不足”时，我仍能沿 invariant 推导方案。</li>
+</ul>
+<h2 id="_16">关联题目</h2>
+<ul>
+<li><span class="srcref">Q061 · 一个 Agent 运行 40 分钟，第 39 分钟进程 crash，怎么办？</span></li>
+<li><span class="srcref">Q063 · Tool 已执行成功，但 Agent 在写 checkpoint 前 crash，会发生什么？</span></li>
+<li><span class="srcref">Q064 · 哪些错误应该 retry，哪些绝对不应该 retry？</span></li>
+<li><span class="srcref">Q065 · Agent 为什么需要 Circuit Breaker？</span></li>
+<li><span class="srcref">Q066 · 整个 Agent SLA 30 秒，内部 5 个工具 timeout 怎么分？</span></li>
+</ul>
+<h2 id="_17">延伸阅读</h2>
+<h3 id="_18">对应官方工程资料</h3>
+<ul>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/persistence">LangGraph · Persistence</a></li>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/interrupts">LangGraph · Interrupts</a></li>
+</ul>
+<blockquote>
+<p>外部资料用于 GitHub Expanded Edition 的工程深化；PDF 原始题目与核心字段仍按仓库结构化源数据保留。</p>
+</blockquote>
+<ul>
+<li><span class="srcref">Reliability First：六步故障回答框架</span></li>
+<li><span class="srcref">系统设计白板模板</span></li>
+<li><span class="srcref">参考资料与官方工程资料</span></li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

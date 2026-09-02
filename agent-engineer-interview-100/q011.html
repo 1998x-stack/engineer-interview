@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReAct、Plan-and-Execute、Reflection 分别适合什么任务？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Agent Engineer</a><i>∕</i><span>q011</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q011</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">高频</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q010.html">← q010</a><a href="q012.html">q012 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">planning</a><a href="#">react</a><a href="#">reflection</a><a href="#">drift</a><a href="#">control</a><a href="#">高频</a><a href="#">中</a><a href="#">production-agent</a><a href="#">reliability</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      AGENT RELIABILITY · 11 / 100</div>
+    <h1 class="qtitle">ReAct、Plan-and-Execute、Reflection 分别适合什么任务？</h1>
+    <blockquote>
+<p><strong>能力轴</strong>：Planning、Reflection 与任务控制<br />
+<strong>GitHub Edition</strong>：Expanded Professional Version<br />
+<strong>训练目标</strong>：能给出 30 秒结论、3 分钟工程展开，并承受连续系统追问。</p>
+</blockquote>
+<h2 id="_1">题目定位</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>面试层级</td>
+<td>Mid / Senior</td>
+</tr>
+<tr>
+<td>失败类别</td>
+<td>Planning / Trajectory</td>
+</tr>
+<tr>
+<td>风险等级</td>
+<td>中</td>
+</tr>
+<tr>
+<td>核心 Invariant</td>
+<td>每一步都推动目标进度，偏离可检测，计划可局部修复</td>
+</tr>
+<tr>
+<td>面试频率</td>
+<td>高频</td>
+</tr>
+<tr>
+<td>难度</td>
+<td>中</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官在考什么</h2>
+<p>规划范式选择的本质是用多少前瞻换多少运行时灵活性。</p>
+<p>这道题表面在问一个局部技术点，实际上通常同时检查以下三层能力：</p>
+<ul>
+<li>ReAct 的优势是即时适应，缺点是局部贪心与循环。</li>
+<li>Plan-and-Execute 降低每步规划成本，但初始计划可能过时。</li>
+<li>Reflection 只有在反馈信号有信息量时才值得付额外 token。</li>
+<li>计划是候选执行方案，不是授权</li>
+<li>用 milestone / invariant / verifier 监控 trajectory，而非只评最终结果</li>
+</ul>
+<blockquote>
+<p><strong>判断高级答案的标志</strong>：不仅告诉面试官“用什么机制”，还能说明 <strong>为什么需要它、它保护哪个 invariant、失败时怎么恢复、怎么证明方案有效</strong>。</p>
+</blockquote>
+<h2 id="30">30 秒回答</h2>
+<p>ReAct 适合环境反馈频繁、路径不确定的任务；Plan-and-Execute 适合依赖关系清晰、步骤较长的任务；Reflection 适合存在可评估结果、允许迭代改进的任务。生产系统经常组合使用，而不是三选一。</p>
+<h2 id="_3">深挖解析</h2>
+<blockquote>
+<p>下面先逐条展开 PDF 原始深挖点；这些是本题最应该讲清的技术机制。</p>
+</blockquote>
+<h3 id="1-react">1. ReAct 的优势是即时适应，缺点是局部贪心与循环。</h3>
+<p>把这个点落到 trajectory 控制：定义 progress signal、触发阈值和后续动作。只有“发现异常”而没有 replan/stop/clarify 策略仍不完整。</p>
+<h3 id="2-plan-and-execute">2. Plan-and-Execute 降低每步规划成本，但初始计划可能过时。</h3>
+<p>成本优化必须和任务成功率绑定。减少 token、换小模型、增加缓存都要看 <code>cost_per_success</code>，否则可能只是把费用转成失败率和人工升级成本。</p>
+<h3 id="3-reflection-token">3. Reflection 只有在反馈信号有信息量时才值得付额外 token。</h3>
+<p>成本优化必须和任务成功率绑定。减少 token、换小模型、增加缓存都要看 <code>cost_per_success</code>，否则可能只是把费用转成失败率和人工升级成本。</p>
+<h3 id="_4">从机制到系统</h3>
+<p>把上面几点合起来，本题不能只用一个局部 API 或 Prompt 技巧解决。需要把 <strong><code>用任务长度、环境变化率、可验证性、工具延迟四个维度选择策略，并通过 eval 验证。</code></strong> 变成 runtime 中可测试的状态迁移，并给关键 transition 设计失败分支。</p>
+<h2 id="3">3 分钟专业展开</h2>
+<p>先把问题抽象成一个工程约束：<strong>每一步都推动目标进度，偏离可检测，计划可局部修复</strong>。然后按下面四层回答：</p>
+<ol>
+<li><strong>语义层</strong>：先定义“成功 / 失败 / 完成 / 重试 / 授权”等词在这个场景中的准确含义，避免把 HTTP、LLM 或消息状态误当业务状态。</li>
+<li><strong>状态层</strong>：指出哪些事实必须结构化、持久化、带版本或 operation identity；不要只依赖聊天历史或自然语言总结。</li>
+<li><strong>控制层</strong>：明确模型可以提出什么、runtime/策略引擎必须强制什么，以及异常时走 retry、replan、fallback、HITL 还是 fail-safe。</li>
+<li><strong>验证层</strong>：给出 trace / metric / eval，证明机制既能挡住已知 failure mode，又不会产生不可接受的延迟、成本或误拦截。</li>
+</ol>
+<h3 id="_5">核心机制</h3>
+<ul>
+<li><strong>ReAct 的优势是即时适应，缺点是局部贪心与循环。</strong></li>
+<li><strong>Plan-and-Execute 降低每步规划成本，但初始计划可能过时。</strong></li>
+<li><strong>Reflection 只有在反馈信号有信息量时才值得付额外 token。</strong></li>
+<li>计划是候选执行方案，不是授权</li>
+<li>用 milestone / invariant / verifier 监控 trajectory，而非只评最终结果</li>
+<li>控制 budget、cycle、stagnation，把“不会停”变成可检测状态</li>
+</ul>
+<h3 id="_6">关键设计决策</h3>
+<ul>
+<li>当前步骤是否推进 milestone？</li>
+<li>失败需要 retry、replan 还是 clarify？</li>
+<li>何时必须 stop？</li>
+<li>计划变更影响局部还是全局？</li>
+</ul>
+<h2 id="_7">参考架构 / 控制流</h2>
+<pre><code class="language-mermaid">flowchart LR
+  G[Goal] --&gt; P[Planner]
+  P --&gt; C[Plan Validator]
+  C --&gt; E[Executor]
+  E --&gt; O[Observation]
+  O --&gt; J[Progress / Drift Judge]
+  J --&gt;|ok| E
+  J --&gt;|local change| RP[Local Replan]
+  RP --&gt; E
+  J --&gt;|unsafe/stuck| X[Stop / Clarify / HITL]
+</code></pre>
+<p>这张图强调本章的可信边界：每一步都推动目标进度，偏离可检测，计划可局部修复。面试时先讲数据/控制流，再讲每个边界上的校验与恢复。</p>
+<h2 id="_8">状态与接口设计</h2>
+<p>面试中建议显式说出“<strong>哪些字段需要存在</strong>”，这样比只说框架名更有工程可信度。一个最小设计通常包括：</p>
+<ul>
+<li><code>run_id / task_id / step_id</code>：把一次执行和子任务串起来。</li>
+<li><code>attempt / version / deadline</code>：区分重试、版本与剩余时间。</li>
+<li><code>status</code>：使用有限状态机，而不是自由文本表示执行状态。</li>
+<li><code>input_ref / output_ref / artifact_ref</code>：大对象保存为引用，避免在 context/消息中复制。</li>
+<li><code>trace_id / correlation_id</code>：跨模型、工具、Agent 和异步任务关联。</li>
+<li>对副作用步骤再加入 <code>operation_id / idempotency_key / approval_id</code>；对知识步骤加入 <code>source / provenance / freshness</code>。</li>
+</ul>
+<h2 id="_9">实现骨架 / 伪代码</h2>
+<pre><code class="language-python">progress = evaluator.compare(goal, state_before, state_after)
+if progress.violation:
+    stop_or_escalate(progress.reason)
+elif progress.stagnant_for &gt;= STAGNATION_LIMIT:
+    replan_or_clarify()
+elif environment_changed():
+    local_replan(affected_subgraph())
+</code></pre>
+<h2 id="_10">典型生产场景</h2>
+<p>研究 Agent 在第 6 步连续两次检索同一关键词且 evidence set 未增加，stagnation detector 触发 query rewrite；若仍无进展则向用户澄清。</p>
+<h2 id="failure-modes">Failure Modes：方案最容易坏在哪里</h2>
+<ul>
+<li><strong>计划不合法却直接执行</strong></li>
+<li><strong>trajectory 偏移直到最终才发现</strong></li>
+<li><strong>重试/反思没有进展判据形成循环</strong></li>
+</ul>
+<p>遇到异常时，不要立即跳到“重试”。建议统一使用：</p>
+<p><code>Detect → Classify → Contain → Recover → Preserve → Verify</code></p>
+<p>本题最重要的 Preserve 对象是：<strong>每一步都推动目标进度，偏离可检测，计划可局部修复</strong>。</p>
+<h2 id="trade-off">Trade-off：为什么不能只有一个标准答案</h2>
+<ul>
+<li><strong>提前规划 vs 边执行边规划</strong>：稳定环境适合 plan-first；高动态环境更适合局部规划与快速反馈。</li>
+<li><strong>自动恢复 vs 人工澄清</strong>：低代价错误可以自动探索，高代价不确定性应更早澄清或 HITL。</li>
+</ul>
+<p>面试时最好给出一个“默认选择 + 改变选择的条件”，而不是绝对化表达。例如：默认用更简单的单 Agent/同步/低并发方案，只有当评估数据证明瓶颈来自专业化、并行或长任务时再增加复杂度。</p>
+<h2 id="_11">可观测性与关键指标</h2>
+<p>除了最终成功率，更重要的是每步 progress、replan 质量、循环率和 clarification 的 precision/recall。 建议至少记录：</p>
+<ul>
+<li><code>plan_validity_rate</code></li>
+<li><code>replan_rate</code></li>
+<li><code>loop_rate</code></li>
+<li><code>progress_per_step</code></li>
+<li><code>clarification_precision</code></li>
+</ul>
+<p>此外所有指标都应该按 <code>workflow_version / model / tool / tenant / task_type / failure_class</code> 等维度切片，否则总体平均值很容易掩盖局部事故。</p>
+<h2 id="_12">连续追问</h2>
+<h3 id="1-reflection">1. 什么时候 Reflection 反而降低效果？</h3>
+<p><strong>回答方向</strong>：先以“ReAct 的优势是即时适应，缺点是局部贪心与循环。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h3 id="2">2. 计划多久重算一次？</h3>
+<p><strong>回答方向</strong>：先以“ReAct 的优势是即时适应，缺点是局部贪心与循环。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h2 id="_13">易错回答</h2>
+<blockquote>
+<p>背三种模式定义，却不讨论任务特征和成本。</p>
+</blockquote>
+<p>为什么这是低质量答案：它通常只描述 happy path，没有说明失败语义、状态所有权或可信边界，也没有给出验证手段。高级回答要把“模型可能错、网络可能断、进程可能崩、消息可能重复、知识可能过期”当作设计前提。</p>
+<h2 id="know-why">Know-Why</h2>
+<p>规划范式选择的本质是用多少前瞻换多少运行时灵活性。</p>
+<p>更深一层看，本题的本质是保护这个系统 invariant：<strong>每一步都推动目标进度，偏离可检测，计划可局部修复</strong>。Agent 引入的是概率决策，因此工程层需要把不可违反的规则外置为 deterministic guardrails/state machines，并给非确定路径准备恢复机制。</p>
+<h2 id="know-how">Know-How</h2>
+<p>用任务长度、环境变化率、可验证性、工具延迟四个维度选择策略，并通过 eval 验证。</p>
+<h3 id="_14">落地步骤</h3>
+<ol>
+<li>先写出业务 invariant 和明确的完成/失败定义。</li>
+<li>建立结构化 state，给每个关键字段确定 owner、版本与持久化周期。</li>
+<li>在可信 runtime / gateway 中实现校验、权限、预算和异常策略，不只依赖 prompt。</li>
+<li>为关键 transition 添加 trace、state diff 和可聚合 error code。</li>
+<li>构造至少 3 个故障注入案例：超时/重复/崩溃（或本题等价异常）。</li>
+<li>用 regression eval + 线上指标确认修复没有把问题转移到成本、时延或误拦截。</li>
+</ol>
+<h2 id="production-checklist">Production Checklist</h2>
+<ul>
+<li>[ ] 核心 invariant 已写成可验证条件：每一步都推动目标进度，偏离可检测，计划可局部修复</li>
+<li>[ ] 关键状态不只存在于 prompt/messages 中。</li>
+<li>[ ] 存在明确 timeout / retry / stop / fallback / HITL 策略。</li>
+<li>[ ] 所有高风险副作用经过资源侧授权与审计。</li>
+<li>[ ] Trace 能定位到发生错误的具体 transition。</li>
+<li>[ ] 变更有离线 regression，关键路径有线上 SLO/告警。</li>
+</ul>
+<h2 id="_15">面试自测</h2>
+<ul>
+<li>[ ] 我能在 <strong>30 秒</strong>内讲清核心结论，不报框架名堆术语。</li>
+<li>[ ] 我能在 <strong>3 分钟</strong>内说明状态、控制边界、失败恢复和指标。</li>
+<li>[ ] 我能画出上面的控制流，并解释每个箭头的失败语义。</li>
+<li>[ ] 面试官换成“网络断了 / Worker crash / 重复消息 / 权限不足”时，我仍能沿 invariant 推导方案。</li>
+</ul>
+<h2 id="_16">关联题目</h2>
+<ul>
+<li><span class="srcref">Q012 · Planner 输出的计划为什么不能直接执行？</span></li>
+<li><span class="srcref">Q013 · Agent 执行一半跑偏了，如何在中间发现？</span></li>
+<li><span class="srcref">Q014 · 计划执行到第三步发现环境变化，全部重规划还是局部重规划？</span></li>
+<li><span class="srcref">Q015 · ReAct Agent 为什么经常死循环？怎么识别？</span></li>
+<li><span class="srcref">Q016 · max_steps 设置 10 还是 100？依据是什么？</span></li>
+</ul>
+<h2 id="_17">延伸阅读</h2>
+<h3 id="_18">对应官方工程资料</h3>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">Anthropic · Harness design for long-running apps</a></li>
+<li><a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents">Anthropic · Demystifying evals for AI agents</a></li>
+</ul>
+<blockquote>
+<p>外部资料用于 GitHub Expanded Edition 的工程深化；PDF 原始题目与核心字段仍按仓库结构化源数据保留。</p>
+</blockquote>
+<ul>
+<li><span class="srcref">Reliability First：六步故障回答框架</span></li>
+<li><span class="srcref">系统设计白板模板</span></li>
+<li><span class="srcref">参考资料与官方工程资料</span></li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

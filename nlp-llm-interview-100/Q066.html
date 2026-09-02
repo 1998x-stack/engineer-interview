@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LoRA 的低秩假设到底是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q066</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q066</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q065.html">← Q065</a><a href="Q067.html">Q067 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">alignment</a><a href="#">lora</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 66 / 100</div>
+    <h1 class="qtitle">LoRA 的低秩假设到底是什么？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★  ·  <strong>频率</strong>：★★★★★  ·  <strong>标签</strong>：<code>alignment</code>, <code>lora</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q066.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>LoRA 为什么只学习 BA 而冻结 W0？rank r 表示什么？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>必须会公式、参数量和部署。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>先区分数据、目标函数与在线/离线优化。</li>
+<li>能解释 reference/reward/preference 的角色。</li>
+<li>讨论稳定性、成本、reward hacking 与数据偏差。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>假设任务适配所需权重增量 ΔW 位于低维子空间，可写为 BA，其中 r≪d。这样显著减少可训练参 数与 optimizer state，同时保留基座权重。</p>
+<h2 id="4">4. 白板核心公式</h2>
+<ul>
+<li>$W=W_0+\Delta W,\quad \Delta W=BA,\quad \mathrm{rank}(BA)\le r$</li>
+</ul>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：通常 B 可零初始化，使初始 ΔW=0。</li>
+<li><strong>PDF 基线要点</strong>：有 scaling α/r 控制更新尺度。</li>
+<li><strong>PDF 基线要点</strong>：推理可将 LoRA merge 回原权重，或动态加载多个 adapter。</li>
+<li><strong>扩展理解</strong>：LoRA 假设任务适配所需的权重更新可由低秩矩阵 BA 近似。</li>
+<li><strong>扩展理解</strong>：训练参数少不等于训练 FLOPs 按同等比例下降，base model 前反向仍需计算。</li>
+<li><strong>扩展理解</strong>：rank、alpha、dropout、target modules 与 learning rate 共同决定效果。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="lora">LoRA 的低秩不是“原权重低秩”</h3>
+<ul>
+<li>LoRA 假设的是下游适配所需的权重增量 $\Delta W$ 具有较低 intrinsic rank，而不是基础权重 $W_0$ 本身低秩。</li>
+<li>令 $\Delta W=BA$，其中 rank r 远小于输入/输出维度，只训练 A/B，就能大幅减少可训练参数、梯度和 optimizer state。</li>
+<li>常把 B 零初始化，使训练开始时 $\Delta W=0$，模型函数与基座完全一致；$\alpha/r$ 控制更新尺度。</li>
+</ul>
+<h3 id="_2">边界与工程</h3>
+<ul>
+<li>r 越大容量越强但参数/显存也涨，不保证单调更好；真正瓶颈可能是数据而非 rank。</li>
+<li>LoRA 可 merge 回权重获得无额外矩阵的推理，也可保留 adapter 动态切换多个任务。</li>
+<li>参数量计算要写成 $r(d_{in}+d_{out})$，并与原矩阵 $d_{out}d_{in}$ 比较。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>先明确 demonstration、preference、reward、rollout 分别来自哪里。</li>
+<li>所有 reward/judge 都是代理目标，要讨论偏差、KL、reward hacking 和覆盖。</li>
+<li>比较方法时同时算训练稳定性、采样成本、显存和在线数据需求。</li>
+</ul>
+<h3 id="_3">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>说“LoRA 是低精度训练”。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>参数量如何计算？</li>
+<li>rank 越大是否一定越好？</li>
+</ol>
+<h3 id="_4">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2106.09685">LoRA</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q065 Pretraining 与 SFT 的本质区别</span></li>
+<li><span class="srcref">Q067 LoRA 应该加 Q/V 还是加所有 Linear？</span></li>
+<li><span class="srcref">Q070 RLHF 的经典 Pipeline 与 KL 约束</span></li>
+<li><span class="srcref">Q074 PPO、DPO、GRPO：什么时候选哪一个？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>LoRA 的低秩不是“原权重低秩”</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

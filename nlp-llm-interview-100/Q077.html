@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么搜索系统通常是多阶段 Retrieval→Rerank？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q077</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q077</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q076.html">← Q076</a><a href="Q078.html">Q078 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">retrieval-rag</a><a href="#">retrieval</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 77 / 100</div>
+    <h1 class="qtitle">为什么搜索系统通常是多阶段 Retrieval→Rerank？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★  ·  <strong>频率</strong>：★★★★★  ·  <strong>标签</strong>：<code>retrieval-rag</code>, <code>retrieval</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q077.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>为什么不直接用最强 Cross-Encoder 对全库搜索？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>考察系统级 recall/precision/cost 权衡。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>把 recall、precision、latency 分阶段分析。</li>
+<li>能从 index/negative sampling/rerank 解释系统设计。</li>
+<li>评价必须端到端可诊断。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>大库中昂贵模型无法逐文档运行，因此先用高召回、低成本 retriever 把候选从百万/十亿缩到百/千， 再用更强 reranker 精排，最后给 LLM 少量高质量 context。</p>
+<h2 id="4">4. 白板核心结构</h2>
+<p>本题更强调概念结构与工程权衡。面试时优先画出数据流、状态转移或模块关系，再补充必要公式。</p>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：每阶段的目标不同：召回阶段优先 Recall，排序阶段优先 top quality。</li>
+<li><strong>PDF 基线要点</strong>：可继续加 rule/authority/freshness 重新排序。</li>
+<li><strong>PDF 基线要点</strong>：端到端优化要避免某阶段指标提升却损伤最终回答。</li>
+<li><strong>扩展理解</strong>：多阶段架构让廉价高召回模块先缩小候选，再用昂贵高精度模型精排。</li>
+<li><strong>扩展理解</strong>：每一阶段都要有独立 recall budget 与 latency budget。</li>
+<li><strong>扩展理解</strong>：系统优化目标是端到端 utility，而不是单模块最高分。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="_2">多阶段检索是计算预算分配问题</h3>
+<ul>
+<li>大规模语料不可能对百万/十亿文档逐一运行昂贵 Cross-Encoder/LLM，因此先用便宜 retriever 把候选压到几百/几千，再用更强模型逐级精排。</li>
+<li>前级优化 recall，后级优化 precision；前级漏掉的相关文档后级无法恢复，所以每层的错误代价不对称。</li>
+<li>典型链路可扩成 query understanding → lexical/dense retrieval → fusion → cross-encoder rerank → LLM context selection/generation。</li>
+</ul>
+<h3 id="_3">边界与工程</h3>
+<ul>
+<li>每加一级都增加 latency、故障点和特征/版本同步成本，不能无限堆模型。</li>
+<li>Top-K 需要按 recall–latency 曲线调，不是固定“1000→100→10”的教条。</li>
+<li>线上应记录每阶段 candidate set、score 和最终点击/答案贡献，才能定位回归发生在哪一级。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>拆成 recall→rerank→generation，各层用不同指标和延迟预算。</li>
+<li>检索系统必须同时考虑 index freshness、长尾实体、ANN recall 与线上 latency。</li>
+<li>任何更强 reranker 都要回答每个 query 需要多少次模型前向。</li>
+</ul>
+<h3 id="_4">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>只说“为了快”。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>候选 K 取多大怎么定？</li>
+<li>cascade 如何做早退？</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_6">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2004.04906">DPR</a></li>
+<li><a href="https://arxiv.org/abs/1908.10084">Sentence-BERT</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q076 Bi‑Encoder 与 Cross‑Encoder：为什么一快一准？</span></li>
+<li><span class="srcref">Q078 Dense Retrieval 的负样本怎么构造？</span></li>
+<li><span class="srcref">Q075 Sparse Retrieval 与 Dense Retrieval 的核心差异</span></li>
+<li><span class="srcref">Q084 如何完整评估一个 RAG 系统？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>多阶段检索是计算预算分配问题</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

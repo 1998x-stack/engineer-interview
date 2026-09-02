@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>写出 Rendering Equation，并解释每一项。 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Game Engine</a><i>∕</i><span>Q061</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q061</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">Advanced</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q060.html">← Q060</a><a href="Q062.html">Q062 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">pbr</a><a href="#">ray-tracing</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      GAME ENGINE · GRAPHICS · 61 / 100</div>
+    <h1 class="qtitle">写出 Rendering Equation，并解释每一项。</h1>
+    <blockquote>
+<p>[!IMPORTANT]
+<strong>内容分层</strong>：<code>PDF 核心内容</code>严格以仓库附带的原 PDF 为基线；<code>专业扩展</code>是为了让题目达到更强的工程面试深度，来自通用工程知识与下方列出的官方/权威资料。两者刻意分开，便于追踪来源。</p>
+</blockquote>
+<p><strong>章节</strong>：PBR、阴影、GI 与 Ray Tracing<br />
+<strong>学习级别</strong>：<code>Advanced</code>（仓库学习分级，不是对 PDF 星级符号的重解释）<br />
+<strong>PDF 位置</strong>：物理页 76<br />
+<strong>来源口径</strong>：公开面经/官方资料可核验 · [M4]</p>
+<hr />
+<h2 id="1">1. 这道题在考什么</h2>
+<p>这题属于 <strong>PBR、阴影、GI 与 Ray Tracing</strong>。面试官通常不是只听一个定义，而是在判断你能否把答案推进到：</p>
+<ol>
+<li><strong>机制</strong>：数据/状态究竟怎样流动；</li>
+<li><strong>成本</strong>：CPU、GPU、内存、同步或数值误差的成本在哪里；</li>
+<li><strong>Trade-off</strong>：什么场景适合，什么场景会失败；</li>
+<li><strong>Engine Context</strong>：在真实 renderer / core / asset / simulation 中怎么落地；</li>
+<li><strong>Evidence</strong>：如何通过 profiler、测试、frame capture 或汇编证明判断。</li>
+</ol>
+<p>本章常见工程落点：material shading、shadow/GI、ray tracing / offline reference。</p>
+<hr />
+<h2 id="2-30-pdf">2. 30 秒回答（PDF 核心内容）</h2>
+<p>Lo(x,wo)=Le(x,wo)+Ω fr(x,wi,wo) Li(x,wi) (n·wi) dwi。它把“自发光 + 所有入射方向经材质散射后的贡献”统一起来。</p>
+<hr />
+<h2 id="3-pdf-source-derived">3. PDF 深入拆解（Source-derived）</h2>
+<p>Lo/Li 是 radiance；fr 是 BRDF，描述单位入射 irradiance 如何变成出射 radiance；cosine 项来自投影面积。递归关系在于 Li 往往来自其他表面的 Lo，这就是全局光照。实时渲染的各种技巧，本质上都在近似这个积分：direct lighting 只取显式光源，IBL 把环境积分预计算，path tracing 用 Monte Carlo 随机估计。</p>
+<h3 id="pdf">PDF 核心抓手</h3>
+<ul>
+<li>radiance 是核心传输量</li>
+<li>BRDF + cosine</li>
+<li>Li 递归来自场景</li>
+<li>各种 GI/IBL/PT 都是方程的不同近似</li>
+</ul>
+<h3 id="pdf-gotcha">PDF 工程 Gotcha</h3>
+<p>只会写公式，不会解释每一项单位与物理意义。</p>
+<h3 id="pdf_1">PDF 面试官在听什么</h3>
+<p>这是判断图形学是否形成统一理论框架的核心题。</p>
+<hr />
+<h2 id="4-repository-v2">4. 专业扩展（Repository v2）</h2>
+<p>这一节不再重复 PDF 的“定义答案”，而是把问题推进到 <strong>可实现、可测量、可讨论 trade-off</strong> 的层级。面试时不要求把下面所有内容一次讲完；更好的策略是先给结论，再根据面试官追问选择其中 2–3 个层次深入。</p>
+<h3 id="41">4.1 先修知识与概念边界</h3>
+<ul>
+<li>radiance/irradiance</li>
+<li>solid angle</li>
+<li>BRDF</li>
+<li>hemisphere integral</li>
+</ul>
+<h3 id="42">4.2 核心心智模型</h3>
+<p>Rendering Equation 是统一光传输框架：一个表面向观察方向的出射 radiance = 自发光 + 来自半球所有方向的入射 radiance 经 BRDF 和余弦权重散射后的积分。实时渲染、IBL、path tracing 都是在用不同预算近似同一个积分。</p>
+<h3 id="43">4.3 底层机制：逐层拆开</h3>
+<ul>
+<li><code>L_i(x,wi)</code> 是从方向 wi 到达 x 的 radiance；它通常来自另一表面的 <code>L_o</code>，因此方程递归。</li>
+<li>BRDF <code>f_r</code> 的单位与物理约束决定材质如何把 incident irradiance 分配到 outgoing direction。</li>
+<li><code>n·wi</code> 来自投影面积：斜入射同样 solid angle 覆盖的有效表面积更小。</li>
+<li>积分域是表面法线朝外的 hemisphere；visibility 和 geometry term 可显式拆出，也可隐含在 Li/path transport 中。</li>
+</ul>
+<h3 id="44">4.4 必须守住的不变量 / 正确性条件</h3>
+<ul>
+<li>理想被动 BRDF 需满足能量守恒；常见非磁性材料还满足 Helmholtz reciprocity。</li>
+<li>Radiance 沿真空直线传播保持不变，这是光线追踪可递归传递 radiance 的关键。</li>
+</ul>
+<p>这些不变量比“记住某个 API”更重要：平台、实现或引擎版本可以变化，但只要不变量没变，你就能重新推导正确方案。</p>
+<h3 id="45-trade-off">4.5 Trade-off：什么时候该用，什么时候不该用</h3>
+<ul>
+<li>实时 raster 通常分 direct/indirect 近似；path tracing 用随机采样换通用性。</li>
+<li>更多近似缓存降低实时成本，但引入 bias、temporal lag 或有限频率响应。</li>
+</ul>
+<h3 id="46">4.6 在真实游戏引擎中的落点</h3>
+<ul>
+<li>Direct lighting：显式枚举 light，估计积分中的少数高贡献方向。</li>
+<li>IBL：环境光积分通过 prefiltered environment/BRDF LUT 近似。</li>
+<li>Path tracer：Monte Carlo 随机选择 wi 并递归 Li。</li>
+</ul>
+<h3 id="47">4.7 最小实现 / 数学骨架</h3>
+<pre><code class="language-math">L_o(x,\omega_o)=L_e(x,\omega_o)+\int_{\Omega^+} f_r(x,\omega_i,\omega_o)L_i(x,\omega_i)(n\cdot\omega_i)d\omega_i
+</code></pre>
+<blockquote>
+<p><strong>面试建议</strong>：代码或公式不是为了炫技。写完后要解释：输入是什么、输出是什么、最贵的步骤在哪里、哪个条件一旦破坏就会出错。</p>
+</blockquote>
+<h3 id="48-profiling-validation">4.8 Profiling / Validation：如何证明你的判断</h3>
+<ul>
+<li>使用 reference path tracer 对实时近似做 ground-truth comparison。</li>
+<li>分别测 bias（系统性误差）、variance（噪声）和 GPU cost，不只看“画面像不像”。</li>
+</ul>
+<h3 id="49">4.9 常见错误答案与为什么错</h3>
+<ul>
+<li>“Li 是光源强度。”——它是沿某方向到达点的 radiance，可能经过多次反射。</li>
+<li>“cosine term 属于 BRDF。”——通常是几何投影因子，与材质散射函数分开。</li>
+</ul>
+<h3 id="410-senior">4.10 Senior 级追问与参考思路</h3>
+<ol>
+<li><strong>Radiance 和 irradiance 的关系？</strong><br />
+   Irradiance 是对入射 radiance 乘 cosine 在 hemisphere 上积分后的面密度；radiance 还带方向。</li>
+<li><strong>为什么 path tracing 可递归？</strong><br />
+   Li 沿反向 ray 命中下一个表面后等于该表面对相反方向的 Lo，再继续应用同一方程。</li>
+</ol>
+<h3 id="411">4.11 推荐实战</h3>
+<blockquote>
+<p>实现一个 Lambertian CPU path tracer，只支持 emissive sphere + diffuse bounce；验证和解析 direct-light 情况一致。</p>
+</blockquote>
+<p>完成实战时建议保留 <strong>baseline、指标、实验变量、结果、结论</strong> 五项记录。真正能在面试中形成 Senior signal 的不是“我写过”，而是“我能解释为什么这个实现更快/更稳，以及证据是什么”。</p>
+<h2 id="5">5. 如何验证，而不是“凭感觉优化”</h2>
+<ul>
+<li>用 reference/path tracer 或离线 ground truth 做视觉对比</li>
+<li>同时观察 variance、bias、sample count 与 GPU cost</li>
+<li>对阴影/BRDF 参数做极端值测试，避免只看“正常材质”</li>
+</ul>
+<h3 id="_1">推荐实战</h3>
+<blockquote>
+<p>从一个 diffuse surface 开始，把 direct lighting、IBL、path tracing 分别标注为 Rendering Equation 的不同估计。</p>
+</blockquote>
+<hr />
+<h2 id="6-gotchas">6. 工程 Gotchas（扩展）</h2>
+<ul>
+<li>“物理正确”与“实时可承受”之间总有采样/近似预算</li>
+<li>任何 sampling 技术都要同时说明 PDF、bias/variance 与 estimator</li>
+</ul>
+<hr />
+<h2 id="7">7. 高频追问树</h2>
+<ol>
+<li><strong>为什么积分只在半球？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+<li><strong>BRDF 需要满足哪些物理性质？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+<li><strong>irradiance 与 radiance 区别？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+</ol>
+<hr />
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 - 记忆点</td>
+<td>只能给出一个术语或结论，无法解释原因。</td>
+</tr>
+<tr>
+<td>1 - 原理</td>
+<td>能解释核心机制与至少一个关键不变量。</td>
+</tr>
+<tr>
+<td>2 - 工程</td>
+<td>能讨论 trade-off、边界条件，并把它落到真实引擎模块。</td>
+</tr>
+<tr>
+<td>3 - Senior signal</td>
+<td>能给出可测量的成本模型、profiling/验证方法和替代方案。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2">2 分钟回答组织法</h3>
+<ol>
+<li>用 PDF 的“30 秒回答”先给结论；</li>
+<li>选择 <strong>2 个机制点</strong> 展开，不要一次倾倒全部知识；</li>
+<li>给出 <strong>1 个真实引擎场景</strong>；</li>
+<li>主动补 <strong>1 个 Gotcha / 失败条件</strong>；</li>
+<li>用 <strong>1 个 profiler / test / counter</strong> 收尾，说明如何验证。</li>
+</ol>
+<hr />
+<h2 id="9">9. 关联题目</h2>
+<ul>
+<li><span class="srcref">Q060 · Instancing 为什么能减少 Draw Call？</span></li>
+<li><span class="srcref">Q062 · Cook-Torrance BRDF 怎么理解？</span></li>
+<li><span class="srcref">Q068 · Path Tracing 为什么会有噪声？收敛速度如何理解？</span></li>
+<li><span class="srcref">Q069 · 什么是 Importance Sampling？</span></li>
+</ul>
+<hr />
+<h2 id="10">10. 参考资料</h2>
+<ul>
+<li><a href="docs/assets/book/game-engine-interview-100.pdf">仓库附带 PDF</a> - 本题 PDF 基线内容，物理页 76。</li>
+<li><a href="https://www.nowcoder.com/discuss/567436318603476992">[M4] 腾讯游戏引擎实习面经：PBR / Path Tracing / Reverse-Z / Early-Z（候选人回忆）</a></li>
+<li><a href="https://pbr-book.org/4ed/contents">PBRT 4th edition (online)</a></li>
+<li><a href="https://www.realtimerendering.com/">Real-Time Rendering resources</a></li>
+</ul>
+<blockquote>
+<p>对候选人面经类链接：仅用于证明某类考察主题曾公开出现，不代表公司官方题库，也不代表问题会原样出现。</p>
+</blockquote>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

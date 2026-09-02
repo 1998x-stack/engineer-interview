@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>10 万个数找最大的 1 万个，怎么做？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Game Engine</a><i>∕</i><span>Q031</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q031</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">Intermediate</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q030.html">← Q030</a><a href="Q032.html">Q032 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">algorithms</a><a href="#">data-structures</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      GAME ENGINE · GRAPHICS · 41 / 100</div>
+    <h1 class="qtitle">10 万个数找最大的 1 万个，怎么做？</h1>
+    <blockquote>
+<p>[!IMPORTANT]
+<strong>内容分层</strong>：<code>PDF 核心内容</code>严格以仓库附带的原 PDF 为基线；<code>专业扩展</code>是为了让题目达到更强的工程面试深度，来自通用工程知识与下方列出的官方/权威资料。两者刻意分开，便于追踪来源。</p>
+</blockquote>
+<p><strong>章节</strong>：数据结构与算法<br />
+<strong>学习级别</strong>：<code>Intermediate</code>（仓库学习分级，不是对 PDF 星级符号的重解释）<br />
+<strong>PDF 位置</strong>：物理页 43<br />
+<strong>来源口径</strong>：高频能力重构 </p>
+<hr />
+<h2 id="1">1. 这道题在考什么</h2>
+<p>这题属于 <strong>数据结构与算法</strong>。面试官通常不是只听一个定义，而是在判断你能否把答案推进到：</p>
+<ol>
+<li><strong>机制</strong>：数据/状态究竟怎样流动；</li>
+<li><strong>成本</strong>：CPU、GPU、内存、同步或数值误差的成本在哪里；</li>
+<li><strong>Trade-off</strong>：什么场景适合，什么场景会失败；</li>
+<li><strong>Engine Context</strong>：在真实 renderer / core / asset / simulation 中怎么落地；</li>
+<li><strong>Evidence</strong>：如何通过 profiler、测试、frame capture 或汇编证明判断。</li>
+</ol>
+<p>本章常见工程落点：开放世界寻路/空间查询、碰撞 broad phase、可见性与加速结构。</p>
+<hr />
+<h2 id="2-30-pdf">2. 30 秒回答（PDF 核心内容）</h2>
+<p>流式场景维护大小 K 的小顶堆：前 K 个建堆，后续元素若大于堆顶则替换并下沉；复杂度 O(N log K)，空间 O(K)。</p>
+<hr />
+<h2 id="3-pdf-source-derived">3. PDF 深入拆解（Source-derived）</h2>
+<p>如果数据全在内存且只需无序 Top-K，可用 QuickSelect 平均 O(N) 把第 K 大元素定位，再处理一侧；如果需要最终排序，则还需 O(K log K)。面试应先问清楚 N、K、是否流式、是否允许修改原数组、是否要有序输出。工程化时还要考虑 SIMD、并行 partition 或分块 local top-K 再 merge。</p>
+<h3 id="pdf">PDF 核心抓手</h3>
+<ul>
+<li>先澄清 streaming vs offline</li>
+<li>小顶堆适合在线 Top-K</li>
+<li>QuickSelect 适合离线无序选择</li>
+<li>最终排序是额外成本</li>
+</ul>
+<h3 id="pdf-gotcha">PDF 工程 Gotcha</h3>
+<p>一上来就排序全部数据 O(N log N)，没有利用 K 远小于 N。</p>
+<h3 id="pdf_1">PDF 面试官在听什么</h3>
+<p>是否会从约束出发选算法，而不是背固定模板。</p>
+<hr />
+<h2 id="4-repository-v2">4. 专业扩展（Repository v2）</h2>
+<p>这一节不再重复 PDF 的“定义答案”，而是把问题推进到 <strong>可实现、可测量、可讨论 trade-off</strong> 的层级。面试时不要求把下面所有内容一次讲完；更好的策略是先给结论，再根据面试官追问选择其中 2–3 个层次深入。</p>
+<h3 id="41">4.1 先修知识与概念边界</h3>
+<ul>
+<li>heap</li>
+<li>QuickSelect</li>
+<li>Top-K</li>
+<li>复杂度与数据流</li>
+</ul>
+<h3 id="42">4.2 核心心智模型</h3>
+<p>Top-K 的正确答案取决于数据是否流式、是否要排序、K/N 比例、内存约束。面试不仅要给小顶堆，还要能比较 heap、QuickSelect、partial_sort 和分布式方案。</p>
+<h3 id="43">4.3 底层机制：逐层拆开</h3>
+<ul>
+<li>维护 K 大小 min-heap：前 K 建堆，之后每个 x 若大于 heap top 则替换并下沉；O(N logK)，空间 O(K)。</li>
+<li>QuickSelect 基于 partition，在平均 O(N) 找到第 N-K 个 order statistic，再取右侧 K 个；最坏 O(N²)，可随机化/median-of-medians。</li>
+<li>若最终还要有序，heap 方案额外 O(K logK)，QuickSelect 后也需排序 K。</li>
+<li>流式/无限数据无法 QuickSelect 全量，heap 是自然在线算法。</li>
+</ul>
+<h3 id="44">4.4 必须守住的不变量 / 正确性条件</h3>
+<ul>
+<li>Top-K “集合”与“有序 Top-K”是不同需求。</li>
+<li>K 接近 N 时，直接 sort/partial_sort 的常数和实现优化可能更好。</li>
+</ul>
+<p>这些不变量比“记住某个 API”更重要：平台、实现或引擎版本可以变化，但只要不变量没变，你就能重新推导正确方案。</p>
+<h3 id="45-trade-off">4.5 Trade-off：什么时候该用，什么时候不该用</h3>
+<ul>
+<li>heap 更新分支多、随机一些；对于整数有限范围可用 counting/bucket。</li>
+<li>GPU/并行场景可分块局部 Top-K，再 merge 局部结果。</li>
+</ul>
+<h3 id="46">4.6 在真实游戏引擎中的落点</h3>
+<ul>
+<li>LOD candidate/最重要 lights 选择。</li>
+<li>Telemetry 中 top slow frames/functions。</li>
+<li>邻近对象筛选中先粗排再取 K nearest。</li>
+</ul>
+<h3 id="47">4.7 最小实现 / 数学骨架</h3>
+<pre><code class="language-cpp">priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; h;
+for (int x: a) {
+  if (h.size()&lt;K) h.push(x);
+  else if (x&gt;h.top()) { h.pop(); h.push(x); }
+}
+</code></pre>
+<blockquote>
+<p><strong>面试建议</strong>：代码或公式不是为了炫技。写完后要解释：输入是什么、输出是什么、最贵的步骤在哪里、哪个条件一旦破坏就会出错。</p>
+</blockquote>
+<h3 id="48-profiling-validation">4.8 Profiling / Validation：如何证明你的判断</h3>
+<ul>
+<li>根据 N/K 画算法 crossover，不能只背复杂度。</li>
+<li>若数据量大，测 memory bandwidth 和 cache behavior。</li>
+</ul>
+<h3 id="49">4.9 常见错误答案与为什么错</h3>
+<ul>
+<li>“最大的 K 个用大顶堆。”——维护候选集时通常用小顶堆才能 O(1) 查看当前门槛。</li>
+<li>“QuickSelect 永远 O(N)。”——平均 O(N)，经典实现最坏 O(N²)。</li>
+</ul>
+<h3 id="410-senior">4.10 Senior 级追问与参考思路</h3>
+<ol>
+<li><strong>分布式 Top-K 怎么做？</strong><br />
+   每 shard 先局部 Top-K，汇总最多 shards×K 个候选再做全局 Top-K；正确因为非局部 Top-K 不可能进入全局 Top-K。</li>
+<li><strong>K 很小且 SIMD/branch 成本重要呢？</strong><br />
+   可用固定排序网络/小数组插入，K=4/8 时比通用 heap 更快。</li>
+</ol>
+<h3 id="411">4.11 推荐实战</h3>
+<blockquote>
+<p>对 N=1e5, K=1e4 与 K=32 分别比较 heap、nth_element、partial_sort，写出选择规则。</p>
+</blockquote>
+<p>完成实战时建议保留 <strong>baseline、指标、实验变量、结果、结论</strong> 五项记录。真正能在面试中形成 Senior signal 的不是“我写过”，而是“我能解释为什么这个实现更快/更稳，以及证据是什么”。</p>
+<h2 id="5">5. 如何验证，而不是“凭感觉优化”</h2>
+<ul>
+<li>先写正确性测试与边界样例，再做复杂度/性能基线</li>
+<li>记录 N、K、分布等输入特征，避免脱离规模谈算法</li>
+<li>对空间结构同时测 build/update/query 成本</li>
+</ul>
+<h3 id="_1">推荐实战</h3>
+<blockquote>
+<p>实现算法并构造随机/极端测试；同时记录输入规模与耗时曲线。</p>
+</blockquote>
+<hr />
+<h2 id="6-gotchas">6. 工程 Gotchas（扩展）</h2>
+<ul>
+<li>先澄清输入规模/在线离线/是否有序等约束，再选算法</li>
+<li>复杂度相同的数据结构可能有完全不同 cache 行为</li>
+</ul>
+<hr />
+<h2 id="7">7. 高频追问树</h2>
+<ol>
+<li><strong>如果数据分布在多机怎么办？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+<li><strong>K 接近 N 时方案如何变化？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+<li><strong>如何处理重复元素？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+</ol>
+<hr />
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 - 记忆点</td>
+<td>只能给出一个术语或结论，无法解释原因。</td>
+</tr>
+<tr>
+<td>1 - 原理</td>
+<td>能解释核心机制与至少一个关键不变量。</td>
+</tr>
+<tr>
+<td>2 - 工程</td>
+<td>能讨论 trade-off、边界条件，并把它落到真实引擎模块。</td>
+</tr>
+<tr>
+<td>3 - Senior signal</td>
+<td>能给出可测量的成本模型、profiling/验证方法和替代方案。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2">2 分钟回答组织法</h3>
+<ol>
+<li>用 PDF 的“30 秒回答”先给结论；</li>
+<li>选择 <strong>2 个机制点</strong> 展开，不要一次倾倒全部知识；</li>
+<li>给出 <strong>1 个真实引擎场景</strong>；</li>
+<li>主动补 <strong>1 个 Gotcha / 失败条件</strong>；</li>
+<li>用 <strong>1 个 profiler / test / counter</strong> 收尾，说明如何验证。</li>
+</ol>
+<hr />
+<h2 id="9">9. 关联题目</h2>
+<ul>
+<li><span class="srcref">Q030 · Triple Buffering 与 Frames in Flight 有什么作用？</span></li>
+<li><span class="srcref">Q032 · 实现 A*，为什么它比 Dijkstra 更适合游戏寻路？</span></li>
+</ul>
+<hr />
+<h2 id="10">10. 参考资料</h2>
+<ul>
+<li><a href="docs/assets/book/game-engine-interview-100.pdf">仓库附带 PDF</a> - 本题 PDF 基线内容，物理页 43。</li>
+<li><a href="https://itanium-cxx-abi.github.io/cxx-abi/abi.html">Itanium C++ ABI</a></li>
+<li><a href="https://en.cppreference.com/w/">cppreference C++ language/library reference</a></li>
+</ul>
+<blockquote>
+<p>对候选人面经类链接：仅用于证明某类考察主题曾公开出现，不代表公司官方题库，也不代表问题会原样出现。</p>
+</blockquote>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>100B 模型训练到 42k Step 突然 Loss Spike，怎么排查？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q081</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q081</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q080.html">← Q080</a><a href="Q082.html">Q082 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">debug</a><a href="#">optimization</a><a href="#">stability-debug-eval</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 82 / 101</div>
+    <h1 class="qtitle">100B 模型训练到 42k Step 突然 Loss Spike，怎么排查？</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>难</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">训练稳定性、Debug 与评测</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>最能区分“读过论文”和“真正训过模型”的故障题。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>first bad event</strong>：能否定位第一个异常 step/rank/tensor？</li>
+<li><strong>可复现</strong>：同 checkpoint+batch 是否重现？</li>
+<li><strong>因果验证</strong>：修复是否有最小变量对照和回归？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>Loss spike 的专业处理是“冻结现场 → 可复现 → 单变量实验 → 根因 → 回归”，而不是经验调参。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>第一原则是定位与保全证据，而不是马上降 LR。先确定第一个异常 step/rank，保存 batch IDs、数据来源、loss、grad norm、activation statistics、optimizer state 与 NCCL/硬件日志。然后按 Data / Numerical / Optimizer / Distributed / Hardware 五类建立假设。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>若有 spike 前 checkpoint，使用同一 batch deterministic replay。可复现则更偏数据/forward/numerical；不可复现或多个 batch 持续异常，则检查 optimizer state、并行同步和硬件。修复后用小范围 replay/回归证明根因。</p>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="loss-spike">Loss Spike 故障树</h3>
+<pre><code class="language-text">First bad step
+├─ same batch replay reproduces?
+│  ├─ yes → data / deterministic numerical path
+│  └─ no  → state / distributed / hardware / nondeterminism
+├─ one rank first or all ranks together?
+├─ forward first or backward first?
+├─ which layer/tensor first diverges?
+└─ rollback + controlled ablation → causal fix
+</code></pre>
+<p>第一目标不是“把 loss 压回去”，而是找到<strong>第一个异常事件</strong>。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：建立自动 anomaly snapshot：异常 step 把 batch hash 与关键 tensor stats 落盘。</li>
+<li><strong>动作 2</strong>：先恢复到 spike 前 checkpoint 做受控复现，避免在昂贵 full run 上试错。</li>
+<li><strong>动作 3</strong>：每次只改变一个变量：skip batch、lower LR、disable node、换数据 shard。</li>
+</ol>
+<h3 id="_2">故障可复现闭环</h3>
+<p>锁定 first bad step，保存 batch/rank/RNG/checkpoint，执行 deterministic replay，再用最小变量实验定位根因。</p>
+<ul>
+<li>先定位，不要先“调参试试”。</li>
+<li>保留正常 step 对照。</li>
+<li>修复后做回归与长期稳定性验证。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-bad-batch-optimizer-instability">追问 1：如何区分 bad batch 与 optimizer instability？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h3 id="2grad-norm-loss">追问 2：Grad norm 大但 loss 正常怎么办？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h3 id="3-rank-nan">追问 3：如果只有一个 rank 先 NaN 呢？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>第一反应“调低学习率/加 clipping”。</strong></li>
+<li>改进：回到“Loss spike 的专业处理是“冻结现场 → 可复现 → 单变量实验 → 根因 → 回归”，而不是经验调参。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+<li>❌ <strong>没有保存异常 batch，导致无法复现。</strong></li>
+<li>改进：回到“Loss spike 的专业处理是“冻结现场 → 可复现 → 单变量实验 → 根因 → 回归”，而不是经验调参。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：Loss spike 的专业处理是“冻结现场 → 可复现 → 单变量实验 → 根因 → 回归”，而不是经验调参。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>如何区分 bad batch 与 optimizer instability？</li>
+<li>Grad norm 大但 loss 正常怎么办？</li>
+<li>如果只有一个 rank 先 NaN 呢？</li>
+<li>画 first-bad-step 故障树，说明如何 deterministic replay。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>Loss spike 的专业处理是“冻结现场 → 可复现 → 单变量实验 → 根因 → 回归”，而不是经验调参。</strong></p>
+</blockquote>
+<h3 id="_3">深挖关键点</h3>
+<p>S 级题：回答必须体现 incident response，而不是列一串可能原因。</p>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<h2 id="_4">相关题目</h2>
+<ul>
+<li>→ <span class="srcref">Q082. 如何区分 Bad Batch 与 Optimizer Instability？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

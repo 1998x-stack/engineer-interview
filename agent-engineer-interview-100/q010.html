@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>请构建一个 Agent Failure Taxonomy。 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Agent Engineer</a><i>∕</i><span>q010</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q010</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">必考</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q009.html">← q009</a><a href="q011.html">q011 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">agent-loop</a><a href="#">state</a><a href="#">harness</a><a href="#">completion</a><a href="#">必考</a><a href="#">难</a><a href="#">production-agent</a><a href="#">reliability</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      AGENT RELIABILITY · 10 / 100</div>
+    <h1 class="qtitle">请构建一个 Agent Failure Taxonomy。</h1>
+    <blockquote>
+<p><strong>能力轴</strong>：Agent 架构与 Agent Loop<br />
+<strong>GitHub Edition</strong>：Expanded Professional Version<br />
+<strong>训练目标</strong>：能给出 30 秒结论、3 分钟工程展开，并承受连续系统追问。</p>
+</blockquote>
+<h2 id="_1">题目定位</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>面试层级</td>
+<td>Senior / Staff 倾向</td>
+</tr>
+<tr>
+<td>失败类别</td>
+<td>Control / State</td>
+</tr>
+<tr>
+<td>风险等级</td>
+<td>中</td>
+</tr>
+<tr>
+<td>核心 Invariant</td>
+<td>每类失败都有 owner、detect signal、containment、recovery 和 verification。</td>
+</tr>
+<tr>
+<td>面试频率</td>
+<td>必考</td>
+</tr>
+<tr>
+<td>难度</td>
+<td>难</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官在考什么</h2>
+<p>没有分类就无法统计、归因、设置不同恢复策略，也无法判断优化模型、RAG 还是工具哪一层更有效。</p>
+<p>这道题表面在问一个局部技术点，实际上通常同时检查以下三层能力：</p>
+<ul>
+<li>Failure taxonomy 是自动恢复和故障归因的共同语言。</li>
+<li>同一个最终错误可能来自不同上游原因。</li>
+<li>要记录根因与传播路径，而非只记录最后 exception。</li>
+<li>把 LLM 当作概率式决策器，而不是可信控制器</li>
+<li>把状态迁移显式化，避免“所有状态都藏在 messages”</li>
+</ul>
+<blockquote>
+<p><strong>判断高级答案的标志</strong>：不仅告诉面试官“用什么机制”，还能说明 <strong>为什么需要它、它保护哪个 invariant、失败时怎么恢复、怎么证明方案有效</strong>。</p>
+</blockquote>
+<h2 id="30">30 秒回答</h2>
+<p>按故障发生层分类比按报错文本分类更有效：Goal/Instruction、Planning、Context/Memory、Retrieval、Model、Tool、State、Multi-Agent Coordination、Infrastructure、Security、Business Rule。每类再标注 retryable、recoverable、severity 和 owner。</p>
+<h2 id="_3">深挖解析</h2>
+<blockquote>
+<p>下面先逐条展开 PDF 原始深挖点；这些是本题最应该讲清的技术机制。</p>
+</blockquote>
+<h3 id="1-failure-taxonomy">1. Failure taxonomy 是自动恢复和故障归因的共同语言。</h3>
+<p>把这个点落到状态机：明确输入状态、允许的 transition、产生的 side effect、失败后的合法下一状态。这样才能从概念讨论进入可测试实现。</p>
+<h3 id="2">2. 同一个最终错误可能来自不同上游原因。</h3>
+<p>把这个点落到状态机：明确输入状态、允许的 transition、产生的 side effect、失败后的合法下一状态。这样才能从概念讨论进入可测试实现。</p>
+<h3 id="3-exception">3. 要记录根因与传播路径，而非只记录最后 exception。</h3>
+<p>把这个点落到状态机：明确输入状态、允许的 transition、产生的 side effect、失败后的合法下一状态。这样才能从概念讨论进入可测试实现。</p>
+<h3 id="_4">从机制到系统</h3>
+<p>把上面几点合起来，本题不能只用一个局部 API 或 Prompt 技巧解决。需要把 <strong><code>给 trace span 打 failure_type/error_code；周报按层聚合 task failure rate，并为每类绑定 runbook。</code></strong> 变成 runtime 中可测试的状态迁移，并给关键 transition 设计失败分支。</p>
+<h2 id="3">3 分钟专业展开</h2>
+<p>先把问题抽象成一个工程约束：<strong>每类失败都有 owner、detect signal、containment、recovery 和 verification。</strong>。然后按下面四层回答：</p>
+<ol>
+<li><strong>语义层</strong>：先定义“成功 / 失败 / 完成 / 重试 / 授权”等词在这个场景中的准确含义，避免把 HTTP、LLM 或消息状态误当业务状态。</li>
+<li><strong>状态层</strong>：指出哪些事实必须结构化、持久化、带版本或 operation identity；不要只依赖聊天历史或自然语言总结。</li>
+<li><strong>控制层</strong>：明确模型可以提出什么、runtime/策略引擎必须强制什么，以及异常时走 retry、replan、fallback、HITL 还是 fail-safe。</li>
+<li><strong>验证层</strong>：给出 trace / metric / eval，证明机制既能挡住已知 failure mode，又不会产生不可接受的延迟、成本或误拦截。</li>
+</ol>
+<h3 id="_5">核心机制</h3>
+<ul>
+<li><strong>Failure taxonomy 是自动恢复和故障归因的共同语言。</strong></li>
+<li><strong>同一个最终错误可能来自不同上游原因。</strong></li>
+<li><strong>要记录根因与传播路径，而非只记录最后 exception。</strong></li>
+<li>把 LLM 当作概率式决策器，而不是可信控制器</li>
+<li>把状态迁移显式化，避免“所有状态都藏在 messages”</li>
+<li>完成条件、权限、预算、重试上限等 invariant 由确定性代码守住</li>
+</ul>
+<h3 id="_6">关键设计决策</h3>
+<ul>
+<li>谁拥有控制流？</li>
+<li>哪些状态必须 durable？</li>
+<li>终止条件是否可独立验证？</li>
+<li>哪些 invariant 必须由代码强制？</li>
+</ul>
+<h2 id="_7">参考架构 / 控制流</h2>
+<pre><code class="language-mermaid">flowchart LR
+  U[Goal] --&gt; R[Runtime / Harness]
+  R --&gt; M[Model Step]
+  M --&gt;|tool call| T[Tool Step]
+  T --&gt; S[(Structured State)]
+  S --&gt; V[Verifier]
+  V --&gt;|continue| M
+  V --&gt;|done| O[Final Output]
+  V --&gt;|violation| G[Guardrail / Stop]
+</code></pre>
+<p>这张图强调本章的可信边界：控制流可解释、状态可重放、完成条件可验证。面试时先讲数据/控制流，再讲每个边界上的校验与恢复。</p>
+<h2 id="_8">状态与接口设计</h2>
+<p>面试中建议显式说出“<strong>哪些字段需要存在</strong>”，这样比只说框架名更有工程可信度。一个最小设计通常包括：</p>
+<ul>
+<li><code>run_id / task_id / step_id</code>：把一次执行和子任务串起来。</li>
+<li><code>attempt / version / deadline</code>：区分重试、版本与剩余时间。</li>
+<li><code>status</code>：使用有限状态机，而不是自由文本表示执行状态。</li>
+<li><code>input_ref / output_ref / artifact_ref</code>：大对象保存为引用，避免在 context/消息中复制。</li>
+<li><code>trace_id / correlation_id</code>：跨模型、工具、Agent 和异步任务关联。</li>
+<li>对副作用步骤再加入 <code>operation_id / idempotency_key / approval_id</code>；对知识步骤加入 <code>source / provenance / freshness</code>。</li>
+</ul>
+<h2 id="_9">实现骨架 / 伪代码</h2>
+<pre><code class="language-python">state = load_or_create(run_id)
+while not state.terminal:
+    proposal = model_step(context_builder(state))
+    transition = policy.validate(proposal, state)
+    state = runtime.apply(transition)
+    trace.append(transition)
+    checkpoint(state)
+</code></pre>
+<h2 id="_10">典型生产场景</h2>
+<p>客服 Agent 处理“查询物流 + 必要时创建工单”：查询路径可由模型选择，但创建工单前必须经过确定性 schema、权限、幂等和完成验证。</p>
+<h2 id="failure-modes">Failure Modes：方案最容易坏在哪里</h2>
+<ul>
+<li><strong>控制流隐藏在 prompt 中，无法静态检查和审计</strong></li>
+<li><strong>状态只保存在消息历史中，无法可靠恢复或迁移</strong></li>
+<li><strong>完成条件缺少独立 verifier，模型自报成功</strong></li>
+</ul>
+<p>遇到异常时，不要立即跳到“重试”。建议统一使用：</p>
+<p><code>Detect → Classify → Contain → Recover → Preserve → Verify</code></p>
+<p>本题最重要的 Preserve 对象是：<strong>每类失败都有 owner、detect signal、containment、recovery 和 verification。</strong>。</p>
+<h2 id="trade-off">Trade-off：为什么不能只有一个标准答案</h2>
+<ul>
+<li><strong>自由度 vs 可控性</strong>：模型自治越高，适应性越强，但状态空间、审计和失败面同步扩大。</li>
+<li><strong>抽象便利 vs 可调试性</strong>：高层框架降低开发成本，但必须保留对状态迁移、重试和 trace 的可见性。</li>
+</ul>
+<p>面试时最好给出一个“默认选择 + 改变选择的条件”，而不是绝对化表达。例如：默认用更简单的单 Agent/同步/低并发方案，只有当评估数据证明瓶颈来自专业化、并行或长任务时再增加复杂度。</p>
+<h2 id="_11">可观测性与关键指标</h2>
+<p>指标要区分模型质量与 runtime 正确性；例如模型选错工具与状态机非法迁移是不同 owner。 建议至少记录：</p>
+<ul>
+<li><code>task_success_rate</code></li>
+<li><code>invalid_transition_rate</code></li>
+<li><code>mean_steps_per_run</code></li>
+<li><code>completion_verification_fail_rate</code></li>
+</ul>
+<p>此外所有指标都应该按 <code>workflow_version / model / tool / tenant / task_type / failure_class</code> 等维度切片，否则总体平均值很容易掩盖局部事故。</p>
+<h2 id="_12">连续追问</h2>
+<h3 id="1-taxonomy">1. 如何把 taxonomy 接入线上监控？</h3>
+<p><strong>回答方向</strong>：先以“Failure taxonomy 是自动恢复和故障归因的共同语言。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h3 id="2_1">2. 哪些错误需要自动升级人工？</h3>
+<p><strong>回答方向</strong>：先以“Failure taxonomy 是自动恢复和故障归因的共同语言。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h2 id="_13">⭐ 必刷题：深水区</h2>
+<h3 id="_14">故障分类测试</h3>
+<p>至少能画出 Model / Planning / Context / Retrieval / Tool / State / Coordination / Infra / Security / Business 十类，并给每类 detect signal 与 owner。</p>
+<h3 id="_15">面试评分点</h3>
+<ul>
+<li><strong>60 分</strong>：知道核心术语和基本方案。</li>
+<li><strong>75 分</strong>：能说明状态、失败窗口与恢复动作。</li>
+<li><strong>90 分</strong>：能主动提出 invariant、故障注入、指标和 trade-off。</li>
+<li><strong>95+ 分</strong>：能把方案抽象为与具体框架无关的 runtime / protocol / trust-boundary 设计，并指出何时不值得增加复杂度。</li>
+</ul>
+<h2 id="_16">易错回答</h2>
+<blockquote>
+<p>把所有失败都归成‘LLM 不稳定’。</p>
+</blockquote>
+<p>为什么这是低质量答案：它通常只描述 happy path，没有说明失败语义、状态所有权或可信边界，也没有给出验证手段。高级回答要把“模型可能错、网络可能断、进程可能崩、消息可能重复、知识可能过期”当作设计前提。</p>
+<h2 id="know-why">Know-Why</h2>
+<p>没有分类就无法统计、归因、设置不同恢复策略，也无法判断优化模型、RAG 还是工具哪一层更有效。</p>
+<p>更深一层看，本题的本质是保护这个系统 invariant：<strong>每类失败都有 owner、detect signal、containment、recovery 和 verification。</strong>。Agent 引入的是概率决策，因此工程层需要把不可违反的规则外置为 deterministic guardrails/state machines，并给非确定路径准备恢复机制。</p>
+<h2 id="know-how">Know-How</h2>
+<p>给 trace span 打 failure_type/error_code；周报按层聚合 task failure rate，并为每类绑定 runbook。</p>
+<h3 id="_17">落地步骤</h3>
+<ol>
+<li>先写出业务 invariant 和明确的完成/失败定义。</li>
+<li>建立结构化 state，给每个关键字段确定 owner、版本与持久化周期。</li>
+<li>在可信 runtime / gateway 中实现校验、权限、预算和异常策略，不只依赖 prompt。</li>
+<li>为关键 transition 添加 trace、state diff 和可聚合 error code。</li>
+<li>构造至少 3 个故障注入案例：超时/重复/崩溃（或本题等价异常）。</li>
+<li>用 regression eval + 线上指标确认修复没有把问题转移到成本、时延或误拦截。</li>
+</ol>
+<h2 id="production-checklist">Production Checklist</h2>
+<ul>
+<li>[ ] 核心 invariant 已写成可验证条件：每类失败都有 owner、detect signal、containment、recovery 和 verification。</li>
+<li>[ ] 关键状态不只存在于 prompt/messages 中。</li>
+<li>[ ] 存在明确 timeout / retry / stop / fallback / HITL 策略。</li>
+<li>[ ] 所有高风险副作用经过资源侧授权与审计。</li>
+<li>[ ] Trace 能定位到发生错误的具体 transition。</li>
+<li>[ ] 变更有离线 regression，关键路径有线上 SLO/告警。</li>
+</ul>
+<h2 id="_18">面试自测</h2>
+<ul>
+<li>[ ] 我能在 <strong>30 秒</strong>内讲清核心结论，不报框架名堆术语。</li>
+<li>[ ] 我能在 <strong>3 分钟</strong>内说明状态、控制边界、失败恢复和指标。</li>
+<li>[ ] 我能画出上面的控制流，并解释每个箭头的失败语义。</li>
+<li>[ ] 面试官换成“网络断了 / Worker crash / 重复消息 / 权限不足”时，我仍能沿 invariant 推导方案。</li>
+</ul>
+<h2 id="_19">关联题目</h2>
+<ul>
+<li><span class="srcref">Q001 · LLM、Workflow 和 Agent 有什么区别？什么时候不应该使用 Agent？</span></li>
+<li><span class="srcref">Q002 · 不使用任何 Agent 框架，如何从零实现一个最小 Agent Loop？</span></li>
+<li><span class="srcref">Q003 · 为什么说 Agent Loop 本质上可以看成状态机？State 里应该保存什么？</span></li>
+<li><span class="srcref">Q004 · 生产 Agent 中，哪些逻辑交给 LLM，哪些逻辑必须写死在代码里？</span></li>
+<li><span class="srcref">Q005 · Graph Engineer 和 Loop Engineer 的核心区别是什么？</span></li>
+</ul>
+<h2 id="_20">延伸阅读</h2>
+<h3 id="_21">对应官方工程资料</h3>
+<ul>
+<li><a href="https://openai.github.io/openai-agents-python/running_agents/">OpenAI Agents SDK · Running agents</a></li>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph">LangGraph · Thinking in LangGraph</a></li>
+</ul>
+<blockquote>
+<p>外部资料用于 GitHub Expanded Edition 的工程深化；PDF 原始题目与核心字段仍按仓库结构化源数据保留。</p>
+</blockquote>
+<ul>
+<li><span class="srcref">Reliability First：六步故障回答框架</span></li>
+<li><span class="srcref">系统设计白板模板</span></li>
+<li><span class="srcref">参考资料与官方工程资料</span></li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

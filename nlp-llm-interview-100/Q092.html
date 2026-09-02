@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KV Cache 大小怎么估算？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q092</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q092</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q091.html">← Q091</a><a href="Q093.html">Q093 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">inference-infra</a><a href="#">kv-cache</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 92 / 100</div>
+    <h1 class="qtitle">KV Cache 大小怎么估算？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★★  ·  <strong>频率</strong>：★★★★★  ·  <strong>标签</strong>：<code>inference-infra</code>, <code>kv-cache</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q092.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>给定层数 L、序列 T、KV heads H_kv、head dim D、dtype bytes，KV cache 公式是什么？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>要求现场心算数量级。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>先从 FLOPs、memory、bandwidth、communication 四个资源维度分析。</li>
+<li>区分 prefill/decode、training/serving。</li>
+<li>给出可计算的复杂度或显存公式。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>每层每 token 需存 K 和 V，因此近似 2×L×T×H_kv×D×bytes；还需乘 batch/并发请求。 GQA/MQA 通过降低 H_kv 线性降低 cache。</p>
+<h2 id="4">4. 白板核心公式</h2>
+<ul>
+<li>$\mathrm{KV\ bytes}=2\times L\times T\times H_{kv}\times D_h\times \mathrm{bytes\ per\ element}$</li>
+</ul>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：实际系统还有 block metadata、对齐、碎片化。</li>
+<li><strong>PDF 基线要点</strong>：长上下文服务经常由 KV memory 而非权重 memory 决定并发。</li>
+<li><strong>PDF 基线要点</strong>：KV cache quantization 可继续压缩，但会有精度代价。</li>
+<li><strong>扩展理解</strong>：KV memory 与 layers × sequence × kv_heads × head_dim × dtype_bytes × 2(K,V) 成正比。</li>
+<li><strong>扩展理解</strong>：GQA/MQA 直接通过减少 kv_heads 降内存与带宽。</li>
+<li><strong>扩展理解</strong>：实际服务还要乘 batch/并发序列，并考虑 page/block allocator overhead。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="kv-cache">KV Cache 公式要能现场算显存</h3>
+<ul>
+<li>单层单序列近似 bytes = $2\times T\times H_{kv}\times D_h\times bytes(dtype)$；乘 layers 和 batch/并发得到总 Cache，前面的 2 表示 K+V。</li>
+<li>对 MHA，$H_{kv}=H_q$；GQA/MQA 显著降低 $H_{kv}$，因此 cache 容量按比例下降。</li>
+<li>例如 BF16 每元素 2 bytes，长上下文 × 多层 × 多并发后，KV 往往比“单条看起来不大”的估算膨胀到几十/几百 GB。</li>
+</ul>
+<h3 id="_2">边界与工程</h3>
+<ul>
+<li>实际系统还有 block metadata、alignment、fragmentation、beam copies 等 overhead，公式只是下界近似。</li>
+<li>PagedAttention 解决的是可变长度请求下的分配/碎片与共享，不改变每个有效 KV 元素本身必须存储的事实。</li>
+<li>KV quantization 可进一步降 bytes/element，但要评估 attention quality 和 dequant bandwidth。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>把 prefill/decode 分开做 FLOPs、显存、HBM bandwidth 和通信量账本。</li>
+<li>系统优化需同时报告 TTFT、TPOT、throughput、峰值显存和质量损失。</li>
+<li>先定位瓶颈是 compute-bound、memory-bound 还是 communication-bound，再选优化。</li>
+</ul>
+<h3 id="_3">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>忘记 K+V 的 2。</li>
+<li>把 Q heads 误当 KV heads。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>一个 32-layer、8 KV head、head dim 128、16K context、BF16 请求需要多少？</li>
+<li>为什么 GQA 对 decode 特别有效？</li>
+</ol>
+<h3 id="_4">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2309.06180">vLLM / PagedAttention</a></li>
+<li><a href="https://arxiv.org/abs/2205.14135">FlashAttention</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q091 KV Cache 为什么能显著加速自回归 Decode？</span></li>
+<li><span class="srcref">Q093 Quantization 为什么能提升 LLM 推理吞吐？</span></li>
+<li><span class="srcref">Q096 DP、TP、PP、EP：四种并行怎么组合？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>KV Cache 公式要能现场算显存</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

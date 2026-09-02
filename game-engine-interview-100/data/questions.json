@@ -1,0 +1,1768 @@
+[
+  {
+    "id": "Q001",
+    "number": 1,
+    "title": "C++ 虚函数和运行时多态到底是怎么实现的？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "M5"
+    ],
+    "pdf_physical_page": 10,
+    "tags": [
+      "cpp",
+      "engine-core"
+    ]
+  },
+  {
+    "id": "Q002",
+    "number": 2,
+    "title": "为什么基类析构函数经常必须是 virtual？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 11,
+    "tags": [
+      "cpp",
+      "engine-core",
+      "virtual-dispatch"
+    ]
+  },
+  {
+    "id": "Q003",
+    "number": 3,
+    "title": "为什么构造函数不能是 virtual？构造期间调用 virtual function 会怎样？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2"
+    ],
+    "pdf_physical_page": 12,
+    "tags": [
+      "cpp",
+      "engine-core",
+      "virtual-dispatch"
+    ]
+  },
+  {
+    "id": "Q004",
+    "number": 4,
+    "title": "unique_ptr、shared_ptr、weak_ptr 底层有什么区别？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "M3",
+      "M5"
+    ],
+    "pdf_physical_page": 13,
+    "tags": [
+      "cpp",
+      "engine-core",
+      "smart-pointer"
+    ]
+  },
+  {
+    "id": "Q005",
+    "number": 5,
+    "title": "shared_ptr 为什么会发生循环引用？如何从设计上避免？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M3"
+    ],
+    "pdf_physical_page": 14,
+    "tags": [
+      "cpp",
+      "engine-core",
+      "smart-pointer"
+    ]
+  },
+  {
+    "id": "Q006",
+    "number": 6,
+    "title": "左值、右值、std::move、移动构造究竟解决什么问题？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 15,
+    "tags": [
+      "cpp",
+      "engine-core"
+    ]
+  },
+  {
+    "id": "Q007",
+    "number": 7,
+    "title": "std::vector 扩容时发生了什么？哪些引用会失效？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2"
+    ],
+    "pdf_physical_page": 16,
+    "tags": [
+      "cpp",
+      "engine-core",
+      "stl"
+    ]
+  },
+  {
+    "id": "Q008",
+    "number": 8,
+    "title": "vector 为什么常常比 list 更快，即使 list 插入是 O(1)？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2"
+    ],
+    "pdf_physical_page": 17,
+    "tags": [
+      "cpp",
+      "engine-core",
+      "stl"
+    ]
+  },
+  {
+    "id": "Q009",
+    "number": 9,
+    "title": "new/delete 与 malloc/free 有什么区别？为什么不能混用？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2"
+    ],
+    "pdf_physical_page": 18,
+    "tags": [
+      "cpp",
+      "engine-core"
+    ]
+  },
+  {
+    "id": "Q010",
+    "number": 10,
+    "title": "C++ Reflection 为什么难？游戏引擎如何实现反射？",
+    "chapter_id": 1,
+    "chapter": "C++ 对象模型与语言机制",
+    "chapter_slug": "01-cpp-object-model",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1"
+    ],
+    "pdf_physical_page": 19,
+    "tags": [
+      "cpp",
+      "engine-core",
+      "reflection"
+    ]
+  },
+  {
+    "id": "Q011",
+    "number": 11,
+    "title": "游戏引擎为什么特别在意内存对齐？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "M3"
+    ],
+    "pdf_physical_page": 21,
+    "tags": [
+      "memory",
+      "data-oriented"
+    ]
+  },
+  {
+    "id": "Q012",
+    "number": 12,
+    "title": "Stack 和 Heap 的区别是什么？实时引擎如何选择？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 22,
+    "tags": [
+      "memory",
+      "data-oriented"
+    ]
+  },
+  {
+    "id": "Q013",
+    "number": 13,
+    "title": "如何设计一个固定大小 Memory Pool？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 23,
+    "tags": [
+      "memory",
+      "data-oriented"
+    ]
+  },
+  {
+    "id": "Q014",
+    "number": 14,
+    "title": "Arena / Linear Allocator 为什么适合每帧临时对象？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 24,
+    "tags": [
+      "memory",
+      "data-oriented"
+    ]
+  },
+  {
+    "id": "Q015",
+    "number": 15,
+    "title": "AoS 和 SoA 有什么区别？为什么 SoA 常用于热点系统？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 25,
+    "tags": [
+      "memory",
+      "data-oriented"
+    ]
+  },
+  {
+    "id": "Q016",
+    "number": 16,
+    "title": "ECS 为什么越来越常见？它解决了什么，又带来什么成本？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 26,
+    "tags": [
+      "memory",
+      "data-oriented",
+      "ecs"
+    ]
+  },
+  {
+    "id": "Q017",
+    "number": 17,
+    "title": "Hash Map 和红黑树怎么选？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M5"
+    ],
+    "pdf_physical_page": 27,
+    "tags": [
+      "memory",
+      "data-oriented"
+    ]
+  },
+  {
+    "id": "Q018",
+    "number": 18,
+    "title": "Object Pool 适合什么场景？如何避免把它用成“内存垃圾场”？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 28,
+    "tags": [
+      "memory",
+      "data-oriented"
+    ]
+  },
+  {
+    "id": "Q019",
+    "number": 19,
+    "title": "什么是 Cache Miss？为什么游戏引擎比普通业务代码更在意？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M3"
+    ],
+    "pdf_physical_page": 29,
+    "tags": [
+      "memory",
+      "data-oriented",
+      "cache"
+    ]
+  },
+  {
+    "id": "Q020",
+    "number": 20,
+    "title": "什么是 False Sharing？如何定位与修复？",
+    "chapter_id": 2,
+    "chapter": "内存、STL 与数据导向设计",
+    "chapter_slug": "02-memory-data-oriented",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 30,
+    "tags": [
+      "memory",
+      "data-oriented"
+    ]
+  },
+  {
+    "id": "Q021",
+    "number": 21,
+    "title": "Process 与 Thread 的区别是什么？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "M3"
+    ],
+    "pdf_physical_page": 32,
+    "tags": [
+      "concurrency",
+      "os"
+    ]
+  },
+  {
+    "id": "Q022",
+    "number": 22,
+    "title": "Context Switch 为什么贵？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2"
+    ],
+    "pdf_physical_page": 33,
+    "tags": [
+      "concurrency",
+      "os"
+    ]
+  },
+  {
+    "id": "Q023",
+    "number": 23,
+    "title": "什么是 Job System？为什么比“一个子系统一个线程”更可扩展？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O1"
+    ],
+    "pdf_physical_page": 34,
+    "tags": [
+      "concurrency",
+      "os",
+      "job-system"
+    ]
+  },
+  {
+    "id": "Q024",
+    "number": 24,
+    "title": "Mutex、Spinlock、Semaphore 怎么选？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 35,
+    "tags": [
+      "concurrency",
+      "os"
+    ]
+  },
+  {
+    "id": "Q025",
+    "number": 25,
+    "title": "什么是 Deadlock？四个必要条件是什么？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 36,
+    "tags": [
+      "concurrency",
+      "os"
+    ]
+  },
+  {
+    "id": "Q026",
+    "number": 26,
+    "title": "如何实现一个 SPSC 无锁环形队列？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 37,
+    "tags": [
+      "concurrency",
+      "os"
+    ]
+  },
+  {
+    "id": "Q027",
+    "number": 27,
+    "title": "memory_order_relaxed / acquire / release 是什么？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 38,
+    "tags": [
+      "concurrency",
+      "os",
+      "memory-model"
+    ]
+  },
+  {
+    "id": "Q028",
+    "number": 28,
+    "title": "虚拟地址如何转换成物理地址？Page Fault 发生了什么？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M3"
+    ],
+    "pdf_physical_page": 39,
+    "tags": [
+      "concurrency",
+      "os"
+    ]
+  },
+  {
+    "id": "Q029",
+    "number": 29,
+    "title": "Game Thread 和 Render Thread 为什么要分开？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O2",
+      "O3"
+    ],
+    "pdf_physical_page": 40,
+    "tags": [
+      "concurrency",
+      "os"
+    ]
+  },
+  {
+    "id": "Q030",
+    "number": 30,
+    "title": "Triple Buffering 与 Frames in Flight 有什么作用？",
+    "chapter_id": 3,
+    "chapter": "操作系统、多线程与并发",
+    "chapter_slug": "03-os-concurrency",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O3"
+    ],
+    "pdf_physical_page": 41,
+    "tags": [
+      "concurrency",
+      "os"
+    ]
+  },
+  {
+    "id": "Q031",
+    "number": 31,
+    "title": "10 万个数找最大的 1 万个，怎么做？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 43,
+    "tags": [
+      "algorithms",
+      "data-structures"
+    ]
+  },
+  {
+    "id": "Q032",
+    "number": 32,
+    "title": "实现 A*，为什么它比 Dijkstra 更适合游戏寻路？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 44,
+    "tags": [
+      "algorithms",
+      "data-structures"
+    ]
+  },
+  {
+    "id": "Q033",
+    "number": 33,
+    "title": "A* 在开放世界地图里为什么仍可能很慢？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 45,
+    "tags": [
+      "algorithms",
+      "data-structures"
+    ]
+  },
+  {
+    "id": "Q034",
+    "number": 34,
+    "title": "Bresenham 画线算法为什么能避免浮点数？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 46,
+    "tags": [
+      "algorithms",
+      "data-structures"
+    ]
+  },
+  {
+    "id": "Q035",
+    "number": 35,
+    "title": "二叉树最近公共祖先怎么做？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 47,
+    "tags": [
+      "algorithms",
+      "data-structures"
+    ]
+  },
+  {
+    "id": "Q036",
+    "number": 36,
+    "title": "最长合法括号如何做到 O(N)？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 48,
+    "tags": [
+      "algorithms",
+      "data-structures"
+    ]
+  },
+  {
+    "id": "Q037",
+    "number": 37,
+    "title": "所有节点出度 1，如何寻找最长环？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M3"
+    ],
+    "pdf_physical_page": 49,
+    "tags": [
+      "algorithms",
+      "data-structures"
+    ]
+  },
+  {
+    "id": "Q038",
+    "number": 38,
+    "title": "如何设计空间哈希解决大量对象邻域查询？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 50,
+    "tags": [
+      "algorithms",
+      "data-structures"
+    ]
+  },
+  {
+    "id": "Q039",
+    "number": 39,
+    "title": "Quadtree、Octree、BVH 有什么区别？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M5"
+    ],
+    "pdf_physical_page": 51,
+    "tags": [
+      "algorithms",
+      "data-structures",
+      "bvh"
+    ]
+  },
+  {
+    "id": "Q040",
+    "number": 40,
+    "title": "动态对象很多时 BVH 怎么更新？",
+    "chapter_id": 4,
+    "chapter": "数据结构与算法",
+    "chapter_slug": "04-algorithms",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "M5"
+    ],
+    "pdf_physical_page": 52,
+    "tags": [
+      "algorithms",
+      "data-structures",
+      "bvh"
+    ]
+  },
+  {
+    "id": "Q041",
+    "number": 41,
+    "title": "游戏渲染中有哪些坐标空间？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 54,
+    "tags": [
+      "3d-math",
+      "geometry"
+    ]
+  },
+  {
+    "id": "Q042",
+    "number": 42,
+    "title": "齐次坐标为什么需要第四维？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 55,
+    "tags": [
+      "3d-math",
+      "geometry"
+    ]
+  },
+  {
+    "id": "Q043",
+    "number": 43,
+    "title": "为什么 Normal 不能直接乘 Model Matrix？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 56,
+    "tags": [
+      "3d-math",
+      "geometry"
+    ]
+  },
+  {
+    "id": "Q044",
+    "number": 44,
+    "title": "Quaternion 为什么适合表示旋转？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 57,
+    "tags": [
+      "3d-math",
+      "geometry",
+      "quaternion"
+    ]
+  },
+  {
+    "id": "Q045",
+    "number": 45,
+    "title": "SLERP 和 LERP 有什么区别？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 58,
+    "tags": [
+      "3d-math",
+      "geometry"
+    ]
+  },
+  {
+    "id": "Q046",
+    "number": 46,
+    "title": "如何判断一个点/包围体是否在视锥体中？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 59,
+    "tags": [
+      "3d-math",
+      "geometry"
+    ]
+  },
+  {
+    "id": "Q047",
+    "number": 47,
+    "title": "Ray 与 Triangle 如何求交？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 60,
+    "tags": [
+      "3d-math",
+      "geometry"
+    ]
+  },
+  {
+    "id": "Q048",
+    "number": 48,
+    "title": "AABB 和 OBB 的区别？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 61,
+    "tags": [
+      "3d-math",
+      "geometry"
+    ]
+  },
+  {
+    "id": "Q049",
+    "number": 49,
+    "title": "什么是重心坐标？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 62,
+    "tags": [
+      "3d-math",
+      "geometry"
+    ]
+  },
+  {
+    "id": "Q050",
+    "number": 50,
+    "title": "为什么纹理属性必须做透视矫正插值？",
+    "chapter_id": 5,
+    "chapter": "3D 数学与几何",
+    "chapter_slug": "05-3d-math",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M3"
+    ],
+    "pdf_physical_page": 63,
+    "tags": [
+      "3d-math",
+      "geometry"
+    ]
+  },
+  {
+    "id": "Q051",
+    "number": 51,
+    "title": "请完整讲一遍现代 GPU Rasterization Pipeline。",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1",
+      "M2",
+      "M3",
+      "M5"
+    ],
+    "pdf_physical_page": 65,
+    "tags": [
+      "rendering",
+      "rasterization"
+    ]
+  },
+  {
+    "id": "Q052",
+    "number": 52,
+    "title": "Rasterization 本质上在做什么？",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 66,
+    "tags": [
+      "rendering",
+      "rasterization"
+    ]
+  },
+  {
+    "id": "Q053",
+    "number": 53,
+    "title": "Vertex Shader 与 Fragment Shader 谁调用次数更多？",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 67,
+    "tags": [
+      "rendering",
+      "rasterization"
+    ]
+  },
+  {
+    "id": "Q054",
+    "number": 54,
+    "title": "什么是 Early-Z？它为什么能加速？",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "M4",
+      "M6"
+    ],
+    "pdf_physical_page": 68,
+    "tags": [
+      "rendering",
+      "rasterization",
+      "depth"
+    ]
+  },
+  {
+    "id": "Q055",
+    "number": 55,
+    "title": "Early-Z 什么时候可能失效或受限？",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M4",
+      "M6"
+    ],
+    "pdf_physical_page": 69,
+    "tags": [
+      "rendering",
+      "rasterization",
+      "depth"
+    ]
+  },
+  {
+    "id": "Q056",
+    "number": 56,
+    "title": "Hi-Z / Hierarchical Z 是什么？",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2"
+    ],
+    "pdf_physical_page": 70,
+    "tags": [
+      "rendering",
+      "rasterization"
+    ]
+  },
+  {
+    "id": "Q057",
+    "number": 57,
+    "title": "Forward 和 Deferred Rendering 如何比较？",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1",
+      "M6"
+    ],
+    "pdf_physical_page": 71,
+    "tags": [
+      "rendering",
+      "rasterization",
+      "deferred-rendering"
+    ]
+  },
+  {
+    "id": "Q058",
+    "number": 58,
+    "title": "Forward+ / Clustered Rendering 为什么出现？",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 72,
+    "tags": [
+      "rendering",
+      "rasterization"
+    ]
+  },
+  {
+    "id": "Q059",
+    "number": 59,
+    "title": "为什么 Deferred GBuffer 可以不保存 World Position？",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M6"
+    ],
+    "pdf_physical_page": 73,
+    "tags": [
+      "rendering",
+      "rasterization",
+      "deferred-rendering"
+    ]
+  },
+  {
+    "id": "Q060",
+    "number": 60,
+    "title": "Instancing 为什么能减少 Draw Call？",
+    "chapter_id": 6,
+    "chapter": "实时渲染管线",
+    "chapter_slug": "06-real-time-rendering",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 74,
+    "tags": [
+      "rendering",
+      "rasterization"
+    ]
+  },
+  {
+    "id": "Q061",
+    "number": 61,
+    "title": "写出 Rendering Equation，并解释每一项。",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M4"
+    ],
+    "pdf_physical_page": 76,
+    "tags": [
+      "pbr",
+      "ray-tracing"
+    ]
+  },
+  {
+    "id": "Q062",
+    "number": 62,
+    "title": "Cook-Torrance BRDF 怎么理解？",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1",
+      "M2",
+      "M3"
+    ],
+    "pdf_physical_page": 77,
+    "tags": [
+      "pbr",
+      "ray-tracing"
+    ]
+  },
+  {
+    "id": "Q063",
+    "number": 63,
+    "title": "Metallic/Roughness PBR Workflow 是什么意思？",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2"
+    ],
+    "pdf_physical_page": 78,
+    "tags": [
+      "pbr",
+      "ray-tracing"
+    ]
+  },
+  {
+    "id": "Q064",
+    "number": 64,
+    "title": "Normal Map 为什么通常存在 Tangent Space？",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "M3"
+    ],
+    "pdf_physical_page": 79,
+    "tags": [
+      "pbr",
+      "ray-tracing"
+    ]
+  },
+  {
+    "id": "Q065",
+    "number": 65,
+    "title": "Shadow Mapping 原理是什么？",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1",
+      "M2",
+      "M6"
+    ],
+    "pdf_physical_page": 80,
+    "tags": [
+      "pbr",
+      "ray-tracing",
+      "shadows"
+    ]
+  },
+  {
+    "id": "Q066",
+    "number": 66,
+    "title": "Shadow Acne 和 Peter Panning 为什么出现？",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1"
+    ],
+    "pdf_physical_page": 81,
+    "tags": [
+      "pbr",
+      "ray-tracing",
+      "shadows"
+    ]
+  },
+  {
+    "id": "Q067",
+    "number": 67,
+    "title": "PCF 和 PCSS 有什么区别？",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M6"
+    ],
+    "pdf_physical_page": 82,
+    "tags": [
+      "pbr",
+      "ray-tracing"
+    ]
+  },
+  {
+    "id": "Q068",
+    "number": 68,
+    "title": "Path Tracing 为什么会有噪声？收敛速度如何理解？",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M4"
+    ],
+    "pdf_physical_page": 83,
+    "tags": [
+      "pbr",
+      "ray-tracing"
+    ]
+  },
+  {
+    "id": "Q069",
+    "number": 69,
+    "title": "什么是 Importance Sampling？",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M4"
+    ],
+    "pdf_physical_page": 84,
+    "tags": [
+      "pbr",
+      "ray-tracing"
+    ]
+  },
+  {
+    "id": "Q070",
+    "number": 70,
+    "title": "BVH 在 Ray Tracing 中解决什么问题？",
+    "chapter_id": 7,
+    "chapter": "PBR、阴影、GI 与 Ray Tracing",
+    "chapter_slug": "07-pbr-ray-tracing",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "M5"
+    ],
+    "pdf_physical_page": 85,
+    "tags": [
+      "pbr",
+      "ray-tracing",
+      "bvh"
+    ]
+  },
+  {
+    "id": "Q071",
+    "number": 71,
+    "title": "如果从零设计游戏引擎，最核心模块有哪些？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1",
+      "O1"
+    ],
+    "pdf_physical_page": 87,
+    "tags": [
+      "engine-architecture",
+      "assets"
+    ]
+  },
+  {
+    "id": "Q072",
+    "number": 72,
+    "title": "Scene Graph 和 ECS 有什么关系？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 88,
+    "tags": [
+      "engine-architecture",
+      "assets",
+      "ecs"
+    ]
+  },
+  {
+    "id": "Q073",
+    "number": 73,
+    "title": "游戏引擎 Serialization 系统如何设计？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1"
+    ],
+    "pdf_physical_page": 89,
+    "tags": [
+      "engine-architecture",
+      "assets"
+    ]
+  },
+  {
+    "id": "Q074",
+    "number": 74,
+    "title": "Asset Pipeline 为什么不能直接运行时读取 FBX/PSD？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 90,
+    "tags": [
+      "engine-architecture",
+      "assets"
+    ]
+  },
+  {
+    "id": "Q075",
+    "number": 75,
+    "title": "如何设计 Asset GUID？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 91,
+    "tags": [
+      "engine-architecture",
+      "assets"
+    ]
+  },
+  {
+    "id": "Q076",
+    "number": 76,
+    "title": "什么是 Resource Streaming？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O4"
+    ],
+    "pdf_physical_page": 92,
+    "tags": [
+      "engine-architecture",
+      "assets"
+    ]
+  },
+  {
+    "id": "Q077",
+    "number": 77,
+    "title": "Game Thread、Render Thread、RHI Thread 如何交互？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O2",
+      "O3"
+    ],
+    "pdf_physical_page": 93,
+    "tags": [
+      "engine-architecture",
+      "assets",
+      "rhi"
+    ]
+  },
+  {
+    "id": "Q078",
+    "number": 78,
+    "title": "什么是 Render Graph？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O3"
+    ],
+    "pdf_physical_page": 94,
+    "tags": [
+      "engine-architecture",
+      "assets",
+      "render-graph"
+    ]
+  },
+  {
+    "id": "Q079",
+    "number": 79,
+    "title": "为什么 Shader Variant 会爆炸？如何控制？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 95,
+    "tags": [
+      "engine-architecture",
+      "assets"
+    ]
+  },
+  {
+    "id": "Q080",
+    "number": 80,
+    "title": "如何设计跨平台 RHI？",
+    "chapter_id": 8,
+    "chapter": "引擎架构与资源系统",
+    "chapter_slug": "08-engine-architecture",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1",
+      "O3"
+    ],
+    "pdf_physical_page": 96,
+    "tags": [
+      "engine-architecture",
+      "assets",
+      "rhi"
+    ]
+  },
+  {
+    "id": "Q081",
+    "number": 81,
+    "title": "Skeletal Animation 如何工作？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 98,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q082",
+    "number": 82,
+    "title": "为什么 Linear Blend Skinning 会出现 Candy Wrapper？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 99,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q083",
+    "number": 83,
+    "title": "FK 与 IK 有什么区别？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 100,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q084",
+    "number": 84,
+    "title": "Animation State Machine 与 Blend Tree 分别解决什么？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 101,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q085",
+    "number": 85,
+    "title": "Physics Fixed Timestep 为什么重要？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 102,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q086",
+    "number": 86,
+    "title": "Collision Detection 为什么分 Broad Phase 和 Narrow Phase？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 103,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q087",
+    "number": 87,
+    "title": "GJK 在解决什么问题？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 104,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q088",
+    "number": 88,
+    "title": "NavMesh 为什么比规则 Grid 更适合 3D 游戏角色？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Intermediate",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 105,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q089",
+    "number": 89,
+    "title": "Client Prediction 为什么需要 Server Reconciliation？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 106,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q090",
+    "number": 90,
+    "title": "Lockstep 和 State Replication 如何选择？",
+    "chapter_id": 9,
+    "chapter": "动画、物理、AI 与网络",
+    "chapter_slug": "09-simulation-networking",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 107,
+    "tags": [
+      "simulation",
+      "networking"
+    ]
+  },
+  {
+    "id": "Q091",
+    "number": 91,
+    "title": "Vulkan 中 Fence、Semaphore、Barrier 分别解决什么？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O6"
+    ],
+    "pdf_physical_page": 109,
+    "tags": [
+      "gpu-api",
+      "performance",
+      "vulkan"
+    ]
+  },
+  {
+    "id": "Q092",
+    "number": 92,
+    "title": "为什么 Pipeline Barrier 写得太保守会掉性能？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O6",
+      "O7"
+    ],
+    "pdf_physical_page": 110,
+    "tags": [
+      "gpu-api",
+      "performance"
+    ]
+  },
+  {
+    "id": "Q093",
+    "number": 93,
+    "title": "什么是 Bindless Rendering？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M3"
+    ],
+    "pdf_physical_page": 111,
+    "tags": [
+      "gpu-api",
+      "performance",
+      "bindless"
+    ]
+  },
+  {
+    "id": "Q094",
+    "number": 94,
+    "title": "GPU-Driven Rendering 是什么？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Advanced",
+    "source_kind": "高频能力重构",
+    "source_refs": [],
+    "pdf_physical_page": 112,
+    "tags": [
+      "gpu-api",
+      "performance",
+      "gpu-driven"
+    ]
+  },
+  {
+    "id": "Q095",
+    "number": 95,
+    "title": "Compute Shader 可以在游戏引擎里做什么？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Intermediate",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M1"
+    ],
+    "pdf_physical_page": 113,
+    "tags": [
+      "gpu-api",
+      "performance"
+    ]
+  },
+  {
+    "id": "Q096",
+    "number": 96,
+    "title": "一帧只有 20 FPS，你如何定位问题？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "O7"
+    ],
+    "pdf_physical_page": 114,
+    "tags": [
+      "gpu-api",
+      "performance"
+    ]
+  },
+  {
+    "id": "Q097",
+    "number": 97,
+    "title": "为什么移动 GPU 和桌面 GPU 优化思路不同？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "M2",
+      "M6"
+    ],
+    "pdf_physical_page": 115,
+    "tags": [
+      "gpu-api",
+      "performance"
+    ]
+  },
+  {
+    "id": "Q098",
+    "number": 98,
+    "title": "Nanite 到底解决了什么问题？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O4"
+    ],
+    "pdf_physical_page": 116,
+    "tags": [
+      "gpu-api",
+      "performance",
+      "nanite"
+    ]
+  },
+  {
+    "id": "Q099",
+    "number": 99,
+    "title": "Lumen 的设计目标是什么？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O5"
+    ],
+    "pdf_physical_page": 117,
+    "tags": [
+      "gpu-api",
+      "performance",
+      "lumen"
+    ]
+  },
+  {
+    "id": "Q100",
+    "number": 100,
+    "title": "系统设计：如何设计一个稳定 60 FPS 的开放世界引擎？",
+    "chapter_id": 10,
+    "chapter": "GPU API、现代引擎与性能优化",
+    "chapter_slug": "10-gpu-api-performance",
+    "difficulty": "Advanced",
+    "source_kind": "公开面经/官方资料可核验",
+    "source_refs": [
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O7"
+    ],
+    "pdf_physical_page": 118,
+    "tags": [
+      "gpu-api",
+      "performance",
+      "system-design"
+    ]
+  }
+]

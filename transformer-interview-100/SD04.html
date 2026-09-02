@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD04 设计长上下文训练方案 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD04</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD04</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="SD03.html">← SD03</a><a href="SD05.html">SD05 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">long-context</a><a href="#">training</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 104 / 110</div>
+    <h1 class="qtitle">SD04 设计长上下文训练方案</h1>
+    <h2 id="1">1. 明确“长上下文”的目标</h2>
+<p>不同目标需要不同数据与评测：</p>
+<ul>
+<li>只是容纳长文；</li>
+<li>长距离 needle retrieval；</li>
+<li>多段证据整合；</li>
+<li>长代码依赖；</li>
+<li>多轮 agent memory。</li>
+</ul>
+<p>“max context=128K”不是能力定义。</p>
+<h2 id="2-position-strategy">2. Position Strategy</h2>
+<p>可选：</p>
+<ul>
+<li>RoPE scaling / interpolation；</li>
+<li>frequency-aware scaling；</li>
+<li>ALiBi；</li>
+<li>新训练位置机制。</li>
+</ul>
+<p>必须保证训练与推理的 position id / cache offset 一致。</p>
+<h2 id="3-data-curriculum">3. Data Curriculum</h2>
+<p>直接把所有 batch 都改成 128K 极昂贵且数据不足。常用 curriculum：</p>
+<pre><code class="language-text">短上下文预训练
+  ↓
+中长度 continued training
+  ↓
+高质量长文 / 拼接 / 结构化长任务
+  ↓
+长上下文 SFT / retrieval tasks
+</code></pre>
+<p>需要控制 packing，避免随机拼接让跨文档 attention 学到无意义关系。</p>
+<h2 id="4">4. 训练系统成本</h2>
+<p>标准 attention 算术 $O(T^2d)$；长序列还放大 activation memory。</p>
+<p>优化：</p>
+<ul>
+<li>FlashAttention；</li>
+<li>activation checkpointing；</li>
+<li>sequence/context parallel；</li>
+<li>selective recompute；</li>
+<li>sliding/local attention（若架构允许）；</li>
+<li>sequence packing。</li>
+</ul>
+<h2 id="5-context-parallel">5. Context Parallel</h2>
+<p>沿 sequence 切分，让不同 GPU 持有不同 token 段；Attention 需要通信 K/V 或采用 ring 类策略。重点不是名字，而是说明：</p>
+<ul>
+<li>通信量；</li>
+<li>causal handling；</li>
+<li>load balance；</li>
+<li>topology。</li>
+</ul>
+<h2 id="6">6. 数据质量</h2>
+<p>长文必须保留真实长依赖，而不是简单把独立短文 concat 到 128K。建议保留：</p>
+<ul>
+<li>document boundary；</li>
+<li>heading / code file structure；</li>
+<li>related-document groups；</li>
+<li>retrieval-required examples。</li>
+</ul>
+<h2 id="7">7. 评测矩阵</h2>
+<table>
+<thead>
+<tr>
+<th>能力</th>
+<th>测试</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>位置外推</td>
+<td>perplexity by position bucket</td>
+</tr>
+<tr>
+<td>Retrieval</td>
+<td>needle at 0/25/50/75/100%</td>
+</tr>
+<tr>
+<td>Multi-hop</td>
+<td>多段证据 QA</td>
+</tr>
+<tr>
+<td>Long code</td>
+<td>repo/file dependency tasks</td>
+</tr>
+<tr>
+<td>Robustness</td>
+<td>distractor density sweep</td>
+</tr>
+<tr>
+<td>Systems</td>
+<td>TTFT, peak memory, tokens/s</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-lost-in-the-middle">8. Lost-in-the-Middle</h2>
+<p>不能只把 needle 放开头和结尾。必须扫描 needle position，否则模型可能在中间区域严重掉点却被平均指标掩盖。</p>
+<h2 id="9">9. 上线风险</h2>
+<ul>
+<li>超长 prompt 造成 TTFT 峰值；</li>
+<li>KV cache 侵占并发；</li>
+<li>用户把“128K”理解成“128K 都同样可靠”；</li>
+<li>long-context fine-tune 伤害短上下文质量。</li>
+</ul>
+<p>因此要同时做 retention eval。</p>
+<h2 id="10">10. 强回答</h2>
+<p><code>能力目标 → Position → 长数据 curriculum → Attention/CP 系统 → 位置分桶评测 → 短上下文 retention → Serving 成本</code></p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

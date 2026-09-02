@@ -1,11 +1,11 @@
 # Engineer Interview 100 · 工程师面试系列知识库
 
-> **从算法、深度学习到 LLM 全链路面试题的体系化手册 · 15 大方向 · 1500+ 道高频面试题**
-> 覆盖 **算法 / 推荐系统 / 深度学习 / Transformer / NLP·LLM / LLM 预训练 / LLM 后训练 / LLM 推理 / Memcached / Agent / 计算机视觉 / 强化学习 / 具身智能 / 搜索引擎 / 金融量化** 等方向，
+> **从算法、深度学习到 LLM 全链路面试题的体系化手册 · 16 大方向 · 1600+ 道高频面试题**
+> 覆盖 **算法 / 推荐系统 / 深度学习 / Transformer / NLP·LLM / LLM 预训练 / LLM 后训练 / LLM 推理 / Memcached / Agent / 计算机视觉 / 强化学习 / 具身智能 / 搜索引擎 / 金融量化 / 游戏引擎** 等方向，
 > 每题一 Markdown，强调 **Know-What → Know-Why → Know-How → Trade-off → Production** 五层答题法。
 
-[![Collections](https://img.shields.io/badge/collections-15-blue)](#📁-仓库结构与目录)
-[![Questions](https://img.shields.io/badge/questions-1500%2B-brightgreen)](#📁-仓库结构与目录)
+[![Collections](https://img.shields.io/badge/collections-16-blue)](#📁-仓库结构与目录)
+[![Questions](https://img.shields.io/badge/questions-1600%2B-brightgreen)](#📁-仓库结构与目录)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-MkDocs%20Material-8A2BE2)](#)
 
@@ -66,6 +66,7 @@
 | [`llm-inference-interview-100-pro`](llm-inference-interview-100-pro/) | LLM 推理与部署 | 推理优化、量化、KV Cache、服务化、成本与延迟 |
 | [`search-engine-interview-100`](search-engine-interview-100/) | 搜索引擎 | 检索、排序、索引、相关性、搜索工程 |
 | [`JianZhi-Quant-Offer`](JianZhi-Quant-Offer/) | 金融量化 (Quant) | 因子、回测、风控、Alpha、高频交易、量化工程 |
+| [`game-engine-interview-100`](game-engine-interview-100/) | 游戏引擎 / 图形 | C++ 对象模型、渲染、内存、数学、性能与引擎架构 |
 
 ## 📌 快速开始
 

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent 成本怎么归因？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Agent Engineer</a><i>∕</i><span>q099</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q099</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">必考</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q098.html">← q098</a><a href="q100.html">q100 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">performance</a><a href="#">cost</a><a href="#">scale</a><a href="#">system-design</a><a href="#">必考</a><a href="#">中</a><a href="#">production-agent</a><a href="#">reliability</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      AGENT RELIABILITY · 99 / 100</div>
+    <h1 class="qtitle">Agent 成本怎么归因？</h1>
+    <blockquote>
+<p><strong>能力轴</strong>：性能、成本与综合系统设计<br />
+<strong>GitHub Edition</strong>：Expanded Professional Version<br />
+<strong>训练目标</strong>：能给出 30 秒结论、3 分钟工程展开，并承受连续系统追问。</p>
+</blockquote>
+<h2 id="_1">题目定位</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>面试层级</td>
+<td>Senior / Staff 倾向</td>
+</tr>
+<tr>
+<td>失败类别</td>
+<td>Scale / Economics</td>
+</tr>
+<tr>
+<td>风险等级</td>
+<td>中高</td>
+</tr>
+<tr>
+<td>核心 Invariant</td>
+<td>每一笔模型/token/tool/检索成本都能归因到 tenant/task/run/agent/step，并关联 task outcome。</td>
+</tr>
+<tr>
+<td>面试频率</td>
+<td>必考</td>
+</tr>
+<tr>
+<td>难度</td>
+<td>中</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官在考什么</h2>
+<p>Agent 的成本由轨迹决定，同一用户请求可能触发数量差异很大的内部调用。</p>
+<p>这道题表面在问一个局部技术点，实际上通常同时检查以下三层能力：</p>
+<ul>
+<li>把 retry cost 单独统计。</li>
+<li>关联 task success 计算 cost per successful task。</li>
+<li>对多 Agent 汇总 parent-child cost。</li>
+<li>优化的是 cost per successful task，而非单次 token 最少</li>
+<li>并行、缓存、模型路由都必须计入尾延迟和失效率</li>
+</ul>
+<blockquote>
+<p><strong>判断高级答案的标志</strong>：不仅告诉面试官“用什么机制”，还能说明 <strong>为什么需要它、它保护哪个 invariant、失败时怎么恢复、怎么证明方案有效</strong>。</p>
+</blockquote>
+<h2 id="30">30 秒回答</h2>
+<p>至少能分解到 tenant/task/run/agent/model/tool/step，记录 input/output tokens、模型单价、工具费用、重试和缓存命中。只有成本可归因，才能知道优化哪个组件最值。</p>
+<h2 id="_3">深挖解析</h2>
+<blockquote>
+<p>下面先逐条展开 PDF 原始深挖点；这些是本题最应该讲清的技术机制。</p>
+</blockquote>
+<h3 id="1-retry-cost">1. 把 retry cost 单独统计。</h3>
+<p>Retry 必须同时满足：错误瞬时可恢复、操作可安全重放、仍在父 deadline 内、没有超过 retry budget。否则重试只是把局部故障放大成队列/下游雪崩。</p>
+<h3 id="2-task-success-cost-per-successful-task">2. 关联 task success 计算 cost per successful task。</h3>
+<p>把这个点落到容量模型：说明它对 throughput、P95、成本、queue 和下游限流的影响，并给出扩容/降级阈值。</p>
+<h3 id="3-agent-parent-child-cost">3. 对多 Agent 汇总 parent-child cost。</h3>
+<p>把这个点落到容量模型：说明它对 throughput、P95、成本、queue 和下游限流的影响，并给出扩容/降级阈值。</p>
+<h3 id="_4">从机制到系统</h3>
+<p>把上面几点合起来，本题不能只用一个局部 API 或 Prompt 技巧解决。需要把 <strong><code>每个 span 计算 cost，聚合到 run；设置 per-task budget，超预算触发 smaller model/stop/HITL。</code></strong> 变成 runtime 中可测试的状态迁移，并给关键 transition 设计失败分支。</p>
+<h2 id="3">3 分钟专业展开</h2>
+<p>先把问题抽象成一个工程约束：<strong>每一笔模型/token/tool/检索成本都能归因到 tenant/task/run/agent/step，并关联 task outcome。</strong>。然后按下面四层回答：</p>
+<ol>
+<li><strong>语义层</strong>：先定义“成功 / 失败 / 完成 / 重试 / 授权”等词在这个场景中的准确含义，避免把 HTTP、LLM 或消息状态误当业务状态。</li>
+<li><strong>状态层</strong>：指出哪些事实必须结构化、持久化、带版本或 operation identity；不要只依赖聊天历史或自然语言总结。</li>
+<li><strong>控制层</strong>：明确模型可以提出什么、runtime/策略引擎必须强制什么，以及异常时走 retry、replan、fallback、HITL 还是 fail-safe。</li>
+<li><strong>验证层</strong>：给出 trace / metric / eval，证明机制既能挡住已知 failure mode，又不会产生不可接受的延迟、成本或误拦截。</li>
+</ol>
+<h3 id="_5">核心机制</h3>
+<ul>
+<li><strong>把 retry cost 单独统计。</strong></li>
+<li><strong>关联 task success 计算 cost per successful task。</strong></li>
+<li><strong>对多 Agent 汇总 parent-child cost。</strong></li>
+<li>优化的是 cost per successful task，而非单次 token 最少</li>
+<li>并行、缓存、模型路由都必须计入尾延迟和失效率</li>
+<li>规模化的核心变化来自队列、隔离、配额、背压、状态和可观测性</li>
+</ul>
+<h3 id="_6">关键设计决策</h3>
+<ul>
+<li>critical path 在哪？</li>
+<li>哪些步骤可缓存/并行/降级？</li>
+<li>队列如何背压？</li>
+<li>优化后 cost per success 是否真正下降？</li>
+</ul>
+<h2 id="_7">参考架构 / 控制流</h2>
+<pre><code class="language-mermaid">flowchart LR
+  U[Requests] --&gt; G[Gateway / Admission]
+  G --&gt; R[Router]
+  R --&gt; F[Fast Path]
+  R --&gt; Q[(Queue)]
+  Q --&gt; W[Agent Workers]
+  W --&gt; M[Model Router]
+  W --&gt; T[Tools / RAG]
+  F --&gt; O[Response]
+  W --&gt; O
+  W --&gt; OBS[(Trace / Cost / SLO)]
+</code></pre>
+<p>这张图强调本章的可信边界：在成功率、安全和 SLO 约束下最小化单位任务成本，并能平滑扩展。面试时先讲数据/控制流，再讲每个边界上的校验与恢复。</p>
+<h2 id="_8">状态与接口设计</h2>
+<p>面试中建议显式说出“<strong>哪些字段需要存在</strong>”，这样比只说框架名更有工程可信度。一个最小设计通常包括：</p>
+<ul>
+<li><code>run_id / task_id / step_id</code>：把一次执行和子任务串起来。</li>
+<li><code>attempt / version / deadline</code>：区分重试、版本与剩余时间。</li>
+<li><code>status</code>：使用有限状态机，而不是自由文本表示执行状态。</li>
+<li><code>input_ref / output_ref / artifact_ref</code>：大对象保存为引用，避免在 context/消息中复制。</li>
+<li><code>trace_id / correlation_id</code>：跨模型、工具、Agent 和异步任务关联。</li>
+<li>对副作用步骤再加入 <code>operation_id / idempotency_key / approval_id</code>；对知识步骤加入 <code>source / provenance / freshness</code>。</li>
+</ul>
+<h2 id="_9">实现骨架 / 伪代码</h2>
+<pre><code class="language-text">Request -&gt; admission -&gt; route -&gt; bounded context -&gt; model/tools
+        -&gt; durable state -&gt; response
+        -&gt; trace + cost attribution + SLO
+</code></pre>
+<h2 id="_10">典型生产场景</h2>
+<p>百万请求系统把 FAQ 走小模型/缓存快路径，复杂任务入队由 Agent Worker 执行；所有请求都记录 cost_per_success，而不是只统计 token 总量。</p>
+<h2 id="failure-modes">Failure Modes：方案最容易坏在哪里</h2>
+<ul>
+<li><strong>只优化平均延迟忽略 P95/P99</strong></li>
+<li><strong>并行放大下游限流和 token 成本</strong></li>
+<li><strong>成本无法和成功率关联，优化方向失真</strong></li>
+</ul>
+<p>遇到异常时，不要立即跳到“重试”。建议统一使用：</p>
+<p><code>Detect → Classify → Contain → Recover → Preserve → Verify</code></p>
+<p>本题最重要的 Preserve 对象是：<strong>每一笔模型/token/tool/检索成本都能归因到 tenant/task/run/agent/step，并关联 task outcome。</strong>。</p>
+<h2 id="trade-off">Trade-off：为什么不能只有一个标准答案</h2>
+<ul>
+<li><strong>延迟 vs 成本</strong>：并行和强模型可能降低 latency 却显著增成本；需看 cost per successful task。</li>
+<li><strong>利用率 vs 尾延迟</strong>：高 worker 利用率会放大 queue wait，需要为 P95/P99 保留容量。</li>
+</ul>
+<p>面试时最好给出一个“默认选择 + 改变选择的条件”，而不是绝对化表达。例如：默认用更简单的单 Agent/同步/低并发方案，只有当评估数据证明瓶颈来自专业化、并行或长任务时再增加复杂度。</p>
+<h2 id="_11">可观测性与关键指标</h2>
+<p>平均值容易掩盖尾部问题；至少跟踪 P50/P95/P99、queue wait、model/tool 分段时延。 建议至少记录：</p>
+<ul>
+<li><code>p95_latency</code></li>
+<li><code>cost_per_task</code></li>
+<li><code>cost_per_success</code></li>
+<li><code>queue_wait</code></li>
+<li><code>cache_hit_rate</code></li>
+<li><code>model_escalation_rate</code></li>
+<li><code>throughput</code></li>
+</ul>
+<p>此外所有指标都应该按 <code>workflow_version / model / tool / tenant / task_type / failure_class</code> 等维度切片，否则总体平均值很容易掩盖局部事故。</p>
+<h2 id="_12">连续追问</h2>
+<h3 id="1">1. 共享缓存成本怎么算？</h3>
+<p><strong>回答方向</strong>：先以“把 retry cost 单独统计。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h3 id="2">2. 如何做预算控制？</h3>
+<p><strong>回答方向</strong>：先以“把 retry cost 单独统计。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h2 id="_13">易错回答</h2>
+<blockquote>
+<p>只看整个月模型账单。</p>
+</blockquote>
+<p>为什么这是低质量答案：它通常只描述 happy path，没有说明失败语义、状态所有权或可信边界，也没有给出验证手段。高级回答要把“模型可能错、网络可能断、进程可能崩、消息可能重复、知识可能过期”当作设计前提。</p>
+<h2 id="know-why">Know-Why</h2>
+<p>Agent 的成本由轨迹决定，同一用户请求可能触发数量差异很大的内部调用。</p>
+<p>更深一层看，本题的本质是保护这个系统 invariant：<strong>每一笔模型/token/tool/检索成本都能归因到 tenant/task/run/agent/step，并关联 task outcome。</strong>。Agent 引入的是概率决策，因此工程层需要把不可违反的规则外置为 deterministic guardrails/state machines，并给非确定路径准备恢复机制。</p>
+<h2 id="know-how">Know-How</h2>
+<p>每个 span 计算 cost，聚合到 run；设置 per-task budget，超预算触发 smaller model/stop/HITL。</p>
+<h3 id="_14">落地步骤</h3>
+<ol>
+<li>先写出业务 invariant 和明确的完成/失败定义。</li>
+<li>建立结构化 state，给每个关键字段确定 owner、版本与持久化周期。</li>
+<li>在可信 runtime / gateway 中实现校验、权限、预算和异常策略，不只依赖 prompt。</li>
+<li>为关键 transition 添加 trace、state diff 和可聚合 error code。</li>
+<li>构造至少 3 个故障注入案例：超时/重复/崩溃（或本题等价异常）。</li>
+<li>用 regression eval + 线上指标确认修复没有把问题转移到成本、时延或误拦截。</li>
+</ol>
+<h2 id="production-checklist">Production Checklist</h2>
+<ul>
+<li>[ ] 核心 invariant 已写成可验证条件：每一笔模型/token/tool/检索成本都能归因到 tenant/task/run/agent/step，并关联 task outcome。</li>
+<li>[ ] 关键状态不只存在于 prompt/messages 中。</li>
+<li>[ ] 存在明确 timeout / retry / stop / fallback / HITL 策略。</li>
+<li>[ ] 所有高风险副作用经过资源侧授权与审计。</li>
+<li>[ ] Trace 能定位到发生错误的具体 transition。</li>
+<li>[ ] 变更有离线 regression，关键路径有线上 SLO/告警。</li>
+</ul>
+<h2 id="_15">面试自测</h2>
+<ul>
+<li>[ ] 我能在 <strong>30 秒</strong>内讲清核心结论，不报框架名堆术语。</li>
+<li>[ ] 我能在 <strong>3 分钟</strong>内说明状态、控制边界、失败恢复和指标。</li>
+<li>[ ] 我能画出上面的控制流，并解释每个箭头的失败语义。</li>
+<li>[ ] 面试官换成“网络断了 / Worker crash / 重复消息 / 权限不足”时，我仍能沿 invariant 推导方案。</li>
+</ul>
+<h2 id="_16">关联题目</h2>
+<ul>
+<li><span class="srcref">Q091 · 一个 Agent 每次任务需要 200K tokens，怎么降到 50K？</span></li>
+<li><span class="srcref">Q092 · 是否所有步骤都需要最强模型？</span></li>
+<li><span class="srcref">Q093 · Agent 哪些东西适合缓存？</span></li>
+<li><span class="srcref">Q094 · 并行 10 个 Agent 一定比串行更快吗？</span></li>
+<li><span class="srcref">Q095 · 怎么设计 Agent latency budget？</span></li>
+</ul>
+<h2 id="_17">延伸阅读</h2>
+<h3 id="_18">对应官方工程资料</h3>
+<ul>
+<li><a href="https://www.anthropic.com/engineering">Anthropic · Engineering / long-running harnesses</a></li>
+<li><a href="https://docs.langchain.com/oss/python/langgraph/persistence">LangGraph · Persistence</a></li>
+</ul>
+<blockquote>
+<p>外部资料用于 GitHub Expanded Edition 的工程深化；PDF 原始题目与核心字段仍按仓库结构化源数据保留。</p>
+</blockquote>
+<ul>
+<li><span class="srcref">Reliability First：六步故障回答框架</span></li>
+<li><span class="srcref">系统设计白板模板</span></li>
+<li><span class="srcref">参考资料与官方工程资料</span></li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

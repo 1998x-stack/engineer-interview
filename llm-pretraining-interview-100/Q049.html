@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Expert Parallel 为什么需要 All-to-All？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q049</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q049</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q048.html">← Q048</a><a href="Q050.html">Q050 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">distributed</a><a href="#">distributed-training</a><a href="#">moe</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 50 / 101</div>
+    <h1 class="qtitle">Expert Parallel 为什么需要 All-to-All？</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>中</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">分布式训练</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>MoE 系统的核心通信题。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>切分语义</strong>：每个并行轴到底切哪个 tensor/state？</li>
+<li><strong>collective</strong>：每一步需要 AG/RS/AR/A2A/P2P 中的什么？</li>
+<li><strong>拓扑</strong>：高频通信是否留在 NVLink/NVSwitch 域？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>EP 的 All-to-All 本质是把 token 按路由结果重新排列到 expert 所在设备。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>Router 对每个 token 选出的 expert 可能位于其他 rank。为了把 token hidden states 发送到对应 expert，需要 token dispatch；expert MLP 完成后又要把结果返回原 token 顺序做 combine，因此典型实现出现两次 All-to-All 类通信。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>这使 MoE 从“稀疏计算省 FLOPs”转化为“通信与负载均衡挑战”。expert 越碎、每 expert token 越少，communication/computation ratio 越高。</p>
+<h2 id="4-production">4. 深度展开：从定义走向 Production</h2>
+<p>本题的深挖重点是：<strong>EP 的 All-to-All 本质是把 token 按路由结果重新排列到 expert 所在设备。</strong></p>
+<p>建议沿下面的因果链继续展开：</p>
+<ol>
+<li><strong>定义/状态语义</strong>：先把对象、tensor、数据分布或训练状态说准确；</li>
+<li><strong>机制</strong>：解释为什么该设计会改变 loss、memory、FLOPs、通信或稳定性；</li>
+<li><strong>代价</strong>：指出它牺牲了什么，不把工程 trick 说成“免费午餐”；</li>
+<li><strong>可验证性</strong>：说明你会用什么指标、profile 或 ablation 判断结论是否成立；</li>
+<li><strong>规模化边界</strong>：把 1 GPU/小模型结论推进到千卡、长序列或 MoE 场景。</li>
+</ol>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：画 router→dispatch→expert→combine 数据流。</li>
+<li><strong>动作 2</strong>：监控 tokens/expert、A2A bytes、等待时间和 grouped GEMM utilization。</li>
+<li><strong>动作 3</strong>：让 EP group 映射到高带宽拓扑并尝试 overlap。</li>
+</ol>
+<h3 id="profiling">分布式 Profiling</h3>
+<p>对每个并行轴画出“切分对象—rank 状态—collective—通信量—拓扑”，再用 trace 验证通信是否可 overlap。</p>
+<ul>
+<li>先保证数值一致性再优化性能。</li>
+<li>比较 per-rank peak memory 与 step time。</li>
+<li>识别最慢 rank 和 collective hotspot。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-expert-rank-collective">追问 1：如果 expert 在本 rank 为什么也要参与 collective？</h3>
+<p><strong>回答方向</strong>：明确通信发生在哪个 forward/backward 阶段、通信量随哪个维度增长、能否与计算 overlap，以及跨节点拓扑影响。</p>
+<h3 id="2capacity-factor-token-drop">追问 2：capacity factor / token drop 怎么影响通信？</h3>
+<p><strong>回答方向</strong>：明确通信发生在哪个 forward/backward 阶段、通信量随哪个维度增长、能否与计算 overlap，以及跨节点拓扑影响。</p>
+<h3 id="3ep-dp-group">追问 3：EP 与 DP group 如何组合？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>只说“MoE 要通信”，说不出发送的是什么 tensor。</strong></li>
+<li>改进：回到“EP 的 All-to-All 本质是把 token 按路由结果重新排列到 expert 所在设备。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：EP 的 All-to-All 本质是把 token 按路由结果重新排列到 expert 所在设备。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>如果 expert 在本 rank 为什么也要参与 collective？</li>
+<li>capacity factor / token drop 怎么影响通信？</li>
+<li>EP 与 DP group 如何组合？</li>
+<li>画出 ranks、shards 与 collective；标记跨节点通信。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>EP 的 All-to-All 本质是把 token 按路由结果重新排列到 expert 所在设备。</strong></p>
+</blockquote>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R9 · 官方文档</strong> — <a href="https://docs.nvidia.com/megatron-core/developer-guide/latest/">NVIDIA Megatron Core User Guide</a></li>
+<li><strong>R10 · 技术报告</strong> — <a href="https://arxiv.org/abs/2412.19437">DeepSeek-AI, DeepSeek-V3 Technical Report</a></li>
+<li><strong>R17 · 官方文档</strong> — <a href="https://docs.nvidia.com/megatron-core/developer-guide/latest/user-guide/parallelism-guide.html">NVIDIA Megatron Core — Parallelism Strategies Guide</a></li>
+</ul>
+<h2 id="_2">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q048. Sequence Parallel 与 Context Parallel 有什么区别？</span></li>
+<li>→ <span class="srcref">Q050. 给你 1024 张 GPU，TP/PP/DP/CP/EP 怎么设计？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>预训练数据清洗 Pipeline 应如何设计？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q085</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q085</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q084.html">← Q084</a><a href="Q086.html">Q086 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">data-evaluation</a><a href="#">data</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 85 / 100</div>
+    <h1 class="qtitle">预训练数据清洗 Pipeline 应如何设计？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★★  ·  <strong>频率</strong>：★★★★★  ·  <strong>标签</strong>：<code>data-evaluation</code>, <code>data</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q085.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>从 Common Crawl/文档源到可训练 shard，给出完整数据管线。</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>现代基础模型岗高频系统题。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>强调 provenance、可审计和实验消融。</li>
+<li>把质量信号与最终训练 utility 分开。</li>
+<li>讨论误删、污染、Judge 偏差和线上分布。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>典型链路：来源/许可登记 → 解析与正文抽取 →Unicode 规范化 → 语言识别 → 质量/重复/PII 过滤 →Exact/MinHash/substring 去重 →benchmark decontamination→ 统计/分层 →tokenize/- pack/shard。每一步都应保存原因、版本和 retention。</p>
+<h2 id="4">4. 白板核心结构</h2>
+<p>本题更强调概念结构与工程权衡。面试时优先画出数据流、状态转移或模块关系，再补充必要公式。</p>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：低成本高精度规则应尽量放前面，昂贵模型过滤放后面。</li>
+<li><strong>PDF 基线要点</strong>：过滤策略需要 per-domain/per-language 校准。</li>
+<li><strong>PDF 基线要点</strong>：“流式 pipeline”不代表全局去重能单遍完成。</li>
+<li><strong>扩展理解</strong>：预训练数据管线不是“过滤器堆叠”，而是来源治理、抽取、质量、去重、隐私、安全、污染、混合和 tokenize 的可审计系统。</li>
+<li><strong>扩展理解</strong>：每一步都要记录 retention、reason code、版本与 provenance。</li>
+<li><strong>扩展理解</strong>：最终质量判断必须通过 proxy training/downstream utility，而不只是文本审美。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="_2">预训练数据管线是“可审计的数据系统”</h3>
+<ul>
+<li>完整流程应包含 source/license inventory → parsing/extraction → normalization/language → quality/safety/PII → exact/near/substr dedup → decontamination → mixing → tokenize/pack/shard。</li>
+<li>低成本、高精度规则尽量前置，昂贵 classifier/LLM filter 后置；但全局 dedup 需要多阶段签名、排序、聚类，不能简单一遍流式完成。</li>
+<li>每一步都应保存 sample id、source、score、reason code、pipeline/config/model version 和 retention statistics，才能重跑阈值与审计来源。</li>
+</ul>
+<h3 id="_3">边界与工程</h3>
+<ul>
+<li>不同 source/语言需不同策略：论文的公式符号、代码的长行、网页的菜单模板不能用同一规则。</li>
+<li>过滤器质量必须通过 proxy training/downstream utility 验证；“删得更多、文本更整齐”不等于训练更好。</li>
+<li>最终 shard 还要考虑 tokenizer version、packing boundary、shuffle、可恢复任务和数据血缘到训练 token 的反查。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>为每次过滤保留 reason code、score、阈值、版本和 provenance。</li>
+<li>质量信号不是 ground truth，必须估计误删/漏删和长尾分布损失。</li>
+<li>最终用 proxy training/downstream utility 验证数据决策。</li>
+</ul>
+<h3 id="_4">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>只列步骤，不谈 observability/provenance。</li>
+<li>删除样本不保存原因。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>为什么先抽取正文再做语言识别？</li>
+<li>如何重跑阈值而不重算昂贵信号？</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_6">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://github.com/huggingface/datatrove">DataTrove</a></li>
+<li><a href="https://arxiv.org/abs/2402.00159">Dolma</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q084 如何完整评估一个 RAG 系统？</span></li>
+<li><span class="srcref">Q086 Exact Dedup 与 MinHash：何时用哪一个？</span></li>
+<li><span class="srcref">Q088 合成数据质量：Validity、Faithfulness、Diversity、Utility</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>预训练数据管线是“可审计的数据系统”</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

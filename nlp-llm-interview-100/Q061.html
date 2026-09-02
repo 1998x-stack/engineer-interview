@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么“数据质量越高越好”是危险说法？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q061</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q061</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q060.html">← Q060</a><a href="Q062.html">Q062 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">pretraining</a><a href="#">data</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 61 / 100</div>
+    <h1 class="qtitle">为什么“数据质量越高越好”是危险说法？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★★  ·  <strong>频率</strong>：★★★★★  ·  <strong>标签</strong>：<code>pretraining</code>, <code>data</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q061.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>如果只保留最像 Wikipedia/教材的文本，会发生什么？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>考察数据分布工程意识。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>区分 objective、architecture、data 与 scaling。</li>
+<li>关注训练稳定性、数据分布和 token/compute budget。</li>
+<li>能说明“经验规律”的适用范围，而不是绝对化。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>过强过滤提高平均可读性，但可能降低覆盖、多样性、长尾与独特 token 数。真正目标应是训练效 用，而不是某个单一 quality classifier 分数。</p>
+<h2 id="4">4. 白板核心结构</h2>
+<p>本题更强调概念结构与工程权衡。面试时优先画出数据流、状态转移或模块关系，再补充必要公式。</p>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：质量模型本身带有教师偏好与域偏差。</li>
+<li><strong>PDF 基线要点</strong>：高质量小数据重复多 epoch 可能不如更大、适度噪声的数据。</li>
+<li><strong>PDF 基线要点</strong>：应通过小模型/proxy training 与 downstream ablation 验证过滤策略。</li>
+<li><strong>扩展理解</strong>：过强过滤提高平均质量同时会降低覆盖、多样性和 unique tokens。</li>
+<li><strong>扩展理解</strong>：现代数据工程更关心 quality×coverage×diversity×scale 的联合 utility。</li>
+<li><strong>扩展理解</strong>：分类器“高质量”往往意味着“像其正样本分布”，不是客观真理。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="_2">“高质量”不是单一标量</h3>
+<ul>
+<li>过滤得越狠，平均文本质量可能提高，但 unique token、长尾领域、口语、少数语言和风格多样性会下降；训练效用可能反而变差。</li>
+<li>质量分类器通常学习“像某些正例来源”的分布偏好，不等于客观真值；教育文本分类器会天然偏向解释性、正式书面语。</li>
+<li>更合理目标是固定训练预算下优化 quality × coverage × diversity × uniqueness × downstream utility。</li>
+</ul>
+<h3 id="_3">边界与工程</h3>
+<ul>
+<li>过滤器应保存连续 score 与 reason code，支持阈值消融，而不是一遍删除后丢失信息。</li>
+<li>不同语言/领域需要独立校准，英文网页阈值不能无脑复制到代码、论文或低资源语言。</li>
+<li>真正判断数据决策需要 proxy model 训练或 downstream ablation，而不是人工读十条文本。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>把训练目标与数据分布联系起来：哪些 token 产生监督、模型实际最大化什么。</li>
+<li>比较 tokenizer/架构时给出序列长度、FLOPs、唯一 token、显存和推理代价。</li>
+<li>预训练决策最终需要固定 compute/token 预算下的消融，而不是只看局部 loss。</li>
+</ul>
+<h3 id="_4">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>“越干净越好”是典型错误。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>如何设计 quality bucket？</li>
+<li>如何量化 diversity 与 coverage？</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_6">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1810.04805">BERT</a></li>
+<li><a href="https://arxiv.org/abs/1907.11692">RoBERTa</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q060 大模型训练为什么必须去重？</span></li>
+<li><span class="srcref">Q062 Mixed Precision：BF16 为什么常比 FP16 稳？</span></li>
+<li><span class="srcref">Q056 Decoder LM Loss：为什么每个 token 都是监督信号？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>“高质量”不是单一标量</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

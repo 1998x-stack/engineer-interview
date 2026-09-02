@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>8 个 Worker 中一个失败，要不要整个任务失败？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Agent Engineer</a><i>∕</i><span>q039</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q039</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">中频</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q038.html">← q038</a><a href="q040.html">q040 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">multi-agent</a><a href="#">protocol</a><a href="#">handoff</a><a href="#">isolation</a><a href="#">中频</a><a href="#">中</a><a href="#">production-agent</a><a href="#">reliability</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      AGENT RELIABILITY · 39 / 100</div>
+    <h1 class="qtitle">8 个 Worker 中一个失败，要不要整个任务失败？</h1>
+    <blockquote>
+<p><strong>能力轴</strong>：Multi-Agent 通信与协作<br />
+<strong>GitHub Edition</strong>：Expanded Professional Version<br />
+<strong>训练目标</strong>：能给出 30 秒结论、3 分钟工程展开，并承受连续系统追问。</p>
+</blockquote>
+<h2 id="_1">题目定位</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>面试层级</td>
+<td>Mid / Senior</td>
+</tr>
+<tr>
+<td>失败类别</td>
+<td>Coordination / Protocol</td>
+</tr>
+<tr>
+<td>风险等级</td>
+<td>中</td>
+</tr>
+<tr>
+<td>核心 Invariant</td>
+<td>失败传播策略由任务依赖关系与可降级目标决定，而不是“一人失败全体失败”。</td>
+</tr>
+<tr>
+<td>面试频率</td>
+<td>中频</td>
+</tr>
+<tr>
+<td>难度</td>
+<td>中</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官在考什么</h2>
+<p>可靠性来自任务级故障域设计，而不是 worker 永不失败。</p>
+<p>这道题表面在问一个局部技术点，实际上通常同时检查以下三层能力：</p>
+<ul>
+<li>任务图应标注 critical/optional。</li>
+<li>部分失败必须显式体现在最终结果质量。</li>
+<li>重分配时继承已有 artifact，避免从零重复。</li>
+<li>Multi-Agent 首先是分布式系统，其次才是多个 Prompt</li>
+<li>transport complete、agent done、business complete 必须区分</li>
+</ul>
+<blockquote>
+<p><strong>判断高级答案的标志</strong>：不仅告诉面试官“用什么机制”，还能说明 <strong>为什么需要它、它保护哪个 invariant、失败时怎么恢复、怎么证明方案有效</strong>。</p>
+</blockquote>
+<h2 id="30">30 秒回答</h2>
+<p>看子任务的 criticality 和依赖。独立非关键任务可降级完成；关键路径任务可重试、重分配或用冗余 worker；需要 quorum 的任务按成功阈值决定。</p>
+<h2 id="_3">深挖解析</h2>
+<blockquote>
+<p>下面先逐条展开 PDF 原始深挖点；这些是本题最应该讲清的技术机制。</p>
+</blockquote>
+<h3 id="1-criticaloptional">1. 任务图应标注 critical/optional。</h3>
+<p>把这个点落到分布式任务语义：需要 task ownership、消息 identity、持久化状态和失败传播策略。</p>
+<h3 id="2">2. 部分失败必须显式体现在最终结果质量。</h3>
+<p>Partial success 必须保留 item-level 状态，至少区分 <code>succeeded / failed / unknown / retryable</code>。如果只返回布尔 <code>success=false</code>，上层无法知道哪些子动作已经产生副作用。</p>
+<h3 id="3-artifact">3. 重分配时继承已有 artifact，避免从零重复。</h3>
+<p>消息正确性需要业务状态机兜底：传输层可以 at-least-once，但 consumer 必须按 <code>message_id/task_id/attempt</code> 去重，并拒绝旧 attempt 迟到结果覆盖新状态。</p>
+<h3 id="_4">从机制到系统</h3>
+<p>把上面几点合起来，本题不能只用一个局部 API 或 Prompt 技巧解决。需要把 <strong><code>为每个 task 定义 retry_policy、fallback_worker、required_for_success；orchestrator 按 DAG 传播影响。</code></strong> 变成 runtime 中可测试的状态迁移，并给关键 transition 设计失败分支。</p>
+<h2 id="3">3 分钟专业展开</h2>
+<p>先把问题抽象成一个工程约束：<strong>失败传播策略由任务依赖关系与可降级目标决定，而不是“一人失败全体失败”。</strong>。然后按下面四层回答：</p>
+<ol>
+<li><strong>语义层</strong>：先定义“成功 / 失败 / 完成 / 重试 / 授权”等词在这个场景中的准确含义，避免把 HTTP、LLM 或消息状态误当业务状态。</li>
+<li><strong>状态层</strong>：指出哪些事实必须结构化、持久化、带版本或 operation identity；不要只依赖聊天历史或自然语言总结。</li>
+<li><strong>控制层</strong>：明确模型可以提出什么、runtime/策略引擎必须强制什么，以及异常时走 retry、replan、fallback、HITL 还是 fail-safe。</li>
+<li><strong>验证层</strong>：给出 trace / metric / eval，证明机制既能挡住已知 failure mode，又不会产生不可接受的延迟、成本或误拦截。</li>
+</ol>
+<h3 id="_5">核心机制</h3>
+<ul>
+<li><strong>任务图应标注 critical/optional。</strong></li>
+<li><strong>部分失败必须显式体现在最终结果质量。</strong></li>
+<li><strong>重分配时继承已有 artifact，避免从零重复。</strong></li>
+<li>Multi-Agent 首先是分布式系统，其次才是多个 Prompt</li>
+<li>transport complete、agent done、business complete 必须区分</li>
+<li>跨 Agent 只传 contract + artifact + provenance，不默认共享全部内部状态</li>
+</ul>
+<h3 id="_6">关键设计决策</h3>
+<ul>
+<li>任务是否值得拆分？</li>
+<li>谁拥有 task state？</li>
+<li>消息如何去重/排序/关联？</li>
+<li>失败如何隔离或降级？</li>
+</ul>
+<h2 id="_7">参考架构 / 控制流</h2>
+<pre><code class="language-mermaid">flowchart LR
+  U[User Goal] --&gt; O[Orchestrator]
+  O --&gt; Q[(Task / Message Bus)]
+  Q --&gt; W1[Worker A]
+  Q --&gt; W2[Worker B]
+  Q --&gt; W3[Worker C]
+  W1 --&gt; A[(Artifacts)]
+  W2 --&gt; A
+  W3 --&gt; A
+  A --&gt; V[Aggregator / Verifier]
+  V --&gt; O
+</code></pre>
+<p>这张图强调本章的可信边界：任务 ownership 明确，消息可关联、可去重、可恢复，隔离边界不泄漏。面试时先讲数据/控制流，再讲每个边界上的校验与恢复。</p>
+<h2 id="_8">状态与接口设计</h2>
+<p>面试中建议显式说出“<strong>哪些字段需要存在</strong>”，这样比只说框架名更有工程可信度。一个最小设计通常包括：</p>
+<ul>
+<li><code>run_id / task_id / step_id</code>：把一次执行和子任务串起来。</li>
+<li><code>attempt / version / deadline</code>：区分重试、版本与剩余时间。</li>
+<li><code>status</code>：使用有限状态机，而不是自由文本表示执行状态。</li>
+<li><code>input_ref / output_ref / artifact_ref</code>：大对象保存为引用，避免在 context/消息中复制。</li>
+<li><code>trace_id / correlation_id</code>：跨模型、工具、Agent 和异步任务关联。</li>
+<li>对副作用步骤再加入 <code>operation_id / idempotency_key / approval_id</code>；对知识步骤加入 <code>source / provenance / freshness</code>。</li>
+</ul>
+<h2 id="_9">实现骨架 / 伪代码</h2>
+<pre><code class="language-text">Orchestrator
+  -&gt; persist Task(task_id, attempt, deadline)
+  -&gt; publish task.request(message_id, correlation_id)
+Worker
+  -&gt; deduplicate(message_id)
+  -&gt; execute scoped task
+  -&gt; persist Artifact + terminal task status
+Orchestrator
+  -&gt; verify artifact/business completion
+</code></pre>
+<h2 id="_10">典型生产场景</h2>
+<p>主 Agent 把“整理退款证据”分给 Worker。Worker 返回 artifact_id 和 task status；Orchestrator 验证证据字段完整后才进入退款决策。</p>
+<h2 id="failure-modes">Failure Modes：方案最容易坏在哪里</h2>
+<ul>
+<li><strong>消息重复/迟到导致状态倒退</strong></li>
+<li><strong>任务 ownership 不清造成重复工作</strong></li>
+<li><strong>上下文/权限在 Agent 之间越界传播</strong></li>
+</ul>
+<p>遇到异常时，不要立即跳到“重试”。建议统一使用：</p>
+<p><code>Detect → Classify → Contain → Recover → Preserve → Verify</code></p>
+<p>本题最重要的 Preserve 对象是：<strong>失败传播策略由任务依赖关系与可降级目标决定，而不是“一人失败全体失败”。</strong>。</p>
+<h2 id="trade-off">Trade-off：为什么不能只有一个标准答案</h2>
+<ul>
+<li><strong>专业化/并行 vs 协调成本</strong>：拆 Agent 能提升隔离与并行，但会增加消息、上下文同步和 failure surface。</li>
+<li><strong>共享上下文 vs 隔离</strong>：共享更多信息减少重复检索，但提高污染、越权和耦合。</li>
+</ul>
+<p>面试时最好给出一个“默认选择 + 改变选择的条件”，而不是绝对化表达。例如：默认用更简单的单 Agent/同步/低并发方案，只有当评估数据证明瓶颈来自专业化、并行或长任务时再增加复杂度。</p>
+<h2 id="_11">可观测性与关键指标</h2>
+<p>协调成本本身就是指标：handoff 数、消息量、重复任务率、worker 等待时间会吞噬 Multi-Agent 收益。 建议至少记录：</p>
+<ul>
+<li><code>handoff_success_rate</code></li>
+<li><code>message_redelivery_rate</code></li>
+<li><code>coordination_overhead</code></li>
+<li><code>worker_utilization</code></li>
+<li><code>orchestration_loop_rate</code></li>
+</ul>
+<p>此外所有指标都应该按 <code>workflow_version / model / tool / tenant / task_type / failure_class</code> 等维度切片，否则总体平均值很容易掩盖局部事故。</p>
+<h2 id="_12">连续追问</h2>
+<h3 id="1-speculative-redundancy">1. 什么时候采用 speculative redundancy？</h3>
+<p><strong>回答方向</strong>：先以“任务图应标注 critical/optional。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h3 id="2-worker">2. 如何防止两个 Worker 同时写同一资源？</h3>
+<p><strong>回答方向</strong>：先以“任务图应标注 critical/optional。”为主结论，再补充状态所有权、失败窗口和验证指标。回答必须给出一个明确边界：什么情况下采用该方案，什么情况下应 fail-safe / clarify / HITL。</p>
+<h2 id="_13">易错回答</h2>
+<blockquote>
+<p>任何 worker 失败都 fail-all，或无条件忽略失败。</p>
+</blockquote>
+<p>为什么这是低质量答案：它通常只描述 happy path，没有说明失败语义、状态所有权或可信边界，也没有给出验证手段。高级回答要把“模型可能错、网络可能断、进程可能崩、消息可能重复、知识可能过期”当作设计前提。</p>
+<h2 id="know-why">Know-Why</h2>
+<p>可靠性来自任务级故障域设计，而不是 worker 永不失败。</p>
+<p>更深一层看，本题的本质是保护这个系统 invariant：<strong>失败传播策略由任务依赖关系与可降级目标决定，而不是“一人失败全体失败”。</strong>。Agent 引入的是概率决策，因此工程层需要把不可违反的规则外置为 deterministic guardrails/state machines，并给非确定路径准备恢复机制。</p>
+<h2 id="know-how">Know-How</h2>
+<p>为每个 task 定义 retry_policy、fallback_worker、required_for_success；orchestrator 按 DAG 传播影响。</p>
+<h3 id="_14">落地步骤</h3>
+<ol>
+<li>先写出业务 invariant 和明确的完成/失败定义。</li>
+<li>建立结构化 state，给每个关键字段确定 owner、版本与持久化周期。</li>
+<li>在可信 runtime / gateway 中实现校验、权限、预算和异常策略，不只依赖 prompt。</li>
+<li>为关键 transition 添加 trace、state diff 和可聚合 error code。</li>
+<li>构造至少 3 个故障注入案例：超时/重复/崩溃（或本题等价异常）。</li>
+<li>用 regression eval + 线上指标确认修复没有把问题转移到成本、时延或误拦截。</li>
+</ol>
+<h2 id="production-checklist">Production Checklist</h2>
+<ul>
+<li>[ ] 核心 invariant 已写成可验证条件：失败传播策略由任务依赖关系与可降级目标决定，而不是“一人失败全体失败”。</li>
+<li>[ ] 关键状态不只存在于 prompt/messages 中。</li>
+<li>[ ] 存在明确 timeout / retry / stop / fallback / HITL 策略。</li>
+<li>[ ] 所有高风险副作用经过资源侧授权与审计。</li>
+<li>[ ] Trace 能定位到发生错误的具体 transition。</li>
+<li>[ ] 变更有离线 regression，关键路径有线上 SLO/告警。</li>
+</ul>
+<h2 id="_15">面试自测</h2>
+<ul>
+<li>[ ] 我能在 <strong>30 秒</strong>内讲清核心结论，不报框架名堆术语。</li>
+<li>[ ] 我能在 <strong>3 分钟</strong>内说明状态、控制边界、失败恢复和指标。</li>
+<li>[ ] 我能画出上面的控制流，并解释每个箭头的失败语义。</li>
+<li>[ ] 面试官换成“网络断了 / Worker crash / 重复消息 / 权限不足”时，我仍能沿 invariant 推导方案。</li>
+</ul>
+<h2 id="_16">关联题目</h2>
+<ul>
+<li><span class="srcref">Q031 · 什么时候 Multi-Agent 比 Single-Agent 更好？什么时候反而更差？</span></li>
+<li><span class="srcref">Q032 · Orchestrator-Worker 架构怎么设计？</span></li>
+<li><span class="srcref">Q033 · 多个 Agent 使用异步 JSON 消息通信，你会设计哪些字段？</span></li>
+<li><span class="srcref">Q034 · Agent 消息丢失、重复、乱序分别怎么办？</span></li>
+<li><span class="srcref">Q035 · 主 Agent 怎么知道子 Agent 真正完成？</span></li>
+</ul>
+<h2 id="_17">延伸阅读</h2>
+<h3 id="_18">对应官方工程资料</h3>
+<ul>
+<li><a href="https://a2a-protocol.org/v1.0.0/">A2A Protocol · v1.0</a></li>
+<li><a href="https://openai.github.io/openai-agents-python/multi_agent/">OpenAI Agents SDK · Agent orchestration</a></li>
+</ul>
+<blockquote>
+<p>外部资料用于 GitHub Expanded Edition 的工程深化；PDF 原始题目与核心字段仍按仓库结构化源数据保留。</p>
+</blockquote>
+<ul>
+<li><span class="srcref">Reliability First：六步故障回答框架</span></li>
+<li><span class="srcref">系统设计白板模板</span></li>
+<li><span class="srcref">参考资料与官方工程资料</span></li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

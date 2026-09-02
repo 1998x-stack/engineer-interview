@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q067 Decoder-only LLM 的生成过程是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>Q067</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q067</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">2/5</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q066.html">← Q066</a><a href="Q068.html">Q068 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">inference</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 67 / 110</div>
+    <h1 class="qtitle">Q067 Decoder-only LLM 的生成过程是什么？</h1>
+    <blockquote>
+<p><strong>章节</strong>：6. 训练、优化与分布式<br />
+<strong>难度</strong>：2/5 · <strong>频率</strong>：高频 · <strong>形式</strong>：概念 / 推导 / 追问<br />
+<strong>内容分层</strong>：<code>PDF Core</code> 来自原 PDF 的观点重排；<code>Professional Expansion</code> 为在不改变 PDF 主结论基础上的原创扩展。</p>
+</blockquote>
+<h2 id="1-pdf-core">1. 面试官在考什么 — PDF Core</h2>
+<p>确保真正理解 autoregressive dependency。</p>
+<h2 id="2-30-pdf-core">2. 30 秒回答 — PDF Core</h2>
+<blockquote>
+<p>给定 prefix x₁:T，模型预测 P(x_{T+1}|x_≤T)，采样/选择新 token 后把它追加，再预测下一步。输出 N 个 token 至 少存在 N 个依赖的 decoding steps。</p>
+</blockquote>
+<h2 id="3-shape">3. 核心公式 / Shape</h2>
+<p>$x_{T+1}\sim P(\cdot|x_{\le T})$，追加后重复。</p>
+<h2 id="4-pdf-core">4. 深度拆解 — PDF Core</h2>
+<ul>
+<li>prefill 可并行处理整个 prompt。</li>
+<li>decode 每步通常只新增 1 token。</li>
+<li>sampling policy 决定从 logits 到 token 的选择方式。</li>
+</ul>
+<h2 id="5-professional-expansion">5. Professional Expansion：为什么这题值得深挖</h2>
+<p>生成是循环：prefill prefix→得到 next-token distribution→选 token→增量 forward→重复；性能由 TTFT 与逐 token decode 共同决定。</p>
+<h3 id="51">5.1 工程实现 / 系统视角</h3>
+<p>区分 stopping、sampling、cache 更新和 streaming。</p>
+<h3 id="52">5.2 边界条件与反例</h3>
+<p>不要把生成等同于每次重算全部 prefix。</p>
+<h3 id="53">5.3 建议亲手做的验证实验</h3>
+<ul>
+<li>写最小 greedy generation loop。</li>
+<li>记录至少一种 <strong>correctness metric</strong> 与一种 <strong>performance metric</strong>；不要只凭“代码能运行”判定实现正确。</li>
+</ul>
+<h3 id="54-3">5.4 3 分钟专业版答法</h3>
+<p>面试时可以按下面节奏展开：</p>
+<blockquote>
+<p><strong>第一句给结论</strong>：给定 prefix x₁:T，模型预测 P(x_{T+1}|x_≤T)，采样/选择新 token 后把它追加，再预测下一步。输出 N 个 token 至 少存在 N 个依赖的 decoding steps。<br />
+<strong>第二层讲机制</strong>：prefill 可并行处理整个 prompt。；decode 每步通常只新增 1 token。；sampling policy 决定从 logits 到 token 的选择方式。<br />
+<strong>第三层补工程条件</strong>：把本题放到真实 Tensor Shape、训练/推理阶段与硬件约束下重新检查；如果结论涉及“更快/更省/更稳定”，必须说明比较基线和适用条件。<br />
+<strong>最后主动给验证</strong>：用最小行为测试、数值 parity、profiler 或 ablation 证明，而不是停留在直觉。</p>
+</blockquote>
+<h3 id="55">5.5 复杂度与资源矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>本题应如何分析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>显存</td>
+<td>权重、梯度、optimizer state、activation 四类必须分开估算。</td>
+</tr>
+<tr>
+<td>数值</td>
+<td>FP16/BF16、loss scaling、grad clipping、NaN 定位都要看 first non-finite。</td>
+</tr>
+<tr>
+<td>步数语义</td>
+<td>gradient accumulation 后 scheduler/clip/optimizer 应按 optimizer-step 定义。</td>
+</tr>
+<tr>
+<td>通信</td>
+<td>DP/TP/PP/CP 的收益受网络拓扑与 collective 开销约束。</td>
+</tr>
+<tr>
+<td>主要验证</td>
+<td>固定 batch 参数 delta、layerwise grad、throughput/MFU、恢复一致性。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="56">5.6 本题关键不变量</h3>
+<ul>
+<li>任何 NaN 都先找 first non-finite，而不是先调参。</li>
+<li>optimizer/scheduler/clip 的 step 语义必须与 accumulation 一致。</li>
+<li>多 GPU 方案要同时满足显存约束和通信可承受。</li>
+</ul>
+<h2 id="6">6. 面试中的推导顺序</h2>
+<ol>
+<li><strong>先定义</strong>：一句话说明对象是什么、输入输出是什么。</li>
+<li><strong>再公式</strong>：写最小核心公式，并标出关键维度。</li>
+<li><strong>解释 Why</strong>：它解决前一代方案的什么瓶颈。</li>
+<li><strong>算成本</strong>：参数、FLOPs、activation/KV memory、IO/通信分别看。</li>
+<li><strong>讲 Gotcha</strong>：至少指出一个数值或实现陷阱。</li>
+<li><strong>收束 Trade-off</strong>：明确什么条件下它不一定更优。</li>
+</ol>
+<h2 id="7-pdf-core">7. 常见失分点 — PDF Core</h2>
+<ul>
+<li>把模型一次 forward 输出的所有位置 logits 当成可以一次生成未来 N 个 token。</li>
+</ul>
+<h2 id="8-pdf-core">8. 面试官继续追问 — PDF Core</h2>
+<blockquote>
+<p>为什么 speculative decoding 可以“一次推进多个 token”却仍需 target model 验证？</p>
+</blockquote>
+<h3 id="_1">扩展追问树</h3>
+<ul>
+<li>如果把关键超参数扩大 4 倍，<strong>参数量 / FLOPs / 显存 / latency</strong> 哪一项最先成为瓶颈？</li>
+<li>如果在 <strong>训练</strong> 与 <strong>增量推理</strong> 两个阶段分别使用，本题结论有哪些不同？</li>
+<li>如何写一个最小单元测试或 ablation，证明你的解释而不是只靠直觉？</li>
+</ul>
+<h2 id="9-pdf-core">9. 一语中的 — PDF Core</h2>
+<p><strong>给定 prefix x₁:T，模型预测 P(x_{T+1}|x_≤T)，采样/选择新 token 后把它追加，再预测下一步。 第七章 自回归推理与 KV Cache 从增量解码推导 KV Cache、GQA/MQA、采样、TTFT/TPOT 与 serving 内存。 题号 题目 难度 Q068 KV Cache 缓存了什么，为什么不缓存 Q？ 3/5 Q069 KV Cache 内存如何估算？ 4/5 Q070 为什么训练不需要像 decode 一样使用 KV 3/5 Cache？ Q071 Prefill 与 Decode 的瓶颈有什么不同？ 4/5 Q072 MHA、MQA、GQA 的区别？ 3/5 Q073 Greedy、Beam Search 与 Sampling 如何 3/5 选择？ Q074 Temperature、Top-k、Top-p 分别做什 2/5 么？ Q075 为什么模型会陷入重复生成？ 3/5 Q076 LLM Serving 的关键 latency 指标有哪些？ 3/5 Q077 Continuous Batching 为什么适合 LLM？ 4/5 Q078 PagedAttention 解决什么问题？ 4/5 Q079 Speculative Decoding 为什么能加速且保持 4/5 目标分布？ Q080 FlashAttention 到底优化了什么？ 3/5</strong></p>
+<h2 id="10-rubric">10. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>及格</td>
+<td>能给出 PDF 的 30 秒主干，不出现概念性错误。</td>
+</tr>
+<tr>
+<td>良好</td>
+<td>能写核心公式/shape，并解释为什么这样设计。</td>
+</tr>
+<tr>
+<td>优秀</td>
+<td>能讨论复杂度、数值/工程 gotcha，并回答至少 2 层追问。</td>
+</tr>
+<tr>
+<td>强 Hire 信号</td>
+<td>能把问题连接到训练/推理/硬件约束，主动提出验证实验或 ablation。</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>本题标注难度：<strong>2/5</strong>。难度越高，越看重 trade-off 和验证方法，而不只是定义。</p>
+</blockquote>
+<h2 id="11">11. 相关题目</h2>
+<ul>
+<li><span class="srcref">Q066 Transformer 多 GPU 有哪些并行方式？</span></li>
+<li><span class="srcref">Q068 KV Cache 缓存了什么，为什么不缓存 Q？</span></li>
+</ul>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></li>
+</ul>
+<!-- V2-EXPANSION-START -->
+
+<h2 id="13">13. 深入推导：把结论变成可验证的模型</h2>
+<p>Decoder-only 生成每步根据当前 prefix 得到 next-token distribution，应用 decoding policy 选 token，再追加到 prefix。使用 KV cache 后每层只计算新 token 的 Q/K/V，并复用历史 K/V。</p>
+<p>生成停止条件包括 EOS、max tokens、stop sequence 等；在 batch serving 中不同请求结束时间不同，这直接导致 continuous batching 与动态 KV allocator 的必要性。</p>
+<h3 id="131">13.1 本章心智模型</h3>
+<blockquote>
+<p>建立训练故障树：objective、loss mask、数值精度、optimizer、并行和 scaling。</p>
+</blockquote>
+<p>这意味着面试时不要停在术语层。每个结论至少回答四个问题：<strong>成立所需假设是什么？张量/概率对象是什么？成本落在哪里？怎样设计反例或单测证伪？</strong></p>
+<h2 id="14-checklist">14. 题目特异的工程 Checklist</h2>
+<p><strong>inference 检查表</strong></p>
+<ul>
+<li>分开 prefill 与 decode：前者偏大 GEMM，后者偏 KV bandwidth/调度。</li>
+<li>指标至少报告 TTFT、TPOT/ITL、throughput 与 P95/P99。</li>
+<li>容量估算从权重、KV、workspace、allocator overhead 四部分扣显存。</li>
+<li>full-forward 与 incremental/cache 路径必须做 logits parity。</li>
+</ul>
+<h2 id="15">15. 推荐验证协议</h2>
+<ol>
+<li><strong>Full-vs-cache parity</strong>：逐 token logits 与 full forward 相同。</li>
+<li><strong>Length sweep</strong>：从短到长记录 TTFT/TPOT/KV bytes，验证复杂度趋势。</li>
+<li><strong>Concurrency sweep</strong>：增加并发直到 P99/SLA 或显存首先触顶，得到真实容量曲线。</li>
+</ol>
+<p>验证结果建议至少记录：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>最低要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Correctness</td>
+<td>reference parity / invariant / leakage test 至少一项</td>
+</tr>
+<tr>
+<td>Numerical</td>
+<td>NaN/Inf、max/RMS、dtype 差异</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>wall-clock、显存/bytes、P95/P99（系统题）</td>
+</tr>
+<tr>
+<td>Quality</td>
+<td>loss/perplexity/任务指标；结构改动必须做回归</td>
+</tr>
+</tbody>
+</table>
+<h2 id="16">16. 面试官真正想听到的“边界条件”</h2>
+<ul>
+<li><strong>不要把渐进复杂度等同于实际速度</strong>：kernel、batch、长度、硬件与 IO 会改变主导项。</li>
+<li><strong>不要把一种实现当成数学定义</strong>：mask 语义、layout、fused kernel、cache allocator 都可能变化。</li>
+<li><strong>不要把单点 benchmark 当成普遍规律</strong>：至少说明 $B,T,d,H$、dtype、device 和任务分布。</li>
+<li><strong>不要把“能运行”当成“正确”</strong>：Transformer 很多 bug 会正常降 loss，但存在未来泄漏、错误广播或 cache position 错位。</li>
+</ul>
+<h2 id="17-whiteboard-coding">17. Whiteboard / Coding 表达模板</h2>
+<p>当面试官要求现场推导或编码，可按以下顺序：</p>
+<ol>
+<li>写输入输出 shape 与符号定义；</li>
+<li>写最小核心公式，不先写优化；</li>
+<li>写 2–3 个 invariants/assertions；</li>
+<li>给 reference 实现或手算小例子；</li>
+<li>再讨论 fused kernel、cache、并行或量化；</li>
+<li>最后给测试与 benchmark 设计。</li>
+</ol>
+<blockquote>
+<p><strong>Strong Hire 信号</strong>：不仅能解释“为什么”，还能说出“什么情况下不成立，以及我会怎么证明”。</p>
+</blockquote>
+<!-- V2-EXPANSION-END -->
+
+<hr />
+<p>← <span class="srcref">Q066</span> · <span class="srcref">返回 100 题索引</span> · <span class="srcref">Q068</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

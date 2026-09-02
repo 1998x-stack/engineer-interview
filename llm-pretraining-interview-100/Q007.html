@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RoPE 为什么能把相对位置信息写进 Attention？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q007</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q007</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q006.html">← Q006</a><a href="Q008.html">Q008 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">attention</a><a href="#">position-encoding</a><a href="#">transformer-architecture</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 8 / 101</div>
+    <h1 class="qtitle">RoPE 为什么能把相对位置信息写进 Attention？</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>难</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">Transformer 与模型架构</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>这是最常见的“会不会数学推导”分界题。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>数学尺度</strong>：公式是否解释了数值尺度、梯度和表示能力？</li>
+<li><strong>结构成本</strong>：参数量、FLOPs、KV Cache 与 kernel shape 如何变化？</li>
+<li><strong>生命周期</strong>：训练架构选择会如何影响推理成本？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>RoPE 最关键的一行：旋转后的 QK 点积由 R_{n-m} 决定。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>RoPE 将每对隐藏维度视为二维平面，根据 token position 做旋转。位置 m 的 q 变成 R_m q，位置 n 的 k 变成 R_n k。由于旋转矩阵满足 R_mᵀR_n=R_{n-m}，二者点积只通过相对位移 n-m 进入。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>因此 RoPE 同时保留绝对位置施加在向量上的变换，又让 QK 内积天然具有相对位置结构。这比只说“旋转编码”更完整。</p>
+<h3 id="_2">核心公式</h3>
+<pre><code class="language-text">(R_m q)ᵀ(R_n k)=qᵀR_{n-m}k
+</code></pre>
+<blockquote>
+<p>面试时不要只写公式。要逐个解释符号、shape/量纲，以及公式如何导出工程结论。</p>
+</blockquote>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="rope">RoPE 的相对位置恒等式</h3>
+<p>若位置 $m,n$ 分别应用旋转 $R_m,R_n$，则</p>
+<p>$$
+(R_mq)^T(R_nk)=q^TR_m^TR_nk=q^TR_{n-m}k.
+$$</p>
+<p>所以 attention 内积依赖位置差 $n-m$。高分回答还要说明：这不等于“无限长度外推自然成立”，训练频率范围之外仍可能发生分布外问题。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：白板至少推到 qᵀR_{n-m}k。</li>
+<li><strong>动作 2</strong>：实现时检查偶/奇维配对、频率表、position_ids 与 broadcasting。</li>
+<li><strong>动作 3</strong>：长上下文扩展时继续追问频率外推，而不是简单改 max_position_embeddings。</li>
+</ol>
+<h3 id="ablation">架构 Ablation</h3>
+<p>固定训练 Token 与大部分 recipe，只改变目标组件；同时比较 validation loss、下游能力、训练稳定性、参数/FLOPs 与推理成本。</p>
+<ul>
+<li>不要只比较最终 benchmark；记录收敛速度。</li>
+<li>至少做等参数或等 FLOPs 对照。</li>
+<li>改变 head/hidden 等 shape 时同时检查 kernel efficiency。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-r_mtr_nr_n-m">追问 1：为什么 R_mᵀR_n=R_{n-m}？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → RoPE 最关键的一行：旋转后的 QK 点积由 R_{n-m} 决定。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="2rope">追问 2：RoPE 为什么会有外推问题？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → RoPE 最关键的一行：旋转后的 QK 点积由 R_{n-m} 决定。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="3">追问 3：不同频率维度分别偏向什么距离尺度？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>只背 cos/sin 代码，没有相对位置推导。</strong></li>
+<li>改进：回到“RoPE 最关键的一行：旋转后的 QK 点积由 R_{n-m} 决定。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+<li>❌ <strong>把 RoPE 说成可学习位置 embedding。</strong></li>
+<li>改进：回到“RoPE 最关键的一行：旋转后的 QK 点积由 R_{n-m} 决定。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：RoPE 最关键的一行：旋转后的 QK 点积由 R_{n-m} 决定。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>为什么 R_mᵀR_n=R_{n-m}？</li>
+<li>RoPE 为什么会有外推问题？</li>
+<li>不同频率维度分别偏向什么距离尺度？</li>
+<li>画出相关 tensor shape，并估算参数量/FLOPs/KV 或 activation 的变化。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>RoPE 最关键的一行：旋转后的 QK 点积由 R_{n-m} 决定。</strong></p>
+</blockquote>
+<h3 id="_3">深挖关键点</h3>
+<p>这道题应练到能在 60 秒内从二维旋转矩阵推到相对位移。</p>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R2 · 论文</strong> — <a href="https://arxiv.org/abs/2104.09864">Su et al., RoFormer: Rotary Position Embedding</a></li>
+</ul>
+<h2 id="_4">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q006. SwiGLU 为什么替代传统 ReLU/GELU FFN？</span></li>
+<li>→ <span class="srcref">Q008. 为什么现代 LLM 很少使用原始绝对位置 Embedding？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

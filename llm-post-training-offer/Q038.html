@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KTO 与 DPO 的数据要求有何差异？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Post-Training</a><i>∕</i><span>Q038</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q038</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">L2</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q037.html">← Q037</a><a href="Q039.html">Q039 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">dpo</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      POST-TRAINING · 38 / 100</div>
+    <h1 class="qtitle">KTO 与 DPO 的数据要求有何差异？</h1>
+    <blockquote>
+<p><strong>题型</strong>：高频题 · <strong>难度</strong>：L2 · <strong>优先级</strong>：常规</p>
+<p><strong>来源说明</strong>：下方“PDF 原始提要”严格来自《剑指 LLM 后训练 Offer》；“扩展讲义”是在此基础上结合公开论文与工程实践做的补充分析。</p>
+</blockquote>
+<h2 id="1">1. 题目定位</h2>
+<h3 id="_1">面试官为什么问</h3>
+<p>考察你是否能把概念放进完整后训练链路，并从目标函数、数据分布与系统约束解释选择，而不是复述论文摘要。</p>
+<h3 id="pdf">PDF 原始核心结论</h3>
+<p>DPO 依赖 chosen/rejected pair；KTO 可从单个样本的 desirable/undesirable 二元信号学习，并使用 prospect-theoretic utility。[P5]</p>
+<h3 id="pdf_1">PDF 原始深入理解</h3>
+<p>当 pair 难采集、只有点赞/点踩式反馈时 KTO 更自然，但仍需考虑标签偏差和正负比例。</p>
+<h3 id="pdf_2">PDF 原始常见失分点</h3>
+<p>说 KTO “不需要偏好数据”；它仍需要人类价值信号，只是不必成对。</p>
+<h2 id="2">2. 面试回答阶梯</h2>
+<h3 id="30">30 秒版</h3>
+<p>DPO 依赖 chosen/rejected pair；KTO 可从单个样本的 desirable/undesirable 二元信号学习，并使用 prospect-theoretic utility。[P5]</p>
+<h3 id="2_1">2 分钟版</h3>
+<ol>
+<li>先给核心判断：DPO 依赖 chosen/rejected pair；KTO 可从单个样本的 desirable/undesirable 二元信号学习，并使用 prospect-theoretic utility。[P5]</li>
+<li>再解释机制：当 pair 难采集、只有点赞/点踩式反馈时 KTO 更自然，但仍需考虑标签偏差和正负比例。</li>
+<li>最后补一个边界条件或失败模式：KTO 把 pairwise preference 降为单样本 desirable/undesirable 信号，优势是标注门槛低；代价是失去同 prompt 直接比较提供的局部排序信息。</li>
+</ol>
+<h3 id="5">5 分钟版</h3>
+<p>按 <strong>从 KL-RLHF 或 preference 数据开始 → 写目标 → 解释隐式 reward → offline 边界 → 与 online RL 比较</strong> 展开。不要一开始堆算法名；先明确问题的优化对象、数据分布和约束，再把公式、工程实现和评测接上。</p>
+<h2 id="3-know-why">3. Know-Why：为什么这个问题重要</h2>
+<p>KTO 把 pairwise preference 降为单样本 desirable/undesirable 信号，优势是标注门槛低；代价是失去同 prompt 直接比较提供的局部排序信息。</p>
+<p><strong>推导视角</strong>：DPO family 的共同问题是如何把 preference 直接转成 policy 的相对概率约束。</p>
+<p><strong>数据视角</strong>：offline preference 只能覆盖采样它的旧分布，必须讨论 OOD、长度偏差、hard pair 与 label noise。</p>
+<h2 id="4-know-how">4. Know-How：面试与工程上怎么做</h2>
+<p>回答时建议按照下面的顺序组织，而不是直接背结论：</p>
+<ol>
+<li><strong>定义边界</strong>：先明确本题讨论的 policy/data/reward/system 粒度与假设。</li>
+<li><strong>写出机制</strong>：能写公式就写公式；不能写公式就画数据流或因果链。</li>
+<li><strong>给可观测量</strong>：说明训练时具体看什么日志、分布和系统指标。</li>
+<li><strong>给 failure mode</strong>：至少讲一个“什么时候这套方法会失效”。</li>
+<li><strong>给验证实验</strong>：用受控 ablation 证明你的判断。</li>
+</ol>
+<p><strong>选择视角</strong>：是否需要在线探索、是否有可靠 reward、能否承担 rollout，是 DPO vs RL 的关键分界。</p>
+<h2 id="5_1">5. 公式 / 白板推导</h2>
+<p>本题重点不在死记单一公式，而在明确优化对象、数据分布和 failure mode。建议把相关目标函数与监控量写在同一张白板上。</p>
+<blockquote>
+<p>白板要求：每写一个符号，都能回答“它由谁计算、在哪个阶段产生、数值异常时说明什么”。</p>
+</blockquote>
+<h2 id="6">6. 算法或系统流程</h2>
+<pre><code class="language-text">Problem: KTO 与 DPO 的数据要求有何差异？
+  -&gt; identify objective / data distribution
+  -&gt; choose observable training signal
+  -&gt; implement / optimize
+  -&gt; monitor failure indicators
+  -&gt; held-out evaluation
+  -&gt; ablation &amp; iterate
+</code></pre>
+<h2 id="7">7. 复杂度与工程成本</h2>
+<p>训练成本低于 online RL，但需要 reference logprob、pair 数据存储与严格 generation eval；offline data 是主要瓶颈。</p>
+<p>在项目里至少把成本量化为 <strong>GPU-hours / rollout tokens / peak memory / communication / labeling or verifier cost</strong> 中适用的几项，而不是只说“更省”。</p>
+<h2 id="8-failure-modes">8. Failure Modes 与诊断</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>优先假设</th>
+<th>第一检查项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>preference loss 降但生成质量不升</td>
+<td>offline overfit / metric mismatch</td>
+<td>held-out pair + generation eval</td>
+</tr>
+<tr>
+<td>回答越来越长</td>
+<td>length bias</td>
+<td>length-controlled win rate；长度归一化/数据去偏</td>
+</tr>
+<tr>
+<td>KL/reference drift 过大</td>
+<td>beta 或 reference mismatch</td>
+<td>扫 beta；检查 tokenizer/checkpoint 一致性</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_2">本题特有风险</h3>
+<ul>
+<li>说 KTO “不需要偏好数据”；它仍需要人类价值信号，只是不必成对。</li>
+<li>边界条件：KTO 把 pairwise preference 降为单样本 desirable/undesirable 信号，优势是标注门槛低；代价是失去同 prompt 直接比较提供的局部排序信息。</li>
+<li>若训练曲线与理论预期相反，优先检查数据/版本/归一化/掩码是否和公式假设一致，再调超参。</li>
+</ul>
+<h2 id="9-ablation">9. 推荐实验与 Ablation</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>建议设计</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline</td>
+<td>固定模型、总 token/step、seed 与评测协议</td>
+</tr>
+<tr>
+<td>自变量</td>
+<td>只改变本题对应的数据/reward/objective 设计</td>
+</tr>
+<tr>
+<td>质量指标</td>
+<td>held-out task score / win-rate / calibration / regression</td>
+</tr>
+<tr>
+<td>行为指标</td>
+<td>长度、格式、拒答、diversity、错误类型分布</td>
+</tr>
+<tr>
+<td>判断</td>
+<td>不只看最终点，还看学习曲线、方差与副作用</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10">10. 面试官连续追问树</h2>
+<ol>
+<li>什么业务日志天然适合 KTO 形式？</li>
+<li>如果 preference pair 来自旧模型，怎么处理 distribution shift？</li>
+<li>reference-free 真正省掉了什么，又失去了什么？</li>
+<li>长度偏差怎样做 controlled evaluation？</li>
+</ol>
+<h3 id="_3">追问回答原则</h3>
+<p>不要把每个追问当新题。沿同一条因果链回答：<strong>假设 → 机制 → 可观测量 → 反例 → 实验</strong>。如果能把上一问的 failure mode 自然推成下一问的算法选择，通常比背更多术语更有说服力。</p>
+<h2 id="11">11. 项目映射模板</h2>
+<p>把下面字段替换成你自己的项目数字；面试时“具体数字 + 失败案例 + ablation”比泛泛而谈更可信。</p>
+<ul>
+<li><strong>Preference 数据</strong>：pair 生成策略、hard-pair 比例、长度与难度分布。</li>
+<li><strong>Reference</strong>：checkpoint/tokenizer 一致性，是否预计算 reference logprobs。</li>
+<li><strong>超参</strong>：beta/margin 的 sweep 与 length-controlled eval。</li>
+<li><strong>选择理由</strong>：为什么 offline preference 足够，为什么不需要 online exploration。</li>
+</ul>
+<h2 id="12">12. 一句话记忆</h2>
+<blockquote>
+<p><strong>Q038：DPO 依赖 chosen/rejected pair；KTO 可从单个样本的 desirable/undesirable 二元信号学习，并使用 prospect-theoretic utility。[P5]</strong></p>
+</blockquote>
+<h2 id="13">13. 参考资料</h2>
+<ul>
+<li><strong>[P5] PDF/论文参考</strong>：<a href="https://arxiv.org/abs/2402.01306">Ethayarajh et al. — KTO: Model Alignment as Prospect Theoretic Optimization</a></li>
+<li><strong>[P4] PDF/论文参考</strong>：<a href="https://arxiv.org/abs/2305.18290">Rafailov et al. — Direct Preference Optimization: Your Language Model is Secretly a Reward Model</a></li>
+</ul>
+<h2 id="14">14. 关联题目</h2>
+<ul>
+<li><span class="srcref">Q031 · DPO loss 怎么写？四个 log-prob 项各在做什么？</span></li>
+<li><span class="srcref">Q032 · DPO 如何从 KL-regularized RLHF 推导出来？</span></li>
+<li><span class="srcref">Q033 · 为什么 DPO 比 PPO 简单很多？</span></li>
+<li><span class="srcref">Q034 · 公开真题：PPO 与 DPO 怎么选？</span></li>
+<li><span class="srcref">Q035 · DPO 的 offline distribution shift 问题是什么？</span></li>
+<li><span class="srcref">Q036 · DPO 为什么也可能 overfit 或出现 length bias？</span></li>
+</ul>
+<!-- V2_EXPERT_START -->
+<h2 id="15-v2">15. V2 专业进阶：从“会答”到“能做研究/工程”</h2>
+<blockquote>
+<p><strong>内容属性</strong>：本节是基于 PDF 原始提要的扩展讲义。它不是对 PDF 原文的复述，而是把本题展开到真实后训练项目所需要的假设、实现、诊断与实验层级。</p>
+</blockquote>
+<h3 id="151">15.1 把题目还原成一个可研究的问题</h3>
+<p>本题不能停在“DPO 依赖 chosen/rejected pair；KTO 可从单个样本的 desirable/undesirable 二元信号学习，并使用 prospect-theoretic utility。[P5]”。更专业的表述是先确定五个对象：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>本题应明确的内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Optimization objective</td>
+<td>直接从离线偏好数据调整策略相对 reference 的隐式 reward</td>
+</tr>
+<tr>
+<td>Statistical unit</td>
+<td>chosen/rejected sequence</td>
+</tr>
+<tr>
+<td>关键估计误差</td>
+<td>offline distribution shift、length bias、pair noise</td>
+</tr>
+<tr>
+<td>系统承载</td>
+<td>policy + reference logprob + preference dataset</td>
+</tr>
+<tr>
+<td>Scale variable</td>
+<td>训练 token、reference inference/cache、数据覆盖</td>
+</tr>
+</tbody>
+</table>
+<p>对 <strong>Q038</strong>，最关键的机制判断是：<strong>KTO 把 pairwise preference 降为单样本 desirable/undesirable 信号，优势是标注门槛低；代价是失去同 prompt 直接比较提供的局部排序信息。</strong></p>
+<p>再进一步，工程上真正需要落地的是：KTO 的工程价值在于不要求同 prompt pair，但单点 desirable/undesirable 标签的基准与类比例更重要；需检查类别不平衡和 reference anchor 的影响。</p>
+<h3 id="152">15.2 机制链：输入 → 估计 → 更新 → 行为 → 评测</h3>
+<p>建议把本题按下面的因果链讲清楚：</p>
+<ol>
+<li><strong>输入分布</strong>：样本/trajectory 来自哪里？是否与当前 policy 一致？是否存在 selection bias？</li>
+<li><strong>训练信号</strong>：监督标签、preference、reward、advantage 或系统指标具体由谁产生？噪声和尺度如何控制？</li>
+<li><strong>优化更新</strong>：哪个参数被更新？梯度是按 token、sequence、group 还是 trajectory 聚合？</li>
+<li><strong>行为变化</strong>：模型概率分布应该发生什么方向的变化？若没有发生，优先怀疑哪一层？</li>
+<li><strong>独立验证</strong>：至少使用一个不参与训练信号构造的 held-out evaluator，避免“训练 proxy 自证成功”。</li>
+</ol>
+<p>本题 PDF 的深入结论是：当 pair 难采集、只有点赞/点踩式反馈时 KTO 更自然，但仍需考虑标签偏差和正负比例。把它变成研究问题时，需要追问：<strong>哪一个可观测量能够证伪这句话？</strong> 如果无法设计证伪实验，说明理解仍停留在概念层。</p>
+<h3 id="153">15.3 数学与数值实现的专业要求</h3>
+<p>本题未必需要单一闭式公式，但仍应把关键量形式化：输入分布、优化对象、约束、成本与观测指标。能把工程问题写成可测量变量，本身就是算法能力的一部分。</p>
+<p>工程上建议始终保存原始统计量，不要只保存均值。例如 ratio/reward/length/KL 至少保留分位数或 histogram；大量 RL failure 都发生在尾部，而不会先体现在 mean 上。</p>
+<h2 id="16">16. 工程实现：最小可验证闭环</h2>
+<pre><code class="language-text"># Interview-to-engineering skeleton for Q038
+def investigate(problem):
+    assumptions = define_scope(problem)
+    baseline = build_minimal_baseline(assumptions)
+    metrics = instrument(baseline)
+    failure = reproduce_and_slice(metrics)
+    hypothesis = connect_failure_to_mechanism(failure)
+    result = run_controlled_ablation(hypothesis)
+    return validate_on_heldout_and_regression(result)
+</code></pre>
+<h3 id="161">16.1 实现检查表</h3>
+<ul>
+<li><strong>数据身份</strong>：每条样本能追溯 <code>dataset_version / prompt_id / policy_version / reward_version</code> 中适用的字段。</li>
+<li><strong>mask 与长度</strong>：明确 prompt token、response token、padding、EOS、truncation 是否进入 loss/reward/normalization。</li>
+<li><strong>数值稳定</strong>：logprob 差优先在 log-space 计算；标准化必须显式加 epsilon；极端值要记录而不是静默丢弃。</li>
+<li><strong>可复现性</strong>：模型 checkpoint、tokenizer/chat template、随机 seed、生成参数、verifier 版本全部进入实验元数据。</li>
+<li><strong>独立评测</strong>：训练 reward/judge 与最终评测至少有一层独立实现或独立数据。</li>
+<li><strong>失败可回放</strong>：保留能还原单条 trajectory 的最小日志，而不是只有 aggregate dashboard。</li>
+</ul>
+<h3 id="162">16.2 一个真实项目场景</h3>
+<p>假设你有 50 万 preference pairs，但无法持续在线 rollout；你需要证明 offline preference optimization 的收益与边界。</p>
+<p>如果面试官把本题放进这个场景，回答时不要先给算法名。先给<strong>约束、基线和最小实验</strong>，再说明为什么某个算法/数据策略是由 failure mode 推出来的。</p>
+<h2 id="17">17. 指标仪表盘与实验设计</h2>
+<h3 id="171">17.1 本题优先监控的指标</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">#</th>
+<th>指标</th>
+<th>如何解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>chosen-rejected margin</code></td>
+<td>用来验证本题对应机制是否按预期工作；必须与质量指标联合解释</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>preference margin</code></td>
+<td>用来验证本题对应机制是否按预期工作；必须与质量指标联合解释</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>chosen/rejected logprob</code></td>
+<td>用来验证本题对应机制是否按预期工作；必须与质量指标联合解释</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>implicit reward gap</code></td>
+<td>用来验证本题对应机制是否按预期工作；必须与质量指标联合解释</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>reference KL</code></td>
+<td>用来验证本题对应机制是否按预期工作；必须与质量指标联合解释</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td><code>length-controlled win-rate</code></td>
+<td>用来验证本题对应机制是否按预期工作；必须与质量指标联合解释</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td><code>offline coverage</code></td>
+<td>用来验证本题对应机制是否按预期工作；必须与质量指标联合解释</td>
+</tr>
+</tbody>
+</table>
+<h3 id="172">17.2 推荐的三层实验</h3>
+<p><strong>Layer A — correctness test</strong>：在 toy data / 小模型上验证符号、mask、归一化、版本和边界条件。例如把 reward 固定成常量、构造全对/全错 group、手工设置正负 advantage，确认梯度方向。</p>
+<p><strong>Layer B — mechanism ablation</strong>：固定模型、数据、总 token、rollout budget、seed，只改本题对应机制。目标不是追最高点，而是验证预期中间量是否变化，例如 entropy、group std、clip fraction、length distribution。</p>
+<p><strong>Layer C — scaling test</strong>：在更长 context、更大模型、更大 batch、更异步的设置下验证结论是否保持。很多方法在单机 toy case 正确，但在 policy lag、MoE routing 或重尾长度下失效。</p>
+<h3 id="173-ablation">17.3 怎样避免“伪 ablation”</h3>
+<ul>
+<li>总训练 step 相同但 rollout token 不同，不是等 compute。</li>
+<li>数据条数相同但平均长度不同，不是等 token。</li>
+<li>一个方案使用更强 judge/verifier，不能把增益全部归因于 optimizer。</li>
+<li>系统吞吐变快导致看到更多样本，也会改变学习曲线；算法质量与系统效率需要拆开报告。</li>
+</ul>
+<h2 id="18">18. 反事实、边界条件与方法比较</h2>
+<h3 id="181">18.1 三个必须会回答的反事实</h3>
+<ol>
+<li><strong>如果去掉本题机制，最早会坏哪个指标？</strong> 先说中间量，再说最终 benchmark。</li>
+<li><strong>如果把模型/长度/batch 放大 10×，哪个假设最先失效？</strong> 优先考虑 estimator variance、memory、communication、policy freshness 与 evaluator reliability。</li>
+<li><strong>如果训练 reward 很好但独立评测不涨，怎样证明不是 reward hacking 或数据泄漏？</strong> 给出 held-out evaluator、行为切片、top-reward audit 与污染检查。</li>
+</ol>
+<h3 id="182">18.2 与相邻题目的关系</h3>
+<p>本题不是孤立知识点。它应被放回本章主线：<strong>直接从离线偏好数据调整策略相对 reference 的隐式 reward</strong>。面试中如果能主动说明“当前方法解决了什么 failure，同时引入了什么新成本/新偏差”，通常比继续罗列算法名更有区分度。</p>
+<h3 id="183">18.3 常见高级误区</h3>
+<ul>
+<li>把论文中的<strong>目标函数</strong>当成完整系统；真实结果还取决于 sampling、版本、mask、normalization、scheduler 与 evaluator。</li>
+<li>把 correlation 当 causal evidence；例如长度与 reward 同涨，不等于“更长 reasoning 导致能力提升”。</li>
+<li>只比较最终分数，不比较 compute、variance、稳定性和回归项。</li>
+<li>只描述成功 recipe，不解释它在什么分布、模型规模和 verifier 假设下成立。</li>
+</ul>
+<h2 id="19-rubric-60-95">19. 面试评分 Rubric：怎样从 60 分答到 95 分</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>60–70</td>
+<td>能复述核心结论：DPO 依赖 chosen/rejected pair；KTO 可从单个样本的 desirable/undesirable 二元信号学习，并使用 prospect-theoretic utility。[P5]</td>
+</tr>
+<tr>
+<td>70–80</td>
+<td>能解释机制，并写出适用的公式/数据流；知道一个主要 failure mode。</td>
+</tr>
+<tr>
+<td>80–90</td>
+<td>能给出工程实现、关键监控指标、最小 ablation，并讨论 bias/variance 或系统成本。</td>
+</tr>
+<tr>
+<td>90–95+</td>
+<td>能处理反事实和规模化约束；从真实 failure 反推算法选择；能说明为什么<strong>不选</strong>另一个常见方案。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>本题难度 L2 的最低合格线</strong>：除定义外，需要解释机制、一个 failure mode 和一个可执行实验。</p>
+<h2 id="20">20. 复习与项目化清单</h2>
+<p>在认为自己“掌握 Q038”之前，至少能独立完成：</p>
+<ul>
+<li>[ ] 不看资料给出 30 秒结论，不混淆概念边界。</li>
+<li>[ ] 白板写出关键公式/变量关系，逐项解释数据从哪里来。</li>
+<li>[ ] 画出端到端数据流，并标出最可能的三个 failure point。</li>
+<li>[ ] 给出至少一个能证伪自己判断的 controlled ablation。</li>
+<li>[ ] 给出一组线上/离线监控指标，以及一个异常时的排查顺序。</li>
+<li>[ ] 用自己的项目数字重述本题：模型规模、数据量、G/长度、GPU、吞吐、收益或回归。</li>
+<li>[ ] 回答“为什么不用另一种方法”，并明确 trade-off 而不是说“效果更好”。</li>
+</ul>
+<!-- V2_EXPERT_END -->
+
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

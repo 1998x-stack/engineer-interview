@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q055. 什么叫多任务“跷跷板现象”？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Recommender Systems</a><i>∕</i><span>Q055</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q055</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q054.html">← Q054</a><a href="Q056.html">Q056 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">multitask-cvr</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      RECOMMENDER · 55 / 101</div>
+    <h1 class="qtitle">Q055. 什么叫多任务“跷跷板现象”？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★　 <strong>来源标签</strong>：面经高频　 <strong>章节</strong>：第 5 章 · 多任务、多目标与 CVR 建模</p>
+</blockquote>
+<h2 id="_1">题目定位</h2>
+<p>这道题位于 <strong>第 5 章：多任务、多目标与 CVR 建模</strong>。面试官通常希望候选人能先给定义，再把机制连接到工程后果；最终要落到 <strong>模型/数据/系统/指标</strong> 四个层面的约束，而不是停留在术语复述。</p>
+<p><strong>本章主线</strong>：理解任务关系、负迁移、样本选择偏差、转化漏斗与连续目标建模。</p>
+<h2 id="30">30 秒回答</h2>
+<p>优化一个任务常导致另一个任务下降，例如 CTR 上升但时长下降。这可能来自梯度冲突、目标权重、数据空间差异或任务本身存在竞争。PLE 论文将该现象作为重要动机之一。</p>
+<h2 id="_2">深入拆解</h2>
+<p>分析时先判断是模型共享导致，还是业务目标真实冲突。 可看 per-task gradient、gate/expert usage、不同用户分层的 trade-off。 解决方法包括 PLE、梯度平衡、动态 loss weighting、约束优化。</p>
+<h3 id="_3">公式 / 工程抓手</h3>
+<p><code>Seesaw ≠ 一定是模型 bug；可能反映真实 Pareto trade-off。</code></p>
+<h3 id="pdf">PDF 原始公式 / 工程抓手</h3>
+<p><code>Seesaw ≠ 一定是模型 bug；可能反映真实 Pareto trade-off。</code></p>
+<!-- V2_ENRICHMENT_START -->
+
+<h2 id="v2">V2 深度版：从“会答”到“能落地”</h2>
+<h3 id="_4">多任务建模的第一性原理</h3>
+<p>多任务学习的本质是<strong>受控共享</strong>。共享能提高样本效率，但也会通过共享参数传递冲突梯度。分析任何 MTL 模型都可以沿三条线：任务标签空间是否一致、梯度是否冲突、模型如何分配共享/私有容量。</p>
+<p>$$L(\theta)=\sum_t \lambda_t L_t(\theta_{shared},\theta_t)$$</p>
+<p>真正难点通常不在写出这条式子，而在决定哪些参数该共享、$\lambda_t$ 如何对应业务价值，以及线上多个目标如何合成最终排序。</p>
+<h3 id="_5">针对本题的关键推导</h3>
+<p>“跷跷板”说明 Pareto frontier：一个任务提升伴随另一个任务下降。根因可能是共享容量、标签冲突、loss scale 或业务目标本身竞争。</p>
+<p>这里建议把回答进一步拆成四层证据链：</p>
+<ol>
+<li><strong>定义层</strong>：一句话说明“什么叫多任务“跷跷板现象”？”讨论的对象和优化目标；</li>
+<li><strong>机制层</strong>：给出公式、数据生成过程或计算复杂度，解释为什么会有效；</li>
+<li><strong>系统层</strong>：指出它在完整推荐链路中的上游输入、下游依赖、成本和失败传播路径；</li>
+<li><strong>验证层</strong>：给出 offline slice、线上 A/B、guardrail 与回滚条件。</li>
+</ol>
+<h3 id="90">90 秒标准回答（建议练到可以脱稿）</h3>
+<blockquote>
+<p>“跷跷板”说明 Pareto frontier：一个任务提升伴随另一个任务下降。根因可能是共享容量、标签冲突、loss scale 或业务目标本身竞争。 具体到工程上，可以用下面的数量级来理解：短视频 CTR+1% 但有效时长-0.5%，不一定是模型 bug，也可能是点击诱导与深度消费目标天然冲突。 因此我不会只看单一离线指标，而会把这项方法放回完整链路，联合检查候选/特征分布、P95/P99、成本以及线上主指标。如果出现“离线好、线上差”，我会优先检查数据与 serving 一致性、截断/近似误差和策略覆盖。最后还要说明边界：不能只用调 loss 权重掩盖问题；应定位 gradient conflict、样本空间和任务定义。</p>
+</blockquote>
+<p>这段 90 秒回答的顺序是 <strong>结论 → 机制 → 数量级 → 工程验证 → 边界</strong>。对于大多数推荐算法题，这比从论文历史开始讲更稳。</p>
+<h3 id="_6">容易混淆的概念</h3>
+<p>共享表示 vs 共享专家；任务相关性 vs 标签共现；loss 平衡 vs 业务权重；多任务提升 vs Pareto/跷跷板。</p>
+<h3 id="_7">上线验证与监控</h3>
+<p>离线逐任务看 metric、calibration、gradient conflict、gate/expert usage；线上用多指标 Pareto 评价，并设置不能被牺牲的 guardrail。新增任务必须证明共享带来增量而非负迁移。</p>
+<p><strong>建议至少记录这些字段：</strong> task labels、loss scale、task weights、gradient norm/cosine、gate entropy、expert utilization、per-task prediction/calibration。日志字段不是越多越好，关键是能把一次线上曝光追溯到样本、特征、模型、索引和实验版本。</p>
+<h3 id="_8">一个可用于面试的具体例子</h3>
+<p>短视频 CTR+1% 但有效时长-0.5%，不一定是模型 bug，也可能是点击诱导与深度消费目标天然冲突。</p>
+<p>面试里具体数字的价值不是“显得真实”，而是迫使方案满足数量级约束。即使没有真实业务数据，也可以明确说“下面用数量级举例”，然后说明候选数、样本量、维度、QPS 或延迟如何影响设计。</p>
+<h3 id="_9">工程决策矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>决策维度</th>
+<th>需要监控</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Task relation</td>
+<td>label overlap、gradient cosine、相关性</td>
+</tr>
+<tr>
+<td>Expert/Gate</td>
+<td>expert usage、gate entropy、collapse</td>
+</tr>
+<tr>
+<td>Loss</td>
+<td>scale、动态权重、task-specific convergence</td>
+</tr>
+<tr>
+<td>Calibration</td>
+<td>每任务 reliability / ECE</td>
+</tr>
+<tr>
+<td>Online</td>
+<td>primary + guardrail + Pareto trade-off</td>
+</tr>
+</tbody>
+</table>
+<p>回答时不要把所有维度都平均展开。先指出当前题目的<strong>第一瓶颈</strong>，再解释为什么其他维度是二阶约束，这会比罗列术语更像真实工程决策。</p>
+<h3 id="_10">参考实现 / 伪代码</h3>
+<pre><code class="language-python">shared = shared_or_experts(x)
+loss = 0.0
+for task in tasks:
+    pred = task_head[task](route(task, shared))
+    loss += weight[task] * criterion[task](pred, label[task])
+loss.backward()
+</code></pre>
+<p>这段代码不是为了背 API，而是帮助建立“输入—状态—输出—监控”的工程直觉。真实系统还应记录 feature/model/index/experiment 等版本，确保线上结果能够复现。</p>
+<h3 id="_11">边界条件与反例</h3>
+<p>不能只用调 loss 权重掩盖问题；应定位 gradient conflict、样本空间和任务定义。</p>
+<p>一个强候选人应该主动说明<strong>什么时候不应该使用当前方法</strong>。这能证明你理解的是归纳偏置与业务条件，而不是模型名称。</p>
+<h3 id="_12">面试官继续追问时，建议用这套框架</h3>
+<ul>
+<li><strong>追公式</strong>：先定义符号，再说明每一项改变了什么概率/几何/梯度；</li>
+<li><strong>追为什么</strong>：从数据分布或复杂度出发，不用“实验发现更好”作为唯一理由；</li>
+<li><strong>追线上</strong>：给 P95/P99、候选数、内存、特征 freshness、回退路径；</li>
+<li><strong>追效果</strong>：区分离线增量、stage-wise oracle、线上 causal lift；</li>
+<li><strong>追失败</strong>：给至少一个会让方案失效的分布变化或系统约束。</li>
+</ul>
+<h3 id="senior-staff">Senior / Staff 级加分点</h3>
+<p>如果面试岗位偏高级，可以进一步讨论：</p>
+<ul>
+<li><strong>反事实与增量价值</strong>：新模块到底创造了新候选/新信息，还是复制已有能力；</li>
+<li><strong>Pareto frontier</strong>：质量、延迟、成本、稳定性之间是否存在更优点，而不是只报单指标；</li>
+<li><strong>可观测性</strong>：出现线上退化时，能否在 10~30 分钟内通过 dashboard/slice 定位到具体 stage；</li>
+<li><strong>可演进性</strong>：模型升级是否要求全量重建特征/索引，是否支持 shadow、canary 和快速 rollback；</li>
+<li><strong>组织成本</strong>：跨团队依赖、数据口径与长期维护是否会吞掉理论收益。</li>
+</ul>
+<h3 id="_13">进一步阅读（原始来源优先）</h3>
+<ul>
+<li><strong>MMoE (KDD 2018)</strong> — https://doi.org/10.1145/3219819.3220007</li>
+</ul>
+<!-- V2_ENRICHMENT_END -->
+
+<h2 id="_14">工业级工程视角</h2>
+<ul>
+<li>跷跷板现象必须说明“一个任务涨、另一个任务跌”的机制和业务后果。</li>
+<li>先定义 task graph：哪些 label 是漏斗关系、哪些并列、哪些存在延迟或缺失。</li>
+<li>监控每个 task 的 loss scale、gradient norm、样本量和 gate/expert utilization。</li>
+<li>多任务收益必须按 task 分桶检查，防止“平均上涨、关键任务下降”。</li>
+<li>CVR/GMV 等延迟 label 要明确观察窗、归因窗和 late-arriving data 处理。</li>
+</ul>
+<h3 id="_15">面试中建议主动报出的数字/约束</h3>
+<ul>
+<li>样本量/候选量、离线指标、线上 lift、P95/P99 latency、内存/显存与成本。</li>
+</ul>
+<h2 id="_16">推荐回答结构（白板版）</h2>
+<ol>
+<li>先用 1-2 句话定义核心概念或结论。</li>
+<li>再解释“为什么”，给出机制、公式或数据生成过程。</li>
+<li>补充工业约束：规模、延迟、样本分布、内存/算力或线上一致性。</li>
+<li>给出至少一个反例/失败模式，证明你理解适用边界。</li>
+<li>最后用线上验证方案收尾：离线分桶 + A/B + guardrail。</li>
+</ol>
+<h2 id="_17">常见失分</h2>
+<ul>
+<li><strong>PDF 原始失分点</strong>：只背名词，不会诊断。</li>
+<li>只看平均多任务 loss，不看 task conflict 和分任务收益。</li>
+<li>只给“最佳实践”结论，不说明适用条件与失败边界。</li>
+</ul>
+<h2 id="_18">面试评分标准</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+<th>典型特征</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pass</strong></td>
+<td>能回答定义与主结论</td>
+<td>复述“优化一个任务常导致另一个任务下降，例如 CTR 上升但时长下降。这可能来自梯度冲突、目标权重、数据空间差异或任…”</td>
+</tr>
+<tr>
+<td><strong>Good</strong></td>
+<td>能讲机制、公式/流程与 1-2 个工程权衡</td>
+<td>主动讨论数据分布、复杂度、指标或线上约束</td>
+</tr>
+<tr>
+<td><strong>Strong</strong></td>
+<td>能讨论失败案例、替代方案、监控与 A/B 验证</td>
+<td>把问题放回完整推荐链路，并能承接 3-5 层追问</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_19">连续追问</h2>
+<ol>
+<li>如何判断是 negative transfer 还是业务真实冲突？</li>
+<li>上线决策怎么处理 Pareto frontier？</li>
+<li>这个结论依赖哪些隐含假设？如果假设不成立会怎样？</li>
+<li>你会用哪些离线分桶与线上 guardrail 验证它？</li>
+<li>在 QPS/延迟/显存预算减半时，你会如何降级？</li>
+</ol>
+<h2 id="_20">连续追问参考答案</h2>
+<h3 id="1-negative-transfer">追问 1：如何判断是 negative transfer 还是业务真实冲突？</h3>
+<p>先比较 separate-task models：若各自单训都能好，但共享后一个涨一个跌，更像 negative transfer；若即使独立模型上线也呈现 CTR-留存互斥，可能是业务目标 Pareto 冲突。</p>
+<h3 id="2-pareto-frontier">追问 2：上线决策怎么处理 Pareto frontier？</h3>
+<p>把主/次指标的候选方案画成 Pareto set，淘汰被全面支配方案，再按业务价值和 guardrail 选点。不要用一个任意加权和掩盖明显的指标牺牲。</p>
+<h3 id="3">追问 3：这个结论依赖哪些隐含假设？如果假设不成立会怎样？</h3>
+<p>假设任务之间存在可共享统计强度。若任务目标本身冲突或 label 机制不同，增加共享会加剧 negative transfer，需要私有容量或重新定义任务。</p>
+<h3 id="4-guardrail">追问 4：你会用哪些离线分桶与线上 guardrail 验证它？</h3>
+<p>逐任务看 metric/calibration、gradient norm/cosine、gate/expert usage；线上做多目标 A/B，明确 primary 与不可牺牲 guardrail。</p>
+<h3 id="5-qps">追问 5：在 QPS/延迟/显存预算减半时，你会如何降级？</h3>
+<p>减少 expert/hidden size，合并高度相关任务，保留 task heads 与 calibration；避免直接删 guardrail 任务。</p>
+<h2 id="_21">自测清单</h2>
+<ul>
+<li>[ ] 我能在 30-60 秒内先给结论，不绕模型历史。</li>
+<li>[ ] 我能写出关键公式/复杂度，或者画出完整系统链路。</li>
+<li>[ ] 我能说出至少两个失败模式或适用边界。</li>
+<li>[ ] 我能给出 offline → online 的验证方法。</li>
+<li>[ ] 我能承接至少 3 层追问而不回到背诵式答案。</li>
+</ul>
+<h2 id="_22">相关题目</h2>
+<ul>
+<li><span class="srcref">Q054. MMoE 和普通 MoE 最大区别是什么？</span></li>
+<li><span class="srcref">Q056. PLE 相比 MMoE 改进在哪里？</span></li>
+<li><span class="srcref">Q053. MMoE 怎么解决任务冲突？</span></li>
+<li><span class="srcref">Q057. 多任务 Loss 怎么加权？</span></li>
+<li><span class="srcref">Q052. Shared Bottom 有什么问题？</span></li>
+<li><span class="srcref">Q058. 一个任务收敛了，另一个还没收敛怎么办？</span></li>
+</ul>
+<h2 id="_23">参考资料</h2>
+<ul>
+<li><strong>[I1] 美团推荐算法面经（2025-11）</strong> — https://www.nowcoder.com/feed/main/detail/87082efbdcfb4023b536c06ada8ce1a1</li>
+<li><strong>[I5] 美团搜推算法：PLE / DIN / In-batch 偏差</strong> — https://www.nowcoder.com/feed/main/detail/a6ca5f8234be43ff964f27535ec35ca0</li>
+<li><strong>[P5] Progressive Layered Extraction (PLE)</strong> — https://recsys.acm.org/recsys20/session-4/</li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

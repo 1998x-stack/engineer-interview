@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>set、add、replace 的语义差异是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Memcached</a><i>∕</i><span>009</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">009</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">P0</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="008.html">← 008</a><a href="9.html">9 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      SOURCE · CACHING · 10 / 100</div>
+    <h1 class="qtitle">set、add、replace 的语义差异是什么？</h1>
+    <blockquote>
+<p><strong>P0</strong> · ★★★★☆ · 基础架构与设计哲学<br />
+本文是 PDF 对应题目的扩展版：保留原答案，并补充源码、复杂度、并发不变量、生产实践与实验。</p>
+</blockquote>
+<h2 id="_1">题目</h2>
+<p><strong>set、add、replace 的语义差异是什么？</strong></p>
+<h2 id="_2">面试官在考什么</h2>
+<p>这道题用于判断候选人是否真正理解 <strong>架构边界、KV 语义与“为什么做减法”</strong>。</p>
+<p>面试官通常不会满足于“术语定义”，而会沿着 <code>set、add、replace 的语义差异是什么？</code> 继续追问到：<strong>状态如何变化、哪个模块拥有这份状态、并发下怎样保持不变量、生产中用什么指标证明判断</strong>。优秀回答应先给 30 秒结论，再主动给出一个反例或故障场景。</p>
+<h2 id="30-90">30-90 秒标准回答</h2>
+<blockquote>
+<p>set 无条件存储；add 仅 key 不存在时存储；replace 仅 key 已存在时存储。</p>
+</blockquote>
+<p>面试时建议先讲上面这句话，再根据追问选择展开源码或生产侧影响，不要一开始就陷入函数细节。</p>
+<h2 id="_3">心智模型</h2>
+<p><strong>系统边界：</strong> 把 Memcached 看成“网络接口 + 本地 KV 内核”。关键不是 API 多，而是主动缩小问题：完整 key 精确查找、数据可丢、价值可重建。</p>
+<pre><code class="language-mermaid">flowchart LR
+  C[Client] --&gt; N[Network / Protocol]
+  N --&gt; H[Assoc / Hash]
+  H --&gt; I[Item]
+  I --&gt; S[Slab]
+  I --&gt; L[LRU / TTL]
+</code></pre>
+<h2 id="_4">深度机制</h2>
+<h3 id="1-item-store">1. 三者最终都会走 item 构造与 store 决策。</h3>
+<p>从“系统边界”看，这一结论的重点不是记住术语，而是明确职责边界和失败方式。把 Memcached 看成“网络接口 + 本地 KV 内核”。关键不是 API 多，而是主动缩小问题：完整 key 精确查找、数据可丢、价值可重建。</p>
+<h3 id="2-addreplace">2. add/replace 的条件判断需要在正确锁范围内完成。</h3>
+<p>从“系统边界”看，这一结论的重点不是记住术语，而是明确职责边界和失败方式。把 Memcached 看成“网络接口 + 本地 KV 内核”。关键不是 API 多，而是主动缩小问题：完整 key 精确查找、数据可丢、价值可重建。</p>
+<h3 id="3-appendprepend-value">3. append/prepend 又涉及重新构造 value。</h3>
+<p>从“系统边界”看，这一结论的重点不是记住术语，而是明确职责边界和失败方式。把 Memcached 看成“网络接口 + 本地 KV 内核”。关键不是 API 多，而是主动缩小问题：完整 key 精确查找、数据可丢、价值可重建。</p>
+<h2 id="_5">系统不变量</h2>
+<ul>
+<li><strong>不变量 1：</strong> Cache 数据必须可重建；MISS 不是异常。</li>
+<li><strong>不变量 2：</strong> Key 是服务端唯一主要查询入口；value 对服务端近似 opaque bytes。</li>
+</ul>
+<p>这些不变量比记忆具体函数名更稳定。版本升级可能调整代码组织，但破坏这些约束通常意味着正确性或生命周期出现问题。</p>
+<h2 id="_6">复杂度与性能分析</h2>
+<ul>
+<li>单次操作通常很便宜，生产尾延迟更多由网络 RTT、序列化、锁等待和 miss 路径决定。</li>
+<li>面试回答要把“算法复杂度”和“系统成本模型”分开。</li>
+</ul>
+<p>进一步分析时要区分三个层面：<strong>算法复杂度</strong>（如 Hash 平均 O(1)）、<strong>微架构成本</strong>（cache miss、pointer chasing、cache-line bouncing）和 <strong>系统成本</strong>（RTT、序列化、回源）。高水平回答会主动指出这三者不是一回事。</p>
+<h2 id="_7">源码导航</h2>
+<p>建议优先阅读以下 Memcached 1.6.45 文件：</p>
+<ul>
+<li><a href="https://github.com/memcached/memcached/blob/1.6.45/memcached.h"><code>memcached.h</code></a></li>
+<li><a href="https://github.com/memcached/memcached/blob/1.6.45/memcached.c"><code>memcached.c</code></a></li>
+</ul>
+<p>源码阅读方法：先定位入口函数，再跟踪 <strong>Item 指针如何变化、何时加锁、何时 publication/unlink、何时释放引用</strong>。不要按文件从第一行顺序阅读。</p>
+<h2 id="_8">工程与生产实践</h2>
+<ol>
+<li><strong>先确认语义边界：</strong> 本题讨论的是 架构边界、KV 语义与“为什么做减法”，先区分 server 内部机制、客户端路由和应用回源三层，避免跨层归因。</li>
+<li><strong>把关键路径画出来：</strong> 对 <code>set、add、replace 的语义差异是什么？</code> 至少能指出输入、关键状态、输出以及失败路径；如果涉及 Item，要明确 Hash/LRU/Slab/refcount 中哪些会变化。</li>
+<li><strong>用指标证伪：</strong> 实验时并发 100 个 add 同一 key，统计 STORED/NOT_STORED，并同时验证所有客户端使用相同 server list。</li>
+<li><strong>准备一个故障反例：</strong> 两个请求并发 add 同一 key 时，只有一个成功，但如果客户端对节点路由不一致，两边都可能成功，因此“原子性”依赖同 key 到同节点。</li>
+<li><strong>版本意识：</strong> 本仓库源码锚定 Memcached <code>1.6.45</code>；默认参数与现代特性应以该版本官方源码/文档为准。</li>
+</ol>
+<h2 id="_9">常见易错点</h2>
+<blockquote>
+<p>不要把 add 的“若不存在”误解成跨数据库事务级互斥。</p>
+</blockquote>
+<p>再补充两个通用陷阱：</p>
+<ul>
+<li>把“默认值”说成“协议永远固定值”；例如 item size、线程数等都应区分默认配置与不可变约束。</li>
+<li>把“当前实现细节”说成“KV cache 必然原理”；面试中应先讲不变量，再讲 Memcached 的具体实现。</li>
+</ul>
+<h2 id="_10">高频追问</h2>
+<h3 id="1add">追问 1：add 能否用来做严格分布式锁？</h3>
+<p><strong>回答提示：</strong> 先复述边界，再用本题核心机制回答：set 无条件存储；add 仅 key 不存在时存储；replace 仅 key 已存在时存储。 最后补充一个生产后果或失败场景，避免只给术语。</p>
+<h3 id="2cas-add">追问 2：CAS 与 add 的并发语义有什么不同？</h3>
+<p><strong>回答提示：</strong> 先复述边界，再用本题核心机制回答：set 无条件存储；add 仅 key 不存在时存储；replace 仅 key 已存在时存储。 最后补充一个生产后果或失败场景，避免只给术语。</p>
+<h2 id="_11">动手验证</h2>
+<pre><code class="language-bash"># 启动本地实例后，用基础文本协议观察行为
+printf &quot;set foo 0 5 3\r\nbar\r\nget foo\r\n&quot; | nc 127.0.0.1 11211
+</code></pre>
+<p>观察 <code>STORED</code>、<code>VALUE</code>、TTL 到期后的 <code>END</code>；把“协议语义”和“应用 Cache Aside”明确分开。</p>
+<p>完成实验后，至少记录：<strong>预期 → 实际 → 为什么 → 对生产设计有什么影响</strong>。只跑通命令而没有解释，不算真正掌握。</p>
+<h2 id="_12">面试表达模板</h2>
+<blockquote>
+<p><strong>第一句给结论：</strong> set 无条件存储；add 仅 key 不存在时存储；replace 仅 key 已存在时存储。<br />
+<strong>第二层讲机制：</strong> 用 1 张状态/调用链图说明“谁维护什么状态、何时改变”。<br />
+<strong>第三层讲边界：</strong> add 不是跨系统分布式锁；它只能在单个 Memcached key 的存储语义内提供 create-if-absent，TTL、节点失败和多节点路由仍要考虑。<br />
+<strong>第四层落生产：</strong> 给出一个指标或算式，例如：实验时并发 100 个 add 同一 key，统计 STORED/NOT_STORED，并同时验证所有客户端使用相同 server list。</p>
+</blockquote>
+<h2 id="v2">专家级展开（V2）</h2>
+<h3 id="a">A. 从第一性原理推导</h3>
+<p>set/add/replace 的差异本质是 publication 条件不同：set 无条件写，add 需要当前 key 不存在，replace 需要当前 key 存在；检查与提交必须处在正确的并发保护范围内。</p>
+<p>这道题建议使用“<strong>状态 → 所有者 → 转移条件 → 失败后果</strong>”四步法推导，而不是背结论。先确定哪份状态是核心，再问由哪个模块维护，随后说明状态何时迁移，最后指出违反不变量会表现为什么 bug 或性能问题。</p>
+<h3 id="b">B. 关键源码符号与阅读顺序</h3>
+<ul>
+<li><code>store_item</code></li>
+<li><code>do_store_item</code></li>
+<li><code>NREAD_SET</code></li>
+<li><code>NREAD_ADD</code></li>
+<li><code>NREAD_REPLACE</code></li>
+</ul>
+<p>建议在 <code>memcached-1.6.45</code> 源码树中用下面的方式定位，而不是按文件顺序从头读：</p>
+<pre><code class="language-bash">git grep -n &quot;\bstore_item\b&quot; -- memcached.c assoc.c items.c
+git grep -n &quot;\bdo_store_item\b&quot; -- memcached.c assoc.c items.c
+git grep -n &quot;\bNREAD_SET\b&quot; -- memcached.c assoc.c items.c
+git grep -n &quot;\bNREAD_ADD\b&quot; -- memcached.c assoc.c items.c
+git grep -n &quot;\bNREAD_REPLACE\b&quot; -- memcached.c assoc.c items.c
+</code></pre>
+<p>阅读函数时至少记录 5 个问题：<strong>入参中的 key/hash/item 是谁创建的、当前持有哪些锁、item 是否已 <code>ITEM_LINKED</code>、refcount 谁持有、失败路径最终由谁释放资源</strong>。</p>
+<h3 id="c">C. 边界条件与反例</h3>
+<p>add 不是跨系统分布式锁；它只能在单个 Memcached key 的存储语义内提供 create-if-absent，TTL、节点失败和多节点路由仍要考虑。</p>
+<p>面试中主动讲边界条件很加分，因为它能证明你区分了“默认实现”“协议语义”“架构经验”和“数学近似”。尤其要避免把平均 O(1)、默认 1MB、client-side hashing 等表述成无条件真理。</p>
+<h3 id="d">D. 生产故障推演</h3>
+<p>两个请求并发 add 同一 key 时，只有一个成功，但如果客户端对节点路由不一致，两边都可能成功，因此“原子性”依赖同 key 到同节点。</p>
+<p>遇到这类问题时，建议把故障链写成：</p>
+<pre><code class="language-text">触发条件 → Memcached 内部状态变化 → HIT/MISS/P99 变化 → origin/网络/CPU 后果 → 保护或恢复动作
+</code></pre>
+<p>这样回答能自然从源码层过渡到生产系统，而不是把“源码题”和“系统设计题”割裂开。</p>
+<h3 id="e">E. 定量分析 / 可验证指标</h3>
+<p>实验时并发 100 个 add 同一 key，统计 STORED/NOT_STORED，并同时验证所有客户端使用相同 server list。</p>
+<p>工程上至少给出一个可以<strong>测量或计算</strong>的量。没有数字的“性能更好”“内存更省”“更稳定”通常无法指导容量规划，也很难在故障现场验证。</p>
+<h2 id="_13">关联题目</h2>
+<ul>
+<li><span class="srcref">007. Memcached 存进去的对象到底是什么？</span></li>
+<li><span class="srcref">008. 为什么 Memcached 不支持 SQL、范围查询和 JOIN？</span></li>
+<li><span class="srcref">010. Cache miss 后 Memcached 会自动查数据库吗？</span></li>
+<li><span class="srcref">011. 为什么 struct item 是 Memcached 最核心的数据结构？</span></li>
+</ul>
+<h2 id="_14">官方参考</h2>
+<ul>
+<li><strong>S1</strong> <a href="https://www.memcached.org/">Memcached 官方首页 / Downloads</a> — 项目定位、下载与版本入口。</li>
+<li><strong>S2</strong> <a href="https://docs.memcached.org/protocols/basic/">Basic Text Protocol</a> — 基础文本协议与命令语义。</li>
+<li><strong>S4</strong> <a href="https://docs.memcached.org/protocols/">Protocols Overview</a> — 当前协议状态；Binary Protocol 已 deprecated。</li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

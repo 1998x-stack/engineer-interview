@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sparse Attention / Sliding Window Attention 为什么有用？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Deep Learning</a><i>∕</i><span>Q051</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q051</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">高频</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">yes</span></div>
+    </div>
+    <div class="prevnext"><a href="Q050.html">← Q050</a><a href="Q052.html">Q052 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">deep-learning</a><a href="#">interview</a><a href="#">transformer</a><a href="#">attention</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      DEEP LEARNING · 51 / 100</div>
+    <h1 class="qtitle">Sparse Attention / Sliding Window Attention 为什么有用？</h1>
+    <blockquote>
+<p><strong>章节：</strong> Transformer 核心
+<strong>难度：</strong> ★★☆ ｜ <strong>频度：</strong> 高频 ｜ <strong>优先级：</strong> S
+<strong>PDF 对应：</strong> 第 37 页附近</p>
+</blockquote>
+<h2 id="_1">面试官在考什么</h2>
+<p>考察长上下文结构化稀疏。</p>
+<p><strong>高质量回答标准：</strong> 能写公式与 shape；能给复杂度；能把训练、显存、kernel 与 serving 影响串起来。</p>
+<h2 id="_2">一句话结论</h2>
+<p>Dense attention 让每个 token 关注全部历史，成本随 T² 增长；滑窗把每个 token 的可见范围限制为局部 w，理论复杂度可降到 O(Twd)。</p>
+<h2 id="6090">60–90 秒面试回答</h2>
+<p>Dense attention 让每个 token 关注全部历史，成本随 T² 增长；滑窗把每个 token 的可见范围限制为局部 w，理论复杂度可降到 O(Twd)。再搭配少量全局 token 或周期性全局层，可以在成本与长程依赖之间折中。</p>
+<h2 id="_3">深度解析</h2>
+<ul>
+<li>局部 attention 会损失任意远距离的直接连接。</li>
+<li>模型可通过多层传播间接扩大感受范围。</li>
+<li>结构稀疏只有在 kernel/硬件实现支持时才能兑现 wall-clock 收益。</li>
+</ul>
+<h2 id="shape">数学、Shape 与复杂度</h2>
+<p>本题没有唯一必须背诵的闭式公式；面试时应把关键变量、tensor shape、复杂度或资源量写清楚，并说明它们如何随 batch、sequence、hidden size 或并行度变化。</p>
+<h2 id="pytorch">工程实现 / PyTorch 验证</h2>
+<h3 id="_4">推荐验证协议</h3>
+<p>实现 window mask，比较 T 增长时 dense 与 window attention 的 score 元素数；在长程 copy task 上观察质量退化。</p>
+<p><strong>最低验收标准：</strong> shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。</p>
+<h2 id="_5">工程实践与诊断视角</h2>
+<ul>
+<li>Transformer 题默认同时回答：公式、shape、复杂度、数值稳定和 serving 影响。</li>
+<li>区分“计算优化”和“内存管理”：FlashAttention、GQA、KV Cache、PagedAttention 分别解决不同瓶颈。</li>
+</ul>
+<h3 id="_6">边界条件与反例</h3>
+<ul>
+<li>注意 mask 的广播 shape、全 mask 行、长序列 OOM、softmax 精度和 causal/padding mask 组合。</li>
+</ul>
+<h2 id="_7">面试官连续追问</h2>
+<ul>
+<li>Longformer/Mistral 类滑窗各自如何保持全局信息？</li>
+<li>稀疏模式为什么不一定更快？</li>
+</ul>
+<h3 id="_8">推荐的追问回答结构</h3>
+<ol>
+<li><strong>先给结论</strong>：一句话直接回答，不绕定义。</li>
+<li><strong>再给机制</strong>：公式、shape、统计维度或系统路径。</li>
+<li><strong>说明 trade-off</strong>：速度、显存、泛化、稳定性或数据成本。</li>
+<li><strong>给失败边界</strong>：什么时候不成立、会退化或需要替代方案。</li>
+<li><strong>落到工程</strong>：如何验证、监控或排查。</li>
+</ol>
+<h2 id="_9">高频失分点</h2>
+<ul>
+<li><strong>易错：</strong> 只看理论 FLOPs，不看稀疏 kernel 的实现开销。</li>
+</ul>
+<h3 id="3">3 分钟展开框架</h3>
+<ol>
+<li><strong>数学</strong>：公式与 <code>[B,H,T,Dh]</code> shape；</li>
+<li><strong>复杂度</strong>：$T^2D$、$TD^2$ 和显存项；</li>
+<li><strong>数值</strong>：mask、softmax、precision；</li>
+<li><strong>系统</strong>：KV、kernel、prefill/decode、serving。</li>
+</ol>
+<h2 id="_10">实战练习</h2>
+<ul>
+<li><strong>Shape drill</strong>：从 <code>[B,T,D]</code> 写到 QKV、score、output 的每一步 shape。</li>
+<li><strong>性能</strong>：用 profiler 对比标准 attention / SDPA（环境支持时），记录峰值显存和时间。</li>
+<li><strong>系统题</strong>：固定模型，分别增大 batch、context、KV heads，预测哪一项先成为瓶颈。</li>
+</ul>
+<h2 id="90">90 分深挖：从会背到能做设计</h2>
+<h3 id="_11">机制与定量抓手</h3>
+<p>Sparse/sliding-window 通过限制连接图改变实际计算量；局部窗口适合局部依赖，但全局信息需 global token、dilation、跨层传播或混合层补偿。</p>
+<h3 id="_12">工程与实验抓手</h3>
+<p>实现 window mask，比较 T 增长时 dense 与 window attention 的 score 元素数；在长程 copy task 上观察质量退化。</p>
+<h3 id="_13">失败边界 / 反例</h3>
+<p>Sliding-window 的理论 O(Tw) 只有在 kernel 真正利用 sparsity 时才转化为速度；生成 cache 策略也要匹配窗口。</p>
+<h3 id="_14">白板专项练习</h3>
+<p>给 T=128k,w=4k 估算连接数相对 dense 的比例。</p>
+<blockquote>
+<p><strong>本章 90 分标准：</strong> Transformer 题默认要求公式、shape、复杂度、数值稳定、GPU/serving 影响五层都能展开。</p>
+</blockquote>
+<h2 id="_15">面试官评分拆解</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>40–50 分</td>
+<td>只会给定义或背结论，缺公式/机制，追问一层就断。</td>
+</tr>
+<tr>
+<td>60–70 分</td>
+<td>能解释主机制并写关键公式，但缺边界条件和工程证据。</td>
+</tr>
+<tr>
+<td>80–90 分</td>
+<td>能定量推导、比较替代方案，主动说明失败场景并给验证方法。</td>
+</tr>
+<tr>
+<td>90+ 分</td>
+<td>能把数学、实现、系统成本和项目决策串成完整证据链，并能反向设计实验验证假设。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_16">面试表达建议</h3>
+<p>建议用 <strong>结论 → 机制 → 定量 → trade-off → 边界 → 验证</strong> 六步法回答。先在 60–90 秒内给主线；只有面试官继续追问时再展开公式、代码或系统细节。这样既显示深度，也避免一上来堆知识点失去重点。</p>
+<h2 id="_17">项目化证据链：如何证明你真的做过</h2>
+<p>只讲原理只能证明“学过”，项目面试还要证明“做过、量过、复盘过”。针对本题，建议准备一张实验卡：<strong>问题/假设 → baseline → 改动 → 指标 → 结果 → 失败 slice → 结论</strong>。</p>
+<h3 id="_18">建议报告的指标</h3>
+<ul>
+<li><strong>核心观测：</strong> attention entropy、tokens/s、peak memory、TTFT/TPOT、KV bytes、kernel/backend。</li>
+<li><strong>证据原则：</strong> Transformer 优化必须说明是改数学连接、改 IO、改 KV，还是改 scheduler，避免概念混淆。</li>
+<li><strong>本题特定证据：</strong> 实现 window mask，比较 T 增长时 dense 与 window attention 的 score 元素数；在长程 copy task 上观察质量退化。</li>
+</ul>
+<h3 id="_19">方案选择与停止条件</h3>
+<p>当收益只存在于单一 benchmark、无法复现到多个 seed/slice、引入明显 latency/显存/维护成本，或触发本题的失败边界——<strong>Sliding-window 的理论 O(Tw) 只有在 kernel 真正利用 sparsity 时才转化为速度；生成 cache 策略也要匹配窗口。</strong>——就不应继续用“模型更复杂”掩盖问题。面试中主动说出停止条件，通常比继续堆方案更像真实工程负责人。</p>
+<h2 id="5">5 分钟深挖路线</h2>
+<p>先画 <code>[B,T,D]</code> 数据流 → 写 attention/FFN 公式 → 算复杂度/显存 → 讲数值与 kernel → 讲 serving。</p>
+<p>如果面试官继续追问到第 3–4 层，建议把回答切换到白板：写公式、画 tensor/系统数据流，再给一个量化例子。不要继续只用口头名词解释名词。</p>
+<h2 id="_20">自测清单</h2>
+<ul>
+<li>[ ] 能在 60–90 秒内不看资料完整回答。</li>
+<li>[ ] 能写出本题最关键的公式 / shape / 复杂度关系。</li>
+<li>[ ] 能回答至少 3 个连续追问。</li>
+<li>[ ] 能说出至少 1 个失败场景或反例。</li>
+<li>[ ] 能给出一个可执行的 PyTorch 验证或工程排障方法。</li>
+<li>[ ] 能解释它与相邻技术的区别，而不是把概念混在一起。</li>
+</ul>
+<h2 id="_21">关联题目</h2>
+<ul>
+<li><span class="srcref">Q050 · FlashAttention 为什么快？它有没有把 O(T²) 变成 O(T)？</span></li>
+<li><span class="srcref">Q052 · 为什么现代通用大模型大量采用 Decoder-only？</span></li>
+<li><span class="srcref">Q049 · KV Cache 的原理是什么？显存如何估算？</span></li>
+<li><span class="srcref">Q053 · Transformer 相比 RNN 为什么更适合大规模训练？</span></li>
+</ul>
+<h2 id="_22">参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1706.03762">Vaswani et al., Attention Is All You Need</a></li>
+<li><a href="https://arxiv.org/abs/2104.09864">Su et al., RoFormer / RoPE</a></li>
+<li><a href="https://arxiv.org/abs/2305.13245">Ainslie et al., GQA: Training Generalized Multi-Query Transformer Models</a></li>
+<li><a href="https://arxiv.org/abs/2205.14135">Dao et al., FlashAttention</a></li>
+</ul>
+<blockquote>
+<p>题目来自公开候选人面经的高频问法归一化，并结合论文/官方文档扩展；不代表任何公司的官方题库或内部材料。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

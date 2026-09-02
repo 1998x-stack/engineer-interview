@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q083 Sparse Attention 如何降低复杂度？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>Q083</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q083</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">4/5</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q082.html">← Q082</a><a href="Q084.html">Q084 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">attention</a><a href="#">systems</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 83 / 110</div>
+    <h1 class="qtitle">Q083 Sparse Attention 如何降低复杂度？</h1>
+    <blockquote>
+<p><strong>章节</strong>：8. 长上下文、高性能 Attention 与 MoE<br />
+<strong>难度</strong>：4/5 · <strong>频率</strong>：高频 · <strong>形式</strong>：概念 / 推导 / 追问<br />
+<strong>内容分层</strong>：<code>PDF Core</code> 来自原 PDF 的观点重排；<code>Professional Expansion</code> 为在不改变 PDF 主结论基础上的原创扩展。</p>
+</blockquote>
+<h2 id="1-pdf-core">1. 面试官在考什么 — PDF Core</h2>
+<p>从连接图稀疏化理解。</p>
+<h2 id="2-30-pdf-core">2. 30 秒回答 — PDF Core</h2>
+<blockquote>
+<p>标准 Attention 连接所有 T² token pair；Sparse Attention 只保留局部窗口、global token 或特定 block pattern， 使有效边数下降到如 O(Tw)。代价是某些长距离关系无法直接一层访问。</p>
+</blockquote>
+<h2 id="3-shape">3. 核心公式 / Shape</h2>
+<p>Local sparse attention 常约 $O(Tw)$。</p>
+<h2 id="4-pdf-core">4. 深度拆解 — PDF Core</h2>
+<ul>
+<li>多层局部 attention 可逐层扩大 receptive field。</li>
+<li>稀疏 pattern 必须匹配任务结构。</li>
+<li>kernel 是否真正高效取决于规则稀疏还是不规则稀疏。</li>
+</ul>
+<h2 id="5-professional-expansion">5. Professional Expansion：为什么这题值得深挖</h2>
+<p>Sparse Attention 通过限制可见边集合把 T² 边减为如 O(Tw)；质量取决于 sparse pattern 是否保留任务需要的长距离路径。</p>
+<h3 id="51">5.1 工程实现 / 系统视角</h3>
+<p>kernel 是否真正利用 sparsity 决定 wall-clock。</p>
+<h3 id="52">5.2 边界条件与反例</h3>
+<p>稀疏图路径长度可能变长。</p>
+<h3 id="53">5.3 建议亲手做的验证实验</h3>
+<ul>
+<li>比较 local/global pattern 的 receptive field。</li>
+<li>记录至少一种 <strong>correctness metric</strong> 与一种 <strong>performance metric</strong>；不要只凭“代码能运行”判定实现正确。</li>
+</ul>
+<h3 id="54-3">5.4 3 分钟专业版答法</h3>
+<p>面试时可以按下面节奏展开：</p>
+<blockquote>
+<p><strong>第一句给结论</strong>：标准 Attention 连接所有 T² token pair；Sparse Attention 只保留局部窗口、global token 或特定 block pattern， 使有效边数下降到如 O(Tw)。代价是某些长距离关系无法直接一层访问。<br />
+<strong>第二层讲机制</strong>：多层局部 attention 可逐层扩大 receptive field。；稀疏 pattern 必须匹配任务结构。；kernel 是否真正高效取决于规则稀疏还是不规则稀疏。<br />
+<strong>第三层补工程条件</strong>：把本题放到真实 Tensor Shape、训练/推理阶段与硬件约束下重新检查；如果结论涉及“更快/更省/更稳定”，必须说明比较基线和适用条件。<br />
+<strong>最后主动给验证</strong>：用最小行为测试、数值 parity、profiler 或 ablation 证明，而不是停留在直觉。</p>
+</blockquote>
+<h3 id="55">5.5 复杂度与资源矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>本题应如何分析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>算法复杂度</td>
+<td>先写理论 FLOPs / memory，再判断实现是否改变函数本身。</td>
+</tr>
+<tr>
+<td>硬件复杂度</td>
+<td>HBM IO、SRAM tile、kernel launch、通信可能比 FLOPs 更决定 wall-clock。</td>
+</tr>
+<tr>
+<td>质量风险</td>
+<td>近似 attention / quantization / sparsity 需要单独做 quality regression。</td>
+</tr>
+<tr>
+<td>长上下文</td>
+<td>T 增长同时放大 compute、KV、position extrapolation 与 TTFT。</td>
+</tr>
+<tr>
+<td>主要验证</td>
+<td>profiler + memory trace + accuracy/perplexity + length sweep。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="56">5.6 本题关键不变量</h3>
+<ul>
+<li>理论复杂度与实际 wall-clock 分开报告。</li>
+<li>任何近似/量化/稀疏优化都必须做 quality regression。</li>
+<li>benchmark 必须给出硬件、dtype、batch、context/output length。</li>
+</ul>
+<h2 id="6">6. 面试中的推导顺序</h2>
+<ol>
+<li><strong>先定义</strong>：一句话说明对象是什么、输入输出是什么。</li>
+<li><strong>再公式</strong>：写最小核心公式，并标出关键维度。</li>
+<li><strong>解释 Why</strong>：它解决前一代方案的什么瓶颈。</li>
+<li><strong>算成本</strong>：参数、FLOPs、activation/KV memory、IO/通信分别看。</li>
+<li><strong>讲 Gotcha</strong>：至少指出一个数值或实现陷阱。</li>
+<li><strong>收束 Trade-off</strong>：明确什么条件下它不一定更优。</li>
+</ol>
+<h2 id="7-pdf-core">7. 常见失分点 — PDF Core</h2>
+<ul>
+<li>看到 FLOPs 降低就假设 GPU 一定更快。</li>
+</ul>
+<h2 id="8-pdf-core">8. 面试官继续追问 — PDF Core</h2>
+<blockquote>
+<p>block-sparse 为什么通常比任意 element-wise sparsity 更容易加速？</p>
+</blockquote>
+<h3 id="_1">扩展追问树</h3>
+<ul>
+<li>如果把关键超参数扩大 4 倍，<strong>参数量 / FLOPs / 显存 / latency</strong> 哪一项最先成为瓶颈？</li>
+<li>如果在 <strong>训练</strong> 与 <strong>增量推理</strong> 两个阶段分别使用，本题结论有哪些不同？</li>
+<li>如何写一个最小单元测试或 ablation，证明你的解释而不是只靠直觉？</li>
+</ul>
+<h2 id="9-pdf-core">9. 一语中的 — PDF Core</h2>
+<p><strong>标准 Attention 连接所有 T² token pair；Sparse Attention 只保留局部窗口、global token 或特定 block pattern，使有效 边数下降到如 O(Tw)。</strong></p>
+<h2 id="10-rubric">10. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>及格</td>
+<td>能给出 PDF 的 30 秒主干，不出现概念性错误。</td>
+</tr>
+<tr>
+<td>良好</td>
+<td>能写核心公式/shape，并解释为什么这样设计。</td>
+</tr>
+<tr>
+<td>优秀</td>
+<td>能讨论复杂度、数值/工程 gotcha，并回答至少 2 层追问。</td>
+</tr>
+<tr>
+<td>强 Hire 信号</td>
+<td>能把问题连接到训练/推理/硬件约束，主动提出验证实验或 ablation。</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>本题标注难度：<strong>4/5</strong>。难度越高，越看重 trade-off 和验证方法，而不只是定义。</p>
+</blockquote>
+<h2 id="11">11. 相关题目</h2>
+<ul>
+<li><span class="srcref">Q082 Online Softmax 如何分块仍保持精确？</span></li>
+<li><span class="srcref">Q084 Linear Attention 与 FlashAttention 最大区别？</span></li>
+</ul>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></li>
+</ul>
+<!-- V2-EXPANSION-START -->
+
+<h2 id="13">13. 深入推导：把结论变成可验证的模型</h2>
+<p>Sparse Attention 通过限制边集合把 $T^2$ pair 减为 $T\cdot w$、block sparse 或少量 global links。真正难点是 pattern 是否覆盖任务所需的远程依赖，以及稀疏 kernel 是否能在硬件上高效。</p>
+<p>理论 FLOPs 降低但不规则 sparsity 可能导致低 occupancy/索引开销；因此常用规则化 local window、block sparsity 而不是任意图。</p>
+<h3 id="131">13.1 本章心智模型</h3>
+<blockquote>
+<p>把高效 Transformer 放到 GPU/通信/稀疏计算上讨论，区分算法复杂度和系统效率。</p>
+</blockquote>
+<p>这意味着面试时不要停在术语层。每个结论至少回答四个问题：<strong>成立所需假设是什么？张量/概率对象是什么？成本落在哪里？怎样设计反例或单测证伪？</strong></p>
+<h2 id="14-checklist">14. 题目特异的工程 Checklist</h2>
+<p><strong>attention 检查表</strong></p>
+<ul>
+<li>写出 Q/K/V 与 score 的<strong>完整 shape</strong>，尤其区分 $T_q$、$T_k$、$H_q$、$H_{kv}$。</li>
+<li>明确 softmax 的归一化轴、mask 语义与 fully-masked row 行为。</li>
+<li>用一个朴素 reference implementation 对 fused/optimized kernel 做数值 parity。</li>
+<li>性能分析同时报告 FLOPs、HBM bytes、kernel launch 与是否 materialize $T^2$ 中间量。</li>
+</ul>
+<p><strong>systems 检查表</strong></p>
+<ul>
+<li>不只写 big-O：把计算、HBM IO、网络通信、allocator 与调度分别量化。</li>
+<li>任何“更快”都说明硬件、batch/context 分布、精度和质量基线。</li>
+<li>同时看平均与 P95/P99，防止吞吐优化牺牲尾延迟。</li>
+<li>设计 rollback/quality regression，确保系统优化没有改变模型语义。</li>
+</ul>
+<h2 id="15">15. 推荐验证协议</h2>
+<ol>
+<li><strong>Reference parity</strong>：用小尺寸 FP32 手写 attention 与 <code>scaled_dot_product_attention</code> 对比。</li>
+<li><strong>Mask invariance</strong>：改变被 mask token 的内容，合法 query 输出不应变化。</li>
+<li><strong>Probability invariant</strong>：非 fully-masked 行的 attention probability sum 应约为 1。</li>
+</ol>
+<p>验证结果建议至少记录：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>最低要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Correctness</td>
+<td>reference parity / invariant / leakage test 至少一项</td>
+</tr>
+<tr>
+<td>Numerical</td>
+<td>NaN/Inf、max/RMS、dtype 差异</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>wall-clock、显存/bytes、P95/P99（系统题）</td>
+</tr>
+<tr>
+<td>Quality</td>
+<td>loss/perplexity/任务指标；结构改动必须做回归</td>
+</tr>
+</tbody>
+</table>
+<h2 id="16">16. 面试官真正想听到的“边界条件”</h2>
+<ul>
+<li><strong>不要把渐进复杂度等同于实际速度</strong>：kernel、batch、长度、硬件与 IO 会改变主导项。</li>
+<li><strong>不要把一种实现当成数学定义</strong>：mask 语义、layout、fused kernel、cache allocator 都可能变化。</li>
+<li><strong>不要把单点 benchmark 当成普遍规律</strong>：至少说明 $B,T,d,H$、dtype、device 和任务分布。</li>
+<li><strong>不要把“能运行”当成“正确”</strong>：Transformer 很多 bug 会正常降 loss，但存在未来泄漏、错误广播或 cache position 错位。</li>
+</ul>
+<h2 id="17-whiteboard-coding">17. Whiteboard / Coding 表达模板</h2>
+<p>当面试官要求现场推导或编码，可按以下顺序：</p>
+<ol>
+<li>写输入输出 shape 与符号定义；</li>
+<li>写最小核心公式，不先写优化；</li>
+<li>写 2–3 个 invariants/assertions；</li>
+<li>给 reference 实现或手算小例子；</li>
+<li>再讨论 fused kernel、cache、并行或量化；</li>
+<li>最后给测试与 benchmark 设计。</li>
+</ol>
+<blockquote>
+<p><strong>Strong Hire 信号</strong>：不仅能解释“为什么”，还能说出“什么情况下不成立，以及我会怎么证明”。</p>
+</blockquote>
+<!-- V2-EXPANSION-END -->
+
+<hr />
+<p>← <span class="srcref">Q082</span> · <span class="srcref">返回 100 题索引</span> · <span class="srcref">Q084</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

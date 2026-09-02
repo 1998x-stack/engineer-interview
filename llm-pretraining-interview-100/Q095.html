@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>手算一个 Transformer Block 的参数量怎么做？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q095</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q095</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q094.html">← Q094</a><a href="Q096.html">Q096 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">coding</a><a href="#">coding-system-project</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 96 / 101</div>
+    <h1 class="qtitle">手算一个 Transformer Block 的参数量怎么做？</h1>
+    <blockquote>
+<p><strong>定位</strong>：B 类等价追问题 · 难度 <strong>中</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">手撕、系统设计与项目拷打</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>参数量是架构设计、FLOPs 和显存手算的共同基础。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>正确性</strong>：代码/公式/系统是否在边界条件下仍正确？</li>
+<li><strong>量化</strong>：参数、显存、吞吐、成本是否可手算/实测？</li>
+<li><strong>证明</strong>：项目贡献是否有对照实验和可归因结果？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>参数手算不要背总式：把每个 projection 的矩阵尺寸列出来，就不会错。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>标准 MHA 中 Q/K/V/O 四个 d×d 矩阵约 4d²；传统 4d FFN 两矩阵约 8d²，所以经典 block 粗约 12d²，忽略 bias/norm。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>现代模型用 GQA 与 SwiGLU 时必须重新算：K/V projection 由 h_kv 决定；SwiGLU 有 gate/up/down 三矩阵，intermediate dimension 通常不再简单等于 4d。</p>
+<h3 id="_2">核心公式</h3>
+<pre><code class="language-text">经典 MHA+4d FFN：P_attn≈4d², P_ffn≈8d², P_block≈12d²
+</code></pre>
+<blockquote>
+<p>面试时不要只写公式。要逐个解释符号、shape/量纲，以及公式如何导出工程结论。</p>
+</blockquote>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="_3">参数量手算纪律</h3>
+<p>不要背“每层约 12$d^2$”后直接结束。逐个矩阵列 shape：Q/K/V/O、gate/up/down、embedding/LM head、norm，然后再根据 MHA/GQA/SwiGLU/weight tying 调整。近似式只用于 sanity check，精确值来自矩阵尺寸。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：先写每个 linear 的 in×out，再相加。</li>
+<li><strong>动作 2</strong>：最后乘 layers，加 embedding/LM head。</li>
+<li><strong>动作 3</strong>：所有近似明确是否 weight tying、bias。</li>
+</ol>
+<h3 id="production">白板到 Production</h3>
+<p>要求答案同时包含正确性、复杂度、测试、边界条件、工程约束和量化结果。</p>
+<ul>
+<li>代码题写 shape/assert/unit test。</li>
+<li>设计题先声明约束。</li>
+<li>项目题必须给数字和对照。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1gqa-qkv">追问 1：GQA 如何改变 QKV 参数？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h3 id="2swiglu-8d2">追问 2：SwiGLU 为什么不能仍按 8d²？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → 参数手算不要背总式：把每个 projection 的矩阵尺寸列出来，就不会错。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="3embedding">追问 3：embedding 对小模型为什么占比更高？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → 参数手算不要背总式：把每个 projection 的矩阵尺寸列出来，就不会错。 → 新代价/边界条件”三段式回答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>无论架构都背 12d²。</strong></li>
+<li>改进：回到“参数手算不要背总式：把每个 projection 的矩阵尺寸列出来，就不会错。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：参数手算不要背总式：把每个 projection 的矩阵尺寸列出来，就不会错。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>GQA 如何改变 QKV 参数？</li>
+<li>SwiGLU 为什么不能仍按 8d²？</li>
+<li>embedding 对小模型为什么占比更高？</li>
+<li>把答案写成可运行代码/可核算公式/可量化项目复盘之一。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>参数手算不要背总式：把每个 projection 的矩阵尺寸列出来，就不会错。</strong></p>
+</blockquote>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>基于预训练岗位能力模型、技术报告与高频追问扩展出的等价深挖题；不宣称是某家公司逐字原题。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R1 · 论文</strong> — <a href="https://arxiv.org/abs/1706.03762">Vaswani et al., Attention Is All You Need</a></li>
+</ul>
+<h2 id="_4">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q094. 手写 RoPE：代码之外必须证明什么？</span></li>
+<li>→ <span class="srcref">Q096. 手算 70B + Adam + BF16 的训练显存，并推到 ZeRO</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bresenham 画线算法为什么能避免浮点数？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Game Engine</a><i>∕</i><span>Q034</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q034</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">Intermediate</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q033.html">← Q033</a><a href="Q035.html">Q035 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">algorithms</a><a href="#">data-structures</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      GAME ENGINE · GRAPHICS · 44 / 100</div>
+    <h1 class="qtitle">Bresenham 画线算法为什么能避免浮点数？</h1>
+    <blockquote>
+<p>[!IMPORTANT]
+<strong>内容分层</strong>：<code>PDF 核心内容</code>严格以仓库附带的原 PDF 为基线；<code>专业扩展</code>是为了让题目达到更强的工程面试深度，来自通用工程知识与下方列出的官方/权威资料。两者刻意分开，便于追踪来源。</p>
+</blockquote>
+<p><strong>章节</strong>：数据结构与算法<br />
+<strong>学习级别</strong>：<code>Intermediate</code>（仓库学习分级，不是对 PDF 星级符号的重解释）<br />
+<strong>PDF 位置</strong>：物理页 46<br />
+<strong>来源口径</strong>：高频能力重构 </p>
+<hr />
+<h2 id="1">1. 这道题在考什么</h2>
+<p>这题属于 <strong>数据结构与算法</strong>。面试官通常不是只听一个定义，而是在判断你能否把答案推进到：</p>
+<ol>
+<li><strong>机制</strong>：数据/状态究竟怎样流动；</li>
+<li><strong>成本</strong>：CPU、GPU、内存、同步或数值误差的成本在哪里；</li>
+<li><strong>Trade-off</strong>：什么场景适合，什么场景会失败；</li>
+<li><strong>Engine Context</strong>：在真实 renderer / core / asset / simulation 中怎么落地；</li>
+<li><strong>Evidence</strong>：如何通过 profiler、测试、frame capture 或汇编证明判断。</li>
+</ol>
+<p>本章常见工程落点：开放世界寻路/空间查询、碰撞 broad phase、可见性与加速结构。</p>
+<hr />
+<h2 id="2-30-pdf">2. 30 秒回答（PDF 核心内容）</h2>
+<p>它维护离散化误差项，在主轴每前进一步时判断是否需要在次轴也前进一步，把理想连续直线转换成整数增量更新。</p>
+<hr />
+<h2 id="3-pdf-source-derived">3. PDF 深入拆解（Source-derived）</h2>
+<p>以 0&lt;=slope&lt;=1 为例，每次 x++，累计 dy；误差超过阈值时 y++ 并减去 dx。通过对八个象限做对称处理，可覆盖任意方向。该思想代表一种重要面试能力：把几何判定转成增量整数算法。虽然现代 GPU 不靠 Bresenham 实现所有细节，但它仍是经典 rasterization 入门题。</p>
+<h3 id="pdf">PDF 核心抓手</h3>
+<ul>
+<li>误差累积替代浮点斜率</li>
+<li>每步只做整数加减与比较</li>
+<li>通过象限归一化处理任意方向</li>
+</ul>
+<h3 id="pdf-gotcha">PDF 工程 Gotcha</h3>
+<p>只背代码，不会解释 error term 的几何含义。</p>
+<h3 id="pdf_1">PDF 面试官在听什么</h3>
+<p>能否解释离散化算法背后的数学。</p>
+<hr />
+<h2 id="4-repository-v2">4. 专业扩展（Repository v2）</h2>
+<p>这一节不再重复 PDF 的“定义答案”，而是把问题推进到 <strong>可实现、可测量、可讨论 trade-off</strong> 的层级。面试时不要求把下面所有内容一次讲完；更好的策略是先给结论，再根据面试官追问选择其中 2–3 个层次深入。</p>
+<h3 id="41">4.1 先修知识与概念边界</h3>
+<ul>
+<li>直线隐式方程</li>
+<li>整数误差累积</li>
+<li>raster grid</li>
+<li>八分象限处理</li>
+</ul>
+<h3 id="42">4.2 核心心智模型</h3>
+<p>Bresenham 的本质是用整数 decision variable 跟踪真实直线与当前像素中心的误差，避免每步浮点乘除。它是“增量计算 + 误差项”思想的经典例子。</p>
+<h3 id="43">4.3 底层机制：逐层拆开</h3>
+<ul>
+<li>对 0≤slope≤1，每步 x+1，只需决定 y 是否+1。</li>
+<li>decision error 可由隐式直线 <code>F(x,y)=ax+by+c</code> 推导；移动 E 或 NE 时误差只需加固定增量。</li>
+<li>通过交换 x/y、符号处理可覆盖陡斜率和所有象限。</li>
+<li>现代 GPU rasterizer 更复杂，但 edge function 同样利用线性表达式增量评估 coverage。</li>
+</ul>
+<h3 id="44">4.4 必须守住的不变量 / 正确性条件</h3>
+<ul>
+<li>算法选择最接近理想直线的离散像素，不进行浮点斜率累乘。</li>
+</ul>
+<p>这些不变量比“记住某个 API”更重要：平台、实现或引擎版本可以变化，但只要不变量没变，你就能重新推导正确方案。</p>
+<h3 id="45-trade-off">4.5 Trade-off：什么时候该用，什么时候不该用</h3>
+<ul>
+<li>只解决离散线覆盖，不自动提供 anti-alias；Wu line 等算法处理亚像素覆盖。</li>
+</ul>
+<h3 id="46">4.6 在真实游戏引擎中的落点</h3>
+<ul>
+<li>CPU debug line rasterization/软件渲染。</li>
+<li>理解 triangle edge function 与 incremental rasterization。</li>
+<li>Grid ray/visibility traversal 的误差累积思想与 DDA 类似。</li>
+</ul>
+<h3 id="47">4.7 最小实现 / 数学骨架</h3>
+<pre><code class="language-text">err = dx - dy
+loop:
+  plot(x,y)
+  e2=2*err
+  if e2&gt;-dy: err-=dy; x+=sx
+  if e2&lt; dx: err+=dx; y+=sy
+</code></pre>
+<blockquote>
+<p><strong>面试建议</strong>：代码或公式不是为了炫技。写完后要解释：输入是什么、输出是什么、最贵的步骤在哪里、哪个条件一旦破坏就会出错。</p>
+</blockquote>
+<h3 id="48-profiling-validation">4.8 Profiling / Validation：如何证明你的判断</h3>
+<ul>
+<li>验证所有象限、水平/垂直/45°、反向端点，比较像素集合对称性。</li>
+</ul>
+<h3 id="49">4.9 常见错误答案与为什么错</h3>
+<ul>
+<li>“Bresenham 完全没有乘法。”——经典实现可优化成加减，但重点是避免每点浮点除法。</li>
+<li>“它就是 DDA 取 round。”——DDA 通常使用浮点增量，误差性质不同。</li>
+</ul>
+<h3 id="410-senior">4.10 Senior 级追问与参考思路</h3>
+<ol>
+<li><strong>triangle rasterizer 与它的联系？</strong><br />
+   三角形可用 edge equations，在相邻 pixel 上增量更新三个 edge function，和 Bresenham 的增量思想相通。</li>
+<li><strong>如何 anti-alias？</strong><br />
+   需要估计像素覆盖/距离，Bresenham 本身只做 binary coverage。</li>
+</ol>
+<h3 id="411">4.11 推荐实战</h3>
+<blockquote>
+<p>推导第一象限 decision variable，再扩展到 8 octants，并写 property test 验证交换端点结果一致。</p>
+</blockquote>
+<p>完成实战时建议保留 <strong>baseline、指标、实验变量、结果、结论</strong> 五项记录。真正能在面试中形成 Senior signal 的不是“我写过”，而是“我能解释为什么这个实现更快/更稳，以及证据是什么”。</p>
+<h2 id="5">5. 如何验证，而不是“凭感觉优化”</h2>
+<ul>
+<li>先写正确性测试与边界样例，再做复杂度/性能基线</li>
+<li>记录 N、K、分布等输入特征，避免脱离规模谈算法</li>
+<li>对空间结构同时测 build/update/query 成本</li>
+</ul>
+<h3 id="_1">推荐实战</h3>
+<blockquote>
+<p>实现算法并构造随机/极端测试；同时记录输入规模与耗时曲线。</p>
+</blockquote>
+<hr />
+<h2 id="6-gotchas">6. 工程 Gotchas（扩展）</h2>
+<ul>
+<li>先澄清输入规模/在线离线/是否有序等约束，再选算法</li>
+<li>复杂度相同的数据结构可能有完全不同 cache 行为</li>
+</ul>
+<hr />
+<h2 id="7">7. 高频追问树</h2>
+<ol>
+<li><strong>如何扩展到画圆？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+<li><strong>为什么三角形 raster 更常用 edge function？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+</ol>
+<hr />
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 - 记忆点</td>
+<td>只能给出一个术语或结论，无法解释原因。</td>
+</tr>
+<tr>
+<td>1 - 原理</td>
+<td>能解释核心机制与至少一个关键不变量。</td>
+</tr>
+<tr>
+<td>2 - 工程</td>
+<td>能讨论 trade-off、边界条件，并把它落到真实引擎模块。</td>
+</tr>
+<tr>
+<td>3 - Senior signal</td>
+<td>能给出可测量的成本模型、profiling/验证方法和替代方案。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2">2 分钟回答组织法</h3>
+<ol>
+<li>用 PDF 的“30 秒回答”先给结论；</li>
+<li>选择 <strong>2 个机制点</strong> 展开，不要一次倾倒全部知识；</li>
+<li>给出 <strong>1 个真实引擎场景</strong>；</li>
+<li>主动补 <strong>1 个 Gotcha / 失败条件</strong>；</li>
+<li>用 <strong>1 个 profiler / test / counter</strong> 收尾，说明如何验证。</li>
+</ol>
+<hr />
+<h2 id="9">9. 关联题目</h2>
+<ul>
+<li><span class="srcref">Q033 · A* 在开放世界地图里为什么仍可能很慢？</span></li>
+<li><span class="srcref">Q035 · 二叉树最近公共祖先怎么做？</span></li>
+</ul>
+<hr />
+<h2 id="10">10. 参考资料</h2>
+<ul>
+<li><a href="docs/assets/book/game-engine-interview-100.pdf">仓库附带 PDF</a> - 本题 PDF 基线内容，物理页 46。</li>
+<li><a href="https://itanium-cxx-abi.github.io/cxx-abi/abi.html">Itanium C++ ABI</a></li>
+<li><a href="https://en.cppreference.com/w/">cppreference C++ language/library reference</a></li>
+</ul>
+<blockquote>
+<p>对候选人面经类链接：仅用于证明某类考察主题曾公开出现，不代表公司官方题库，也不代表问题会原样出现。</p>
+</blockquote>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD09 优化一个 Transformer：如何先定位瓶颈 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD09</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD09</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="SD08.html">← SD08</a><a href="SD10.html">SD10 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">profiling</a><a href="#">optimization</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 109 / 110</div>
+    <h1 class="qtitle">SD09 优化一个 Transformer：如何先定位瓶颈</h1>
+    <h2 id="1">1. 先问“慢在哪里”</h2>
+<p>不要一上来换 FlashAttention。先拆 stage：</p>
+<pre><code class="language-text">Data Loader
+Tokenizer
+H2D
+QKV/Attention/MLP
+Communication
+Optimizer
+Checkpoint
+Serving Queue
+Prefill
+Decode
+Sampling
+</code></pre>
+<h2 id="2">2. 建立基线</h2>
+<p>固定：</p>
+<ul>
+<li>commit / model config；</li>
+<li>seed；</li>
+<li>input length distribution；</li>
+<li>batch；</li>
+<li>dtype；</li>
+<li>GPU/driver；</li>
+<li>correctness output。</li>
+</ul>
+<p>没有 baseline 的优化无法归因。</p>
+<h2 id="3-profiler">3. Profiler 分层</h2>
+<h3 id="cpu">CPU</h3>
+<ul>
+<li>dataloader wait；</li>
+<li>tokenizer；</li>
+<li>Python overhead。</li>
+</ul>
+<h3 id="gpu">GPU</h3>
+<ul>
+<li>kernel time；</li>
+<li>occupancy；</li>
+<li>HBM utilization；</li>
+<li>hidden copies；</li>
+<li>synchronization。</li>
+</ul>
+<h3 id="distributed">Distributed</h3>
+<ul>
+<li>AllReduce；</li>
+<li>AllGather；</li>
+<li>ReduceScatter；</li>
+<li>All-to-All；</li>
+<li>pipeline bubble。</li>
+</ul>
+<h2 id="4-compute-bound-memory-bound-communication-bound">4. 判断 Compute-bound / Memory-bound / Communication-bound</h2>
+<ul>
+<li>Compute-bound：提高 matmul efficiency、fusion、batch；</li>
+<li>Memory-bound：量化、layout、fusion、KV 优化；</li>
+<li>Communication-bound：并行拓扑、overlap、shard 重构；</li>
+<li>Scheduler-bound：continuous batching / admission。</li>
+</ul>
+<h2 id="5">5. 优化顺序</h2>
+<ol>
+<li>Correctness bug；</li>
+<li>明显无效工作/拷贝；</li>
+<li>算法级大项；</li>
+<li>kernel/fusion；</li>
+<li>并行与 overlap；</li>
+<li>微小常数优化。</li>
+</ol>
+<h2 id="6-amdahls-law">6. Amdahl's Law</h2>
+<p>若某 stage 只占总时间 5%，即使优化到无限快，端到端最多约提升 5%。因此 profiler 占比比“技术热门度”更重要。</p>
+<h2 id="7">7. 性能与质量双回归</h2>
+<p>任何优化 PR 必须同时记录：</p>
+<ul>
+<li>output/logits parity 或任务质量；</li>
+<li>peak memory；</li>
+<li>latency/throughput；</li>
+<li>P95/P99；</li>
+<li>测试环境。</li>
+</ul>
+<h2 id="8">8. 常见错误</h2>
+<ul>
+<li>只用 <code>time.time()</code> 不 GPU synchronize；</li>
+<li>cold-start 与 steady-state 混合；</li>
+<li>不控制 sequence length；</li>
+<li>benchmark 只测 batch=1；</li>
+<li>换了 dtype 却声称纯 kernel 加速；</li>
+<li>忽略 accuracy regression。</li>
+</ul>
+<h2 id="9">9. 面试官追问</h2>
+<p><strong>为什么理论 FLOPs 降低但更慢？</strong> 可能算术强度下降、kernel 不规则、launch/索引开销增大、无法利用 Tensor Core。</p>
+<p><strong>怎么证明瓶颈是 HBM？</strong> profiler/roofline，观察 compute utilization 低而 memory bandwidth 接近上限，并通过减少 bytes 的改动验证。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

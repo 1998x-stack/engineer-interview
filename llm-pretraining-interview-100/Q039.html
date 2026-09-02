@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>同样 FLOPs 下，Dense 与 MoE 怎么公平比较？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q039</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q039</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q038.html">← Q038</a><a href="Q040.html">Q040 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">moe</a><a href="#">scaling-law</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 40 / 101</div>
+    <h1 class="qtitle">同样 FLOPs 下，Dense 与 MoE 怎么公平比较？</h1>
+    <blockquote>
+<p><strong>定位</strong>：B 类等价追问题 · 难度 <strong>难</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">Scaling Law 与预算设计</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>避免用 total parameters 制造错误比较。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>约束优化</strong>：到底固定的是 FLOPs、GPU-hours、成本还是推理预算？</li>
+<li><strong>外推</strong>：小规模曲线在哪些条件下可以外推？</li>
+<li><strong>等成本比较</strong>：Dense/MoE/不同数据 recipe 是否真的比较公平？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>MoE 比较必须看 active compute 与通信，而不是只看总参数。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>MoE 的 total parameters 很大，但每个 token 只激活少数 experts。因此公平比较至少要对齐 training FLOPs/token、训练 tokens、wall-clock 或总预算，同时报告 total params 与 activated params。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>还必须计入 routing、All-to-All、load imbalance 和 kernel 效率。算法 FLOPs 相近不意味着集群成本相近。DeepSeek-V3 例如公开为 671B total、约 37B activated/token。</p>
+<h2 id="4-production">4. 深度展开：从定义走向 Production</h2>
+<p>本题的深挖重点是：<strong>MoE 比较必须看 active compute 与通信，而不是只看总参数。</strong></p>
+<p>建议沿下面的因果链继续展开：</p>
+<ol>
+<li><strong>定义/状态语义</strong>：先把对象、tensor、数据分布或训练状态说准确；</li>
+<li><strong>机制</strong>：解释为什么该设计会改变 loss、memory、FLOPs、通信或稳定性；</li>
+<li><strong>代价</strong>：指出它牺牲了什么，不把工程 trick 说成“免费午餐”；</li>
+<li><strong>可验证性</strong>：说明你会用什么指标、profile 或 ablation 判断结论是否成立；</li>
+<li><strong>规模化边界</strong>：把 1 GPU/小模型结论推进到千卡、长序列或 MoE 场景。</li>
+</ol>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：制作比较表：total/active params、FLOPs/token、tokens、MFU、network time、memory。</li>
+<li><strong>动作 2</strong>：用实际 accelerator-hours 做第二组成本指标。</li>
+<li><strong>动作 3</strong>：统一数据和 evaluation。</li>
+</ol>
+<h3 id="scaling-proxy">Scaling Proxy</h3>
+<p>用多个模型尺寸、Token 预算和 seed 构造 proxy grid，拟合 loss/compute 曲线，再用 hold-out 规模验证外推误差。</p>
+<ul>
+<li>拟合前确认数据 mixture 一致。</li>
+<li>报告置信区间/外推范围。</li>
+<li>区分训练 FLOPs optimum 与生命周期成本 optimum。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1moe-embeddingattention">追问 1：MoE 的 embedding/attention 是不是也稀疏？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="2activated-params-flops">追问 2：activated params 能完全代表 FLOPs 吗？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="3-moe-wall-clock-dense">追问 3：为什么 MoE wall-clock 可能比 dense 更差？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → MoE 比较必须看 active compute 与通信，而不是只看总参数。 → 新代价/边界条件”三段式回答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>拿 671B 与同 FLOPs 的 671B dense 直接比较。</strong></li>
+<li>改进：回到“MoE 比较必须看 active compute 与通信，而不是只看总参数。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：MoE 比较必须看 active compute 与通信，而不是只看总参数。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>MoE 的 embedding/attention 是不是也稀疏？</li>
+<li>activated params 能完全代表 FLOPs 吗？</li>
+<li>为什么 MoE wall-clock 可能比 dense 更差？</li>
+<li>写出固定预算下的优化变量、约束和至少一个 proxy experiment。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>MoE 比较必须看 active compute 与通信，而不是只看总参数。</strong></p>
+</blockquote>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>基于预训练岗位能力模型、技术报告与高频追问扩展出的等价深挖题；不宣称是某家公司逐字原题。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R10 · 技术报告</strong> — <a href="https://arxiv.org/abs/2412.19437">DeepSeek-AI, DeepSeek-V3 Technical Report</a></li>
+</ul>
+<h2 id="_2">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q038. Loss 平滑 Scaling，为什么能力可能出现阈值或跳变？</span></li>
+<li>→ <span class="srcref">Q040. Scaling Law 能否用于 Data Mixture 优化？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

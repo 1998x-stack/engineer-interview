@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BERT 原始预训练任务：MLM 与 NSP · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q051</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q051</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q050.html">← Q050</a><a href="Q052.html">Q052 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">pretraining</a><a href="#">bert</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 51 / 100</div>
+    <h1 class="qtitle">BERT 原始预训练任务：MLM 与 NSP</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★  ·  <strong>频率</strong>：★★★★★  ·  <strong>标签</strong>：<code>pretraining</code>, <code>bert</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q051.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>BERT 的 MLM 与 NSP 分别做什么？后来为什么很多模型去掉 NSP？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>理解 encoder-only 训练信号。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>区分 objective、architecture、data 与 scaling。</li>
+<li>关注训练稳定性、数据分布和 token/compute budget。</li>
+<li>能说明“经验规律”的适用范围，而不是绝对化。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>MLM 随机遮蔽部分 token，用双向上下文预测；NSP 判断两段是否连续。后续工作发现更长训练、 更多数据、更合理 sentence packing 等比 NSP 本身更关键，因此不少模型取消或替换它。</p>
+<h2 id="4">4. 白板核心结构</h2>
+<p>本题更强调概念结构与工程权衡。面试时优先画出数据流、状态转移或模块关系，再补充必要公式。</p>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：MLM 训练/推理存在 [MASK] mismatch。</li>
+<li><strong>PDF 基线要点</strong>：动态 masking 可让不同 epoch 看到不同 mask。</li>
+<li><strong>PDF 基线要点</strong>：BERT 的双向性来自非 causal self-attention。</li>
+<li><strong>扩展理解</strong>：MLM 是双向 denoising objective，NSP 是句对关系任务；BERT 成功并不意味着 NSP 必不可少。</li>
+<li><strong>扩展理解</strong>：RoBERTa 等工作通过去掉 NSP、增大数据和动态 mask 改进训练。</li>
+<li><strong>扩展理解</strong>：要理解 encoder 预训练目标与 downstream representation 的关系。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="bert">BERT 的两个原始任务要分开理解</h3>
+<ul>
+<li>MLM 随机选择部分 token 做遮盖/替换，让模型利用双向上下文预测原词，本质上学习 $P(x_i|x_{\setminus i})$，不是标准自回归似然。</li>
+<li>NSP 判断两个 segment 是否来自原文连续片段，试图让模型学习句间关系；后续 RoBERTa 等工作显示 NSP 并非 BERT 成功的必要条件。</li>
+<li>BERT 的真正核心是 Encoder-only + 双向 self-attention + 大规模 MLM 预训练，NSP 只是原始配方的一部分。</li>
+</ul>
+<h3 id="_2">边界与工程</h3>
+<ul>
+<li>MLM 只在被选位置产生主要预测损失，训练信号密度低于 decoder LM 的“每个 token 都预测下一个 token”。</li>
+<li>经典 80/10/10 mask 策略是为减轻 <code>[MASK]</code> 训练–下游分布差异，但具体比例不是理论定理。</li>
+<li>做 BERT 预训练复现时要明确 dynamic masking、whole-word masking、sequence packing 与 tokenizer 版本，它们都会影响结果。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>把训练目标与数据分布联系起来：哪些 token 产生监督、模型实际最大化什么。</li>
+<li>比较 tokenizer/架构时给出序列长度、FLOPs、唯一 token、显存和推理代价。</li>
+<li>预训练决策最终需要固定 compute/token 预算下的消融，而不是只看局部 loss。</li>
+</ul>
+<h3 id="_3">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>把 MLM 说成自回归。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>15% mask 的 token 如何处理？</li>
+<li>SOP 与 NSP 有什么不同？</li>
+</ol>
+<h3 id="_4">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1810.04805">BERT</a></li>
+<li><a href="https://arxiv.org/abs/1907.11692">RoBERTa</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q050 MHA、MQA、GQA：为什么共享 K/V 能省 KV Cache？</span></li>
+<li><span class="srcref">Q052 为什么 BERT 不能天然像 GPT 一样左到右生成？</span></li>
+<li><span class="srcref">Q056 Decoder LM Loss：为什么每个 token 都是监督信号？</span></li>
+<li><span class="srcref">Q060 大模型训练为什么必须去重？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>BERT 的两个原始任务要分开理解</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

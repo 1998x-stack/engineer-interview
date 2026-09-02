@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CUDA OOM 怎么系统排查，而不是只减 batch？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Deep Learning</a><i>∕</i><span>Q086</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q086</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">极高频</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">yes</span></div>
+    </div>
+    <div class="prevnext"><a href="Q085.html">← Q085</a><a href="Q087.html">Q087 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">deep-learning</a><a href="#">interview</a><a href="#">training-systems</a><a href="#">debugging</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      DEEP LEARNING · 86 / 100</div>
+    <h1 class="qtitle">CUDA OOM 怎么系统排查，而不是只减 batch？</h1>
+    <blockquote>
+<p><strong>章节：</strong> 训练工程与分布式训练
+<strong>难度：</strong> ★★★ ｜ <strong>频度：</strong> 极高频 ｜ <strong>优先级：</strong> S（Top 30）
+<strong>PDF 对应：</strong> 第 58 页附近</p>
+</blockquote>
+<h2 id="_1">面试官在考什么</h2>
+<p>工程排障能力。</p>
+<p><strong>高质量回答标准：</strong> 能先定位 compute/memory/communication/input 哪类瓶颈，再选择工具；能解释优化手段的代价。</p>
+<h2 id="_2">一句话结论</h2>
+<p>先拆显存组成：参数、梯度、optimizer states、activations、KV/临时 workspace、通信 buffer 与碎片。</p>
+<h2 id="6090">60–90 秒面试回答</h2>
+<p>先拆显存组成：参数、梯度、optimizer states、activations、KV/临时 workspace、通信 buffer 与碎片。再看OOM 发生在 forward/backward/optimizer 哪个阶段，结合 profiler 和 memory summary 决定用 mixed precision、checkpoint、ZeRO/FSDP、sequence/batch 调整或 allocator 配置。</p>
+<h2 id="_3">深度解析</h2>
+<ul>
+<li>训练 OOM 与推理 OOM 的主导项不同。</li>
+<li>长序列常由 activation/attention memory 主导。</li>
+<li>峰值临时 tensor 也可能造成“平均显存明明够”的 OOM。</li>
+</ul>
+<h3 id="oom">一棵实用的 OOM 排障树</h3>
+<p><strong>先问：OOM 在哪里？</strong></p>
+<ul>
+<li>forward：activation、attention score、临时 workspace、长样本；</li>
+<li>backward：saved activation、梯度、通信 bucket；</li>
+<li>optimizer.step：Adam states / master weights；</li>
+<li>serving decode：KV cache / 并发 / 长上下文；</li>
+<li>随机出现：shape outlier、fragmentation、其他进程抢显存。</li>
+</ul>
+<p><strong>再问：是 steady-state 还是 peak？</strong> 平均显存足够但某一步 OOM，往往是峰值 tensor 或动态 batch，而不是模型常驻参数。</p>
+<p><strong>最后选药：</strong> checkpoint、mixed precision、sequence/batch 策略、FlashAttention、FSDP/ZeRO、CPU offload、KV block 管理。每个手段都应说明换来的计算/通信成本。</p>
+<h2 id="shape">数学、Shape 与复杂度</h2>
+<p>本题没有唯一必须背诵的闭式公式；面试时应把关键变量、tensor shape、复杂度或资源量写清楚，并说明它们如何随 batch、sequence、hidden size 或并行度变化。</p>
+<h2 id="pytorch">工程实现 / PyTorch 验证</h2>
+<pre><code class="language-python">import torch
+
+# 两个最常用的第一现场工具
+print(torch.cuda.memory_summary())
+print(torch.cuda.max_memory_allocated() / 1024**3, &quot;GiB allocated peak&quot;)
+print(torch.cuda.max_memory_reserved() / 1024**3, &quot;GiB reserved peak&quot;)
+</code></pre>
+<p>实际排障中同时记录 OOM 发生阶段、当前 sequence length、micro-batch、是否 checkpoint、optimizer 与并行策略。</p>
+<h3 id="_4">推荐验证协议</h3>
+<p>在训练脚本每阶段 <code>reset_peak_memory_stats()</code> + 打点；记录异常 batch 的 sequence length 和 memory snapshot。</p>
+<p><strong>最低验收标准：</strong> shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。</p>
+<h2 id="_5">工程实践与诊断视角</h2>
+<ul>
+<li>训练工程题先定位瓶颈属于 compute、memory、communication 还是 input pipeline，再选优化手段。</li>
+<li>分布式系统的正确性优先于吞吐：先确认各 rank 数据、随机种子、梯度同步和 checkpoint 可恢复性。</li>
+</ul>
+<h3 id="_6">边界条件与反例</h3>
+<ul>
+<li>先缩小到最小复现；一次只改变一个变量；保留最近正常版本作差分。</li>
+</ul>
+<h2 id="_7">面试官连续追问</h2>
+<ul>
+<li>Adam 训练 7B 为什么 optimizer state 很大？</li>
+<li>memory fragmentation 怎么判断？</li>
+</ul>
+<h3 id="_8">推荐的追问回答结构</h3>
+<ol>
+<li><strong>先给结论</strong>：一句话直接回答，不绕定义。</li>
+<li><strong>再给机制</strong>：公式、shape、统计维度或系统路径。</li>
+<li><strong>说明 trade-off</strong>：速度、显存、泛化、稳定性或数据成本。</li>
+<li><strong>给失败边界</strong>：什么时候不成立、会退化或需要替代方案。</li>
+<li><strong>落到工程</strong>：如何验证、监控或排查。</li>
+</ol>
+<h2 id="_9">高频失分点</h2>
+<ul>
+<li><strong>易错：</strong> 只回答 batch size↓。</li>
+</ul>
+<h3 id="3">3 分钟展开框架</h3>
+<ol>
+<li>先定位 compute / memory / communication / input；</li>
+<li>再拆 steady-state 与 peak；</li>
+<li>解释并行/精度/重计算的 trade-off；</li>
+<li>最后说 profiler、指标和最小复现。</li>
+</ol>
+<h2 id="_10">实战练习</h2>
+<ul>
+<li><strong>显存账本</strong>：估算 parameter / gradient / optimizer / activation 四大项。</li>
+<li><strong>故障定位</strong>：对 OOM、NaN、低 GPU util 各写一棵 5 步排障树。</li>
+<li><strong>分布式</strong>：说明 DDP/FSDP/TP/PP 各自发生哪些 collective 或数据交换。</li>
+</ul>
+<h2 id="90">90 分深挖：从会背到能做设计</h2>
+<h3 id="_11">机制与定量抓手</h3>
+<p>OOM 要先区分常驻内存与峰值、allocated 与 reserved、forward/backward/optimizer/decode 阶段；再对 parameter/grad/optimizer/activation/KV/workspace 建账本。</p>
+<h3 id="_12">工程与实验抓手</h3>
+<p>在训练脚本每阶段 <code>reset_peak_memory_stats()</code> + 打点；记录异常 batch 的 sequence length 和 memory snapshot。</p>
+<h3 id="_13">失败边界 / 反例</h3>
+<p><code>empty_cache()</code> 不是解决模型实际内存需求的办法；碎片问题与真实容量不足要分开。</p>
+<h3 id="_14">白板专项练习</h3>
+<p>为 AdamW BF16 模型估算每参数内存，再加入 activation，判断优先选 checkpoint 还是 FSDP。</p>
+<blockquote>
+<p><strong>本章 90 分标准：</strong> 训练系统题先建资源账本，再定位 compute/memory/communication/input；任何优化都要说明交换来的代价。</p>
+</blockquote>
+<h2 id="_15">面试官评分拆解</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>40–50 分</td>
+<td>只会给定义或背结论，缺公式/机制，追问一层就断。</td>
+</tr>
+<tr>
+<td>60–70 分</td>
+<td>能解释主机制并写关键公式，但缺边界条件和工程证据。</td>
+</tr>
+<tr>
+<td>80–90 分</td>
+<td>能定量推导、比较替代方案，主动说明失败场景并给验证方法。</td>
+</tr>
+<tr>
+<td>90+ 分</td>
+<td>能把数学、实现、系统成本和项目决策串成完整证据链，并能反向设计实验验证假设。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_16">面试表达建议</h3>
+<p>建议用 <strong>结论 → 机制 → 定量 → trade-off → 边界 → 验证</strong> 六步法回答。先在 60–90 秒内给主线；只有面试官继续追问时再展开公式、代码或系统细节。这样既显示深度，也避免一上来堆知识点失去重点。</p>
+<h2 id="_17">项目化证据链：如何证明你真的做过</h2>
+<p>只讲原理只能证明“学过”，项目面试还要证明“做过、量过、复盘过”。针对本题，建议准备一张实验卡：<strong>问题/假设 → baseline → 改动 → 指标 → 结果 → 失败 slice → 结论</strong>。</p>
+<h3 id="_18">建议报告的指标</h3>
+<ul>
+<li><strong>核心观测：</strong> allocated/reserved/peak memory、step time、GPU util、SM/BW、NCCL time、dataloader wait。</li>
+<li><strong>证据原则：</strong> 系统题用 timeline 和资源账本说话；所有优化都要注明换来的 compute/communication/复杂度。</li>
+<li><strong>本题特定证据：</strong> 在训练脚本每阶段 <code>reset_peak_memory_stats()</code> + 打点；记录异常 batch 的 sequence length 和 memory snapshot。</li>
+</ul>
+<h3 id="_19">方案选择与停止条件</h3>
+<p>当收益只存在于单一 benchmark、无法复现到多个 seed/slice、引入明显 latency/显存/维护成本，或触发本题的失败边界——<strong><code>empty_cache()</code> 不是解决模型实际内存需求的办法；碎片问题与真实容量不足要分开。</strong>——就不应继续用“模型更复杂”掩盖问题。面试中主动说出停止条件，通常比继续堆方案更像真实工程负责人。</p>
+<h2 id="5">5 分钟深挖路线</h2>
+<p>先建资源账本 → 定位阶段 → 看 profiler/timeline → 选择优化 → 量化收益和副作用 → 验证可恢复性。</p>
+<p>如果面试官继续追问到第 3–4 层，建议把回答切换到白板：写公式、画 tensor/系统数据流，再给一个量化例子。不要继续只用口头名词解释名词。</p>
+<h2 id="_20">自测清单</h2>
+<ul>
+<li>[ ] 能在 60–90 秒内不看资料完整回答。</li>
+<li>[ ] 能写出本题最关键的公式 / shape / 复杂度关系。</li>
+<li>[ ] 能回答至少 3 个连续追问。</li>
+<li>[ ] 能说出至少 1 个失败场景或反例。</li>
+<li>[ ] 能给出一个可执行的 PyTorch 验证或工程排障方法。</li>
+<li>[ ] 能解释它与相邻技术的区别，而不是把概念混在一起。</li>
+</ul>
+<h2 id="_21">关联题目</h2>
+<ul>
+<li><span class="srcref">Q082 · Gradient Checkpointing 为什么能省显存？代价是什么？</span></li>
+<li><span class="srcref">Q084 · ZeRO-1/2/3 与 FSDP 的核心区别和关系是什么？</span></li>
+<li><span class="srcref">Q087 · Loss 变 NaN/Inf，如何定位根因？</span></li>
+<li><span class="srcref">Q088 · GPU 利用率只有 30%，如何排查？</span></li>
+</ul>
+<h2 id="_22">参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1710.03740">Micikevicius et al., Mixed Precision Training</a></li>
+<li><a href="https://arxiv.org/abs/1910.02054">Rajbhandari et al., ZeRO</a></li>
+<li><a href="https://docs.pytorch.org/docs/stable/fsdp.html">PyTorch FSDP documentation</a></li>
+<li><a href="https://docs.pytorch.org/docs/stable/index.html">PyTorch documentation</a></li>
+</ul>
+<blockquote>
+<p>题目来自公开候选人面经的高频问法归一化，并结合论文/官方文档扩展；不代表任何公司的官方题库或内部材料。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

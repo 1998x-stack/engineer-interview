@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1000 张 GPU 给你一个月，怎样降低 Full Run 失败概率？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q098</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q098</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q097.html">← Q097</a><a href="Q099.html">Q099 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">coding</a><a href="#">coding-system-project</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 99 / 101</div>
+    <h1 class="qtitle">1000 张 GPU 给你一个月，怎样降低 Full Run 失败概率？</h1>
+    <blockquote>
+<p><strong>定位</strong>：B 类等价追问题 · 难度 <strong>难</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">手撕、系统设计与项目拷打</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>考察可靠性工程与昂贵实验的风险管理。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>正确性</strong>：代码/公式/系统是否在边界条件下仍正确？</li>
+<li><strong>量化</strong>：参数、显存、吞吐、成本是否可手算/实测？</li>
+<li><strong>证明</strong>：项目贡献是否有对照实验和可归因结果？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>降低大模型失败概率的本质，是把未知风险转成小规模可测试、可观测、可恢复的问题。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>把失败风险前移：在小规模完成 data/tokenizer unit tests、distributed correctness、resume determinism、mixed-precision stability、throughput benchmark；再按 GPU 数和 token 数逐级扩大。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>Full run 中要有多副本/异步 checkpoint、异常快照、节点健康监控、自动重启与明确的“继续/回滚”策略。还应保留部分算力预算用于 pilot 与突发恢复。</p>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="full-run">Full Run 风险预算</h3>
+<p>把失败风险拆成：代码正确性、数值稳定、数据、网络/硬件、checkpoint、容量规划、观测性。每类都设计“预防 + 监控 + 恢复演练”。真正成熟的答案会给出 RTO/RPO 思维：最多允许损失多少训练进度，恢复需要哪些状态。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：建立 preflight checklist：loss parity、gradient parity、data uniqueness、resume parity。</li>
+<li><strong>动作 2</strong>：chaos test：模拟节点失败与 checkpoint 恢复。</li>
+<li><strong>动作 3</strong>：训练期间定期恢复最近 checkpoint 跑短验证。</li>
+</ol>
+<h3 id="production">白板到 Production</h3>
+<p>要求答案同时包含正确性、复杂度、测试、边界条件、工程约束和量化结果。</p>
+<ul>
+<li>代码题写 shape/assert/unit test。</li>
+<li>设计题先声明约束。</li>
+<li>项目题必须给数字和对照。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-silent-failure">追问 1：最危险的 silent failure 是什么？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="2checkpoint">追问 2：checkpoint 多久存一次最优？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="3-checkpoint-io">追问 3：如何评估存 checkpoint 的 IO 成本？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>把稳定性等同于“多存 checkpoint”。</strong></li>
+<li>改进：回到“降低大模型失败概率的本质，是把未知风险转成小规模可测试、可观测、可恢复的问题。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：降低大模型失败概率的本质，是把未知风险转成小规模可测试、可观测、可恢复的问题。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>最危险的 silent failure 是什么？</li>
+<li>checkpoint 多久存一次最优？</li>
+<li>如何评估存 checkpoint 的 IO 成本？</li>
+<li>把答案写成可运行代码/可核算公式/可量化项目复盘之一。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>降低大模型失败概率的本质，是把未知风险转成小规模可测试、可观测、可恢复的问题。</strong></p>
+</blockquote>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>基于预训练岗位能力模型、技术报告与高频追问扩展出的等价深挖题；不宣称是某家公司逐字原题。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R9 · 官方文档</strong> — <a href="https://docs.nvidia.com/megatron-core/developer-guide/latest/">NVIDIA Megatron Core User Guide</a></li>
+</ul>
+<h2 id="_2">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q097. 从 0 预训练一个 1B 模型，完整 Pipeline 如何设计？</span></li>
+<li>→ <span class="srcref">Q099. 面试官问“你真的从 0 预训练过模型吗？”怎样证明？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

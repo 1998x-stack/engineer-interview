@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD01 设计 Transformer 机器翻译系统 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD01</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD01</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q100.html">← Q100</a><a href="SD02.html">SD02 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">transformer</a><a href="#">encoder-decoder</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 101 / 110</div>
+    <h1 class="qtitle">SD01 设计 Transformer 机器翻译系统</h1>
+    <blockquote>
+<p>目标：把“Encoder-Decoder + Beam Search”升级成一个能落地、可容量估算、可监控回归的生产级回答。</p>
+</blockquote>
+<h2 id="1">1. 先澄清需求，而不是先选模型</h2>
+<p>至少问清：</p>
+<ul>
+<li>语言对：单语对、100+ 多语、是否零样本语言迁移；</li>
+<li>领域：通用、法律、医疗、客服、代码/技术文档；</li>
+<li>质量目标：BLEU/COMET、术语准确率、人评 MQM；</li>
+<li>SLA：P50/P95 延迟、QPS、最大输入/输出长度；</li>
+<li>约束：专有名词、数字、格式、不可翻译片段；</li>
+<li>部署：在线句级翻译还是离线文档批处理。</li>
+</ul>
+<p>如果这些条件不同，架构和 decoding 方案可能完全不同。</p>
+<h2 id="2">2. 数据流与核心架构</h2>
+<pre><code class="language-text">Raw Source
+   ↓
+Normalization / Language ID
+   ↓
+Subword Tokenizer
+   ↓
+Encoder: bidirectional self-attention
+   ↓
+Encoder Memory
+   ↓
+Decoder: causal self-attention + cross-attention
+   ↓
+Logits
+   ↓
+Constrained Beam / Greedy / Sampling
+   ↓
+Detokenize / Terminology Restore / Format Repair
+</code></pre>
+<h3 id="21">2.1 数学主干</h3>
+<p>Encoder 得到：</p>
+<p>[
+H_{enc}=Encoder(x_{1:S})
+]</p>
+<p>Decoder 第 $t$ 步的 cross-attention：</p>
+<p>[
+Q_t = H^{dec}<em enc="enc">tW_Q,\quad
+K=H</em>W_K,\quad
+V=H_{enc}W_V
+]</p>
+<p>[
+C_t=softmax(Q_tK^T/\sqrt{d_k})V
+]</p>
+<p>其中 encoder 的 K/V 在整个 target decode 中不变，因此可缓存。</p>
+<h2 id="3">3. 训练设计</h2>
+<p>训练通常使用 teacher forcing：</p>
+<p>[
+\mathcal L=-\sum_t\log p(y_t\mid y_{&lt;t},x)
+]</p>
+<p>需要额外考虑：</p>
+<ul>
+<li>label smoothing；</li>
+<li>multilingual sampling；</li>
+<li>noisy parallel corpus filtering；</li>
+<li>length curriculum；</li>
+<li>back-translation / synthetic parallel data；</li>
+<li>domain-adaptive continued training。</li>
+</ul>
+<h3 id="_1">数据质量检查</h3>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>检查</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>错语言对</td>
+<td>LID + embedding similarity</td>
+</tr>
+<tr>
+<td>source/target 不对齐</td>
+<td>sentence alignment score</td>
+</tr>
+<tr>
+<td>复制 source</td>
+<td>copy ratio</td>
+</tr>
+<tr>
+<td>数字/实体漂移</td>
+<td>entity/number exact checks</td>
+</tr>
+<tr>
+<td>boilerplate</td>
+<td>n-gram / template dedup</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4">4. 推理与解码</h2>
+<h3 id="greedy">Greedy</h3>
+<p>最快，但可能产生局部最优。</p>
+<h3 id="beam-search">Beam Search</h3>
+<p>维护 $K$ 个 hypothesis。需要 length normalization，否则总 log-prob 倾向短序列：</p>
+<p>[
+score(y)=\frac{\log P(y\mid x)}{LP(|y|)}
+]</p>
+<h3 id="constrained-decoding">Constrained Decoding</h3>
+<p>专业翻译常比单纯扩大 beam 更重要：</p>
+<ul>
+<li>terminology constraints；</li>
+<li>protected spans；</li>
+<li>number/date preservation；</li>
+<li>markup/HTML tags；</li>
+<li>glossary injection。</li>
+</ul>
+<h2 id="5">5. 容量与性能估算</h2>
+<p>在线服务至少拆成：</p>
+<ul>
+<li>Encoder/prefill compute；</li>
+<li>Decoder self-attention KV；</li>
+<li>Cross-attention encoder K/V；</li>
+<li>beam factor；</li>
+<li>batch scheduler。</li>
+</ul>
+<p>Beam size 从 1 增到 $K$ 会显著放大 decoder state/KV 和搜索开销。encoder memory 可在 beams 间共享，不能机械复制所有 source state。</p>
+<p>指标：</p>
+<ul>
+<li>TTFT / sentence latency；</li>
+<li>output token latency；</li>
+<li>tokens/s；</li>
+<li>P95/P99；</li>
+<li>GPU memory；</li>
+<li>batch utilization。</li>
+</ul>
+<h2 id="6">6. 质量评估</h2>
+<p>自动指标不能只看 BLEU：</p>
+<ul>
+<li>COMET / learned metric；</li>
+<li>terminology accuracy；</li>
+<li>entity/number preservation；</li>
+<li>hallucination rate；</li>
+<li>human MQM/error taxonomy。</li>
+</ul>
+<p>要按语言对、领域、句长、低资源语言分桶。</p>
+<h2 id="7">7. 线上监控与回滚</h2>
+<p>监控：</p>
+<ul>
+<li>输入语言分布漂移；</li>
+<li>OOV/subword length；</li>
+<li>解码长度异常；</li>
+<li>实体/数字差错；</li>
+<li>P95 latency；</li>
+<li>fallback rate。</li>
+</ul>
+<p>上线必须支持模型版本、tokenizer、词表/术语表一起回滚。</p>
+<h2 id="8">8. 典型追问</h2>
+<h3 id="q-decoder-only">Q：为什么 decoder-only 也能翻译？</h3>
+<p>把 source 和 target 放在同一 causal stream 即可建模 $p(y\mid x)$。但 encoder-decoder 可以双向编码 source，并在多步 target decode 时复用 encoder representation；对严格 seq2seq 和 source/target 结构清晰的任务仍有优势。</p>
+<h3 id="q-beam">Q：为什么 beam 越大不一定越好？</h3>
+<p>搜索更接近模型概率最大序列，不等于更接近人类偏好；还会增加长度偏置、重复和 latency。</p>
+<h3 id="q-serving">Q：如何证明一次 serving 优化没有改变翻译质量？</h3>
+<p>固定 tokenizer、随机种子与 decoding config，对 logits/sequence 做回归；再运行完整质量集和实体/术语专项测试。</p>
+<h2 id="9">9. 强回答模板</h2>
+<p><code>需求/SLA → 数据质量 → Encoder-Decoder 数据流 → 训练目标 → 解码 → 容量 → 质量回归 → 监控/回滚</code></p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>手算 70B + Adam + BF16 的训练显存，并推到 ZeRO · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q096</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q096</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q095.html">← Q095</a><a href="Q097.html">Q097 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">coding</a><a href="#">coding-system-project</a><a href="#">distributed</a><a href="#">memory</a><a href="#">optimization</a><a href="#">precision</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 97 / 101</div>
+    <h1 class="qtitle">手算 70B + Adam + BF16 的训练显存，并推到 ZeRO</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>难</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">手撕、系统设计与项目拷打</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>预训练岗位 S 级题：假设、公式和分片必须都对。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>正确性</strong>：代码/公式/系统是否在边界条件下仍正确？</li>
+<li><strong>量化</strong>：参数、显存、吞吐、成本是否可手算/实测？</li>
+<li><strong>证明</strong>：项目贡献是否有对照实验和可归因结果？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>显存手算模板：列状态 → 算 bytes → 标复制/分片 → 加 activation/峰值。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>先声明一种常见假设：BF16 params 2B、BF16 grads 2B、FP32 master 4B、Adam m/v 各4B，总计 16 bytes/param。70B model states 约 1.12TB；这还不包括 activation、临时 buffer 和 fragmentation。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>然后按 ZeRO stage 分片：Stage1 只把 optimizer 部分按 DP 分；Stage2 再分 grad；Stage3 连 param 也按 DP 分。真正单卡峰值还要加入参数 all-gather、activation 和通信 workspace。</p>
+<h3 id="_2">核心公式</h3>
+<pre><code class="language-text">示例基线：70×10⁹ × 16 bytes ≈ 1.12 TB（model states，未分片）
+</code></pre>
+<blockquote>
+<p>面试时不要只写公式。要逐个解释符号、shape/量纲，以及公式如何导出工程结论。</p>
+</blockquote>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="70b">70B 训练显存答题模板</h3>
+<ol>
+<li>声明 weight/grad/master/m/v 的 dtype；</li>
+<li>按 bytes/param × 70B 算 model states；</li>
+<li>指出 DP replica；</li>
+<li>应用 ZeRO-1/2/3 或 FSDP 的分片因子；</li>
+<li>再估 activation、临时 gather buffer、通信 buffer 和 allocator peak。</li>
+</ol>
+<p>面试官更看重<strong>假设透明与分片语义正确</strong>，不是背一个固定 TB 数。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：白板用表格列 state、dtype、总字节、是否 /DP。</li>
+<li><strong>动作 2</strong>：给出“理论常驻”与“运行峰值”两个数字。</li>
+<li><strong>动作 3</strong>：说明不同框架没有 master copy 时数字会变化。</li>
+</ol>
+<h3 id="production">白板到 Production</h3>
+<p>要求答案同时包含正确性、复杂度、测试、边界条件、工程约束和量化结果。</p>
+<ul>
+<li>代码题写 shape/assert/unit test。</li>
+<li>设计题先声明约束。</li>
+<li>项目题必须给数字和对照。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1dp64zero-2-model-states">追问 1：DP=64，ZeRO-2 常驻 model states 多少？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="2stage3-dp">追问 2：Stage3 为什么峰值不等于总状态/DP？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → 显存手算模板：列状态 → 算 bytes → 标复制/分片 → 加 activation/峰值。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="3-activation-checkpointing">追问 3：加 activation checkpointing 影响哪一项？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>不声明 dtype 假设。</strong></li>
+<li>改进：回到“显存手算模板：列状态 → 算 bytes → 标复制/分片 → 加 activation/峰值。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+<li>❌ <strong>把全部 16B/param 在 ZeRO-1 就除以 DP。</strong></li>
+<li>改进：回到“显存手算模板：列状态 → 算 bytes → 标复制/分片 → 加 activation/峰值。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：显存手算模板：列状态 → 算 bytes → 标复制/分片 → 加 activation/峰值。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>DP=64，ZeRO-2 常驻 model states 多少？</li>
+<li>Stage3 为什么峰值不等于总状态/DP？</li>
+<li>加 activation checkpointing 影响哪一项？</li>
+<li>把答案写成可运行代码/可核算公式/可量化项目复盘之一。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>显存手算模板：列状态 → 算 bytes → 标复制/分片 → 加 activation/峰值。</strong></p>
+</blockquote>
+<h3 id="_3">深挖关键点</h3>
+<p>S 级题必须练到任何参数规模、DP degree 和 ZeRO stage 都能现场推。</p>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R7 · 论文</strong> — <a href="https://arxiv.org/abs/1910.02054">Rajbhandari et al., ZeRO</a></li>
+<li><strong>R9 · 官方文档</strong> — <a href="https://docs.nvidia.com/megatron-core/developer-guide/latest/">NVIDIA Megatron Core User Guide</a></li>
+<li><strong>R15 · 公开面经</strong> — <a href="https://www.nowcoder.com/feed/main/detail/e4ac3528bcdd44ebb8c3617540216932">公开面经：京东大模型算法实习</a></li>
+</ul>
+<h2 id="_4">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q095. 手算一个 Transformer Block 的参数量怎么做？</span></li>
+<li>→ <span class="srcref">Q097. 从 0 预训练一个 1B 模型，完整 Pipeline 如何设计？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD02 设计高吞吐 LLM Serving · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD02</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD02</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="SD01.html">← SD01</a><a href="SD03.html">SD03 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">inference</a><a href="#">serving</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 102 / 110</div>
+    <h1 class="qtitle">SD02 设计高吞吐 LLM Serving</h1>
+    <h2 id="1">1. 需求定义</h2>
+<p>先把“高吞吐”约束成可测指标：</p>
+<ul>
+<li>模型参数量 / dtype / TP size；</li>
+<li>prompt P50/P95/P99；</li>
+<li>output P50/P95/P99；</li>
+<li>TTFT SLA；</li>
+<li>TPOT/ITL SLA；</li>
+<li>requests/s 与 tokens/s；</li>
+<li>最大并发与租户公平性。</li>
+</ul>
+<p>吞吐和尾延迟通常冲突，因此必须给 SLA，而不是只追求 tokens/s。</p>
+<h2 id="2">2. 请求生命周期</h2>
+<pre><code class="language-text">HTTP/gRPC
+  ↓
+Tokenizer
+  ↓
+Admission Control / Scheduler
+  ↓
+Prefill Queue ──→ Chunked Prefill
+  ↓
+KV Block Allocation
+  ↓
+Decode Iterations ← Continuous Batching
+  ↓
+Sampling / Stop Check
+  ↓
+Streaming Response
+  ↓
+KV Release
+</code></pre>
+<h2 id="3-prefill-decode">3. Prefill 与 Decode 分开优化</h2>
+<h3 id="prefill">Prefill</h3>
+<p>特点：长 Q/K，GEMM 大，算术强度高。</p>
+<p>优化：</p>
+<ul>
+<li>FlashAttention/SDPA；</li>
+<li>prefix cache；</li>
+<li>chunked prefill；</li>
+<li>prompt batching；</li>
+<li>tokenizer pipeline 并行。</li>
+</ul>
+<p>主要指标：TTFT。</p>
+<h3 id="decode">Decode</h3>
+<p>特点：每步 query length≈1，要读取完整历史 KV，常 memory-bandwidth bound。</p>
+<p>优化：</p>
+<ul>
+<li>GQA/MQA；</li>
+<li>paged KV；</li>
+<li>continuous batching；</li>
+<li>KV quantization；</li>
+<li>speculative decoding；</li>
+<li>CUDA graphs / kernel fusion。</li>
+</ul>
+<p>主要指标：TPOT/ITL。</p>
+<h2 id="4-kv-cache">4. KV Cache 容量</h2>
+<p>[
+M_{KV}=2LBTH_{kv}D_hs
+]</p>
+<p>还要额外考虑：</p>
+<ul>
+<li>allocator block 尾部浪费；</li>
+<li>beam / best-of-N；</li>
+<li>prefix sharing；</li>
+<li>workspace；</li>
+<li>model weights；</li>
+<li>CUDA graph reserved memory。</li>
+</ul>
+<p>生产 capacity planning 应使用真实请求长度分布，而不是平均长度。</p>
+<h2 id="5-scheduler">5. Scheduler 设计</h2>
+<p>核心目标同时包括：</p>
+<ul>
+<li>GPU utilization；</li>
+<li>TTFT；</li>
+<li>TPOT；</li>
+<li>fairness；</li>
+<li>OOM avoidance。</li>
+</ul>
+<p>策略例子：</p>
+<ul>
+<li>continuous batching；</li>
+<li>prefill/decode priority；</li>
+<li>chunked prefill；</li>
+<li>max batched tokens；</li>
+<li>preemption / swap / recompute；</li>
+<li>tenant quotas。</li>
+</ul>
+<h2 id="6-paged-kv-prefix-cache">6. Paged KV / Prefix Cache</h2>
+<p>Paged KV 将逻辑 token 序列映射到物理 KV blocks，降低 contiguous preallocation 和 fragmentation。</p>
+<p>Prefix cache 适合 system prompt、共享长前缀；必须考虑：</p>
+<ul>
+<li>cache key 包含模型/tokenizer/adapter/version；</li>
+<li>eviction policy；</li>
+<li>多租户隔离；</li>
+<li>cache pollution。</li>
+</ul>
+<h2 id="7">7. 并行与硬件拓扑</h2>
+<ul>
+<li>TP：高频 collective，优先同节点 NVLink/NVSwitch；</li>
+<li>PP：层间 activation 传输；</li>
+<li>DP replicas：横向扩 QPS；</li>
+<li>Expert Parallel：MoE all-to-all；</li>
+<li>disaggregated prefill/decode：在特定 workload 下分开资源池。</li>
+</ul>
+<h2 id="8">8. 量化</h2>
+<p>权重量化降低模型 memory / bandwidth；KV 量化降低长上下文并发成本。每种量化都必须有：</p>
+<ul>
+<li>quality regression；</li>
+<li>kernel support；</li>
+<li>latency benchmark；</li>
+<li>fallback path。</li>
+</ul>
+<h2 id="9-slo">9. SLO 监控</h2>
+<p>必须按长度分桶：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Queue Time</td>
+<td>admission/scheduler 压力</td>
+</tr>
+<tr>
+<td>TTFT</td>
+<td>prefill 体验</td>
+</tr>
+<tr>
+<td>TPOT/ITL</td>
+<td>decode 流畅度</td>
+</tr>
+<tr>
+<td>P95/P99</td>
+<td>尾延迟</td>
+</tr>
+<tr>
+<td>KV occupancy</td>
+<td>容量瓶颈</td>
+</tr>
+<tr>
+<td>active sequences</td>
+<td>实际并发</td>
+</tr>
+<tr>
+<td>preemption</td>
+<td>scheduler 过载信号</td>
+</tr>
+<tr>
+<td>tokens/s</td>
+<td>GPU 总吞吐</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10">10. 故障与降级</h2>
+<ul>
+<li>OOM 前 admission control；</li>
+<li>超长 prompt 截断/异步队列；</li>
+<li>降低 max output；</li>
+<li>speculative/offload 功能快速关闭；</li>
+<li>模型 replica unhealthy 自动摘除；</li>
+<li>tokenizer/model revision 一致性检查。</li>
+</ul>
+<h2 id="11">11. 面试追问</h2>
+<p><strong>为什么 continuous batching 有效？</strong> 不等最长 request，iteration 级回收和加入请求。</p>
+<p><strong>为什么吞吐提高后 P99 可能恶化？</strong> batch 更大和排队更久，会提高 GPU 利用但增加 queue/iteration latency。</p>
+<p><strong>为什么 FlashAttention 不能单独解决 decode？</strong> decode 的 query 很短，主要瓶颈常是 KV 读取和调度，而非完整 $T^2$ 中间矩阵。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

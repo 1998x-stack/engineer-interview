@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>shared_ptr 为什么会发生循环引用？如何从设计上避免？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Game Engine</a><i>∕</i><span>Q005</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q005</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">Intermediate</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q004.html">← Q004</a><a href="Q006.html">Q006 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">cpp</a><a href="#">engine-core</a><a href="#">smart-pointer</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      GAME ENGINE · GRAPHICS · 15 / 100</div>
+    <h1 class="qtitle">shared_ptr 为什么会发生循环引用？如何从设计上避免？</h1>
+    <blockquote>
+<p>[!IMPORTANT]
+<strong>内容分层</strong>：<code>PDF 核心内容</code>严格以仓库附带的原 PDF 为基线；<code>专业扩展</code>是为了让题目达到更强的工程面试深度，来自通用工程知识与下方列出的官方/权威资料。两者刻意分开，便于追踪来源。</p>
+</blockquote>
+<p><strong>章节</strong>：C++ 对象模型与语言机制<br />
+<strong>学习级别</strong>：<code>Intermediate</code>（仓库学习分级，不是对 PDF 星级符号的重解释）<br />
+<strong>PDF 位置</strong>：物理页 14<br />
+<strong>来源口径</strong>：公开面经/官方资料可核验 · [M3]</p>
+<hr />
+<h2 id="1">1. 这道题在考什么</h2>
+<p>这题属于 <strong>C++ 对象模型与语言机制</strong>。面试官通常不是只听一个定义，而是在判断你能否把答案推进到：</p>
+<ol>
+<li><strong>机制</strong>：数据/状态究竟怎样流动；</li>
+<li><strong>成本</strong>：CPU、GPU、内存、同步或数值误差的成本在哪里；</li>
+<li><strong>Trade-off</strong>：什么场景适合，什么场景会失败；</li>
+<li><strong>Engine Context</strong>：在真实 renderer / core / asset / simulation 中怎么落地；</li>
+<li><strong>Evidence</strong>：如何通过 profiler、测试、frame capture 或汇编证明判断。</li>
+</ol>
+<p>本章常见工程落点：对象 ABI 与插件边界、组件/资源生命周期、运行时类型系统与编辑器工具链。</p>
+<hr />
+<h2 id="2-30-pdf">2. 30 秒回答（PDF 核心内容）</h2>
+<p>如果两个对象互相持有 shared_ptr，双方 strong count 都无法归零；应把至少一条“非所有权关系”改成 weak_ptr。</p>
+<hr />
+<h2 id="3-pdf-source-derived">3. PDF 深入拆解（Source-derived）</h2>
+<p>循环引用本质上是 ownership graph 中出现强引用环。正确做法不是事后搜索环，而是在架构上定义“谁拥有谁” ：树形层级通常由父节点拥有子节点，子节点只观察父节点；事件系统、缓存和 observer 关系也常是弱引用。引擎里 entity/component、asset dependency、editor object graph 都需要明确区分 ownership 与 reference。</p>
+<h3 id="pdf">PDF 核心抓手</h3>
+<ul>
+<li>将对象关系建模为 ownership graph</li>
+<li>强引用表示生命周期责任，弱引用表示可失效观察</li>
+<li>避免在全局 manager 与对象间建立双向 shared ownership</li>
+</ul>
+<h3 id="pdf-gotcha">PDF 工程 Gotcha</h3>
+<p>仅回答“用 weak_ptr 就行”，没有说明哪一边应该弱、为什么。</p>
+<h3 id="pdf_1">PDF 面试官在听什么</h3>
+<p>能否先设计生命周期，再选择智能指针。</p>
+<hr />
+<h2 id="4-repository-v2">4. 专业扩展（Repository v2）</h2>
+<p>这一节不再重复 PDF 的“定义答案”，而是把问题推进到 <strong>可实现、可测量、可讨论 trade-off</strong> 的层级。面试时不要求把下面所有内容一次讲完；更好的策略是先给结论，再根据面试官追问选择其中 2–3 个层次深入。</p>
+<h3 id="41">4.1 先修知识与概念边界</h3>
+<ul>
+<li>引用计数</li>
+<li>有向所有权图</li>
+<li>weak_ptr</li>
+<li>资源生命周期设计</li>
+</ul>
+<h3 id="42">4.2 核心心智模型</h3>
+<p>循环引用是“所有权图形成强环”，不是 shared_ptr 的小 bug。正确解法是先把关系分成 owner edge 与 observer/back-reference edge，再让后者变弱或变成非 owning handle。</p>
+<h3 id="43">4.3 底层机制：逐层拆开</h3>
+<ul>
+<li>引用计数只能在图是有向无环的强 ownership graph 时自然回收；强环中每个节点都被环内对象维持 strong count。</li>
+<li>weak_ptr 不参与 strong count，可安全观察对象是否仍存活，因此常用于 parent/back-reference、cache、listener 等非所有关系。</li>
+<li>事件系统中 callback 捕获 <code>shared_from_this()</code> 很容易形成 Subject → callback → Observer 的隐式强环。</li>
+<li><code>enable_shared_from_this</code> 需要对象已经由 shared_ptr 管理；在构造函数中调用 <code>shared_from_this()</code> 会违反其前置条件。</li>
+</ul>
+<h3 id="44">4.4 必须守住的不变量 / 正确性条件</h3>
+<ul>
+<li>每条强引用边都应该回答“谁负责让谁活着”。答不出来的边往往不该是 shared ownership。</li>
+<li>生命周期闭环要能从一个明确 root 释放，不能依赖“希望计数最后归零”。</li>
+</ul>
+<p>这些不变量比“记住某个 API”更重要：平台、实现或引擎版本可以变化，但只要不变量没变，你就能重新推导正确方案。</p>
+<h3 id="45-trade-off">4.5 Trade-off：什么时候该用，什么时候不该用</h3>
+<ul>
+<li>weak_ptr 解决 shared_ptr 生态里的 observer，但也带 control block/原子成本。</li>
+<li>Entity/Scene 图更常用 stable handle + generation，避免智能指针把序列化和世界迁移复杂化。</li>
+</ul>
+<h3 id="46">4.6 在真实游戏引擎中的落点</h3>
+<ul>
+<li>Parent-child transform：parent 通常拥有 child，child 回指 parent 应为非 owning。</li>
+<li>Event bus：订阅 token/weak listener，销毁时显式 unsubscribe，避免 lambda 捕获强引用。</li>
+<li>Asset cache：cache 不应因为缓存条目而无限延长资源生命周期，可用 weak reference 或 residency policy。</li>
+</ul>
+<h3 id="47">4.7 最小实现 / 数学骨架</h3>
+<pre><code class="language-cpp">struct Node {
+    std::vector&lt;std::shared_ptr&lt;Node&gt;&gt; children;
+    std::weak_ptr&lt;Node&gt; parent; // back-reference 不拥有 parent
+};
+</code></pre>
+<blockquote>
+<p><strong>面试建议</strong>：代码或公式不是为了炫技。写完后要解释：输入是什么、输出是什么、最贵的步骤在哪里、哪个条件一旦破坏就会出错。</p>
+</blockquote>
+<h3 id="48-profiling-validation">4.8 Profiling / Validation：如何证明你的判断</h3>
+<ul>
+<li>用对象生命周期日志或 heap profiler 观察场景卸载后仍存活的对象图。</li>
+<li>在 debug build 记录 strong-edge provenance，定位谁持有最后一个引用。</li>
+</ul>
+<h3 id="49">4.9 常见错误答案与为什么错</h3>
+<ul>
+<li>“出现环就把任意一条 shared_ptr 改 weak_ptr。”——应根据 ownership 语义决定哪条边弱。</li>
+<li>“weak_ptr 自动解决所有生命周期问题。”——悬空逻辑、竞态和对象 ready-state 仍要处理。</li>
+</ul>
+<h3 id="410-senior">4.10 Senior 级追问与参考思路</h3>
+<ol>
+<li><strong>事件系统最常见的 hidden cycle？</strong><br />
+   publisher 持 callback，callback lambda 强捕获 subscriber/shared_from_this，subscriber 又间接持 publisher。</li>
+<li><strong>如何调试 shared_ptr 泄漏？</strong><br />
+   除了 heap snapshot，最好记录 control block owner 来源或为重要资源建立生命周期/引用图 telemetry。</li>
+</ol>
+<h3 id="411">4.11 推荐实战</h3>
+<blockquote>
+<p>实现一个订阅系统，返回 RAII subscription token；token 销毁自动解绑，并允许 listener 使用 weak handle，证明场景卸载后不会形成引用环。</p>
+</blockquote>
+<p>完成实战时建议保留 <strong>baseline、指标、实验变量、结果、结论</strong> 五项记录。真正能在面试中形成 Senior signal 的不是“我写过”，而是“我能解释为什么这个实现更快/更稳，以及证据是什么”。</p>
+<h2 id="5">5. 如何验证，而不是“凭感觉优化”</h2>
+<ul>
+<li>查看对象布局/生成汇编，确认假设是否成立</li>
+<li>对 microbenchmark 与真实 frame profile 做区分</li>
+<li>用 ASan/UBSan/TSan 等工具验证生命周期或并发错误</li>
+</ul>
+<h3 id="_1">推荐实战</h3>
+<blockquote>
+<p>写一个最小 C++ 程序，用编译器输出/汇编验证对象布局或生命周期假设；记录优化前后差异。</p>
+</blockquote>
+<hr />
+<h2 id="6-gotchas">6. 工程 Gotchas（扩展）</h2>
+<ul>
+<li>不要把“主流 ABI 实现”说成 C++ 标准强制</li>
+<li>不要只从 Big-O/语法推性能，必须讨论数据布局与编译器优化</li>
+</ul>
+<hr />
+<h2 id="7">7. 高频追问树</h2>
+<ol>
+<li><strong>weak_ptr::expired 与 lock 有什么区别？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+<li><strong>资源缓存应该持强引用还是弱引用？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+<li><strong>GC 引擎为什么可能不使用 shared_ptr？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+</ol>
+<hr />
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 - 记忆点</td>
+<td>只能给出一个术语或结论，无法解释原因。</td>
+</tr>
+<tr>
+<td>1 - 原理</td>
+<td>能解释核心机制与至少一个关键不变量。</td>
+</tr>
+<tr>
+<td>2 - 工程</td>
+<td>能讨论 trade-off、边界条件，并把它落到真实引擎模块。</td>
+</tr>
+<tr>
+<td>3 - Senior signal</td>
+<td>能给出可测量的成本模型、profiling/验证方法和替代方案。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2">2 分钟回答组织法</h3>
+<ol>
+<li>用 PDF 的“30 秒回答”先给结论；</li>
+<li>选择 <strong>2 个机制点</strong> 展开，不要一次倾倒全部知识；</li>
+<li>给出 <strong>1 个真实引擎场景</strong>；</li>
+<li>主动补 <strong>1 个 Gotcha / 失败条件</strong>；</li>
+<li>用 <strong>1 个 profiler / test / counter</strong> 收尾，说明如何验证。</li>
+</ol>
+<hr />
+<h2 id="9">9. 关联题目</h2>
+<ul>
+<li><span class="srcref">Q004 · unique_ptr、shared_ptr、weak_ptr 底层有什么区别？</span></li>
+<li><span class="srcref">Q006 · 左值、右值、std::move、移动构造究竟解决什么问题？</span></li>
+</ul>
+<hr />
+<h2 id="10">10. 参考资料</h2>
+<ul>
+<li><a href="docs/assets/book/game-engine-interview-100.pdf">仓库附带 PDF</a> - 本题 PDF 基线内容，物理页 14。</li>
+<li><a href="https://www.nowcoder.com/feed/main/detail/94e7409152494799b0bab3ac069b812c?sourceSSR=dynamic">[M3] Unity 中国引擎研发实习生面经（候选人回忆）</a></li>
+<li><a href="https://itanium-cxx-abi.github.io/cxx-abi/abi.html">Itanium C++ ABI</a></li>
+<li><a href="https://en.cppreference.com/w/">cppreference C++ language/library reference</a></li>
+</ul>
+<blockquote>
+<p>对候选人面经类链接：仅用于证明某类考察主题曾公开出现，不代表公司官方题库，也不代表问题会原样出现。</p>
+</blockquote>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

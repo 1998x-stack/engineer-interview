@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>压轴：Backtest 与 Live 表现差异巨大，如何系统定位？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Quant Finance</a><i>∕</i><span>q100</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q100</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q099.html">← q099</a><span></span></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">系统诊断</a><a href="#">research parity</a><a href="#">distribution shift</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      QUANTITATIVE · 101 / 101</div>
+    <h1 class="qtitle">压轴：Backtest 与 Live 表现差异巨大，如何系统定位？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★<br />
+<strong>标签</strong>：系统诊断｜research parity｜distribution shift<br />
+<strong>题型口径</strong>：高可信重构题型<br />
+<strong>所属模块</strong>：J. Coding、算法与量化系统<br />
+<strong>本题能力主线</strong>：算法与量化系统</p>
+</blockquote>
+<h2 id="_1">题目</h2>
+<p>压轴：Backtest 与 Live 表现差异巨大，如何系统定位？</p>
+<hr />
+<h2 id="1">1. 面试官到底在考什么</h2>
+<p>本题表面属于 <strong>系统诊断, research parity, distribution shift</strong>，但真正考察的是：你能否把口头问题迅速变成一个<strong>定义清楚、假设透明、可推导、可验证</strong>的模型。</p>
+<p>本章统一的高质量作答原则是：<strong>同时回答正确性、复杂度、内存/缓存行为、时间戳语义、幂等性和 replay；量化系统的核心是状态正确性与可重现。</strong></p>
+<p>面试官通常会观察四件事：</p>
+<ol>
+<li>你是否先明确随机变量 / 状态 / 时间信息集，而不是立即套公式；</li>
+<li>你是否知道结论依赖哪些假设，以及假设被破坏后会发生什么；</li>
+<li>你能否给出一条简洁主解，同时知道替代方法与扩展；</li>
+<li>你能否把数学结果翻译成量化研究或工程上的可验证结论。</li>
+</ol>
+<h2 id="2-30">2. 先给结论（30 秒版本）</h2>
+<p>构建差异树：Data → Feature/Model → Simulation/Execution → Code/Infra → Distribution。先用 same-input replay 找 research 与 production 的第一处分叉；前四层排除后再讨论 regime/concept drift。</p>
+<p><strong>推荐面试表达：</strong> 这是高级面试最看重的结构化能力：先证明系统一致，再解释市场变化。</p>
+<p>如果只有 30 秒，优先说清楚：<strong>定义 → 关键式子/算法 → 结论 → 一个最重要的坑</strong>。不要先铺背景。</p>
+<h2 id="3-formalization">3. Formalization：变量、假设与数学对象</h2>
+<p>构建分层差异分解：$\Delta PnL=\Delta data+\Delta feature/model+\Delta decision+\Delta execution+\Delta infra+\Delta distribution$ 只是概念分解，实际定位依赖逐层 same-input replay 与 counterfactual simulation。</p>
+<h3 id="_2">专业建模检查表</h3>
+<ol>
+<li>先定义状态、输入事件和 invariants，再谈数据结构；系统题的第一目标是 deterministic correctness，不是先报复杂度。</li>
+<li>明确 ordering 语义：sequence number、event/exchange time、receive time 和 processing time 不能混为一个 timestamp。</li>
+<li>同时分析时间复杂度、空间复杂度、cache locality、allocation、serialization 与 I/O；大数据系统里常数项决定实际延迟。</li>
+<li>设计 duplicate/out-of-order/gap/retry 的行为，保证 idempotency、recovery 与 replay；异常不能靠“忽略”解决。</li>
+<li>准备 golden dataset、property/invariant tests、shadow/replay diff 和 observability 指标，证明 research 与 production parity。</li>
+</ol>
+<h2 id="4">4. 标准推导：从第一原则得到答案</h2>
+<p>Data 查 timestamp/version/PIT；Model 查 checkpoint/preprocessing/feature order；Simulation 查 fill/cost/latency/impact；Code 查数值、状态、event ordering；最后才比较 P_live(X,Y) 与 P_hist(X,Y)。</p>
+<h3 id="_3">第二视角：如何验证主解</h3>
+<p>先写 reference implementation 保证正确，再做 optimized implementation；用同一 golden replay 做逐事件 diff，性能优化不得改变状态语义。</p>
+<p>对本题尤其值得继续追问的是：<strong>定位 live-backtest gap 应采用层级归因：数据 → 特征 → 模型 → 仿真/执行 → 系统 → 分布；只有前面 parity 通过后才讨论 regime shift。</strong></p>
+<p>一个成熟回答应能说明：如果解析解、数值实验和经验数据三者不一致，优先检查哪一层假设，而不是简单选择“看起来最漂亮”的结果。</p>
+<h2 id="5-why">5. Why：为什么这个方法有效</h2>
+<p>定位 live-backtest gap 应采用层级归因：数据 → 特征 → 模型 → 仿真/执行 → 系统 → 分布；只有前面 parity 通过后才讨论 regime shift。</p>
+<p>这一层是区分“会做题”和“理解题”的关键。面试官继续追问时，最常见的方向不是让你重复公式，而是问：<strong>为什么这个结构成立、什么情况下失效、能否推广</strong>。</p>
+<h3 id="_4">高级面试层：从答案到研究判断</h3>
+<ul>
+<li><strong>本题的高级抽象</strong>：定位 live-backtest gap 应采用层级归因：数据 → 特征 → 模型 → 仿真/执行 → 系统 → 分布；只有前面 parity 通过后才讨论 regime shift。</li>
+<li><strong>最值得保留的原始面试表达</strong>：这是高级面试最看重的结构化能力：先证明系统一致，再解释市场变化。</li>
+<li><strong>研究者视角</strong>：不要只问“公式是否正确”，还要问“这个结论对哪些 perturbation 稳定、什么观测会证伪它、实现中哪一层最容易引入偏差”。</li>
+</ul>
+<h2 id="6">6. 量化金融 / 工程语境中的对应问题</h2>
+<p>最专业的处理不是列 checklist，而是设计证据链：每层都有可保存 artifact、hash、expected invariant 与自动 diff；只有 parity 通过后才把残差归因市场变化。</p>
+<p>把本题迁移到真实研究时，建议统一问四个问题：</p>
+<ol>
+<li><strong>Data generating process</strong>：数据是怎么产生的？</li>
+<li><strong>Information set</strong>：在决策时刻真正可用的信息是什么？</li>
+<li><strong>Estimator / algorithm</strong>：我们估计/计算的对象是什么？</li>
+<li><strong>Validation</strong>：用什么反事实、OOS、replay 或 simulation 能证伪它？</li>
+</ol>
+<h3 id="_5">实际落地检查清单</h3>
+<ul>
+<li>定义 invariants + golden replay + deterministic diff。</li>
+<li>分别测 correctness、throughput、p99 latency、memory 与 recovery。</li>
+<li>对乱序、重复、缺口、崩溃重启与 schema change 做故障注入。</li>
+</ul>
+<h2 id="7">7. 边界条件、失效场景与模型风险</h2>
+<p>本题所在模块最容易出现以下系统性错误：</p>
+<ul>
+<li>只给算法复杂度不讲状态和 failure recovery</li>
+<li>时间戳/事件顺序语义不明确</li>
+<li>缺少 replay/idempotency/observability</li>
+</ul>
+<p>结合本题，还要特别注意原始题解中的这些陷阱：</p>
+<ul>
+<li><strong>错误 1</strong>：一上来归因“市场变了”。</li>
+<li><strong>错误 2</strong>：只对最终 PnL，不比较中间 state。</li>
+</ul>
+<p>一个专业回答不应该只说“答案是 X”，而应至少能补一句：<strong>“这个结论依赖于……；如果……不成立，我会改用……”</strong>。</p>
+<h2 id="8">8. 追问树：不只列问题，还要会接</h2>
+<h3 id="1-golden-replay-dataset">追问 1：如何设计 golden replay dataset？</h3>
+<p><strong>回答方向：</strong> 固定一段原始事件、PIT 数据和期望的中间 artifacts（features/scores/orders/book state），版本化并在每次变更后 deterministic replay/diff。</p>
+<h3 id="2-execution-miss-predictive-decay">追问 2：如何区分 execution miss 与 predictive decay？</h3>
+<p><strong>回答方向：</strong> 做 counterfactual 分解：用 live signal + idealized execution 看预测是否仍有效；用 historical signal + live-like execution 看执行损失，由此区分 predictive decay 与 execution miss。</p>
+<h3 id="3">追问 3：如何把诊断自动化成监控？</h3>
+<p><strong>回答方向：</strong> 建立分层监控：data freshness/schema → feature parity → score/calibration drift → order/fill/slippage → PnL attribution；每层有阈值、artifact 和 drill-down 链接。</p>
+<h3 id="_6">面试现场的追问策略</h3>
+<ul>
+<li>第一次追问：先给结论与关键理由，不要重新从头讲整题；</li>
+<li>第二次追问：主动指出新假设改变了哪一部分模型；</li>
+<li>开放追问：给一个 baseline，再给一个更严格/更工程化版本，并说明验证方式。</li>
+</ul>
+<h2 id="9">9. 高频错误：错误为什么会发生</h2>
+<ul>
+<li><strong>错误 1</strong>：一上来归因“市场变了”。</li>
+<li><strong>错误 2</strong>：只对最终 PnL，不比较中间 state。</li>
+</ul>
+<p>这些错误通常源于<strong>状态/顺序语义不清、只关注平均性能而忽略恢复与可重放性</strong>；修复方法是 invariants + deterministic replay + failure injection。</p>
+<h2 id="10-3">10. 3 分钟专业回答模板</h2>
+<p>可以按下面顺序组织：</p>
+<blockquote>
+<p><strong>第一步，定义。</strong> 我先明确本题的变量/状态和信息条件。<br />
+<strong>第二步，主解。</strong> 用最短的推导得到核心结论：构建差异树：Data → Feature/Model → Simulation/Execution → Code/Infra → Distribution。先用 same-input replay 找 research 与 production 的第一处分叉；前四层排除后再讨论 regime/concept drift。<br />
+<strong>第三步，解释。</strong> 关键结构是：定位 live-backtest gap 应采用层级归因：数据 → 特征 → 模型 → 仿真/执行 → 系统 → 分布；只有前面 parity 通过后才讨论 regime shift。<br />
+<strong>第四步，边界。</strong> 如果事件排序、状态语义、协议或性能预算改变，我会先重建 invariants/replay contract；系统正确性不能靠统计平均“差不多”保证。<br />
+<strong>第五步，迁移。</strong> 迁移到生产系统时，我会用 reference implementation + golden replay + invariant monitoring 建立正确性基线，再做 profiling 和低延迟优化。</p>
+</blockquote>
+<p>这比“先堆术语、最后给答案”更符合顶级 Quant Research / Algorithm 面试的交流方式。</p>
+<h2 id="11">11. 自测与延伸练习</h2>
+<ol>
+<li>不看答案，用 30 秒给出本题结论与最重要假设。</li>
+<li>不看推导，重新写出关键等式 / 状态 / 目标函数。</li>
+<li>回答全部追问，并明确哪些答案是精确结论、哪些只是近似或建模选择。</li>
+<li>为本题设计一个最小 simulation / numerical check，验证主结论。</li>
+<li>说明一个真实量化场景中会导致本题假设失效的例子。</li>
+</ol>
+<h2 id="12">12. 关联题目</h2>
+<ul>
+<li><span class="srcref">099. Research code 与 production code 最大区别是什么？</span></li>
+<li><span class="srcref">095. 给无序 trade events，如何检测 timestamp 问题？</span></li>
+</ul>
+<h2 id="13">13. 延伸阅读</h2>
+<ul>
+<li>Kleppmann, <em>Designing Data-Intensive Applications</em>；Bryant &amp; O’Hallaron, <em>Computer Systems: A Programmer’s Perspective</em></li>
+<li><span class="srcref">本仓库知识地图</span></li>
+<li><span class="srcref">面试回答框架</span></li>
+<li><span class="srcref">官方题型与岗位能力依据</span></li>
+</ul>
+<h2 id="14">14. 来源与内容边界</h2>
+<ul>
+<li><strong>PDF 来源内容</strong>：本题题干、基础答案、原始推导、追问、高频错误与面试表达，来自仓库所附 Professional Edition PDF / <code>questions.json</code> 的结构化转录。</li>
+<li><strong>V2 扩展内容</strong>：Formalization、量化语境、追问回答方向、模型风险、工程验证与延伸阅读，是本次仓库专业化扩写；它们用于教学与面试训练，不应被误认为某家公司未公开的内部标准答案。</li>
+<li><code>source_type: 高可信重构题型</code> 只表示题目来源口径。</li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q009. 如果推荐系统 CTR 突然下降 20%，怎么排查？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Recommender Systems</a><i>∕</i><span>Q009</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q009</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q008.html">← Q008</a><a href="Q010.html">Q010 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-architecture</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      RECOMMENDER · 9 / 101</div>
+    <h1 class="qtitle">Q009. 如果推荐系统 CTR 突然下降 20%，怎么排查？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★　 <strong>来源标签</strong>：系统设计　 <strong>章节</strong>：第 1 章 · 系统架构与业务理解</p>
+</blockquote>
+<h2 id="_1">题目定位</h2>
+<p>这道题位于 <strong>第 1 章：系统架构与业务理解</strong>。面试官通常希望候选人能给出可落地方案、权衡与验证路径；最终要落到 <strong>模型/数据/系统/指标</strong> 四个层面的约束，而不是停留在术语复述。</p>
+<p><strong>本章主线</strong>：把推荐系统理解为受 QPS、SLA、数据闭环、实验体系和业务目标共同约束的工程系统。</p>
+<h2 id="30">30 秒回答</h2>
+<p>先按“数据→流量→服务→特征→候选→模型→策略→实验”分层排查，优先验证是否为埋点、流量结构或服务故障，而不是第一时间归因模型。</p>
+<h2 id="_2">深入拆解</h2>
+<p>检查埋点与 denominator 是否变化、实验分桶是否 SRM、请求成功率和时延是否异常、特征缺失率与 freshness、ANN 索引版本、召回量与分数分布。 做时间维度、用户维度、场景维度、模型版本维度切片，定位异常从何时/何群体开始。 若所有模型同时掉，通常先怀疑数据或流量；只有新模型掉，则优先查模型/特征/serving skew。</p>
+<h3 id="_3">公式 / 工程抓手</h3>
+<p><code>排障核心：找到最早发生分布断点的层，而不是盯最终 CTR。</code></p>
+<h3 id="pdf">PDF 原始公式 / 工程抓手</h3>
+<p><code>排障核心：找到最早发生分布断点的层，而不是盯最终 CTR。</code></p>
+<!-- V2_ENRICHMENT_START -->
+
+<h2 id="v2">V2 深度版：从“会答”到“能落地”</h2>
+<h3 id="_4">系统设计的第一性原理</h3>
+<p>推荐系统首先是一个<strong>受预算约束的决策系统</strong>。面试时建议明确五个预算：候选规模、特征读取、模型计算、端到端延迟、实验/迭代速度。一个方案如果只在模型指标上成立，却无法在这些预算内运行，就不是工业答案。</p>
+<p>可以把整条链抽象成：</p>
+<p>$$\text{Logs}\rightarrow\text{Data/Features}\rightarrow\text{Candidate Generation}\rightarrow\text{Scoring}\rightarrow\text{List Optimization}\rightarrow\text{Exposure}\rightarrow\text{Feedback}$$</p>
+<p>每个箭头都可能产生分布变化和信息损失。因此分析系统时，要同时回答：<strong>输入分布是什么、这一层丢掉什么、下一层还能否补救、线上如何观测。</strong></p>
+<h3 id="_5">针对本题的关键推导</h3>
+<p>线上指标突降要按“数据→流量→候选→特征→模型→策略→实验”分层定位，并优先排查共享基础设施，因为模型 bug 往往不是最高先验。</p>
+<p>这里建议把回答进一步拆成四层证据链：</p>
+<ol>
+<li><strong>定义层</strong>：一句话说明“如果推荐系统 CTR 突然下降 20%，怎么排查？”讨论的对象和优化目标；</li>
+<li><strong>机制层</strong>：给出公式、数据生成过程或计算复杂度，解释为什么会有效；</li>
+<li><strong>系统层</strong>：指出它在完整推荐链路中的上游输入、下游依赖、成本和失败传播路径；</li>
+<li><strong>验证层</strong>：给出 offline slice、线上 A/B、guardrail 与回滚条件。</li>
+</ol>
+<h3 id="90">90 秒标准回答（建议练到可以脱稿）</h3>
+<blockquote>
+<p>线上指标突降要按“数据→流量→候选→特征→模型→策略→实验”分层定位，并优先排查共享基础设施，因为模型 bug 往往不是最高先验。 具体到工程上，可以用下面的数量级来理解：CTR 下降 20% 但曝光量和候选数正常，进一步发现实时 user feature freshness 从 2 分钟变成 2 小时；回滚特征流即可恢复，无需回滚模型。 因此我不会只看单一离线指标，而会把这项方法放回完整链路，联合检查候选/特征分布、P95/P99、成本以及线上主指标。如果出现“离线好、线上差”，我会优先检查数据与 serving 一致性、截断/近似误差和策略覆盖。最后还要说明边界：只看全局均值会掩盖问题。必须切 region/app_version/user cohort/traffic source/model version，避免平均值把局部事故冲淡。</p>
+</blockquote>
+<p>这段 90 秒回答的顺序是 <strong>结论 → 机制 → 数量级 → 工程验证 → 边界</strong>。对于大多数推荐算法题，这比从论文历史开始讲更稳。</p>
+<h3 id="_6">容易混淆的概念</h3>
+<p>模型指标 vs 系统指标；候选质量 vs 排序质量；请求级优化 vs 用户长期效用；平均延迟 vs P99。</p>
+<h3 id="_7">上线验证与监控</h3>
+<p>离线先做 stage-wise oracle 与分层 slice；线上用稳定 A/B 验证 primary metric，同时守住延迟、负反馈、留存等 guardrail。任何链路改动都应记录候选集合和 score 分布，便于解释增益来自哪里。</p>
+<p><strong>建议至少记录这些字段：</strong> request_id、user/session、route candidates、每层 input/output 数、feature/model/index/config version、各 stage latency、final scores、rerank reason、exposure/feedback。日志字段不是越多越好，关键是能把一次线上曝光追溯到样本、特征、模型、索引和实验版本。</p>
+<h3 id="_8">一个可用于面试的具体例子</h3>
+<p>CTR 下降 20% 但曝光量和候选数正常，进一步发现实时 user feature freshness 从 2 分钟变成 2 小时；回滚特征流即可恢复，无需回滚模型。</p>
+<p>面试里具体数字的价值不是“显得真实”，而是迫使方案满足数量级约束。即使没有真实业务数据，也可以明确说“下面用数量级举例”，然后说明候选数、样本量、维度、QPS 或延迟如何影响设计。</p>
+<h3 id="_9">工程决策矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>决策维度</th>
+<th>面试中要给出的证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>候选规模</td>
+<td>每层 input/output 数量、截断率、oracle 上限</td>
+</tr>
+<tr>
+<td>延迟</td>
+<td>P50/P95/P99、超时率、降级路径</td>
+</tr>
+<tr>
+<td>数据</td>
+<td>样本窗口、特征 freshness、标签延迟</td>
+</tr>
+<tr>
+<td>质量</td>
+<td>Recall/GAUC/NDCG 与线上 primary metric</td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>回滚、版本一致性、监控与事故隔离</td>
+</tr>
+</tbody>
+</table>
+<p>回答时不要把所有维度都平均展开。先指出当前题目的<strong>第一瓶颈</strong>，再解释为什么其他维度是二阶约束，这会比罗列术语更像真实工程决策。</p>
+<h3 id="_10">参考实现 / 伪代码</h3>
+<pre><code class="language-text">request
+  -&gt; load user/context features
+  -&gt; parallel_recall(routes, deadline)
+  -&gt; merge_dedup_quota
+  -&gt; coarse_rank
+  -&gt; fine_rank(multi_objective)
+  -&gt; rerank(constraints, diversity, exploration)
+  -&gt; expose + log(all_versions, candidates, scores)
+</code></pre>
+<p>这段代码不是为了背 API，而是帮助建立“输入—状态—输出—监控”的工程直觉。真实系统还应记录 feature/model/index/experiment 等版本，确保线上结果能够复现。</p>
+<h3 id="_11">边界条件与反例</h3>
+<p>只看全局均值会掩盖问题。必须切 region/app_version/user cohort/traffic source/model version，避免平均值把局部事故冲淡。</p>
+<p>一个强候选人应该主动说明<strong>什么时候不应该使用当前方法</strong>。这能证明你理解的是归纳偏置与业务条件，而不是模型名称。</p>
+<h3 id="_12">面试官继续追问时，建议用这套框架</h3>
+<ul>
+<li><strong>追公式</strong>：先定义符号，再说明每一项改变了什么概率/几何/梯度；</li>
+<li><strong>追为什么</strong>：从数据分布或复杂度出发，不用“实验发现更好”作为唯一理由；</li>
+<li><strong>追线上</strong>：给 P95/P99、候选数、内存、特征 freshness、回退路径；</li>
+<li><strong>追效果</strong>：区分离线增量、stage-wise oracle、线上 causal lift；</li>
+<li><strong>追失败</strong>：给至少一个会让方案失效的分布变化或系统约束。</li>
+</ul>
+<h3 id="senior-staff">Senior / Staff 级加分点</h3>
+<p>如果面试岗位偏高级，可以进一步讨论：</p>
+<ul>
+<li><strong>反事实与增量价值</strong>：新模块到底创造了新候选/新信息，还是复制已有能力；</li>
+<li><strong>Pareto frontier</strong>：质量、延迟、成本、稳定性之间是否存在更优点，而不是只报单指标；</li>
+<li><strong>可观测性</strong>：出现线上退化时，能否在 10~30 分钟内通过 dashboard/slice 定位到具体 stage；</li>
+<li><strong>可演进性</strong>：模型升级是否要求全量重建特征/索引，是否支持 shadow、canary 和快速 rollback；</li>
+<li><strong>组织成本</strong>：跨团队依赖、数据口径与长期维护是否会吞掉理论收益。</li>
+</ul>
+<h3 id="_13">进一步阅读（原始来源优先）</h3>
+<ul>
+<li>本题优先结合本页“参考资料”中的原始论文、官方技术材料与公开面经阅读；面经用于理解问法，论文用于校准技术事实。</li>
+</ul>
+<!-- V2_ENRICHMENT_END -->
+
+<h2 id="_14">工业级工程视角</h2>
+<ul>
+<li>排障先看全局/分桶/端上/版本/流量结构，再定位召回、特征、模型或实验系统。</li>
+<li>先明确规模：DAU/MAU、item 数、QPS、峰值流量、P50/P95/P99 SLA。</li>
+<li>把离线数据链路、在线特征链路、模型发布链路、实验链路分别画出来。</li>
+<li>任何模型提升都要回答：候选分布是否改变？latency 增量多少？回滚路径是什么？</li>
+<li>业务指标必须配护栏：例如 CTR 上升时同时看时长、负反馈、留存与生态指标。</li>
+</ul>
+<h3 id="_15">面试中建议主动报出的数字/约束</h3>
+<ul>
+<li>跌幅、发生时间、受影响端/人群、流量比例、最近发布版本、score/candidate 分布。</li>
+</ul>
+<h2 id="_16">推荐回答结构（白板版）</h2>
+<ol>
+<li>先用 1-2 句话定义核心概念或结论。</li>
+<li>再解释“为什么”，给出机制、公式或数据生成过程。</li>
+<li>补充工业约束：规模、延迟、样本分布、内存/算力或线上一致性。</li>
+<li>给出至少一个反例/失败模式，证明你理解适用边界。</li>
+<li>最后用线上验证方案收尾：离线分桶 + A/B + guardrail。</li>
+</ol>
+<h2 id="_17">常见失分</h2>
+<ul>
+<li><strong>PDF 原始失分点</strong>：“回滚模型”是应急动作，不等于根因分析。</li>
+<li>只讲架构图，不给规模、SLA、候选数和指标。</li>
+<li>只给“最佳实践”结论，不说明适用条件与失败边界。</li>
+</ul>
+<h2 id="_18">面试评分标准</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+<th>典型特征</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pass</strong></td>
+<td>能回答定义与主结论</td>
+<td>复述“先按“数据→流量→服务→特征→候选→模型→策略→实验”分层排查，优先验证是否为埋点、流量结构或服务故障，而不…”</td>
+</tr>
+<tr>
+<td><strong>Good</strong></td>
+<td>能讲机制、公式/流程与 1-2 个工程权衡</td>
+<td>主动讨论数据分布、复杂度、指标或线上约束</td>
+</tr>
+<tr>
+<td><strong>Strong</strong></td>
+<td>能讨论失败案例、替代方案、监控与 A/B 验证</td>
+<td>把问题放回完整推荐链路，并能承接 3-5 层追问</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_19">连续追问</h2>
+<ol>
+<li>如何判断是流量季节性还是系统故障？</li>
+<li>哪些监控应该预先建设？</li>
+<li>分数分布正常但 CTR 掉了说明什么？</li>
+<li>只有 iOS CTR 跌、Android 正常，你下一步查什么？</li>
+<li>如果 AUC 正常但线上 CTR 跌，最可能是哪几类问题？</li>
+</ol>
+<h2 id="_20">连续追问参考答案</h2>
+<h3 id="1">追问 1：如何判断是流量季节性还是系统故障？</h3>
+<p>对比历史同星期/节假日、外部活动与 control baseline，再看故障是否与版本、地域、端、feature freshness、错误率同步。季节性通常跨模型一致且平滑，系统故障常与某版本/链路突变高度相关。</p>
+<h3 id="2">追问 2：哪些监控应该预先建设？</h3>
+<p>至少有流量/曝光、candidate count、route overlap、feature missing/freshness、score distribution、各 stage P50/P99、timeout/fallback、业务 primary/guardrail，并能按 model/index/app/region/user cohort slice。</p>
+<h3 id="3-ctr">追问 3：分数分布正常但 CTR 掉了说明什么？</h3>
+<p>说明模型 raw score 本身未明显漂移，但展示环境、候选组成、位置、UI、埋点或用户流量可能变了。继续查 candidate overlap、position distribution、曝光日志、客户端版本和 calibration by slice。</p>
+<h3 id="4-ios-ctr-android">追问 4：只有 iOS CTR 跌、Android 正常，你下一步查什么？</h3>
+<p>优先查 iOS app/version 发布、埋点、UI/位置、网络/feature 请求、设备特征默认值和实验覆盖；再对比同模型下候选与 score 分布。端特异退化通常先从客户端/流量差异排，而不是重训全局模型。</p>
+<h3 id="5-auc-ctr">追问 5：如果 AUC 正常但线上 CTR 跌，最可能是哪几类问题？</h3>
+<p>候选分布/流量变了、train-serving skew、score calibration/阈值、位置/展示变化、延迟超时回退、策略覆盖或日志问题都可能。AUC 只说明离线排序能力，不验证线上数据和决策链。</p>
+<h2 id="_21">自测清单</h2>
+<ul>
+<li>[ ] 我能在 30-60 秒内先给结论，不绕模型历史。</li>
+<li>[ ] 我能写出关键公式/复杂度，或者画出完整系统链路。</li>
+<li>[ ] 我能说出至少两个失败模式或适用边界。</li>
+<li>[ ] 我能给出 offline → online 的验证方法。</li>
+<li>[ ] 我能承接至少 3 层追问而不回到背诵式答案。</li>
+</ul>
+<h2 id="_22">相关题目</h2>
+<ul>
+<li><span class="srcref">Q010. 如何评价一个推荐项目做得好不好？</span></li>
+<li><span class="srcref">Q006. 推荐系统里的北极星指标应该怎么选？</span></li>
+<li><span class="srcref">Q005. 如何从零设计一个短视频推荐系统？</span></li>
+<li><span class="srcref">Q003. 为什么推荐系统要做多路召回？</span></li>
+<li><span class="srcref">Q002. 召回、粗排、精排、重排分别解决什么问题？</span></li>
+<li><span class="srcref">Q001. 请完整介绍一个工业级推荐系统的链路</span></li>
+</ul>
+<h2 id="_23">参考资料</h2>
+<ul>
+<li><strong>[I1] 美团推荐算法面经（2025-11）</strong> — https://www.nowcoder.com/feed/main/detail/87082efbdcfb4023b536c06ada8ce1a1</li>
+<li><strong>[I2] 26 校招美团推荐算法一面（2025-12）</strong> — https://www.nowcoder.com/feed/main/detail/16e5b9c65159469983165ce7f37c1884</li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

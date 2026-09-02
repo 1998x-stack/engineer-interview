@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HMM：三个基本问题与两条核心假设 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q013</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q013</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q012.html">← Q012</a><a href="Q014.html">Q014 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">classical-nlp</a><a href="#">hmm</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 13 / 100</div>
+    <h1 class="qtitle">HMM：三个基本问题与两条核心假设</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★★  ·  <strong>频率</strong>：★★★★  ·  <strong>标签</strong>：<code>classical-nlp</code>, <code>hmm</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q013.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>HMM 的状态、观测、转移、发射分别是什么？三个基本问题如何求解？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>从概率图角度理解早期序列标注。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>先说模型建模对象与条件独立假设。</li>
+<li>能写出动态规划/打分函数并解释复杂度。</li>
+<li>能和神经网络/LLM 时代方案比较适用边界。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>HMM 是生成式序列模型，假设隐藏状态满足一阶马尔可夫，当前观测只依赖当前隐藏状态。Eval- uation 用 Forward，Decoding 用 Viterbi，Learning 常用 Baum-Welch/EM。</p>
+<h2 id="4">4. 白板核心公式</h2>
+<ul>
+<li>$P(x,z)=P(z_1)\prod_{t=2}^T P(z_t|z_{t-1})\prod_{t=1}^T P(x_t|z_t)$</li>
+</ul>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：联合分布可分解为初始状态、状态转移和发射概率的乘积。</li>
+<li><strong>PDF 基线要点</strong>：Forward 计算所有路径概率之和；Viterbi 只保留最优路径。</li>
+<li><strong>PDF 基线要点</strong>：HMM 对特征依赖假设强，难以使用丰富重叠特征。</li>
+<li><strong>扩展理解</strong>：HMM 的三类问题对应 Forward、Viterbi 与 Baum-Welch/EM，分别是求概率、求最优路径、估参数。</li>
+<li><strong>扩展理解</strong>：生成式假设带来可解释性，也限制了特征表达能力。</li>
+<li><strong>扩展理解</strong>：面试常追问前向算法与 Viterbi 的“sum-product vs max-product”差异。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="hmm">HMM 的所有算法来自同一个分解</h3>
+<ul>
+<li>HMM 联合分布可写为 $P(z_1)\prod_tP(z_t|z_{t-1})\prod_tP(x_t|z_t)$，依赖一阶 Markov 和 emission 条件独立假设。</li>
+<li>Forward 是对所有隐状态路径求和，Viterbi 是对所有路径取 max；递推结构相似，只是聚合代数不同。</li>
+<li>Baum–Welch 是 EM：E 步用 forward-backward 计算状态/转移后验期望，M 步更新初始、转移和 emission 参数。</li>
+</ul>
+<h3 id="_2">边界与工程</h3>
+<ul>
+<li>长序列概率连乘容易 underflow，应使用 log-space 或 scaling factors。</li>
+<li>K 个状态时训练/解码典型复杂度 $O(TK^2)$；稀疏转移可降低实际代价。</li>
+<li>HMM 的限制不是“传统”，而是观测生成假设和局部 Markov 结构使其难以利用任意上下文特征。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>给出状态/标签空间、独立性假设和训练/解码复杂度。</li>
+<li>区分局部 score、全局归一化与解码约束。</li>
+<li>真实 NLP 数据要考虑 OOV、标注规范、领域词典和 span 对齐。</li>
+</ul>
+<h3 id="_3">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>把 Forward 与 Viterbi 混淆。</li>
+<li>只背算法名称，不会写递推。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>Backward 算法作用？</li>
+<li>为什么 EM 能训练含隐变量模型？</li>
+</ol>
+<h3 id="_4">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://repository.upenn.edu/cis_papers/159/">CRF</a></li>
+<li><a href="https://nlp.stanford.edu/IR-book/html/htmledition/okapi-bm25-a-non-binary-model-1.html">BM25 overview (Stanford IR book)</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q012 Adam 与 AdamW 到底差在哪？</span></li>
+<li><span class="srcref">Q014 CRF 和 HMM 有什么根本区别？</span></li>
+<li><span class="srcref">Q015 BERT 后为什么还要接 CRF？</span></li>
+<li><span class="srcref">Q021 BM25 相比 TF‑IDF 改进了什么？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>HMM 的所有算法来自同一个分解</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

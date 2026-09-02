@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q032 ALiBi 与 RoPE 的思想有什么区别？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>Q032</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q032</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">3/5</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q031.html">← Q031</a><a href="Q033.html">Q033 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">position</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 32 / 110</div>
+    <h1 class="qtitle">Q032 ALiBi 与 RoPE 的思想有什么区别？</h1>
+    <blockquote>
+<p><strong>章节</strong>：3. 位置编码与 RoPE<br />
+<strong>难度</strong>：3/5 · <strong>频率</strong>：高频 · <strong>形式</strong>：概念 / 推导 / 追问<br />
+<strong>内容分层</strong>：<code>PDF Core</code> 来自原 PDF 的观点重排；<code>Professional Expansion</code> 为在不改变 PDF 主结论基础上的原创扩展。</p>
+</blockquote>
+<h2 id="1-pdf-core">1. 面试官在考什么 — PDF Core</h2>
+<p>比较“改变表示几何”和“改变注意力偏置”。</p>
+<h2 id="2-30-pdf-core">2. 30 秒回答 — PDF Core</h2>
+<blockquote>
+<p>ALiBi 直接在 attention logits 上加入与距离相关的线性 bias，通常让更远位置默认受到更大惩罚；RoPE 则旋转 Q/K，使点积结构包含相对位置。二者注入位置的位置和归纳偏置不同。 score_ij=q_iᵀk_j - m_h·|i-j|</p>
+</blockquote>
+<h2 id="3-shape">3. 核心公式 / Shape</h2>
+<p>ALiBi: $s_{ij}=q_i^Tk_j-m_h|i-j|$（具体方向形式依实现）。</p>
+<h2 id="4-pdf-core">4. 深度拆解 — PDF Core</h2>
+<ul>
+<li>ALiBi 不需要显式位置 embedding table。</li>
+<li>不同 head 可使用不同 slope。</li>
+<li>RoPE 的位置影响与内容向量点积耦合更深。</li>
+</ul>
+<h2 id="5-professional-expansion">5. Professional Expansion：为什么这题值得深挖</h2>
+<p>ALiBi 直接给 attention logit 加与距离相关的 head-specific bias；RoPE 改变 Q/K 几何。前者是 logit prior，后者是表征旋转。</p>
+<h3 id="51">5.1 工程实现 / 系统视角</h3>
+<p>比较是否增加缓存状态、是否改 Q/K、外推行为与 kernel 兼容性。</p>
+<h3 id="52">5.2 边界条件与反例</h3>
+<p>不要把两者都归为‘相对位置 embedding’就停止。</p>
+<h3 id="53">5.3 建议亲手做的验证实验</h3>
+<ul>
+<li>同一 toy model 替换 RoPE/ALiBi，观察 attention distance profile。</li>
+<li>记录至少一种 <strong>correctness metric</strong> 与一种 <strong>performance metric</strong>；不要只凭“代码能运行”判定实现正确。</li>
+</ul>
+<h3 id="54-3">5.4 3 分钟专业版答法</h3>
+<p>面试时可以按下面节奏展开：</p>
+<blockquote>
+<p><strong>第一句给结论</strong>：ALiBi 直接在 attention logits 上加入与距离相关的线性 bias，通常让更远位置默认受到更大惩罚；RoPE 则旋转 Q/K，使点积结构包含相对位置。二者注入位置的位置和归纳偏置不同。 score_ij=q_iᵀk_j - m_h·|i-j|<br />
+<strong>第二层讲机制</strong>：ALiBi 不需要显式位置 embedding table。；不同 head 可使用不同 slope。；RoPE 的位置影响与内容向量点积耦合更深。<br />
+<strong>第三层补工程条件</strong>：把本题放到真实 Tensor Shape、训练/推理阶段与硬件约束下重新检查；如果结论涉及“更快/更省/更稳定”，必须说明比较基线和适用条件。<br />
+<strong>最后主动给验证</strong>：用最小行为测试、数值 parity、profiler 或 ablation 证明，而不是停留在直觉。</p>
+</blockquote>
+<h3 id="55">5.5 复杂度与资源矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>本题应如何分析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>参数量</td>
+<td>Sin/Cos/RoPE 可无 learned position table；learned absolute PE 约 $T_{max}d$ 参数。</td>
+</tr>
+<tr>
+<td>FLOPs</td>
+<td>位置变换通常不是总 FLOPs 主项，但可能影响 fused kernel 与 cache 路径。</td>
+</tr>
+<tr>
+<td>KV Cache</td>
+<td>RoPE 类方法必须保证增量 K 的 position offset 与 full forward 一致。</td>
+</tr>
+<tr>
+<td>外推</td>
+<td>“可计算更长位置”与“有效长上下文”必须分开评估。</td>
+</tr>
+<tr>
+<td>主要验证</td>
+<td>position sweep、needle/retrieval、full-vs-cache parity。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="56">5.6 本题关键不变量</h3>
+<ul>
+<li>full forward 与 incremental decode 使用的 position id 必须语义一致。</li>
+<li>长度外推必须用超训练长度评测，而不是只看模型能否接收输入。</li>
+<li>位置机制改变的位置必须明确：embedding、Q/K、attention bias 或其他。</li>
+</ul>
+<h2 id="6">6. 面试中的推导顺序</h2>
+<ol>
+<li><strong>先定义</strong>：一句话说明对象是什么、输入输出是什么。</li>
+<li><strong>再公式</strong>：写最小核心公式，并标出关键维度。</li>
+<li><strong>解释 Why</strong>：它解决前一代方案的什么瓶颈。</li>
+<li><strong>算成本</strong>：参数、FLOPs、activation/KV memory、IO/通信分别看。</li>
+<li><strong>讲 Gotcha</strong>：至少指出一个数值或实现陷阱。</li>
+<li><strong>收束 Trade-off</strong>：明确什么条件下它不一定更优。</li>
+</ol>
+<h2 id="7-pdf-core">7. 常见失分点 — PDF Core</h2>
+<ul>
+<li>把 ALiBi 说成“另一种位置 embedding 向量”。</li>
+</ul>
+<h2 id="8-pdf-core">8. 面试官继续追问 — PDF Core</h2>
+<blockquote>
+<p>为什么不同 head 使用不同距离 slope 可能有意义？</p>
+</blockquote>
+<h3 id="_1">扩展追问树</h3>
+<ul>
+<li>如果把关键超参数扩大 4 倍，<strong>参数量 / FLOPs / 显存 / latency</strong> 哪一项最先成为瓶颈？</li>
+<li>如果在 <strong>训练</strong> 与 <strong>增量推理</strong> 两个阶段分别使用，本题结论有哪些不同？</li>
+<li>如何写一个最小单元测试或 ablation，证明你的解释而不是只靠直觉？</li>
+</ul>
+<h2 id="9-pdf-core">9. 一语中的 — PDF Core</h2>
+<p><strong>ALiBi 直接在 attention logits 上加入与距离相关的线性 bias，通常让更远位置默认受到更大惩罚；RoPE 则旋转 Q/K，使点 积结构包含相对位置。</strong></p>
+<h2 id="10-rubric">10. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>及格</td>
+<td>能给出 PDF 的 30 秒主干，不出现概念性错误。</td>
+</tr>
+<tr>
+<td>良好</td>
+<td>能写核心公式/shape，并解释为什么这样设计。</td>
+</tr>
+<tr>
+<td>优秀</td>
+<td>能讨论复杂度、数值/工程 gotcha，并回答至少 2 层追问。</td>
+</tr>
+<tr>
+<td>强 Hire 信号</td>
+<td>能把问题连接到训练/推理/硬件约束，主动提出验证实验或 ablation。</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>本题标注难度：<strong>3/5</strong>。难度越高，越看重 trade-off 和验证方法，而不只是定义。</p>
+</blockquote>
+<h2 id="11">11. 相关题目</h2>
+<ul>
+<li><span class="srcref">Q031 RoPE 为什么会遇到长上下文外推问题？</span></li>
+<li><span class="srcref">Q033 Position Interpolation 的基本思想是什么？</span></li>
+</ul>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></li>
+<li><a href="https://arxiv.org/abs/2108.12409">Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation</a></li>
+</ul>
+<!-- V2-EXPANSION-START -->
+
+<h2 id="13">13. 深入推导：把结论变成可验证的模型</h2>
+<p>RoPE 通过旋转 Q/K 改变几何；ALiBi 直接在 attention logits 加与距离相关的线性偏置。前者把位置信息嵌入特征交互，后者显式施加距离先验。</p>
+<p>ALiBi 不需要位置 embedding table，外推实现简单，但其线性距离偏置是一种较强先验；RoPE 表达更丰富但长长度需要处理频率外推。选型应以目标长度与训练 recipe 实验为准。</p>
+<h3 id="131">13.1 本章心智模型</h3>
+<blockquote>
+<p>把位置问题当作 pairwise geometry：绝对位置、相对位置、RoPE、外推与长上下文验证。</p>
+</blockquote>
+<p>这意味着面试时不要停在术语层。每个结论至少回答四个问题：<strong>成立所需假设是什么？张量/概率对象是什么？成本落在哪里？怎样设计反例或单测证伪？</strong></p>
+<h2 id="14-checklist">14. 题目特异的工程 Checklist</h2>
+<p><strong>position 检查表</strong></p>
+<ul>
+<li>分清 position signal 进入哪里：embedding、Q/K rotation、attention bias，还是 cache index。</li>
+<li>full forward 与 incremental decode 的 position id 必须一致。</li>
+<li>“支持更长输入”必须配合超训练长度质量评测。</li>
+<li>长位置下检查 sin/cos 计算精度、频率缩放和 cache offset。</li>
+</ul>
+<h2 id="15">15. 推荐验证协议</h2>
+<ol>
+<li><strong>Shift test</strong>：对可分析的小序列移动 position，观察相对关系是否符合设计。</li>
+<li><strong>Cache parity</strong>：full forward 与逐 token RoPE/cache logits 对齐。</li>
+<li><strong>Extrapolation sweep</strong>：按位置桶报告训练长度内外的质量，而非只报总体均值。</li>
+</ol>
+<p>验证结果建议至少记录：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>最低要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Correctness</td>
+<td>reference parity / invariant / leakage test 至少一项</td>
+</tr>
+<tr>
+<td>Numerical</td>
+<td>NaN/Inf、max/RMS、dtype 差异</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>wall-clock、显存/bytes、P95/P99（系统题）</td>
+</tr>
+<tr>
+<td>Quality</td>
+<td>loss/perplexity/任务指标；结构改动必须做回归</td>
+</tr>
+</tbody>
+</table>
+<h2 id="16">16. 面试官真正想听到的“边界条件”</h2>
+<ul>
+<li><strong>不要把渐进复杂度等同于实际速度</strong>：kernel、batch、长度、硬件与 IO 会改变主导项。</li>
+<li><strong>不要把一种实现当成数学定义</strong>：mask 语义、layout、fused kernel、cache allocator 都可能变化。</li>
+<li><strong>不要把单点 benchmark 当成普遍规律</strong>：至少说明 $B,T,d,H$、dtype、device 和任务分布。</li>
+<li><strong>不要把“能运行”当成“正确”</strong>：Transformer 很多 bug 会正常降 loss，但存在未来泄漏、错误广播或 cache position 错位。</li>
+</ul>
+<h2 id="17-whiteboard-coding">17. Whiteboard / Coding 表达模板</h2>
+<p>当面试官要求现场推导或编码，可按以下顺序：</p>
+<ol>
+<li>写输入输出 shape 与符号定义；</li>
+<li>写最小核心公式，不先写优化；</li>
+<li>写 2–3 个 invariants/assertions；</li>
+<li>给 reference 实现或手算小例子；</li>
+<li>再讨论 fused kernel、cache、并行或量化；</li>
+<li>最后给测试与 benchmark 设计。</li>
+</ol>
+<blockquote>
+<p><strong>Strong Hire 信号</strong>：不仅能解释“为什么”，还能说出“什么情况下不成立，以及我会怎么证明”。</p>
+</blockquote>
+<!-- V2-EXPANSION-END -->
+
+<hr />
+<p>← <span class="srcref">Q031</span> · <span class="srcref">返回 100 题索引</span> · <span class="srcref">Q033</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

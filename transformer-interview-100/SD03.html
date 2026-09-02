@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD03 估算一个 LLM 服务能承载多少并发 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD03</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD03</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="SD02.html">← SD02</a><a href="SD04.html">SD04 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">capacity</a><a href="#">kv-cache</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 103 / 110</div>
+    <h1 class="qtitle">SD03 估算一个 LLM 服务能承载多少并发</h1>
+    <h2 id="1">1. 先做“显存上限”，再做“延迟上限”</h2>
+<p>最大并发不是单一显存公式。真实并发：</p>
+<p>[
+C_{real}=\min(C_{memory}, C_{latency}, C_{scheduler}, C_{throughput})
+]</p>
+<h2 id="2">2. 显存账本</h2>
+<p>GPU 可用显存减去：</p>
+<ol>
+<li>模型权重；</li>
+<li>runtime / NCCL / CUDA context；</li>
+<li>kernel workspace / CUDA graph；</li>
+<li>KV cache pool；</li>
+<li>adapter / logits / sampling buffer；</li>
+<li>safety margin。</li>
+</ol>
+<h3 id="kv">KV 主项</h3>
+<p>单请求：</p>
+<p>[
+M_{req}=2LT H_{kv}D_hs
+]</p>
+<p>若长度动态，必须使用请求的“当前 token 数”或容量规划分位数。</p>
+<h3 id="_1">示例</h3>
+<p>32 层、8 KV heads、head dim 128、BF16、32K tokens：</p>
+<p>[
+M_{req}\approx 4.0\ GiB
+]</p>
+<p>这说明 32K 并发服务的核心压力可能不是参数，而是 KV。</p>
+<h2 id="3-gqamqa">3. GQA/MQA 的容量影响</h2>
+<p>若从 $H_q=32$ 的 MHA 改成 $H_{kv}=8$ 的 GQA，K/V 主项约降至 1/4。若 MQA $H_{kv}=1$，进一步下降。</p>
+<p>但不要只用 cache 公式判断模型质量，需要训练/微调验证。</p>
+<h2 id="4-length-distribution">4. Length Distribution</h2>
+<p>平均长度几乎从来不够：</p>
+<ul>
+<li>P50 prompt 可能 800；</li>
+<li>P95 8K；</li>
+<li>P99 32K。</li>
+</ul>
+<p>少数长请求会占据大量 KV blocks 并拖高 decode iteration 时间。</p>
+<p>建议按 token buckets 做 admission / quotas。</p>
+<h2 id="5">5. 延迟约束</h2>
+<p>即使显存还能放更多 request，batch 增大后每个 decode iteration 变慢，TPOT 可能超过 SLA。因此通过 sweep 得到：</p>
+<pre><code class="language-text">concurrency → TTFT / TPOT / tokens/s / KV occupancy
+</code></pre>
+<p>真实容量取 SLA 边界点，不取 OOM 点。</p>
+<h2 id="6-prefix-sharing">6. Prefix Sharing</h2>
+<p>若大量请求共享 system prompt，可共享 prefix KV，从而降低重复 cache。但容量模型要考虑：</p>
+<ul>
+<li>prefix cache hit rate；</li>
+<li>unique suffix；</li>
+<li>eviction；</li>
+<li>tenant isolation。</li>
+</ul>
+<h2 id="7-beam-best-of-n">7. Beam / Best-of-N</h2>
+<p>生成多个候选常近似乘大 decoder state/KV 成本；若底层实现支持共享 prefix blocks，可降低初期复制，但分叉后仍增长。</p>
+<h2 id="8">8. 容量规划表</h2>
+<table>
+<thead>
+<tr>
+<th>输入</th>
+<th>必填</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model</td>
+<td>L, Hq, Hkv, Dh, dtype</td>
+</tr>
+<tr>
+<td>Hardware</td>
+<td>GPU count, memory, interconnect</td>
+</tr>
+<tr>
+<td>Traffic</td>
+<td>QPS, prompt/output P50/P95/P99</td>
+</tr>
+<tr>
+<td>SLA</td>
+<td>TTFT/TPOT/P99</td>
+</tr>
+<tr>
+<td>Runtime</td>
+<td>block size, max batched tokens</td>
+</tr>
+<tr>
+<td>Features</td>
+<td>prefix cache, LoRA, speculative</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 线上保护</h2>
+<ul>
+<li>hard max context；</li>
+<li>per-tenant token quota；</li>
+<li>admission control；</li>
+<li>queue timeout；</li>
+<li>KV occupancy high-watermark；</li>
+<li>graceful shedding。</li>
+</ul>
+<h2 id="10">10. 面试官加压</h2>
+<p><strong>“80GB H100 可以放多少个请求？”</strong></p>
+<p>不能直接回答一个数字。先扣权重/runtime，再代入模型 KV 公式和长度分布，最后用 P99 latency benchmark 校正。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

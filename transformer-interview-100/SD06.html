@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD06 Transformer 预训练数据 Packing · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD06</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD06</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="SD05.html">← SD05</a><a href="SD07.html">SD07 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">data</a><a href="#">training</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 106 / 110</div>
+    <h1 class="qtitle">SD06 Transformer 预训练数据 Packing</h1>
+    <h2 id="1-packing">1. 为什么需要 Packing</h2>
+<p>固定最大长度 $T$ 时，若每篇文档单独 padding，会浪费大量 token compute。Packing 把多篇短文填入同一训练 sequence，提高 token utilization。</p>
+<p>[
+utilization=\frac{real\ tokens}{allocated\ tokens}
+]</p>
+<h2 id="2">2. 最关键语义：文档边界</h2>
+<p>简单 concat 有两种选择：</p>
+<h3 id="attention">允许跨文档 attention</h3>
+<p>更简单、吞吐高，但模型可看到无关下一文档。</p>
+<h3 id="block-diagonal-attention-document-mask">Block-diagonal attention / document mask</h3>
+<p>每篇文档只看本篇历史，语义更干净，但 mask/kernel 更复杂。</p>
+<p>要明确你采用哪一种，不能只说“pack 到 4K”。</p>
+<h2 id="3-eos-bos">3. EOS / BOS</h2>
+<p>文档之间至少需要 EOS/boundary signal。是否添加 BOS、是否对 EOS 计 loss、空文档如何处理，都需固定 tokenizer recipe。</p>
+<h2 id="4-loss-mask">4. Loss Mask</h2>
+<ul>
+<li>padding 不计 loss；</li>
+<li>boundary token 是否计 loss要定义；</li>
+<li>SFT packing 还要 mask user/system token，只训练 assistant 部分（取决于目标）。</li>
+</ul>
+<p>Attention mask 和 loss mask 不同。</p>
+<h2 id="5-packing">5. Packing 算法</h2>
+<p>可视作 bin packing：</p>
+<ul>
+<li>first-fit / best-fit；</li>
+<li>sort by length；</li>
+<li>streaming buffer；</li>
+<li>bucketed packing。</li>
+</ul>
+<p>追求 utilization 的同时不能导致过大 CPU preprocessing 和 shuffle 偏差。</p>
+<h2 id="6">6. 数据混合</h2>
+<p>若把不同 domain 混在同一 pack，要确认：</p>
+<ul>
+<li>sampling ratio；</li>
+<li>document IDs；</li>
+<li>provenance；</li>
+<li>contamination；</li>
+<li>domain boundary。</li>
+</ul>
+<h2 id="7">7. 分布式数据加载</h2>
+<p>每个 rank 应消费不重叠 shard；恢复训练时要保存数据位置。packing 若依赖随机 buffer，resume determinism 更难，需要记录 RNG/buffer state 或接受近似恢复。</p>
+<h2 id="8">8. 质量测试</h2>
+<ul>
+<li>token utilization；</li>
+<li>documents/pack 分布；</li>
+<li>length histogram；</li>
+<li>boundary leakage test；</li>
+<li>label shift sanity；</li>
+<li>data source mix；</li>
+<li>duplicate rate。</li>
+</ul>
+<h2 id="9">9. 性能测试</h2>
+<p>比较：</p>
+<pre><code class="language-text">unpacked vs packed
+→ tokens/s
+→ MFU
+→ host CPU
+→ dataloader wait
+→ peak memory
+</code></pre>
+<p>如果 GPU 利用率没提高，瓶颈可能已在 attention/IO，而不是 padding。</p>
+<h2 id="10">10. 追问</h2>
+<p><strong>为什么 packing 有时会伤质量？</strong> 边界处理错误、跨文档无意义依赖、sampling/shuffle 改变。</p>
+<p><strong>为什么 SFT packing 更难？</strong> 需要 conversation boundary、assistant-only loss、不同模板和 sequence truncation 语义。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shadow Acne 和 Peter Panning 为什么出现？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Game Engine</a><i>∕</i><span>Q066</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q066</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">Intermediate</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q065.html">← Q065</a><a href="Q067.html">Q067 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">pbr</a><a href="#">ray-tracing</a><a href="#">shadows</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      GAME ENGINE · GRAPHICS · 66 / 100</div>
+    <h1 class="qtitle">Shadow Acne 和 Peter Panning 为什么出现？</h1>
+    <blockquote>
+<p>[!IMPORTANT]
+<strong>内容分层</strong>：<code>PDF 核心内容</code>严格以仓库附带的原 PDF 为基线；<code>专业扩展</code>是为了让题目达到更强的工程面试深度，来自通用工程知识与下方列出的官方/权威资料。两者刻意分开，便于追踪来源。</p>
+</blockquote>
+<p><strong>章节</strong>：PBR、阴影、GI 与 Ray Tracing<br />
+<strong>学习级别</strong>：<code>Intermediate</code>（仓库学习分级，不是对 PDF 星级符号的重解释）<br />
+<strong>PDF 位置</strong>：物理页 81<br />
+<strong>来源口径</strong>：公开面经/官方资料可核验 · [M1]</p>
+<hr />
+<h2 id="1">1. 这道题在考什么</h2>
+<p>这题属于 <strong>PBR、阴影、GI 与 Ray Tracing</strong>。面试官通常不是只听一个定义，而是在判断你能否把答案推进到：</p>
+<ol>
+<li><strong>机制</strong>：数据/状态究竟怎样流动；</li>
+<li><strong>成本</strong>：CPU、GPU、内存、同步或数值误差的成本在哪里；</li>
+<li><strong>Trade-off</strong>：什么场景适合，什么场景会失败；</li>
+<li><strong>Engine Context</strong>：在真实 renderer / core / asset / simulation 中怎么落地；</li>
+<li><strong>Evidence</strong>：如何通过 profiler、测试、frame capture 或汇编证明判断。</li>
+</ol>
+<p>本章常见工程落点：material shading、shadow/GI、ray tracing / offline reference。</p>
+<hr />
+<h2 id="2-30-pdf">2. 30 秒回答（PDF 核心内容）</h2>
+<p>离散 shadow depth 与浮点/采样误差使表面自比较时产生假阴影；加 bias 可缓解，但 bias 过大让阴影与物体分离，形成 Peter Panning。</p>
+<hr />
+<h2 id="3-pdf-source-derived">3. PDF 深入拆解（Source-derived）</h2>
+<p>常见 bias 包括 constant depth bias、slope-scaled bias 和 normal offset。斜表面尤其容易出现 depth gradient 误差，因此 slope bias 根据表面倾斜程度增加偏移。PCF/软阴影扩大采样范围后 bias 需求也可能变化。没有一个固定 bias 对所有 cascades/距离都最佳，常需按 texel world size 缩放。</p>
+<h3 id="pdf">PDF 核心抓手</h3>
+<ul>
+<li>acne 是自阴影误判</li>
+<li>bias 是精度补偿</li>
+<li>slope/normal bias 各有用途</li>
+<li>bias 与 shadow texel size 应关联</li>
+</ul>
+<h3 id="pdf-gotcha">PDF 工程 Gotcha</h3>
+<p>只把 bias 数值调大直到 acne 消失，导致远距离阴影漂浮。</p>
+<h3 id="pdf_1">PDF 面试官在听什么</h3>
+<p>是否能把视觉伪影追溯到采样/精度。</p>
+<hr />
+<h2 id="4-repository-v2">4. 专业扩展（Repository v2）</h2>
+<p>这一节不再重复 PDF 的“定义答案”，而是把问题推进到 <strong>可实现、可测量、可讨论 trade-off</strong> 的层级。面试时不要求把下面所有内容一次讲完；更好的策略是先给结论，再根据面试官追问选择其中 2–3 个层次深入。</p>
+<h3 id="41">4.1 先修知识与概念边界</h3>
+<ul>
+<li>shadow map quantization</li>
+<li>depth bias</li>
+<li>surface slope</li>
+<li>normal bias</li>
+</ul>
+<h3 id="42">4.2 核心心智模型</h3>
+<p>Shadow Acne 来自“同一个表面在 shadow pass 与 camera pass 的离散深度/采样不完全相同”，比较时会错误认为自身更远。Bias 把 receiver/caster 深度人为分离；太大就让阴影脱离，形成 Peter Panning。</p>
+<h3 id="43">4.3 底层机制：逐层拆开</h3>
+<ul>
+<li>Constant depth bias 对所有 fragment 加固定偏移，简单但斜面所需偏移不同。</li>
+<li>Slope-scaled bias 与 <code>max depth slope</code> 相关，斜视 surface 需要更大偏移。</li>
+<li>Normal bias 沿 receiver normal 偏移 sample point，在斜面更直观但会改变几何位置。</li>
+<li>Shadow map texel footprint/PCF kernel 变大时，所需 receiver-plane bias 也可能变化。</li>
+</ul>
+<h3 id="44">4.4 必须守住的不变量 / 正确性条件</h3>
+<ul>
+<li>没有一个 bias 数值对所有 cascade、分辨率、光角度都完美。</li>
+</ul>
+<p>这些不变量比“记住某个 API”更重要：平台、实现或引擎版本可以变化，但只要不变量没变，你就能重新推导正确方案。</p>
+<h3 id="45-trade-off">4.5 Trade-off：什么时候该用，什么时候不该用</h3>
+<ul>
+<li>小 bias→acne；大 bias→detached shadow/light leak。</li>
+<li>提高 shadow resolution 减少量化问题但不能完全消除 slope mismatch。</li>
+</ul>
+<h3 id="46">4.6 在真实游戏引擎中的落点</h3>
+<ul>
+<li>CSM 每 cascade 使用不同 world-units-per-texel，因此 bias 常随 cascade scale。</li>
+<li>Contact shadow/SS shadow 可补偿大 bias 造成的接触缺失。</li>
+</ul>
+<h3 id="47">4.7 最小实现 / 数学骨架</h3>
+<pre><code class="language-text">shadowed = currentDepth - bias &gt; sampledDepth
+Bias often = constant + slopeScale * slope (+ normal offset)
+</code></pre>
+<blockquote>
+<p><strong>面试建议</strong>：代码或公式不是为了炫技。写完后要解释：输入是什么、输出是什么、最贵的步骤在哪里、哪个条件一旦破坏就会出错。</p>
+</blockquote>
+<h3 id="48-profiling-validation">4.8 Profiling / Validation：如何证明你的判断</h3>
+<ul>
+<li>提供 bias debug sliders 和 cascade-specific visualization。</li>
+<li>构造 grazing-angle plane/细小接触物 stress test。</li>
+</ul>
+<h3 id="49">4.9 常见错误答案与为什么错</h3>
+<ul>
+<li>“Peter Panning 是 PCF 导致。”——根因通常是过大的 bias/几何偏移。</li>
+<li>“把 bias 调到没有 acne 就结束。”——必须检查接触、远近 cascade、不同光角。</li>
+</ul>
+<h3 id="410-senior">4.10 Senior 级追问与参考思路</h3>
+<ol>
+<li><strong>Receiver-plane depth bias 是什么？</strong><br />
+   利用 receiver plane 在 shadow-map footprint 内的深度变化估计每个 sample 需要的偏移，比固定 bias 更自适应。</li>
+<li><strong>为什么 normal bias 会让 thin geometry 出问题？</strong><br />
+   沿 normal 移动 receiver 可穿过薄表面/边界，导致漏光或形状变化。</li>
+</ol>
+<h3 id="411">4.11 推荐实战</h3>
+<blockquote>
+<p>做 bias lab：constant/slope/normal 三种开关，记录 acne 与 contact error 随光角和分辨率的变化。</p>
+</blockquote>
+<p>完成实战时建议保留 <strong>baseline、指标、实验变量、结果、结论</strong> 五项记录。真正能在面试中形成 Senior signal 的不是“我写过”，而是“我能解释为什么这个实现更快/更稳，以及证据是什么”。</p>
+<h2 id="5">5. 如何验证，而不是“凭感觉优化”</h2>
+<ul>
+<li>用 reference/path tracer 或离线 ground truth 做视觉对比</li>
+<li>同时观察 variance、bias、sample count 与 GPU cost</li>
+<li>对阴影/BRDF 参数做极端值测试，避免只看“正常材质”</li>
+</ul>
+<h3 id="_1">推荐实战</h3>
+<blockquote>
+<p>实现一个 CPU reference 或 shader demo，对照公式和可视化结果验证。</p>
+</blockquote>
+<hr />
+<h2 id="6-gotchas">6. 工程 Gotchas（扩展）</h2>
+<ul>
+<li>“物理正确”与“实时可承受”之间总有采样/近似预算</li>
+<li>任何 sampling 技术都要同时说明 PDF、bias/variance 与 estimator</li>
+</ul>
+<hr />
+<h2 id="7">7. 高频追问树</h2>
+<ol>
+<li><strong>receiver-plane depth bias 是什么？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+<li><strong>Reverse-Z shadow map 会改变 bias 方向吗？</strong><br />
+   先给结论，再说明机制、一个边界条件，以及在引擎中的实际后果；必要时用上方 Senior 级参考思路展开。</li>
+</ol>
+<hr />
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 - 记忆点</td>
+<td>只能给出一个术语或结论，无法解释原因。</td>
+</tr>
+<tr>
+<td>1 - 原理</td>
+<td>能解释核心机制与至少一个关键不变量。</td>
+</tr>
+<tr>
+<td>2 - 工程</td>
+<td>能讨论 trade-off、边界条件，并把它落到真实引擎模块。</td>
+</tr>
+<tr>
+<td>3 - Senior signal</td>
+<td>能给出可测量的成本模型、profiling/验证方法和替代方案。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2">2 分钟回答组织法</h3>
+<ol>
+<li>用 PDF 的“30 秒回答”先给结论；</li>
+<li>选择 <strong>2 个机制点</strong> 展开，不要一次倾倒全部知识；</li>
+<li>给出 <strong>1 个真实引擎场景</strong>；</li>
+<li>主动补 <strong>1 个 Gotcha / 失败条件</strong>；</li>
+<li>用 <strong>1 个 profiler / test / counter</strong> 收尾，说明如何验证。</li>
+</ol>
+<hr />
+<h2 id="9">9. 关联题目</h2>
+<ul>
+<li><span class="srcref">Q065 · Shadow Mapping 原理是什么？</span></li>
+<li><span class="srcref">Q067 · PCF 和 PCSS 有什么区别？</span></li>
+</ul>
+<hr />
+<h2 id="10">10. 参考资料</h2>
+<ul>
+<li><a href="docs/assets/book/game-engine-interview-100.pdf">仓库附带 PDF</a> - 本题 PDF 基线内容，物理页 81。</li>
+<li><a href="https://www.nowcoder.com/discuss/353157907686563840">[M1] 腾讯游戏引擎研发实习面经（候选人回忆）</a></li>
+<li><a href="https://pbr-book.org/4ed/contents">PBRT 4th edition (online)</a></li>
+<li><a href="https://www.realtimerendering.com/">Real-Time Rendering resources</a></li>
+</ul>
+<blockquote>
+<p>对候选人面经类链接：仅用于证明某类考察主题曾公开出现，不代表公司官方题库，也不代表问题会原样出现。</p>
+</blockquote>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

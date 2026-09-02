@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>中文分词：传统方法与 LLM 时代如何看？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q017</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q017</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q016.html">← Q016</a><a href="Q018.html">Q018 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">classical-nlp</a><a href="#">llm</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 17 / 100</div>
+    <h1 class="qtitle">中文分词：传统方法与 LLM 时代如何看？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★  ·  <strong>频率</strong>：★★★  ·  <strong>标签</strong>：<code>classical-nlp</code>, <code>llm</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q017.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>中文分词有哪些经典方法？为什么它与 BPE/SentencePiece 的 tokenization 不是同一个问 题？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>区分 NLP task segmentation 与 tokenizer segmentation。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>先说模型建模对象与条件独立假设。</li>
+<li>能写出动态规划/打分函数并解释复杂度。</li>
+<li>能和神经网络/LLM 时代方案比较适用边界。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>中文分词任务目标是恢复“词”边界，可用词典、HMM、CRF、BiLSTM-CRF、BERT 标注；LLM tokenizer 的 subword 切分主要服务模型计算与词表压缩，不保证语言学意义上的词。</p>
+<h2 id="4">4. 白板核心结构</h2>
+<p>本题更强调概念结构与工程权衡。面试时优先画出数据流、状态转移或模块关系，再补充必要公式。</p>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：最大匹配依赖词典，简单但歧义处理弱。</li>
+<li><strong>PDF 基线要点</strong>：序列标注可用 B/M/E/S 或 BIO 标签。</li>
+<li><strong>PDF 基线要点</strong>：下游任务未必需要显式中文分词，端到端 subword 模型常直接学习。</li>
+<li><strong>扩展理解</strong>：中文 word segmentation 与 tokenizer segmentation 是两个概念：前者是语言学任务，后者是模型输入编码。</li>
+<li><strong>扩展理解</strong>：LLM 时代仍可能需要显式分词，例如搜索索引、词典特征、可解释标注。</li>
+<li><strong>扩展理解</strong>：评估通常用 boundary/span F1，而不是只看 token accuracy。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="tokenizer">“中文分词”与“Tokenizer”不是一回事</h3>
+<ul>
+<li>中文分词是语言学/任务层的词边界预测；BPE/WordPiece/SentencePiece 是模型输入单位的构造，两者目标完全不同。</li>
+<li>传统 CWS 可用 B/M/E/S 序列标签建模，从 HMM/CRF 到 BiLSTM/BERT-CRF；现代 LLM 不一定需要显式词边界才能建模中文。</li>
+<li>但搜索、词法分析、实体对齐等系统仍可能需要可解释词粒度，因此分词没有因为 LLM 出现而“消失”。</li>
+</ul>
+<h3 id="_2">边界与工程</h3>
+<ul>
+<li>不同标注规范对专名、数字、组合词的切分并不唯一；必须先明确 gold standard。</li>
+<li>搜索系统常使用词、字、字符 n-gram 多粒度索引，降低单一分词错误对 recall 的不可逆影响。</li>
+<li>评估除了总体 F1，还要看 OOV recall、领域新词和歧义句 slice。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>给出状态/标签空间、独立性假设和训练/解码复杂度。</li>
+<li>区分局部 score、全局归一化与解码约束。</li>
+<li>真实 NLP 数据要考虑 OOV、标注规范、领域词典和 span 对齐。</li>
+</ul>
+<h3 id="_3">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>把“Tokenizer”与“中文分词”混为一谈。</li>
+<li>只列工具名。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>新词发现怎么做？</li>
+<li>分词错误会如何传播到检索/NER？</li>
+</ol>
+<h3 id="_4">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://repository.upenn.edu/cis_papers/159/">CRF</a></li>
+<li><a href="https://nlp.stanford.edu/IR-book/html/htmledition/okapi-bm25-a-non-binary-model-1.html">BM25 overview (Stanford IR book)</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q016 CRF 的 Emission 与 Transition Matrix 分别表示什么？</span></li>
+<li><span class="srcref">Q018 NER 模型为什么从 HMM 演化到 BERT/LLM？</span></li>
+<li><span class="srcref">Q015 BERT 后为什么还要接 CRF？</span></li>
+<li><span class="srcref">Q021 BM25 相比 TF‑IDF 改进了什么？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>“中文分词”与“Tokenizer”不是一回事</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

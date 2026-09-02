@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么 calibration 在真实视觉系统里重要？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Vision</a><i>∕</i><span>Q088</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q088</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">4</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">4</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q087.html">← Q087</a><a href="Q089.html">Q089 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">data-training-evaluation</a><a href="#">calibration</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      VISION · 88 / 100</div>
+    <h1 class="qtitle">为什么 calibration 在真实视觉系统里重要？</h1>
+    <h2 id="_1">题目画像</h2>
+<ul>
+<li><strong>章节</strong>：数据、训练与 Evaluation</li>
+<li><strong>难度</strong>：★★★★</li>
+<li><strong>面试频度</strong>：★★★★</li>
+<li><strong>来源标签</strong>：基础高频</li>
+<li><strong>一句话记忆</strong>：模型分数不只要会排序，还要知道自己多确定。</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p>置信度常被用于阈值、拒识、人审路由和风险控制，因此概率是否可信直接影响系统决策。</p>
+<p>如果只能再补一句：<strong>模型分数不只要会排序，还要知道自己多确定。</strong></p>
+<h2 id="_2">面试官真正想听什么</h2>
+<p>这题不是只检查名词记忆，而是在看你能否把<strong>机制、边界条件和工程后果</strong>连起来。一个高质量回答至少覆盖下面三个层次：</p>
+<ol>
+<li><strong>定义/结构</strong>：先说明对象是什么，避免一上来堆历史或模块名。</li>
+<li><strong>为什么有效</strong>：用关键公式或信息流解释机制，而不是只说“效果更好”。</li>
+<li><strong>什么时候会失效</strong>：主动给出 trade-off、数据条件与部署注意事项。</li>
+</ol>
+<h2 id="2-5">2-5 分钟标准回答</h2>
+<h3 id="1">1. 核心要点</h3>
+<p>理想 calibration：置信度0.9的样本约90%正确</p>
+<p><strong>深入理解：</strong> 数据与评测题最能体现工程成熟度。先定义目标和切片，再讨论采样/损失/增强；所有“涨点”都需要通过数据泄漏检查、多个随机种子、置信区间和 failure migration 验证。</p>
+<h3 id="2">2. 核心要点</h3>
+<p>ECE/reliability diagram 比较 confidence 与 empirical accuracy</p>
+<p><strong>深入理解：</strong> 数据与评测题最能体现工程成熟度。先定义目标和切片，再讨论采样/损失/增强；所有“涨点”都需要通过数据泄漏检查、多个随机种子、置信区间和 failure migration 验证。</p>
+<h3 id="3">3. 核心要点</h3>
+<p>Temperature scaling 学一个 T 调 logits，不改变 argmax，但 distribution shift 下校准仍可能失效</p>
+<p><strong>深入理解：</strong> 数据与评测题最能体现工程成熟度。先定义目标和切片，再讨论采样/损失/增强；所有“涨点”都需要通过数据泄漏检查、多个随机种子、置信区间和 failure migration 验证。</p>
+<h2 id="_3">关键公式 / 数学口径</h2>
+<p>Temperature scaling 对 logits $z$ 做：</p>
+<p>$$
+p=\mathrm{softmax}(z/T)
+$$</p>
+<p>在验证集上只优化标量 $T$，不改变类别排序，主要改善概率校准。</p>
+<h2 id="_4">深入解析：从原理到工程</h2>
+<p>数据与评测题最能体现工程成熟度。先定义目标和切片，再讨论采样/损失/增强；所有“涨点”都需要通过数据泄漏检查、多个随机种子、置信区间和 failure migration 验证。</p>
+<p>对 <strong>Q088</strong> 尤其要注意：高风险业务应设计 abstention/human review 并按业务成本选阈值。 这不是附加知识，而是把理论答案变成“可上线判断”的关键一步。</p>
+<h3 id="_5">推荐的口述顺序</h3>
+<pre><code class="language-text">一句定义 → 关键公式/结构 → 设计动机 → 优势 → 局限/失败模式 → 工程验证
+</code></pre>
+<h2 id="_6">高频追问与参考答案</h2>
+<h3 id="1calibration-accuracy">追问 1：Calibration 与 accuracy 有何区别？</h3>
+<p>accuracy 只看 top-1 是否正确；calibration 关心预测概率是否匹配真实频率。两个模型 accuracy 相同，置信度可靠性可以完全不同。</p>
+<p><strong>回答加分点：</strong> 最后补一句它会如何改变指标、训练稳定性或部署成本；若答案依赖实现约定，先声明约定。</p>
+<h3 id="2ood-calibration">追问 2：OOD 与 calibration 什么关系？</h3>
+<p>模型可能对 OOD 样本仍给很高置信度，所以 ID calibration 好并不保证 OOD detection 好；需要单独的 OOD score、reject policy 和覆盖测试。</p>
+<p><strong>回答加分点：</strong> 最后补一句它会如何改变指标、训练稳定性或部署成本；若答案依赖实现约定，先声明约定。</p>
+<h2 id="_7">常见失分点</h2>
+<ul>
+<li>softmax 最大值不能直接当真实概率。</li>
+<li>只背结论，不解释“为什么”，或没有指出结论成立的前提。</li>
+<li>论文/离线结论直接套到自己的数据，却没有给出切片实验或消融。</li>
+</ul>
+<h2 id="_8">工程 / 项目视角</h2>
+<p>高风险业务应设计 abstention/human review 并按业务成本选阈值。</p>
+<p>建议把自己的项目补成以下四个事实：</p>
+<ul>
+<li><strong>数据条件</strong>：这个机制在哪些尺寸/类别/光照/噪声/设备上最重要？</li>
+<li><strong>评价切片</strong>：不能只看总体均值，至少有一个与本题机制直接相关的 slice。</li>
+<li><strong>成本</strong>：训练显存、参数量、FLOPs、目标硬件 latency、前后处理成本至少知道一个。</li>
+<li><strong>回归</strong>：新增方案让哪些场景变差？上线前如何兜底？</li>
+</ul>
+<h2 id="v2">V2 专业深化</h2>
+<blockquote>
+<p>这一节是在 PDF/原题解基础上的<strong>专业扩展</strong>：用于把“会答”提升到“能推导、能诊断、能做工程决策”。其中的扩展内容属于通用计算机视觉与工程知识，不用于声称某家公司曾逐字问过这些内容。</p>
+</blockquote>
+<h3 id="1_1">1. 更精确的技术表述</h3>
+<ul>
+<li>calibration 关心“预测概率是否对应真实正确率”，与 top-1 accuracy 是不同属性；高准确模型也可能极度过度自信。</li>
+<li>ECE 是常用但依赖分桶的 summary，可靠性图、NLL/Brier score 能提供互补信息；temperature scaling 是简单后处理。</li>
+<li>拒识、人审路由、风险阈值和多模型级联都依赖置信度，因此线上应在目标域重新做 calibration。</li>
+</ul>
+<h3 id="2_1">2. 回答时必须显式声明的前提</h3>
+<ul>
+<li>数据题先问“分布是什么、标签怎么来、采样怎样改变先验、指标是否与业务一致”。</li>
+<li>实验设计要控制 confounder、随机性和数据泄漏；只报 best score 不能支持因果结论。</li>
+<li>线上决策还需要 calibration、切片、置信区间和持续监控。</li>
+</ul>
+<p>面试中尤其建议先把输入/输出、坐标或 tensor shape、训练/推理阶段以及评价口径说清楚。很多看似“知识点错误”的争论，本质是双方默认的实现约定不同。</p>
+<h3 id="3_1">3. 从“结论”推进到“机制”的推理链</h3>
+<p>针对 <strong>为什么 calibration 在真实视觉系统里重要？</strong>，推荐强制自己完成以下链条：</p>
+<pre><code class="language-text">现象/任务约束
+  → 数学对象或网络中的信息流
+  → 为什么当前设计能改变梯度/表示/几何/搜索空间
+  → 得到什么收益
+  → 付出什么代价
+  → 哪些数据分布下会失效
+  → 用什么切片实验和 profiler 证明
+</code></pre>
+<p>不要把“论文上更好”当作最后一层证据。真正专业的答案需要把方法映射到<strong>具体 failure mode</strong>，再设计能证伪自己的实验。</p>
+<h3 id="4">4. 工程诊断矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>观察到的现象</th>
+<th>优先怀疑</th>
+<th>最小验证实验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>平均指标涨但业务不涨</td>
+<td>指标/采样与真实成本不一致</td>
+<td>按业务 slice 与 cost-weighted metric 重评</td>
+</tr>
+<tr>
+<td>实验波动大</td>
+<td>随机性/数据顺序/评测样本不足</td>
+<td>多 seed、bootstrap CI、固定数据版本</td>
+</tr>
+</tbody>
+</table>
+<p>如果这两行都无法解释项目中的真实失败，再继续向数据版本、标注协议、随机性、导出后端或线上流量结构扩展，而不是直接堆更多模型模块。</p>
+<h3 id="5">5. 建议做的最小消融</h3>
+<ul>
+<li><strong>Control</strong>：保留原 baseline 的训练预算、数据版本、输入尺寸和评测脚本，只改变与本题直接相关的一项。</li>
+<li><strong>Slice</strong>：至少增加一个与本题机制直接相关的子集指标；例如尺寸、遮挡、边界、长尾、噪声或设备域。</li>
+<li><strong>Cost</strong>：同时记录参数量/FLOPs 之外的真实成本：显存、wall-clock、目标硬件 latency、P95/P99 或后处理开销。</li>
+<li><strong>Regression</strong>：列出方案新增的 FP/FN 或退化场景，避免只展示改善样本。</li>
+<li><strong>Repeatability</strong>：若提升幅度较小，使用多随机种子或 bootstrap 置信区间，判断收益是否超出自然波动。</li>
+</ul>
+<h3 id="6">6. 专家级追问清单</h3>
+<ol>
+<li><strong>Calibration 与 accuracy 有何区别？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+<li><strong>OOD 与 calibration 什么关系？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+<li><strong>如何证明不是数据泄漏、随机种子或调参预算造成的？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+<li><strong>这个指标是否与真实业务损失单调一致？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+</ol>
+<h3 id="7">7. 面试表达升级模板</h3>
+<blockquote>
+<p>“我先明确这里的实现/评价口径。核心机制是 <strong>A</strong>，它通过 <strong>B</strong> 改变了 <strong>C</strong>，所以在 <strong>D 类数据</strong>上预期有效；代价是 <strong>E</strong>。如果这是我的项目，我会用 <strong>一个控制实验 + 一个关键切片 + 一个真实硬件/线上指标</strong> 来验证，而不是只看总体平均分。”</p>
+</blockquote>
+<p>把这个模板替换成当前题目的具体名词后，通常可以自然从 30 秒回答扩展到 3–5 分钟，并且给面试官留下继续追问的接口。</p>
+<h2 id="_9">自测清单</h2>
+<ul>
+<li>[ ] 能否不看资料，用 30 秒说出核心结论？</li>
+<li>[ ] 能否写出/解释本题最关键的公式、shape 或信息流？</li>
+<li>[ ] 能否主动指出一个失效条件或反例？</li>
+<li>[ ] 能否把答案迁移到自己的一个项目 failure case？</li>
+<li>[ ] 我能独立回答追问：Calibration 与 accuracy 有何区别？</li>
+<li>[ ] 我能独立回答追问：OOD 与 calibration 什么关系？</li>
+</ul>
+<h2 id="_10">关联题</h2>
+<ul>
+<li><span class="srcref">Q087 · 半监督视觉训练怎么做？最大风险是什么？</span></li>
+<li><span class="srcref">Q089 · 如何判断模型真的变好，而不是偶然涨 0.5%？</span></li>
+<li><span class="srcref">Q040 · 线上检测 Recall 很低，如何系统定位？</span></li>
+</ul>
+<h2 id="_11">资料来源</h2>
+<p>本题主体结构来自配套 PDF；公开依据与经典论文统一见 <span class="srcref"><code>references/papers.md</code></span>。</p>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

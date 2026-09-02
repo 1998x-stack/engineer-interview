@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>多模态模型如何处理视频？视觉 token 爆炸怎么办？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Deep Learning</a><i>∕</i><span>Q074</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q074</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">极高频</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q073.html">← Q073</a><a href="Q075.html">Q075 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">deep-learning</a><a href="#">interview</a><a href="#">multimodal</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      DEEP LEARNING · 74 / 100</div>
+    <h1 class="qtitle">多模态模型如何处理视频？视觉 token 爆炸怎么办？</h1>
+    <blockquote>
+<p><strong>章节：</strong> 对比学习、多模态与 Diffusion
+<strong>难度：</strong> ★★★ ｜ <strong>频度：</strong> 极高频 ｜ <strong>优先级：</strong> A
+<strong>PDF 对应：</strong> 第 51 页附近</p>
+</blockquote>
+<h2 id="_1">面试官在考什么</h2>
+<p>2026 多模态面试热点。</p>
+<p><strong>高质量回答标准：</strong> 能给出表征/生成的核心目标；能估算 token/compute；能说明跨模态对齐或采样成本。</p>
+<h2 id="_2">一句话结论</h2>
+<p>视频先做帧/clip 采样，经视觉编码器得到空间 token，再做 temporal pooling、token merging、resampler或层次编码，压缩成可被 LLM 消化的视频 token。</p>
+<h2 id="6090">60–90 秒面试回答</h2>
+<p>视频先做帧/clip 采样，经视觉编码器得到空间 token，再做 temporal pooling、token merging、resampler或层次编码，压缩成可被 LLM 消化的视频 token。核心矛盾是时空信息完整性与上下文/计算成本。</p>
+<h2 id="_3">深度解析</h2>
+<ul>
+<li>均匀抽帧可能错过短关键事件，应考虑 shot/event-aware sampling。</li>
+<li>视觉 token 远多于文本时，loss 和梯度可能被视觉模态主导，需要采样/权重/对齐策略。</li>
+<li>长视频还需处理时间位置编码。</li>
+</ul>
+<h2 id="shape">数学、Shape 与复杂度</h2>
+<p>本题没有唯一必须背诵的闭式公式；面试时应把关键变量、tensor shape、复杂度或资源量写清楚，并说明它们如何随 batch、sequence、hidden size 或并行度变化。</p>
+<h2 id="pytorch">工程实现 / PyTorch 验证</h2>
+<h3 id="_4">推荐验证协议</h3>
+<p>用不同 FPS/scene-based sampling/temporal pooling 测事件定位准确率和 token 成本。</p>
+<p><strong>最低验收标准：</strong> shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。</p>
+<h2 id="_5">工程实践与诊断视角</h2>
+<ul>
+<li>多模态问题先做 token budget：图片/视频 token 数决定 attention 成本和可支持的 batch/上下文。</li>
+<li>生成模型要区分训练参数化、采样器、guidance 与 backbone，避免把不同层次概念混为一谈。</li>
+</ul>
+<h3 id="_6">边界条件与反例</h3>
+<ul>
+<li>回答时主动给出一个边界条件或反例，避免把经验规律说成无条件定理。</li>
+</ul>
+<h2 id="_7">面试官连续追问</h2>
+<ul>
+<li>如何保留关键动作？</li>
+<li>视频问答如何设计 temporal grounding？</li>
+<li>帧率与分辨率如何折中？</li>
+</ul>
+<h3 id="_8">推荐的追问回答结构</h3>
+<ol>
+<li><strong>先给结论</strong>：一句话直接回答，不绕定义。</li>
+<li><strong>再给机制</strong>：公式、shape、统计维度或系统路径。</li>
+<li><strong>说明 trade-off</strong>：速度、显存、泛化、稳定性或数据成本。</li>
+<li><strong>给失败边界</strong>：什么时候不成立、会退化或需要替代方案。</li>
+<li><strong>落到工程</strong>：如何验证、监控或排查。</li>
+</ol>
+<h2 id="_9">高频失分点</h2>
+<ul>
+<li><strong>易错：</strong> 默认“多抽帧一定更好”。</li>
+</ul>
+<h3 id="3">3 分钟展开框架</h3>
+<ol>
+<li>先定义表示或生成目标；</li>
+<li>写关键 loss/forward process；</li>
+<li>估算 token/latent/采样成本；</li>
+<li>说明对齐、false negative、视频 token 或采样器的边界。</li>
+</ol>
+<h2 id="_10">实战练习</h2>
+<ul>
+<li><strong>对比学习</strong>：手算一个 3×3 similarity matrix 的 InfoNCE。</li>
+<li><strong>多模态</strong>：估算不同 frame sampling 下 visual token 总量。</li>
+<li><strong>Diffusion</strong>：画出 $x_0 \rightarrow x_t \rightarrow x_0$ 的训练与采样信息流。</li>
+</ul>
+<h2 id="90">90 分深挖：从会背到能做设计</h2>
+<h3 id="_11">机制与定量抓手</h3>
+<p>视频同时有空间与时间冗余，关键是 frame sampling、temporal encoder、token compression 与长上下文预算；均匀抽帧可能漏掉短事件。</p>
+<h3 id="_12">工程与实验抓手</h3>
+<p>用不同 FPS/scene-based sampling/temporal pooling 测事件定位准确率和 token 成本。</p>
+<h3 id="_13">失败边界 / 反例</h3>
+<p>把每帧所有 patch token 直接拼接会迅速爆上下文；压缩过强又会丢动作与时序细节。</p>
+<h3 id="_14">白板专项练习</h3>
+<p>给 120 秒视频、2 fps、每帧 576 tokens，算原始 token 数并设计压缩到 8k 的方案。</p>
+<blockquote>
+<p><strong>本章 90 分标准：</strong> 多模态/生成题要同时说明表示接口、token/compute 成本、训练目标和生成/评估失败模式。</p>
+</blockquote>
+<h2 id="_15">面试官评分拆解</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>40–50 分</td>
+<td>只会给定义或背结论，缺公式/机制，追问一层就断。</td>
+</tr>
+<tr>
+<td>60–70 分</td>
+<td>能解释主机制并写关键公式，但缺边界条件和工程证据。</td>
+</tr>
+<tr>
+<td>80–90 分</td>
+<td>能定量推导、比较替代方案，主动说明失败场景并给验证方法。</td>
+</tr>
+<tr>
+<td>90+ 分</td>
+<td>能把数学、实现、系统成本和项目决策串成完整证据链，并能反向设计实验验证假设。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_16">面试表达建议</h3>
+<p>建议用 <strong>结论 → 机制 → 定量 → trade-off → 边界 → 验证</strong> 六步法回答。先在 60–90 秒内给主线；只有面试官继续追问时再展开公式、代码或系统细节。这样既显示深度，也避免一上来堆知识点失去重点。</p>
+<h2 id="_17">项目化证据链：如何证明你真的做过</h2>
+<p>只讲原理只能证明“学过”，项目面试还要证明“做过、量过、复盘过”。针对本题，建议准备一张实验卡：<strong>问题/假设 → baseline → 改动 → 指标 → 结果 → 失败 slice → 结论</strong>。</p>
+<h3 id="_18">建议报告的指标</h3>
+<ul>
+<li><strong>核心观测：</strong> retrieval/zero-shot/生成质量、token 数、分辨率/帧数、FLOPs、VRAM、采样步数。</li>
+<li><strong>证据原则：</strong> 多模态与生成模型要把质量曲线与 token/step/分辨率成本放在同一张表里。</li>
+<li><strong>本题特定证据：</strong> 用不同 FPS/scene-based sampling/temporal pooling 测事件定位准确率和 token 成本。</li>
+</ul>
+<h3 id="_19">方案选择与停止条件</h3>
+<p>当收益只存在于单一 benchmark、无法复现到多个 seed/slice、引入明显 latency/显存/维护成本，或触发本题的失败边界——<strong>把每帧所有 patch token 直接拼接会迅速爆上下文；压缩过强又会丢动作与时序细节。</strong>——就不应继续用“模型更复杂”掩盖问题。面试中主动说出停止条件，通常比继续堆方案更像真实工程负责人。</p>
+<h2 id="5">5 分钟深挖路线</h2>
+<p>先画模态/latent 接口 → 算 token/step 成本 → 讲训练目标 → 讲质量失败模式 → 给压缩/采样 trade-off。</p>
+<p>如果面试官继续追问到第 3–4 层，建议把回答切换到白板：写公式、画 tensor/系统数据流，再给一个量化例子。不要继续只用口头名词解释名词。</p>
+<h2 id="_20">自测清单</h2>
+<ul>
+<li>[ ] 能在 60–90 秒内不看资料完整回答。</li>
+<li>[ ] 能写出本题最关键的公式 / shape / 复杂度关系。</li>
+<li>[ ] 能回答至少 3 个连续追问。</li>
+<li>[ ] 能说出至少 1 个失败场景或反例。</li>
+<li>[ ] 能给出一个可执行的 PyTorch 验证或工程排障方法。</li>
+<li>[ ] 能解释它与相邻技术的区别，而不是把概念混在一起。</li>
+</ul>
+<h2 id="_21">关联题目</h2>
+<ul>
+<li><span class="srcref">Q073 · 如何把 Text-only LLM 改造成多模态模型？</span></li>
+<li><span class="srcref">Q075 · Diffusion 的 Forward Process 是什么？</span></li>
+<li><span class="srcref">Q072 · CLIP 为什么能做 Zero-shot 分类？</span></li>
+<li><span class="srcref">Q076 · Diffusion 为什么经常预测 Noise？</span></li>
+</ul>
+<h2 id="_22">参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2103.00020">Radford et al., CLIP</a></li>
+<li><a href="https://arxiv.org/abs/2006.11239">Ho et al., Denoising Diffusion Probabilistic Models</a></li>
+<li><a href="https://arxiv.org/abs/2112.10752">Rombach et al., High-Resolution Image Synthesis with Latent Diffusion Models</a></li>
+<li><a href="https://arxiv.org/abs/2212.09748">Peebles &amp; Xie, Scalable Diffusion Models with Transformers</a></li>
+</ul>
+<blockquote>
+<p>题目来自公开候选人面经的高频问法归一化，并结合论文/官方文档扩展；不代表任何公司的官方题库或内部材料。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

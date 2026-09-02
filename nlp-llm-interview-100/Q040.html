@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Causal Mask 是怎么工作的？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">NLP / LLM</a><i>∕</i><span>Q040</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q040</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q039.html">← Q039</a><a href="Q041.html">Q041 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">transformer</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NLP &amp; LLM · 40 / 100</div>
+    <h1 class="qtitle">Causal Mask 是怎么工作的？</h1>
+    <blockquote>
+<p><strong>难度</strong>：★★  ·  <strong>频率</strong>：★★★★★  ·  <strong>标签</strong>：<code>transformer</code></p>
+<p>本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 <a href="sources/questions_raw/Q040.txt"><code>sources/questions_raw</code></a>，原始 PDF 见 <a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf"><code>assets/pdf</code></a>。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>GPT 的 causal mask 应屏蔽哪一半矩阵？为什么是在 softmax 前加 -∞？</p>
+<h2 id="2">2. 面试官到底在考什么</h2>
+<p>实现必会，方向错一行就泄漏未来。</p>
+<h3 id="_1">评分维度</h3>
+<ul>
+<li>先写 shape 与核心公式，避免只背架构图。</li>
+<li>从优化/数值/复杂度解释 Why。</li>
+<li>必须能回答训练与推理实现差异。</li>
+</ul>
+<h2 id="3-30-60">3. 30-60 秒标准回答</h2>
+<p>第 i 个 query 只能访问位置 ≤i 的 key，未来位置 logit 加 -∞，softmax 后概率变为 0。实际实现 需同时处理 padding、cache offset 与 batch shape。</p>
+<h2 id="4">4. 白板核心结构</h2>
+<p>本题更强调概念结构与工程权衡。面试时优先画出数据流、状态转移或模块关系，再补充必要公式。</p>
+<h2 id="5-know-why">5. 第一性原理与 Know-Why</h2>
+<ul>
+<li><strong>PDF 基线要点</strong>：常见矩阵约定 row=query、col=key，因此是上三角 future 区域被屏蔽。</li>
+<li><strong>PDF 基线要点</strong>：prefill 时是完整三角 mask；单 token decode 配合 cache 时通常无需显式大三角矩阵。</li>
+<li><strong>PDF 基线要点</strong>：mask dtype 与极小值选择需兼顾 FP16/BF16。</li>
+<li><strong>扩展理解</strong>：Causal mask 保证位置 t 只能看 &lt;=t 的 key，从结构上实现自回归因果因子分解。</li>
+<li><strong>扩展理解</strong>：mask 应在 softmax 前施加，注意 bool/additive mask 的语义差异。</li>
+<li><strong>扩展理解</strong>：KV cache decode 时 mask 形状会与 prefill 不同。</li>
+</ul>
+<h2 id="6">6. 专业深挖：原理、边界与工程</h2>
+<h3 id="causal-mask">Causal Mask 让训练并行但不泄漏未来</h3>
+<ul>
+<li>Decoder LM 的第 i 个 token 只能依赖 $x_{&lt;i}$；Causal Mask 在矩阵中把未来 key logits 置为 $-\infty$，Softmax 后权重严格为 0。</li>
+<li>因此训练时可以一次矩阵化算全序列，而逻辑上每个位置仍满足自回归条件分布。</li>
+<li>Padding Mask 是“这个 token 是否有效”，Causal Mask 是“这个位置是否已经发生”，二者语义不同但常合并广播。</li>
+</ul>
+<h3 id="_2">边界与工程</h3>
+<ul>
+<li>上三角/下三角取决于 row=query、col=key 约定，死记图形非常容易写反。</li>
+<li>Packed sequence 还需要 block-diagonal/segment mask，否则后一个样本会看到前一个样本内容。</li>
+<li>cached decode 与 full forward logits 对拍是验证 mask + position offset 正确性的黄金测试。</li>
+</ul>
+<h2 id="7">7. 实现、复杂度与工程验证</h2>
+<ul>
+<li>明确 <code>[B,T,H,D]</code> 等 tensor shape、softmax axis、mask broadcast 与 dtype。</li>
+<li>区分训练全序列、prefill 与 decode；后两者的资源瓶颈不同。</li>
+<li>用 reference implementation 对拍 fused/optimized kernel，确保优化不改变语义。</li>
+</ul>
+<h3 id="_3">推荐验证清单</h3>
+<ul>
+<li><strong>Correctness</strong>：与最小 reference/手算结果对拍。</li>
+<li><strong>Numerics</strong>：加入极端输入、低精度与长序列测试。</li>
+<li><strong>Complexity</strong>：同时写时间、空间以及关键系统资源。</li>
+<li><strong>Ablation</strong>：只改变一个设计变量，固定数据/compute/评测口径。</li>
+<li><strong>Slices</strong>：不要只看总体均值，检查长尾、长度、语言/领域或 hard cases。</li>
+</ul>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>方向反了导致训练 label leakage。</li>
+<li>mask broadcast shape 错。</li>
+</ul>
+<h2 id="9">9. 追问树</h2>
+<ol>
+<li>padding mask 与 causal mask 如何合并？</li>
+<li>KV cache 时 position offset 如何影响 mask？</li>
+</ol>
+<h3 id="_4">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h3 id="_5">回答追问时的升级原则</h3>
+<ol>
+<li>先给结论，再写一个关键公式 / shape / 数据流。</li>
+<li>主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。</li>
+<li>给出一个“不适用”的条件，证明不是机械背诵。</li>
+<li>若追问工程实现，优先说明验证方法和可观测指标。</li>
+</ol>
+<h2 id="10">10. 面试现场自检</h2>
+<ul>
+<li>[ ] 30-60 秒能给出结论，不绕弯。</li>
+<li>[ ] 能写出关键公式、shape 或状态转移。</li>
+<li>[ ] 至少能解释一个 Why 和一个 trade-off。</li>
+<li>[ ] 能举出一个失败模式或反例。</li>
+<li>[ ] 能回答两层追问。</li>
+<li>[ ] 能把答案连接到真实训练/检索/服务系统。</li>
+</ul>
+<h2 id="11">11. 参考资料</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1706.03762">Attention Is All You Need</a></li>
+<li><a href="https://arxiv.org/abs/2104.09864">RoFormer / RoPE</a></li>
+<li><a href="assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf">本项目原始 PDF</a></li>
+</ul>
+<h2 id="12">12. 关联题目与知识网络</h2>
+<ul>
+<li><span class="srcref">Q039 Self‑Attention 的复杂度到底是多少？</span></li>
+<li><span class="srcref">Q041 为什么 Transformer 必须注入位置信息？</span></li>
+<li><span class="srcref">Q035 Self‑Attention 的完整计算流程</span></li>
+<li><span class="srcref">Q043 RoPE：如何把相对位置写进 QK 点积？</span></li>
+<li><span class="srcref">Q050 MHA、MQA、GQA：为什么共享 K/V 能省 KV Cache？</span></li>
+</ul>
+<h2 id="13">13. 一句话收束</h2>
+<blockquote>
+<p><strong>Causal Mask 让训练并行但不泄漏未来</strong>：先给出核心结论，再用公式/结构证明它，最后补充边界条件与工程验证。</p>
+</blockquote>
+<hr />
+<p><strong>复习动作</strong>：60 秒标准回答 → 白板公式/shape → 专业深挖 → 回答原题追问 → 给一个失败模式 → 给一个工程验证方案。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

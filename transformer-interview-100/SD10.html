@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD10 如何回答一个没见过的 Transformer 变体 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD10</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD10</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="SD09.html">← SD09</a><span></span></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">reasoning</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 110 / 110</div>
+    <h1 class="qtitle">SD10 如何回答一个没见过的 Transformer 变体</h1>
+    <blockquote>
+<p>高级算法岗真正想看的是：面对未知结构，你能否从不变量推导，而不是是否背过论文名。</p>
+</blockquote>
+<h2 id="1">1. 第一步：重写成最小数学对象</h2>
+<p>问：</p>
+<ul>
+<li>输入/输出 shape？</li>
+<li>哪些 projection？</li>
+<li>attention score 如何定义？</li>
+<li>normalization 在哪里？</li>
+<li>residual 是否保留？</li>
+<li>training objective 是否变化？</li>
+</ul>
+<p>把新名字还原成公式。</p>
+<h2 id="2">2. 第二步：找它改变了哪一层</h2>
+<p>通常属于：</p>
+<ol>
+<li><strong>Objective</strong>：MLM/CLM/denoising；</li>
+<li><strong>Connectivity</strong>：full/sparse/local/cross；</li>
+<li><strong>Position</strong>：RoPE/bias/interpolation；</li>
+<li><strong>Channel computation</strong>：FFN/GLU/MoE；</li>
+<li><strong>State/cache</strong>：MHA/GQA/recurrent memory；</li>
+<li><strong>Kernel/system</strong>：FlashAttention/paged memory；</li>
+<li><strong>Parallelism</strong>：TP/CP/expert parallel。</li>
+</ol>
+<h2 id="3">3. 第三步：四张账表</h2>
+<h3 id="_1">参数</h3>
+<p>[
+Params=f(d,L,H,H_{kv},d_{ff},E,...)
+]</p>
+<h3 id="flops">FLOPs</h3>
+<p>分 train / prefill / decode。</p>
+<h3 id="memory">Memory</h3>
+<p>分 weights / optimizer / activation / KV。</p>
+<h3 id="communication-io">Communication / IO</h3>
+<p>分 HBM、NCCL、all-to-all、allocator。</p>
+<h2 id="4">4. 第四步：问它解决什么瓶颈</h2>
+<p>如果作者声称“更快”，先问：</p>
+<ul>
+<li>哪个阶段？</li>
+<li>哪个长度？</li>
+<li>哪种硬件？</li>
+<li>是否保持 exact output？</li>
+<li>是否重新训练？</li>
+</ul>
+<p>如果声称“更长上下文”，问：</p>
+<ul>
+<li>API 支持还是有效能力？</li>
+<li>训练外推？</li>
+<li>KV 成本？</li>
+</ul>
+<h2 id="5">5. 第五步：找反例</h2>
+<p>例如：</p>
+<ul>
+<li>稀疏 attention 对长程任务可能漏边；</li>
+<li>MQA 可能压缩 K/V 表示；</li>
+<li>quantization 对 outlier 层敏感；</li>
+<li>MoE 在通信差的集群上反而慢；</li>
+<li>linear attention 在短序列可能不如 fused softmax attention。</li>
+</ul>
+<h2 id="6">6. 第六步：设计验证</h2>
+<p>至少一个 correctness + 一个 performance + 一个 quality：</p>
+<pre><code class="language-text">Reference parity
++ Microbenchmark
++ End-to-end task eval
+</code></pre>
+<h2 id="7-whiteboard">7. Whiteboard 模板</h2>
+<pre><code class="language-text">Definition
+→ Formula / Shape
+→ What changed vs baseline
+→ Param/FLOPs/Memory/IO
+→ Train vs Prefill vs Decode
+→ Failure modes
+→ Experiment
+→ Trade-off conclusion
+</code></pre>
+<h2 id="8-kv">8. 示例：面试官突然说“我们把 K/V 压到低秩”</h2>
+<p>不要先猜论文。</p>
+<p>你可以推导：</p>
+<ul>
+<li>K/V cache storage 是否由 $H_{kv}D_h$ 降成 rank $r$；</li>
+<li>decode 是否需要重构 K/V；</li>
+<li>重构 FLOPs 是否抵消 bandwidth 节省；</li>
+<li>attention score 是否 exact；</li>
+<li>低秩瓶颈是否伤质量；</li>
+<li>与 GQA/quantized KV 比较；</li>
+<li>做 full-vs-modified quality + TPOT benchmark。</li>
+</ul>
+<p>这就是高级面试需要的迁移推理能力。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

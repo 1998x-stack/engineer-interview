@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD08 从公式到 GPU：为什么 Attention 是算法+系统共同问题 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD08</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD08</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="SD07.html">← SD07</a><a href="SD09.html">SD09 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">attention</a><a href="#">gpu</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 108 / 110</div>
+    <h1 class="qtitle">SD08 从公式到 GPU：为什么 Attention 是算法+系统共同问题</h1>
+    <h2 id="1">1. 数学公式并不能预测真实速度</h2>
+<p>[
+Attention(Q,K,V)=softmax(QK^T/\sqrt d)V
+]</p>
+<p>看起来只有两个矩阵乘和 softmax，但 GPU 上还包括：</p>
+<ul>
+<li>QKV projection；</li>
+<li>layout transform；</li>
+<li>mask；</li>
+<li>HBM read/write；</li>
+<li>SRAM/shared memory；</li>
+<li>kernel launch；</li>
+<li>synchronization。</li>
+</ul>
+<h2 id="2-roofline">2. Roofline 心智模型</h2>
+<p>性能受：</p>
+<p>[
+\min(Compute\ Throughput, Memory\ Bandwidth\times Arithmetic\ Intensity)
+]</p>
+<p>Prefill 大矩阵更容易 compute-bound；decode query 很短，KV 读取常使其 bandwidth-bound。</p>
+<h2 id="3-naive-attention-io">3. Naive Attention 的 IO</h2>
+<p>若显式写：</p>
+<p>[
+S=QK^T,\quad P=softmax(S)
+]</p>
+<p>$S,P$ 都是 $T^2$ 中间量，需要反复写入/读取 HBM。</p>
+<h2 id="4-flashattention">4. FlashAttention</h2>
+<p>通过 tiling，把 Q/K/V block 搬到片上 memory，使用 online softmax，减少完整 score/probability materialization。</p>
+<p><strong>不改变 exact attention 数学结果；改变 IO schedule。</strong></p>
+<h2 id="5-flashattention-2">5. FlashAttention-2 的进一步方向</h2>
+<p>在相同 exact attention 上继续改 work partition、occupancy 和 warp communication。说明“算法已相同”仍可有巨大系统性能差。</p>
+<h2 id="6-decode">6. Decode 为什么不同</h2>
+<p>单步 query <code>[B,H,1,Dh]</code>：</p>
+<ul>
+<li>matmul 很瘦；</li>
+<li>读取历史 <code>[B,Hkv,T,Dh]</code> KV；</li>
+<li>batch scheduler 决定矩阵规模。</li>
+</ul>
+<p>因此 decode 优化重点是 GQA/MQA、batching、KV layout/quantization，而非只看 $T^2$。</p>
+<h2 id="7-layout-copy">7. Layout 与隐式 Copy</h2>
+<p><code>transpose</code> 常只是 stride 变化，但某些 kernel 需要 contiguous layout；<code>.contiguous()</code> 会产生 HBM copy。优化前先 profiler，避免“为了 shape 正确”引入大规模复制。</p>
+<h2 id="8-benchmark">8. Benchmark 方法</h2>
+<p>固定：</p>
+<ul>
+<li>GPU 型号；</li>
+<li>dtype；</li>
+<li>B/H/T/Dh；</li>
+<li>causal/non-causal；</li>
+<li>dropout；</li>
+<li>warmup；</li>
+<li>同步计时。</li>
+</ul>
+<p>报告：</p>
+<ul>
+<li>wall-clock；</li>
+<li>TFLOPs/s；</li>
+<li>HBM bytes（若可测）；</li>
+<li>peak memory；</li>
+<li>numerical parity。</li>
+</ul>
+<h2 id="9">9. 面试高分点</h2>
+<p>任何“复杂度优化”都继续问：</p>
+<ol>
+<li>常数项？</li>
+<li>算术强度？</li>
+<li>kernel 是否规则？</li>
+<li>内存 layout？</li>
+<li>训练和 decode 是否同样受益？</li>
+</ol>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

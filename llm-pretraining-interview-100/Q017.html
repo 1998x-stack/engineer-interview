@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>预训练数据 Mixture 到底怎么调？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q017</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q017</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q016.html">← Q016</a><a href="Q018.html">Q018 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">data</a><a href="#">tokenizer-data</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 18 / 101</div>
+    <h1 class="qtitle">预训练数据 Mixture 到底怎么调？</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>难</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">Tokenizer 与预训练数据</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>数据配比是当代预训练的核心算法问题，决定不同能力的边际收益。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>分布</strong>：每个过滤/采样动作怎样改变 p_train(x)？</li>
+<li><strong>信息密度</strong>：单位 Token 的新颖性、正确性和覆盖度怎样衡量？</li>
+<li><strong>可追溯</strong>：能否从训练异常追到具体 shard/domain/sample？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>配比不是 recipe，而是“每增加一个 token，应放到哪个 domain”的边际收益优化。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>设 domain i 的采样概率为 p_i，目标不是给出固定百分比，而是让有限 token budget 在多个能力/验证目标上获得最大边际收益。实际可通过 proxy models、不同 mixture 的 controlled experiments、domain-conditioned validation loss 与 scaling trend 来估计。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>配比还受数据可用量、重复次数、阶段目标和 transfer effect 影响：同一 domain 在早期通用阶段与后期 reasoning/code 阶段的最优权重可能完全不同。</p>
+<h3 id="_2">核心公式</h3>
+<pre><code class="language-text">min_p Σ_j w_j L_j(p),  Σ_i p_i=1
+</code></pre>
+<blockquote>
+<p>面试时不要只写公式。要逐个解释符号、shape/量纲，以及公式如何导出工程结论。</p>
+</blockquote>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="mixture">把 Mixture 写成优化问题</h3>
+<p>设 domain 权重为 $p_1,\dots,p_k$，$\sum_i p_i=1$。可以把目标抽象为</p>
+<p>$$
+\min_{p}\sum_j w_j L_j(p),
+$$</p>
+<p>但生产中不能只靠一次网格搜索：domain 之间存在迁移、重复上限和 stage dependency。更实用的方法是 proxy models + mixture ablation + domain-conditioned validation loss。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：先固定总 token 与模型大小，只改变 mixture 做正交对照。</li>
+<li><strong>动作 2</strong>：记录每 domain 实际 consumed tokens，防止数据 loader 与重复策略偏离目标比例。</li>
+<li><strong>动作 3</strong>：对稀缺高价值数据设置 epoch/repetition 上限并观察 overfit。</li>
+</ol>
+<h3 id="_3">数据闭环</h3>
+<p>从样本级 provenance 到 domain-level held-out loss 建立闭环：数据变更必须能追溯到采样率、重复率、污染率和能力变化。</p>
+<ul>
+<li>所有过滤规则可版本化。</li>
+<li>Mixture 调整用 proxy run 或受控消融。</li>
+<li>benchmark contamination 与训练质量评估分开。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-5-10">追问 1：怎样判断数学数据该从 5% 加到 10%？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="2-domain-loss">追问 2：不同 domain 的 loss 能直接比较吗？</h3>
+<p><strong>回答方向</strong>：先统一比较维度（质量、FLOPs、memory、communication、wall-clock），再逐项对齐，避免只比一个指标。</p>
+<h3 id="3mixture-curriculum">追问 3：mixture 与 curriculum 有什么区别？</h3>
+<p><strong>回答方向</strong>：先统一比较维度（质量、FLOPs、memory、communication、wall-clock），再逐项对齐，避免只比一个指标。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>报一组“经验百分比”却没有实验方法。</strong></li>
+<li>改进：回到“配比不是 recipe，而是“每增加一个 token，应放到哪个 domain”的边际收益优化。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+<li>❌ <strong>忽略不同 tokenizer 对 domain token 数的影响。</strong></li>
+<li>改进：回到“配比不是 recipe，而是“每增加一个 token，应放到哪个 domain”的边际收益优化。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：配比不是 recipe，而是“每增加一个 token，应放到哪个 domain”的边际收益优化。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>怎样判断数学数据该从 5% 加到 10%？</li>
+<li>不同 domain 的 loss 能直接比较吗？</li>
+<li>mixture 与 curriculum 有什么区别？</li>
+<li>设计一个最小数据消融，说明你会记录哪些 provenance 与 domain metrics。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>配比不是 recipe，而是“每增加一个 token，应放到哪个 domain”的边际收益优化。</strong></p>
+</blockquote>
+<h3 id="_4">深挖关键点</h3>
+<p>面试若能主动提出 proxy model + mixture ablation + domain-conditioned loss，通常比背任何比例更有价值。</p>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R5 · 论文</strong> — <a href="https://arxiv.org/abs/2203.15556">Hoffmann et al., Training Compute-Optimal Large Language Models (Chinchilla)</a></li>
+<li><strong>R11 · 技术报告</strong> — <a href="https://arxiv.org/abs/2505.09388">Qwen Team, Qwen3 Technical Report</a></li>
+</ul>
+<h2 id="_5">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q016. 预训练数据为什么不能简单追求“质量越高越好”？</span></li>
+<li>→ <span class="srcref">Q018. 什么是 Benchmark Contamination？如何系统检测？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

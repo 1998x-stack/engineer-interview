@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Recall@1000 提升但 NDCG@10 下降，怎么解释？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Search Engine</a><i>∕</i><span>Q058</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q058</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">4</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">S</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q057.html">← Q057</a><a href="Q059.html">Q059 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">evaluation</a><a href="#">click-bias</a><a href="#">ab-testing</a><a href="#">ndcg</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      SEARCH · IR · 58 / 100</div>
+    <h1 class="qtitle">Recall@1000 提升但 NDCG@10 下降，怎么解释？</h1>
+    <blockquote>
+<p>本题“30 秒回答 / 深度拆解 / 原始追问 / Gotcha / 一句话记忆”来自配套 PDF；“工程化补充 / 推导 / 练习 / 追问参考回答”等为仓库扩展内容。</p>
+</blockquote>
+<h2 id="_1">题目画像</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>难度</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>频率</td>
+<td>S</td>
+</tr>
+<tr>
+<td>适用岗位</td>
+<td>诊断</td>
+</tr>
+<tr>
+<td>所属章节</td>
+<td><span class="srcref">搜索指标、点击偏差与实验</span></td>
+</tr>
+<tr>
+<td>核心标签</td>
+<td><code>evaluation</code>, <code>click-bias</code>, <code>ab-testing</code>, <code>ndcg</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官到底在考什么</h2>
+<p>这道题表面在问“Recall@1000 提升但 NDCG@10 下降，怎么解释？”，实际主要看三件事：<strong>是否掌握核心定义/机制、是否能说明边界与 trade-off、是否能把算法落到可观测的线上系统</strong>。回答建议采用“结论 → 原理 → 极限/反例 → 工业实现 → 指标”的顺序。</p>
+<h2 id="30">30 秒回答</h2>
+<p>说明“候选更全”并不代表“顶部更好”。新召回通道可能引入大量 hard negatives，改变 Ranker 的候 选分布；也可能 Ranker 没学会利用新通道，或候选预算挤掉了原来高质量候选。</p>
+<h2 id="5">5 分钟深度回答</h2>
+<ul>
+<li>先做 oracle analysis：在新候选集合上，用真实 label 的理想排序看 NDCG 上限是否提高。</li>
+<li>分析 relevant docs 是否确实更多进入 candidate set。</li>
+<li>检查 Ranker training 是否包含新召回分布；若没有，会发生 distribution shift。</li>
+<li>按 recall source 打 feature、score 和 topK occupancy，定位谁挤占了位置。</li>
+<li>必要时对 source 做 quota、fusion 或重新训练 ranker。</li>
+</ul>
+<h2 id="_3">进一步深挖：从“会答”到“能做”</h2>
+<h4 id="_4">评价指标的三个层级</h4>
+<p>建议把指标分成：<strong>retrieval ceiling</strong>（Recall@K）、<strong>ranking quality</strong>（NDCG/MRR/MAP）、<strong>online utility</strong>（成功搜索率、CTR/CVR、abandonment）。离线涨而线上跌时，优先检查 label mismatch、slice shift、latency、presentation 与 feedback loop，而不是直接怀疑“实验噪声”。</p>
+<h3 id="_5">本章高级视角</h3>
+<p>指标必须和产品任务对齐。导航型搜索可能 MRR 更重要；多相关文档探索型搜索更适合 NDCG/MAP；召回服务首先看 Recall。任何 click-derived metric 都要说明 exposure mechanism，否则“相关性提升”可能只是展示策略变化。</p>
+<h3 id="6">工业落地时必须补充的 6 个问题</h3>
+<ol>
+<li><strong>数据从哪里来？</strong> 标签/统计量/embedding/点击信号如何生成，是否存在偏差或版本漂移？</li>
+<li><strong>线上预算是多少？</strong> candidate 数、CPU/GPU、内存、网络 fan-out 与 p99 latency 分别是多少？</li>
+<li><strong>离线怎么验证？</strong> 需要什么 golden set、oracle analysis、slice 与 counterfactual/ablation？</li>
+<li><strong>线上看什么？</strong> 除主指标外，至少准备 latency、zero-result/timeout、quality guardrail 与成本指标。</li>
+<li><strong>失败如何降级？</strong> 模型、向量服务、feature store 或 shard 异常时是否能回退到 lexical / cache / static rule？</li>
+<li><strong>如何回滚和复现？</strong> index、model、feature schema、query rewrite policy 是否版本化并可灰度？</li>
+</ol>
+<h3 id="_6">追问链：参考回答</h3>
+<p><strong>追问 1：Recall 增量为什么可能是“无效 recall”？</strong></p>
+<p>先看 oracle recall：正确结果是否已经在候选中。如果不在，ranker 再强也无能为力；如果在但排序差，则瓶颈在 rank/fusion。</p>
+<p><strong>追问 2：如何做 channel ablation？</strong></p>
+<p>回答时先给定义，再给边界条件与可观测指标；如果是算法选择题，用“效果、延迟、内存、更新、可解释性”五维 trade-off 组织。</p>
+<h2 id="v2">第二轮专业扩展（v2）</h2>
+<blockquote>
+<p>本节是在第一版题解之上新增的工程与研究视角，目标是让回答达到高级搜索算法 / Relevance / Retrieval 面试的深度。</p>
+</blockquote>
+<h3 id="_7">核心机制再拆一层</h3>
+<p>先做 oracle 分解：新候选是否包含更多 relevant？ranker 是否见过这种新候选分布？可能是 recall channel 提升但 downstream ranker calibration/feature 缺失。</p>
+<p>不要停留在名词解释。面试时建议主动回答三个问题：<strong>它改变了哪一个概率/排序/数据结构？它用什么近似换来了什么成本？它最容易在哪类 query 或数据分布上失败？</strong></p>
+<h3 id="_8">数据链路与可复现性</h3>
+<p>评估数据必须区分人工 relevance、点击弱标签、业务 outcome 和在线 exposure。每个 label 都有生成机制，不能把“观测到的行为”直接当成“真实相关性”。</p>
+<p>建议把所有可能影响结果的资产版本化：<code>data/index snapshot → analyzer/feature schema → model/config → serving policy → evaluation set</code>。只有这样，线上 bad case 才能被可靠重放。</p>
+<h3 id="_9">复杂度、成本与规模感</h3>
+<p>指标计算本身不是瓶颈，真正成本是标注、实验流量与误判机会成本。建立小而稳定的 gold set，再配大规模弱监督，是常见的成本平衡。</p>
+<p>回答复杂度时不要只写 Big-O；至少再补一个真实工程维度：<strong>内存/字节、候选数、网络 fan-out、模型调用数、cache locality、p99 或更新成本</strong>。算法岗高级面试非常看这种规模感。</p>
+<h3 id="_10">白板公式 / 伪代码 / 实验抓手</h3>
+<p>本题不要求为了“显得技术”而硬写代码。白板上更重要的是把 <strong>输入 → 状态/统计量 → 决策 → 输出 → 复杂度 → 失败边界</strong> 连起来，并给出一个可验证的反例或极限情况。</p>
+<h3 id="_11">失败模式与线上诊断</h3>
+<p>最危险的是 metric gaming：CTR 上升但满意度下降、NDCG 上升但 tail query 变差、Recall 上升但 ranker 被噪声候选拖垮。</p>
+<p>诊断时优先问：“<strong>正确答案在哪一步第一次消失？</strong>”如果到当前阶段输入里就没有正确候选，这一阶段再复杂也无法修复；如果候选存在但顺序错，才进入评分、特征、模型或融合分析。</p>
+<h3 id="_12">可观测性：上线后必须能回答什么</h3>
+<p>离线必须分 slice；在线同时看 primary metric、guardrail、SRM、p95/p99、zero-result/abandonment、长期 retention 或 conversion。</p>
+<p>最少保留按 query slice 的指标，而不是只看全局均值。常见 slice 包括 head/tail、navigational/informational、rare entity、语言/地区、长短 query、长短文档、新老内容、filter selectivity 与设备。</p>
+<h3 id="senior-staff">Senior / Staff 级追问</h3>
+<ol>
+<li><strong>如果 primary metric 显著上涨但 guardrail 下降，如何做上线决策？</strong>
+   - 回答应先定义目标与约束，再给实验设计；不要只给“换某算法”的结论。</li>
+<li><strong>怎样构建长期稳定、不会被模型迭代污染的 gold set？</strong>
+   - 回答应包含可观测信号、对照/消融、上线 guardrail 和失败回退。</li>
+</ol>
+<p>Staff 级评估回答应明确因果边界：什么能由离线相关性证明，什么必须 A/B；如何处理 exposure bias、novelty effect、multiple testing 和实验污染。</p>
+<h3 id="_13">面试回答分层标准</h3>
+<ul>
+<li><strong>及格（60 分）</strong>：定义正确，能说明输入/输出与一个核心优缺点。</li>
+<li><strong>较强（75 分）</strong>：能写关键公式/流程，说明至少两个 trade-off，并指出适用与失败场景。</li>
+<li><strong>高级（85 分）</strong>：能给数量级或复杂度，说明数据如何构建、线上如何观测、如何用实验验证。</li>
+<li><strong>Senior/Staff（90+）</strong>：能把该技术放进完整搜索链路，讨论 SLO、成本、bias、降级、版本化、回滚和优先级，并能用 oracle/ablation 证明为什么要做这项改动。</li>
+</ul>
+<h3 id="_14">复习时建议做的最小实验</h3>
+<p>把本题做成一个可复现小实验：固定一组 20–100 个 query 和 golden relevance，改变<strong>一个</strong>关键变量，记录质量、延迟/成本和失败样本。最终产出一张 <code>quality–cost</code> 曲线和 5 个 bad cases。这样面试时就不再只是“背知识”，而是能讲出自己的工程判断。</p>
+<h2 id="pdf">PDF 原始追问链</h2>
+<ul>
+<li>Recall 增量为什么可能是“无效 recall”？</li>
+<li>如何做 channel ablation？</li>
+</ul>
+<h2 id="gotcha">高频失分点 / Gotcha</h2>
+<p>一个阶段指标上升不等于 end-to-end 上升；搜索必须按 cascade 做归因。</p>
+<h3 id="gotchas">加强版 Gotchas</h3>
+<ul>
+<li>不要把“算法名字”当作系统答案：面试官通常会继续问数据、参数、SLO、更新与失败恢复。</li>
+<li>不要只报全局平均指标：至少按 head/tail query、语言/类目、文档长度、新老用户或 filter selectivity 做 slice。</li>
+<li>不要把 offline gain 直接等价为 online gain：线上还有曝光偏差、延迟、缓存、展示和反馈环。</li>
+<li>数学题至少检查一个极限情况；系统题至少做一次数量级估算。</li>
+</ul>
+<h2 id="_15">实战练习</h2>
+<blockquote>
+<p><strong>练习：</strong> 把本题用 5 分钟白板讲清楚，并补充一个真实线上 failure case、一个可观测指标和一个降级方案。</p>
+</blockquote>
+<p>完成标准：能在不看答案的情况下，先用 30 秒给结论，再用 5 分钟白板说明原理、至少两个 trade-off、一个 failure case 和验证指标。</p>
+<h2 id="_16">一句话记忆</h2>
+<p>召回决定上限，排序决定你能拿到多少上限。</p>
+<h2 id="_17">参考资料</h2>
+<ul>
+<li><span class="srcref">全局参考资料</span></li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

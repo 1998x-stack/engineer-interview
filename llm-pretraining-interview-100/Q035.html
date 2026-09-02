@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>给定固定 GPU-hours，如何决定模型大小和 Token 数？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q035</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q035</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q034.html">← Q034</a><a href="Q036.html">Q036 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">scaling-law</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 36 / 101</div>
+    <h1 class="qtitle">给定固定 GPU-hours，如何决定模型大小和 Token 数？</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>难</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">Scaling Law 与预算设计</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>最接近真实预训练立项的系统设计题。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>约束优化</strong>：到底固定的是 FLOPs、GPU-hours、成本还是推理预算？</li>
+<li><strong>外推</strong>：小规模曲线在哪些条件下可以外推？</li>
+<li><strong>等成本比较</strong>：Dense/MoE/不同数据 recipe 是否真的比较公平？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>立项不是“选参数”，而是把算力、数据、架构和部署约束联合求解。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>先把 GPU 数、时长、峰值算力与预期 MFU 转成可用训练 FLOPs，再利用 scaling-law proxy runs 在候选 N/D 上寻找低 loss 区域。之后加入硬件约束：显存能否 fit、TP/PP 并行效率、数据供应和目标上下文。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>最终还要加入部署目标。一个数学上 compute-optimal 的超宽模型，可能因 TP 通信或推理成本而不是系统最优。</p>
+<h2 id="4-production">4. 深度展开：从定义走向 Production</h2>
+<p>本题的深挖重点是：<strong>先算得起，再算最优，最后算能不能稳定跑完。</strong></p>
+<p>建议沿下面的因果链继续展开：</p>
+<ol>
+<li><strong>定义/状态语义</strong>：先把对象、tensor、数据分布或训练状态说准确；</li>
+<li><strong>机制</strong>：解释为什么该设计会改变 loss、memory、FLOPs、通信或稳定性；</li>
+<li><strong>代价</strong>：指出它牺牲了什么，不把工程 trick 说成“免费午餐”；</li>
+<li><strong>可验证性</strong>：说明你会用什么指标、profile 或 ablation 判断结论是否成立；</li>
+<li><strong>规模化边界</strong>：把 1 GPU/小模型结论推进到千卡、长序列或 MoE 场景。</li>
+</ol>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：先做粗预算，再做 100M/1B 级 proxy grid。</li>
+<li><strong>动作 2</strong>：对每个候选记录预计训练天数、MFU、内存余量和推理成本。</li>
+<li><strong>动作 3</strong>：保留 5-10% 预算用于 pilot、失败恢复和关键 ablation。</li>
+</ol>
+<h3 id="scaling-proxy">Scaling Proxy</h3>
+<p>用多个模型尺寸、Token 预算和 seed 构造 proxy grid，拟合 loss/compute 曲线，再用 hold-out 规模验证外推误差。</p>
+<ul>
+<li>拟合前确认数据 mixture 一致。</li>
+<li>报告置信区间/外推范围。</li>
+<li>区分训练 FLOPs optimum 与生命周期成本 optimum。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1-2t-token">追问 1：如果数据只有 2T 高质量 token 怎么办？</h3>
+<p><strong>回答方向</strong>：给出可执行步骤，并补充至少一个可观测指标和一个对照实验，避免只给概念。</p>
+<h3 id="2mfu-10">追问 2：MFU 估错 10% 会怎样影响计划？</h3>
+<p><strong>回答方向</strong>：回到定义、数学/状态语义、工程代价和可验证实验四层作答。</p>
+<h3 id="3-scaling-law">追问 3：为什么系统最优可能偏离 scaling-law 最优？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → 立项不是“选参数”，而是把算力、数据、架构和部署约束联合求解。 → 新代价/边界条件”三段式回答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>拿到预算直接选行业常见模型大小。</strong></li>
+<li>改进：回到“立项不是“选参数”，而是把算力、数据、架构和部署约束联合求解。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：立项不是“选参数”，而是把算力、数据、架构和部署约束联合求解。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>如果数据只有 2T 高质量 token 怎么办？</li>
+<li>MFU 估错 10% 会怎样影响计划？</li>
+<li>为什么系统最优可能偏离 scaling-law 最优？</li>
+<li>写出固定预算下的优化变量、约束和至少一个 proxy experiment。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>立项不是“选参数”，而是把算力、数据、架构和部署约束联合求解。</strong></p>
+</blockquote>
+<h3 id="_2">深挖关键点</h3>
+<p>先算得起，再算最优，最后算能不能稳定跑完。</p>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R5 · 论文</strong> — <a href="https://arxiv.org/abs/2203.15556">Hoffmann et al., Training Compute-Optimal Large Language Models (Chinchilla)</a></li>
+<li><strong>R9 · 官方文档</strong> — <a href="https://docs.nvidia.com/megatron-core/developer-guide/latest/">NVIDIA Megatron Core User Guide</a></li>
+</ul>
+<h2 id="_3">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q034. 为什么训练 FLOPs 常粗略写成 6ND？</span></li>
+<li>→ <span class="srcref">Q036. 为什么 1B 模型的最优超参不能原样搬到 100B？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

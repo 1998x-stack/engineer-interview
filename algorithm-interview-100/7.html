@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>缺失的第一个正数 / First Missing Positive · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Algorithm</a><i>∕</i><span>7</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">7</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">Hard</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">yes</span></div>
+    </div>
+    <div class="prevnext"><a href="6.html">← 6</a><a href="8.html">8 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      LEETCODE · PATTERNS · 7 / 102</div>
+    <h1 class="qtitle">缺失的第一个正数 / First Missing Positive</h1>
+    <blockquote>
+<p><strong>定位</strong>：Hard · 优先级 <strong>S</strong> · 高频经典母题（H） · <code>In-place Index Mapping</code>
+<strong>章节</strong>：数组、哈希与前缀状态
+<strong>冻结版</strong>：内容源自 <code>docs/assets/algorithm-interview-100-2026.pdf</code>，本页在其基础上扩写。</p>
+</blockquote>
+<h2 id="1">1. 题目概括</h2>
+<p>在线性时间、常数额外空间下找数组中缺失的最小正整数。</p>
+<blockquote>
+<p>本仓库不复制 LeetCode 完整题面；正式练习时请从原题链接确认输入输出细节。</p>
+</blockquote>
+<h2 id="2">2. 面试官在考什么</h2>
+<p>这题表面考 <code>In-place Index Mapping</code>，更深层通常考三件事：</p>
+<ol>
+<li>能否从基线解法中识别重复工作；</li>
+<li>能否把关键约束写成稳定的不变量；</li>
+<li>能否在写完代码后解释复杂度、边界与约束变化。</li>
+</ol>
+<p><strong>PDF 核心突破：</strong> 答案必在 [1,n+1]；把值 x 放到下标 x-1，让数组本身充当哈希表。</p>
+<h2 id="3">3. 先做约束澄清</h2>
+<p>面试开始先确认：输入规模、是否保证存在答案、是否允许修改输入、是否包含重复值/负数，以及返回值对顺序是否有要求。不同约束可能改变最优方案或实现边界。</p>
+<p>建议现场至少问/确认 2-3 个与本题最相关的条件，而不是直接开始编码。</p>
+<h2 id="4">4. 暴力基线与瓶颈</h2>
+<p>枚举所有配对/区间通常重复读取历史信息。先写 O(n²) 基线，再问历史状态能否压缩成 O(1) 平均查询。</p>
+<p>基线方案的作用不是“凑一个答案”，而是暴露优化方向：到底重复枚举了候选、重复查询了历史、还是重复计算了子问题。</p>
+<h2 id="5">5. 关键观察与不变量</h2>
+<p><strong>问题特定观察：</strong> 答案必在 [1,n+1]；把值 x 放到下标 x-1，让数组本身充当哈希表。</p>
+<p><strong>家族级不变量：</strong> 哈希表中只保存“已经扫描完、且未来仍有用”的状态；查询和写入顺序必须与是否允许使用当前元素一致。</p>
+<p>在真正写代码前，应该能把不变量压缩成一句话；如果一句话说不清，通常说明边界语义还没有定稳。</p>
+<h2 id="6">6. 最优解法推导</h2>
+<p><strong>PDF 给出的最优路径：</strong> 循环交换直到 nums[i] 不在 [1,n] 或已经在正确位置；最后找首个 nums[i]!=i+1。</p>
+<p>可以按下面顺序推导，而不是直接背模板：</p>
+<ol>
+<li>写出基线中被重复处理的对象；</li>
+<li>找到能复用的历史状态或单调结构；</li>
+<li>明确更新顺序与循环边界；</li>
+<li>证明每次丢弃/合并/移动都不会漏掉可能答案；</li>
+<li>最后才落到代码。</li>
+</ol>
+<h2 id="7">7. 正确性说明</h2>
+<p>证明重点是：任何合法答案在扫描到其右端点时，左端所需信息已经存在于哈希表中，因此不会漏解。</p>
+<p>针对本题，证明时应把“答案必在 [1,n+1]；把值 x 放到下标 x-1，让数组本身充当哈希表。”对应到代码中的具体状态更新。面试中不必写形式化证明，但要能解释为什么优化后没有漏解、重复计数或错误淘汰候选。</p>
+<h2 id="8">8. 复杂度</h2>
+<p><strong>冻结版结论：</strong> <code>O(n) / O(1)</code></p>
+<p>面试中不要只报 Big-O：还要说清复杂度来自哪里。例如线性算法要解释每个元素被推进/入栈/出栈/访问的次数；堆算法要解释为什么是 <code>log k</code> 而不是 <code>log n</code>。</p>
+<h2 id="9-python">9. Python 参考实现</h2>
+<pre><code class="language-python">from __future__ import annotations
+class Solution:
+    def firstMissingPositive(self, nums: list[int]) -&gt; int:
+        n = len(nums)
+        for i in range(n):
+            while 1 &lt;= nums[i] &lt;= n and nums[nums[i] - 1] != nums[i]:
+                j = nums[i] - 1
+                nums[i], nums[j] = nums[j], nums[i]
+        for i, x in enumerate(nums):
+            if x != i + 1:
+                return i + 1
+        return n + 1
+</code></pre>
+<p>独立源码：<a href="solutions/python/007-first-missing-positive.py"><code>solutions/python/007-first-missing-positive.py</code></a></p>
+<blockquote>
+<p>代码以面试可读性为优先；LeetCode 中的 <code>ListNode / TreeNode / Node / rand7</code> 等由题目环境提供。</p>
+</blockquote>
+<h2 id="10-dry-run">10. Dry-run：怎样检查代码</h2>
+<p>选择一个存在答案的普通样例，再选择“重复值/目标等于 2*x/不存在答案”的样例，逐步记录哈希状态。</p>
+<p>建议把每一步的关键状态写在纸上，不只看最终输出。</p>
+<h2 id="11">11. 边界与测试清单</h2>
+<ul>
+<li>空输入或最小规模</li>
+<li>大量重复值</li>
+<li>答案不存在/唯一性假设</li>
+<li>负数与零</li>
+</ul>
+<p>再增加一个“最容易触发本题高频 bug”的定向样例。</p>
+<h2 id="12">12. 高频失误</h2>
+<p>交换条件不防重复值会死循环。</p>
+<p>此外还要检查：</p>
+<ul>
+<li>是否偷偷依赖题目没有承诺的条件；</li>
+<li>查询和更新顺序是否改变了允许使用的数据范围；</li>
+<li>返回值、下标和区间端点是否与题意一致；</li>
+<li>是否为了省几行代码牺牲了可解释性。</li>
+</ul>
+<h2 id="13">13. 面试追问</h2>
+<p><strong>PDF 追问：</strong> 若不能修改输入？位图/哈希；为什么答案上界一定是 n+1？</p>
+<p>进一步建议主动训练：</p>
+<ul>
+<li>如果内存限制为当前的 1/100，方案怎么改？</li>
+<li>如果数据不断到来，需要在线回答，哪些状态保留？</li>
+<li>如果输入分散在多台机器，局部结果能否合并成全局结果？</li>
+<li>如果只需要近似答案，能否换取更低延迟/内存？</li>
+</ul>
+<h2 id="14">14. 算法岗工程化升级</h2>
+<p>把输入规模放大 1000 倍，讨论当前方案首先受 CPU、内存还是 I/O 限制；再考虑输入改为在线数据流或分片数据后，哪些状态能够增量维护。</p>
+<p>这一步是算法岗区别于纯刷题的重要训练：从“单机、静态、小数据”的 LeetCode 假设继续推到在线、流式、分布式或 ML 系统约束。</p>
+<h2 id="15-30">15. 30 秒口述模板</h2>
+<p>“我先给一个基线解法，然后利用 In-place Index Mapping 去掉重复工作。关键不变量是：答案必在 [1,n+1]；把值 x 放到下标 x-1，让数组本身充当哈希表。 最终复杂度是 O(n) / O(1)。”</p>
+<h2 id="16">16. 迁移训练</h2>
+<ul>
+<li><strong>同模式变体</strong>：保持 <code>In-place Index Mapping</code> 不变，改变“求数量 / 求最长 / 求最短 / 返回路径”等目标。</li>
+<li><strong>约束变体</strong>：加入重复值、负数、动态更新、内存限制或流式输入。</li>
+<li><strong>实现变体</strong>：用另一种数据结构重做，并比较复杂度与代码风险。</li>
+<li><strong>表达训练</strong>：不看代码，只用 90 秒讲清“基线 -&gt; 瓶颈 -&gt; 不变量 -&gt; 最优解”。</li>
+</ul>
+<!-- PRO-ENRICHMENT-V2:START -->
+
+<h2 id="17">17. 解法谱系：从“能做”到“面试最优”</h2>
+<blockquote>
+<p>这一节的目标是避免“只背一个答案”。真正的算法面试通常会沿着 <strong>baseline → 瓶颈 → 优化 → trade-off</strong> 继续追问。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>方案</th>
+<th>复杂度/代价</th>
+<th>面试价值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>排序后找缺失</td>
+<td>过滤正数后排序</td>
+<td>O(n log n)</td>
+<td>简单但不满足线性要求</td>
+</tr>
+<tr>
+<td>Hash Set</td>
+<td>存所有正数，从 1 向上查询</td>
+<td>O(n)/O(n)</td>
+<td>线性但空间不达标</td>
+</tr>
+<tr>
+<td>原地 cyclic placement</td>
+<td>把值 x 放到下标 x-1，最后找首个错位</td>
+<td>O(n)/O(1)</td>
+<td>关键是每次 swap 至少把一个合法值送到最终位置</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_1">怎样在白板上自然推到推荐解</h3>
+<ol>
+<li><strong>先承认基线是正确的</strong>：不要一上来赌最优模板；先建立 correctness anchor。</li>
+<li><strong>指出真正浪费</strong>：本题最值得消掉的重复工作可以概括为：<strong>答案必在 [1,n+1]；把值 x 放到下标 x-1，让数组本身充当哈希表。</strong></li>
+<li><strong>选择结构而不是背 API</strong>：说明 <code>In-place Index Mapping</code> 为什么正好承载需要保留的信息。</li>
+<li><strong>先说 invariant，再写循环</strong>：循环条件、更新顺序和边界全部应该从 invariant 推出来。</li>
+<li><strong>最后比较替代方案</strong>：什么时候愿意多用空间换更低延迟？什么时候输入已排序/流式/内存受限会换算法？</li>
+</ol>
+<hr />
+<h2 id="18">18. 状态设计与不变量审计</h2>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>精确定义</th>
+<th>必须保持的性质</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>扫描位置 <code>i</code></td>
+<td>已处理前缀边界</td>
+<td>每轮单调前进</td>
+</tr>
+<tr>
+<td>状态表/原数组</td>
+<td>历史信息或值域映射</td>
+<td>只保存未来仍会被查询的信息</td>
+</tr>
+<tr>
+<td>答案</td>
+<td>已完成前缀的最优/计数结果</td>
+<td>更新顺序与“能否使用当前元素”一致</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_2">本题的一句话不变量</h3>
+<blockquote>
+<p><strong>答案必在 [1,n+1]；把值 x 放到下标 x-1，让数组本身充当哈希表。</strong></p>
+</blockquote>
+<p>这句话必须能对应到代码中的某个具体变量、容器或返回值。若只能说“这里用一个 Hash/DP/Heap”，但说不出其中存的<strong>精确语义</strong>，通常还没有真正掌握。</p>
+<h3 id="_3">写代码前的三问</h3>
+<ul>
+<li><strong>状态何时有效？</strong> 当前元素加入之前还是之后？</li>
+<li><strong>状态是否包含当前元素？</strong> 这会直接决定 query-before-update 还是 update-before-query。</li>
+<li><strong>丢弃的信息为何永远不再需要？</strong> 若无法回答，空间优化或指针移动可能是不安全的。</li>
+</ul>
+<hr />
+<h2 id="19">19. 正确性证明：面试版 + 严谨版</h2>
+<h3 id="191">19.1 面试版证明骨架</h3>
+<ol>
+<li><strong>初始化成立</strong>：循环/递归开始前，状态满足定义。</li>
+<li><strong>保持性成立</strong>：假设处理前缀/子树前 invariant 成立，本轮按照 <code>In-place Index Mapping</code> 更新后仍成立。</li>
+<li><strong>不漏解</strong>：被跳过、弹出、剪枝、覆盖或淘汰的候选，都可以证明不可能产生更优合法答案。</li>
+<li><strong>终止得到答案</strong>：扫描结束/递归返回时，所有需要考虑的候选已经被覆盖。</li>
+</ol>
+<h3 id="192">19.2 本题证明抓手</h3>
+<ul>
+<li><strong>关键事实</strong>：答案必在 [1,n+1]；把值 x 放到下标 x-1，让数组本身充当哈希表。</li>
+<li><strong>转移/操作</strong>：循环交换直到 nums[i] 不在 [1,n] 或已经在正确位置；最后找首个 nums[i]!=i+1。</li>
+<li><strong>最容易被质疑的点</strong>：交换条件不防重复值会死循环。</li>
+</ul>
+<p>面试时不需要写形式化定理，但至少要能给出一个<strong>反事实解释</strong>：如果不按当前更新顺序/移动规则做，会在哪个最小反例上出错。</p>
+<hr />
+<h2 id="20-big-o">20. 复杂度深拆：不要只背 Big-O</h2>
+<p><strong>目标结论：</strong> <code>O(n) / O(1)</code></p>
+<p>平均 O(1) Hash 操作依赖合理哈希分布；若为原地交换，要解释每次交换至少把一个值推进到其目标位置，因此总交换次数受 O(n) 限制。</p>
+<h3 id="_4">复杂度回答建议</h3>
+<ul>
+<li><strong>时间</strong>：说明循环/递归总共访问多少状态，每个状态执行哪些 O(1)/O(log n) 操作。</li>
+<li><strong>空间</strong>：区分“输出空间”“输入原地修改”“显式辅助结构”“递归调用栈”。</li>
+<li><strong>最坏 vs 平均/期望</strong>：Hash、QuickSelect、随机采样等题不要把平均/期望复杂度说成确定最坏上界。</li>
+<li><strong>隐藏主项</strong>：如果方案需要排序、建图、预处理，必须把它计入总复杂度。</li>
+</ul>
+<hr />
+<h2 id="21-bug">21. 测试工程：从样例测试升级为 bug 定向测试</h2>
+<h3 id="_5">基础测试矩阵</h3>
+<ul>
+<li>[ ] 空输入/最小长度</li>
+<li>[ ] 重复值导致 key 覆盖</li>
+<li>[ ] 目标恰好由两个相同值构成</li>
+<li>[ ] 极端值与负数（若允许）</li>
+<li>[ ] 原地修改前后是否仍能读取所需信息</li>
+</ul>
+<h3 id="bug">本题 bug 定向测试</h3>
+<p>高频失误是：<strong>交换条件不防重复值会死循环。</strong></p>
+<p>因此至少手工设计一个样例，让错误实现稳定触发这个问题。测试目标不是“多测几个数”，而是让每个 case 对应一个风险：<strong>初始化、边界、重复、更新顺序、数据结构不变量、返回语义</strong>。</p>
+<h3 id="_6">推荐测试层次</h3>
+<ol>
+<li><strong>Minimal</strong>：最小合法输入；</li>
+<li><strong>Boundary</strong>：答案卡在边界；</li>
+<li><strong>Adversarial</strong>：专门攻击高频错误；</li>
+<li><strong>Structure</strong>：构造最坏形态，如退化树、单调数组、长链、全重复；</li>
+<li><strong>Random differential test</strong>：小规模随机输入，与暴力基线对拍。</li>
+</ol>
+<blockquote>
+<p>对拍尤其适合 Hard：先写一个慢但显然正确的 reference，再随机生成小输入比较数千次，往往能快速找出边界 bug。</p>
+</blockquote>
+<hr />
+<h2 id="22-review-checklist">22. 代码 Review Checklist</h2>
+<p>提交代码前逐项检查：</p>
+<ul>
+<li>[ ] 函数/变量名能直接表达状态语义，而不是 <code>a/b/tmp1/tmp2</code>。</li>
+<li>[ ] 初始化值来自 state 定义，而不是“记得模板这么写”。</li>
+<li>[ ] 查询与更新顺序符合“当前元素能否参与当前答案”的语义。</li>
+<li>[ ] 每个 <code>while</code> 都能解释终止性；每个 <code>continue/break</code> 都有正确性依据。</li>
+<li>[ ] 没有把平均 O(1) Hash、期望 O(1) sampling 等误报为绝对最坏复杂度。</li>
+<li>[ ] 没有漏算排序、建图、递归栈、输出容器等成本。</li>
+<li>[ ] 至少 dry-run 一个普通样例和一个 adversarial 样例。</li>
+</ul>
+<p><strong>Hard / S 级要求：</strong> Hard 的目标不是背完整代码，而是能拆出关键不变量、先给可行解，再逐步逼近目标复杂度。</p>
+<hr />
+<h2 id="23-follow-up-tree">23. Follow-up Tree：面试官可以怎样继续加压</h2>
+<h3 id="level-1">Level 1：证明与边界</h3>
+<ul>
+<li>为什么当前 invariant 足以保证不漏解？</li>
+<li>把更新顺序交换一下会发生什么？给一个最小反例。</li>
+<li>输入为空、重复很多、极端长度时，代码哪一行最容易出错？</li>
+</ul>
+<h3 id="level-2">Level 2：替代算法</h3>
+<ul>
+<li>不允许使用当前主要辅助结构时，退化到什么方案？复杂度如何变化？</li>
+<li>如果输入额外满足“有序 / 值域小 / 全正 / 静态 / 可修改”等条件，能否换更简单或更快的方案？</li>
+<li>如果除了答案值还要求<strong>恢复具体路径/下标/操作序列</strong>，需要额外保存什么？</li>
+</ul>
+<h3 id="level-3">Level 3：本题经典追问</h3>
+<blockquote>
+<p>若不能修改输入？位图/哈希；为什么答案上界一定是 n+1？</p>
+</blockquote>
+<h3 id="level-4">Level 4：算法工程约束</h3>
+<ul>
+<li>数据量扩大 1000 倍，CPU、内存、I/O 哪一个先成为瓶颈？</li>
+<li>输入变为无限流后，哪些状态还能增量维护？</li>
+<li>数据分片到多机后，局部结果是否具有可合并性？若不能，需要交换什么中间状态？</li>
+</ul>
+<hr />
+<h2 id="24-leetcode">24. 算法工程化：从 LeetCode 假设走向真实系统</h2>
+<ul>
+<li>数据规模超过内存时，哈希状态能否分片、压缩或改成 Bloom Filter/外部排序？</li>
+<li>高 QPS 下关注哈希冲突、对象开销、cache locality，而不只是理论 O(1)。</li>
+<li>若状态持续增长，必须明确 TTL、窗口或淘汰策略。</li>
+</ul>
+<h3 id="_7">一个通用的系统化分析框架</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>LeetCode 默认</th>
+<th>工业追问</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据规模</td>
+<td>单机内存可放</td>
+<td>超内存、分片、冷热分层</td>
+</tr>
+<tr>
+<td>到达方式</td>
+<td>静态数组/字符串</td>
+<td>流式、乱序、动态更新</td>
+</tr>
+<tr>
+<td>正确性</td>
+<td>精确答案</td>
+<td>是否允许近似、误差界多大</td>
+</tr>
+<tr>
+<td>延迟</td>
+<td>单次运行</td>
+<td>P50/P95/P99、持续 QPS</td>
+</tr>
+<tr>
+<td>状态</td>
+<td>进程内临时变量</td>
+<td>checkpoint、恢复、TTL、并发一致性</td>
+</tr>
+<tr>
+<td>输出</td>
+<td>一个答案</td>
+<td>Top-K、路径、解释、可审计中间状态</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="25">25. 同类题迁移导航</h2>
+<p>掌握本题后，不要立即跳到完全无关题型。优先练同章节不同约束，确认你掌握的是<strong>模式</strong>而不是题目答案：</p>
+<ul>
+<li><span class="srcref">006. LC525 连续数组 / Contiguous Array</span> — <code>Prefix State Compression</code></li>
+<li><span class="srcref">008. LC73 矩阵置零 / Set Matrix Zeroes</span> — <code>State Reuse</code></li>
+<li><span class="srcref">005. LC560 和为 K 的子数组 / Subarray Sum Equals K</span> — <code>Prefix Sum + Hash Count</code></li>
+<li><span class="srcref">009. LC54 螺旋矩阵 / Spiral Matrix</span> — <code>Boundary Simulation</code></li>
+</ul>
+<h3 id="_8">迁移时强制改变一个条件</h3>
+<ul>
+<li>把“是否存在”改成“计数 / 最短 / 最长”；</li>
+<li>把离线输入改成 online stream；</li>
+<li>把精确解改成允许近似；</li>
+<li>把单机改成分片后合并；</li>
+<li>把只返回数值改成恢复路径/方案。</li>
+</ul>
+<hr />
+<h2 id="26-rubric">26. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>表现层级</th>
+<th>你需要做到什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2/5 - 能写出正确基线</td>
+<td>能复述题意并给出可运行但非最优方案；复杂度分析基本正确。</td>
+</tr>
+<tr>
+<td>3/5 - 能识别模式</td>
+<td>能主动指出重复工作，选择合适数据结构/算法范式，并在少量提示下写出最优解。</td>
+</tr>
+<tr>
+<td>4/5 - 面试可过</td>
+<td>无提示定义不变量、写出边界正确的代码、完成 dry-run，并能解释正确性和复杂度来源。</td>
+</tr>
+<tr>
+<td>5/5 - 强算法岗表现</td>
+<td>能比较替代方案、回答约束变化、指出工程 trade-off，并把母题迁移到流式/分布式/ML 系统场景。</td>
+</tr>
+</tbody>
+</table>
+<p>对于 <strong>S 级题</strong>，目标至少达到 <strong>4/5</strong>；因为 S 级的意义不是题更难，而是该 pattern 的覆盖率、迁移价值和追问空间更高。</p>
+<hr />
+<h2 id="27-active-recall">27. 复习卡片 / Active Recall</h2>
+<p><strong>Q1. 看到怎样的信号应该想到 <code>In-place Index Mapping</code>？</strong>
+A. 当题目出现与“答案必在 [1,n+1]；把值 x 放到下标 x-1，让数组本身充当哈希表。”相同的结构时，优先尝试该模式；先写清状态和不变量，再写模板。</p>
+<p><strong>Q2. 这题最关键的一句话 invariant 是什么？</strong>
+A. 答案必在 [1,n+1]；把值 x 放到下标 x-1，让数组本身充当哈希表。</p>
+<p><strong>Q3. 推荐解的复杂度为什么是 <code>O(n) / O(1)</code>？</strong>
+A. 不只记结论；按第 20 节把“状态数、每状态操作、辅助结构、递归栈/排序成本”完整说一遍。</p>
+<p><strong>Q4. 最容易写错的地方？</strong>
+A. 交换条件不防重复值会死循环。</p>
+<p><strong>Q5. 面试官把规模放大 1000 倍时，第一反应是什么？</strong>
+A. 先识别当前方案的主要状态与随机访问结构，再判断 CPU、内存还是 I/O 先爆；随后讨论 streaming / sharding / approximation。</p>
+<h3 id="_9">复盘记录</h3>
+<ul>
+<li>[ ] 第一次独立 AC 日期：____</li>
+<li>[ ] 15–25 分钟内无提示写对：____</li>
+<li>[ ] 能 90 秒讲清推导：____</li>
+<li>[ ] 能证明 invariant：____</li>
+<li>[ ] 完成一个变体：____</li>
+<li>[ ] 完成一次随机对拍/边界测试：____</li>
+<li>[ ] 能回答系统化追问：____</li>
+</ul>
+<!-- PRO-ENRICHMENT-V2:END -->
+
+<h2 id="28">28. 资料与证据</h2>
+<ul>
+<li>LeetCode 原题定位: https://leetcode.com/problems/first-missing-positive/</li>
+</ul>
+<blockquote>
+<p><code>R</code> 只表示存在公开个人面经样本；<code>H</code> 表示经典/高频母题。二者都不代表任何公司的官方题库或未来题目承诺。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

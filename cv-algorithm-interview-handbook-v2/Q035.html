@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NMS 是什么？为什么需要？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Vision</a><i>∕</i><span>Q035</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q035</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">5</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">5</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q034.html">← Q034</a><a href="Q036.html">Q036 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">object-detection</a><a href="#">nms</a><a href="#">public-interview-pattern</a><a href="#">top30</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      VISION · 35 / 100</div>
+    <h1 class="qtitle">NMS 是什么？为什么需要？</h1>
+    <blockquote>
+<p>[!IMPORTANT]
+<strong>Top 30 必会题。</strong> 要求做到：能口述、能写关键公式/伪代码、能连续回答追问，并能迁移到自己的项目。</p>
+</blockquote>
+<h2 id="_1">题目画像</h2>
+<ul>
+<li><strong>章节</strong>：目标检测</li>
+<li><strong>难度</strong>：★★★★★</li>
+<li><strong>面试频度</strong>：★★★★★</li>
+<li><strong>来源标签</strong>：公开面经手撕原题</li>
+<li><strong>一句话记忆</strong>：NMS = 按分数选代表，用 IoU 抑制重复。</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p>同一目标常产生多个重叠预测，NMS 按 score 贪心保留代表框并抑制重复框。</p>
+<p>如果只能再补一句：<strong>NMS = 按分数选代表，用 IoU 抑制重复。</strong></p>
+<h2 id="_2">面试官真正想听什么</h2>
+<p>这题不是只检查名词记忆，而是在看你能否把<strong>机制、边界条件和工程后果</strong>连起来。一个高质量回答至少覆盖下面三个层次：</p>
+<ol>
+<li><strong>定义/结构</strong>：先说明对象是什么，避免一上来堆历史或模块名。</li>
+<li><strong>为什么有效</strong>：用关键公式或信息流解释机制，而不是只说“效果更好”。</li>
+<li><strong>什么时候会失效</strong>：主动给出 trade-off、数据条件与部署注意事项。</li>
+</ol>
+<h2 id="2-5">2-5 分钟标准回答</h2>
+<h3 id="1">1. 核心要点</h3>
+<p>按 score 降序，取最高分框；算它与剩余框 IoU；删除 IoU&gt;threshold 的框并循环</p>
+<p><strong>深入理解：</strong> 检测中的表示、匹配、后处理和评测是耦合的：改变一个阈值可能同时移动 recall/precision。回答时最好明确“训练阶段的匹配”与“评测/部署阶段的匹配或去重”不是同一个概念。</p>
+<h3 id="2">2. 核心要点</h3>
+<p>naive worst-case O(N²)，实际先做 confidence/top-k 并可向量化/GPU 加速</p>
+<p><strong>深入理解：</strong> 这类结论必须先声明计算口径和 tensor shape。面试时把“公式”继续落到显存访问、并行度和目标硬件；否则只能说明理论工作量，不能推出真实 latency。</p>
+<h3 id="3">3. 核心要点</h3>
+<p>class-aware 与 class-agnostic NMS 会产生不同跨类抑制行为</p>
+<p><strong>深入理解：</strong> 检测中的表示、匹配、后处理和评测是耦合的：改变一个阈值可能同时移动 recall/precision。回答时最好明确“训练阶段的匹配”与“评测/部署阶段的匹配或去重”不是同一个概念。</p>
+<h2 id="_3">深入解析：从原理到工程</h2>
+<p>检测题建议始终沿着“表示 - 匹配 - 分类/回归 - 后处理 - 指标”五层回答。很多线上问题并不是 backbone 不够强，而是 label assignment、阈值、NMS、尺度分布或数据漏标共同造成。</p>
+<p>对 <strong>Q035</strong> 尤其要注意：线上 recall 下降时要检查 conf/NMS threshold，而不只怀疑 backbone。 这不是附加知识，而是把理论答案变成“可上线判断”的关键一步。</p>
+<h3 id="_4">推荐的口述顺序</h3>
+<pre><code class="language-text">一句定义 → 关键公式/结构 → 设计动机 → 优势 → 局限/失败模式 → 工程验证
+</code></pre>
+<h2 id="_5">代码 / 伪代码</h2>
+<pre><code class="language-python">def nms(boxes, scores, iou_thr=0.5):
+    order = scores.argsort(descending=True)
+    keep = []
+    while order.numel():
+        i = order[0]
+        keep.append(i.item())
+        if order.numel() == 1:
+            break
+        rest = order[1:]
+        iou = batch_iou(boxes[i:i+1], boxes[rest])[0]
+        order = rest[iou &lt;= iou_thr]
+    return keep
+</code></pre>
+<blockquote>
+<p>面试手撕时先说明输入 shape、坐标/数值口径和边界条件，再写主逻辑。正确性优先于过早微优化。</p>
+</blockquote>
+<h2 id="_6">高频追问与参考答案</h2>
+<h3 id="1-recallprecision">追问 1：阈值高/低如何影响 recall/precision？</h3>
+<p>confidence threshold 提高通常减少 FP、提高 precision 但降低 recall；NMS IoU threshold 提高会保留更多重叠框，可能提高密集目标 recall 但增加 duplicate FP。</p>
+<p><strong>回答加分点：</strong> 最后补一句它会如何改变指标、训练稳定性或部署成本；若答案依赖实现约定，先声明约定。</p>
+<h3 id="2-nms">追问 2：如何手写向量化 NMS？</h3>
+<p>先回到本题的核心机制：按 score 降序，取最高分框；算它与剩余框 IoU；删除 IoU&gt;threshold 的框并循环。回答这个追问时建议按“直接机制 → 边界条件/反例 → 对训练或部署的影响”三步展开；不要只给结论，至少说明一个会改变答案的条件。</p>
+<p><strong>回答加分点：</strong> 最后补一句它会如何改变指标、训练稳定性或部署成本；若答案依赖实现约定，先声明约定。</p>
+<h2 id="_7">常见失分点</h2>
+<ul>
+<li>坐标格式、退化框、面积负值是手撕高频错误。</li>
+<li>只背结论，不解释“为什么”，或没有指出结论成立的前提。</li>
+<li>论文/离线结论直接套到自己的数据，却没有给出切片实验或消融。</li>
+</ul>
+<h2 id="_8">工程 / 项目视角</h2>
+<p>线上 recall 下降时要检查 conf/NMS threshold，而不只怀疑 backbone。</p>
+<p>建议把自己的项目补成以下四个事实：</p>
+<ul>
+<li><strong>数据条件</strong>：这个机制在哪些尺寸/类别/光照/噪声/设备上最重要？</li>
+<li><strong>评价切片</strong>：不能只看总体均值，至少有一个与本题机制直接相关的 slice。</li>
+<li><strong>成本</strong>：训练显存、参数量、FLOPs、目标硬件 latency、前后处理成本至少知道一个。</li>
+<li><strong>回归</strong>：新增方案让哪些场景变差？上线前如何兜底？</li>
+</ul>
+<h2 id="v2">V2 专业深化</h2>
+<blockquote>
+<p>这一节是在 PDF/原题解基础上的<strong>专业扩展</strong>：用于把“会答”提升到“能推导、能诊断、能做工程决策”。其中的扩展内容属于通用计算机视觉与工程知识，不用于声称某家公司曾逐字问过这些内容。</p>
+</blockquote>
+<h3 id="1_1">1. 更精确的技术表述</h3>
+<ul>
+<li>NMS 是 score-ordered greedy set selection：每轮保留最高分框，并按 IoU 阈值抑制其余候选；naive 最坏 $O(N^2)$。</li>
+<li>class-aware NMS 按类别分别处理，class-agnostic NMS 可抑制跨类别重复；二者在类别易混淆或层级标签场景会产生不同错误模式。</li>
+<li>工程实现通常先 confidence filter/top-k 减少候选，再用向量化或 GPU kernel；阈值必须与 score calibration 和目标拥挤度联合调。</li>
+</ul>
+<h3 id="2_1">2. 回答时必须显式声明的前提</h3>
+<ul>
+<li>检测问题统一沿“表示→匹配/assignment→分类/回归→后处理→评测”定位。</li>
+<li>始终区分训练正负样本匹配、推理 threshold/NMS、评测 IoU matching，这三者语义不同。</li>
+<li>至少报告一个尺寸/遮挡/类别切片，避免总体 mAP 掩盖真实 failure mode。</li>
+</ul>
+<p>面试中尤其建议先把输入/输出、坐标或 tensor shape、训练/推理阶段以及评价口径说清楚。很多看似“知识点错误”的争论，本质是双方默认的实现约定不同。</p>
+<h3 id="3_1">3. 从“结论”推进到“机制”的推理链</h3>
+<p>针对 <strong>NMS 是什么？为什么需要？</strong>，推荐强制自己完成以下链条：</p>
+<pre><code class="language-text">现象/任务约束
+  → 数学对象或网络中的信息流
+  → 为什么当前设计能改变梯度/表示/几何/搜索空间
+  → 得到什么收益
+  → 付出什么代价
+  → 哪些数据分布下会失效
+  → 用什么切片实验和 profiler 证明
+</code></pre>
+<p>不要把“论文上更好”当作最后一层证据。真正专业的答案需要把方法映射到<strong>具体 failure mode</strong>，再设计能证伪自己的实验。</p>
+<h3 id="4">4. 工程诊断矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>观察到的现象</th>
+<th>优先怀疑</th>
+<th>最小验证实验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Recall 低</td>
+<td>漏标、assignment、score/NMS 或小目标信息丢失</td>
+<td>建立 FN taxonomy 并分别扫描 conf/NMS threshold</td>
+</tr>
+<tr>
+<td>AP75 低但 AP50 尚可</td>
+<td>定位精度不足</td>
+<td>检查 bbox error、输入分辨率与回归 loss/ROI alignment</td>
+</tr>
+</tbody>
+</table>
+<p>如果这两行都无法解释项目中的真实失败，再继续向数据版本、标注协议、随机性、导出后端或线上流量结构扩展，而不是直接堆更多模型模块。</p>
+<h3 id="5">5. 建议做的最小消融</h3>
+<ul>
+<li><strong>Control</strong>：保留原 baseline 的训练预算、数据版本、输入尺寸和评测脚本，只改变与本题直接相关的一项。</li>
+<li><strong>Slice</strong>：至少增加一个与本题机制直接相关的子集指标；例如尺寸、遮挡、边界、长尾、噪声或设备域。</li>
+<li><strong>Cost</strong>：同时记录参数量/FLOPs 之外的真实成本：显存、wall-clock、目标硬件 latency、P95/P99 或后处理开销。</li>
+<li><strong>Regression</strong>：列出方案新增的 FP/FN 或退化场景，避免只展示改善样本。</li>
+<li><strong>Repeatability</strong>：若提升幅度较小，使用多随机种子或 bootstrap 置信区间，判断收益是否超出自然波动。</li>
+</ul>
+<h3 id="6">6. 专家级追问清单</h3>
+<ol>
+<li><strong>阈值高/低如何影响 recall/precision？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+<li><strong>如何手写向量化 NMS？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+<li><strong>它会如何改变正负样本、score 分布和最终 PR curve？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+<li><strong>密集目标/小目标/长尾类别下最先失败的是哪一环？</strong>：先给结论，再说明一个成立前提、一个反例/边界和一个可验证实验。</li>
+</ol>
+<h3 id="7">7. 面试表达升级模板</h3>
+<blockquote>
+<p>“我先明确这里的实现/评价口径。核心机制是 <strong>A</strong>，它通过 <strong>B</strong> 改变了 <strong>C</strong>，所以在 <strong>D 类数据</strong>上预期有效；代价是 <strong>E</strong>。如果这是我的项目，我会用 <strong>一个控制实验 + 一个关键切片 + 一个真实硬件/线上指标</strong> 来验证，而不是只看总体平均分。”</p>
+</blockquote>
+<p>把这个模板替换成当前题目的具体名词后，通常可以自然从 30 秒回答扩展到 3–5 分钟，并且给面试官留下继续追问的接口。</p>
+<h2 id="_9">自测清单</h2>
+<ul>
+<li>[ ] 能否不看资料，用 30 秒说出核心结论？</li>
+<li>[ ] 能否写出/解释本题最关键的公式、shape 或信息流？</li>
+<li>[ ] 能否主动指出一个失效条件或反例？</li>
+<li>[ ] 能否把答案迁移到自己的一个项目 failure case？</li>
+<li>[ ] 我能独立回答追问：阈值高/低如何影响 recall/precision？</li>
+<li>[ ] 我能独立回答追问：如何手写向量化 NMS？</li>
+</ul>
+<h2 id="_10">关联题</h2>
+<ul>
+<li><span class="srcref">Q034 · 为什么 Smooth L1 曾常用于 bbox regression？</span></li>
+<li><span class="srcref">Q036 · NMS 有什么缺陷？Soft-NMS/NMS-free 在解决什么？</span></li>
+<li><span class="srcref">Q097 · 手写 NMS：面试时应该怎么写？</span></li>
+</ul>
+<h2 id="_11">资料来源</h2>
+<p>本题主体结构来自配套 PDF；公开依据与经典论文统一见 <span class="srcref"><code>references/papers.md</code></span>。</p>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MHA、MQA、GQA 的本质区别是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">LLM Pre-Training</a><i>∕</i><span>Q002</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q002</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q001.html">← Q001</a><a href="Q003.html">Q003 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">attention</a><a href="#">transformer-architecture</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      PRE-TRAINING · 3 / 101</div>
+    <h1 class="qtitle">MHA、MQA、GQA 的本质区别是什么？</h1>
+    <blockquote>
+<p><strong>定位</strong>：A 类高频真题型 · 难度 <strong>中</strong> · 频率 <strong>★★★★★</strong>
+章节：<span class="srcref">Transformer 与模型架构</span></p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问</h2>
+<p>考察你能否把表示能力、KV Cache、内存带宽和训练架构统一起来。</p>
+<p>这道题真正区分的是：<strong>能否把“知道概念”推进到“解释机制、量化成本、落到训练系统并设计验证”</strong>。</p>
+<h3 id="_1">本题的三层观察镜</h3>
+<ul>
+<li><strong>数学尺度</strong>：公式是否解释了数值尺度、梯度和表示能力？</li>
+<li><strong>结构成本</strong>：参数量、FLOPs、KV Cache 与 kernel shape 如何变化？</li>
+<li><strong>生命周期</strong>：训练架构选择会如何影响推理成本？</li>
+</ul>
+<h2 id="2-30">2. 30 秒结论</h2>
+<blockquote>
+<p>GQA 的关键不是“少几个头”，而是用更少的 KV 表示换取更低的缓存与带宽成本。</p>
+</blockquote>
+<p>30 秒版本的目标不是覆盖所有细节，而是先给出<strong>正确结论 + 最关键因果关系</strong>，让面试官知道你掌握主线。</p>
+<h2 id="3-3">3. 3 分钟标准回答</h2>
+<h3 id="31">3.1 核心机制</h3>
+<p>MHA 为每个 query head 配一组独立 K/V；MQA 让所有 query heads 共享一组 K/V；GQA 介于两者之间，让若干 query heads 共享一个 KV head。若 h_q 为 query heads、h_kv 为 KV heads，则 MHA: h_kv=h_q，MQA: h_kv=1，GQA: 1&lt;h_kv&lt;h_q。</p>
+<h3 id="32-trade-off">3.2 关键 Trade-off / 边界</h3>
+<p>推理时 KV Cache 大小近似正比于 h_kv，因此减少 KV heads 能显著降低显存占用和内存带宽；代价是 K/V 表示自由度下降。GQA 是质量与 serving efficiency 的折中。</p>
+<h2 id="4">4. 深度展开</h2>
+<h3 id="kv-cache">KV Cache 手算模板</h3>
+<p>对 decoder-only 模型，忽略额外元数据时 KV Cache 近似：</p>
+<p>$$
+M_{KV}\approx B\times S\times L\times 2\times h_{kv}\times d_h\times bytes(dtype).
+$$</p>
+<p>MHA/MQA/GQA 的核心差异会直接落在 $h_{kv}$。这也是为什么 GQA 是架构层面的生命周期成本设计，而不是 serving 阶段临时加的技巧。</p>
+<h2 id="5-know-how">5. Know-how：如何落到实现与训练系统</h2>
+<ol>
+<li><strong>动作 1</strong>：手算 KV Cache 时显式写 batch、sequence、layers、2(K/V)、h_kv、head_dim、dtype。</li>
+<li><strong>动作 2</strong>：实现中注意 repeat_kv 只是逻辑广播；不应真的复制成 MHA 大小再做 attention。</li>
+<li><strong>动作 3</strong>：训练架构选型要结合预期推理吞吐，而不是只看 pretraining loss。</li>
+</ol>
+<h3 id="ablation">架构 Ablation</h3>
+<p>固定训练 Token 与大部分 recipe，只改变目标组件；同时比较 validation loss、下游能力、训练稳定性、参数/FLOPs 与推理成本。</p>
+<ul>
+<li>不要只比较最终 benchmark；记录收敛速度。</li>
+<li>至少做等参数或等 FLOPs 对照。</li>
+<li>改变 head/hidden 等 shape 时同时检查 kernel efficiency。</li>
+</ul>
+<h2 id="6">6. 高频追问与回答方向</h2>
+<h3 id="1gqa">追问 1：GQA 为什么不只是一种推理优化？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → GQA 的关键不是“少几个头”，而是用更少的 KV 表示换取更低的缓存与带宽成本。 → 新代价/边界条件”三段式回答。</p>
+<h3 id="2gqa-mha">追问 2：GQA 的参数量比 MHA 少多少？</h3>
+<p><strong>回答方向</strong>：列出矩阵 shape 后逐项求和，不要凭经验比例；同时指出 weight tying/GQA/SwiGLU 等会改变结果。</p>
+<h3 id="3-kv-heads">追问 3：为什么 KV heads 太少可能伤质量？</h3>
+<p><strong>回答方向</strong>：从“旧方案瓶颈 → GQA 的关键不是“少几个头”，而是用更少的 KV 表示换取更低的缓存与带宽成本。 → 新代价/边界条件”三段式回答。</p>
+<h2 id="7">7. 常见失分点：为什么错</h2>
+<ul>
+<li>❌ <strong>只回答“GQA 更省显存”，不说明省的是 KV Cache 哪一维。</strong></li>
+<li>改进：回到“GQA 的关键不是“少几个头”，而是用更少的 KV 表示换取更低的缓存与带宽成本。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+<li>❌ <strong>把 query heads 也错误地一起减少。</strong></li>
+<li>改进：回到“GQA 的关键不是“少几个头”，而是用更少的 KV 表示换取更低的缓存与带宽成本。”这一主线，并补充可量化的状态/公式/实验，而不是只给结论。</li>
+</ul>
+<h2 id="8-rubric">8. 面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 — 不合格</td>
+<td>只会名词或结论，定义/公式/状态语义存在明显错误。</td>
+</tr>
+<tr>
+<td>1 — 基础</td>
+<td>能复述：GQA 的关键不是“少几个头”，而是用更少的 KV 表示换取更低的缓存与带宽成本。</td>
+</tr>
+<tr>
+<td>2 — 良好</td>
+<td>能解释 Why + How，回答至少一个追问，并指出主要 trade-off。</td>
+</tr>
+<tr>
+<td>3 — 强</td>
+<td>能手算/画通信或数据流/给出实验设计，把算法与系统联系起来。</td>
+</tr>
+<tr>
+<td>4 — 研究/Production</td>
+<td>能说明失效边界、诊断指标、等成本对照和规模化约束，并结合真实项目给数字。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9">9. 自测与白板练习</h2>
+<p>闭卷完成下面练习，建议每题控制在 5–10 分钟：</p>
+<ol>
+<li>GQA 为什么不只是一种推理优化？</li>
+<li>GQA 的参数量比 MHA 少多少？</li>
+<li>为什么 KV heads 太少可能伤质量？</li>
+<li>画出相关 tensor shape，并估算参数量/FLOPs/KV 或 activation 的变化。</li>
+</ol>
+<h2 id="10">10. 一句话记忆</h2>
+<blockquote>
+<p><strong>GQA 的关键不是“少几个头”，而是用更少的 KV 表示换取更低的缓存与带宽成本。</strong></p>
+</blockquote>
+<h3 id="_2">深挖关键点</h3>
+<p>把架构题回答成全生命周期成本题，会明显体现预训练岗位的系统意识。</p>
+<h2 id="11">11. 题源与可信度说明</h2>
+<p>公开面经中出现或高度近似的高频题型；题干在本项目中做了规范化重写。</p>
+<blockquote>
+<p>本项目将“公开面经题型”和“能力等价追问题”明确分开；公开面经用于观察招聘分布，不视为公司官方试卷。</p>
+</blockquote>
+<h2 id="12">12. 延伸阅读</h2>
+<ul>
+<li><strong>R3 · 论文</strong> — <a href="https://arxiv.org/abs/2305.13245">Ainslie et al., GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints</a></li>
+<li><strong>R15 · 公开面经</strong> — <a href="https://www.nowcoder.com/feed/main/detail/e4ac3528bcdd44ebb8c3617540216932">公开面经：京东大模型算法实习</a></li>
+</ul>
+<h2 id="_3">相关题目</h2>
+<ul>
+<li>← <span class="srcref">Q001. 手推 Self-Attention：为什么要除以 √d_k？</span></li>
+<li>→ <span class="srcref">Q003. 为什么大模型主流选择 Decoder-only？</span></li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>复习要求</strong>：能够在不看答案的情况下完成 30 秒结论、3 分钟主答，并承受至少 3 轮 Why/How/Trade-off/Production 追问。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

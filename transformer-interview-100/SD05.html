@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SD05 训练一个 70B Transformer · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">15 fields · ~1500 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Transformer</a><i>∕</i><span>SD05</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">SD05</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="SD04.html">← SD04</a><a href="SD06.html">SD06 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">system-design</a><a href="#">distributed-training</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TRANSFORMER · 105 / 110</div>
+    <h1 class="qtitle">SD05 训练一个 70B Transformer</h1>
+    <h2 id="1">1. 先写显存预算</h2>
+<p>仅 BF16 权重：</p>
+<p>[
+70B\times2\ bytes\approx140\ GB
+]</p>
+<p>训练还需要 gradients、optimizer states、master weights（视实现）、activation。因此单卡显然不够。</p>
+<p>不要死背“每参数多少 bytes”，因为 Adam state、mixed precision 和 ZeRO/FSDP shard 方式不同。应列账本再代入当前 recipe。</p>
+<h2 id="2">2. 并行维度</h2>
+<h3 id="data-parallel-fsdp-zero">Data Parallel / FSDP / ZeRO</h3>
+<p>切 optimizer/gradient/parameter state。</p>
+<h3 id="tensor-parallel">Tensor Parallel</h3>
+<p>切 attention/MLP 大矩阵，通信频繁，优先放在高速同节点互联。</p>
+<h3 id="pipeline-parallel">Pipeline Parallel</h3>
+<p>按层切 stage；需要 micro-batch pipeline，关注 bubble。</p>
+<h3 id="context-sequence-parallel">Context / Sequence Parallel</h3>
+<p>长序列下切 sequence/activation。</p>
+<h3 id="expert-parallel">Expert Parallel</h3>
+<p>MoE 需要 all-to-all。</p>
+<p>真实方案通常：</p>
+<p>[
+WorldSize=DP\times TP\times PP\times CP
+]</p>
+<h2 id="3">3. 拓扑映射</h2>
+<p>原则：通信最频繁的并行维优先映射到最快互联。</p>
+<p>例如 TP 通常优先单节点 NVLink；DP 可跨节点；PP stage 边界要考虑节点拓扑。</p>
+<h2 id="4-activation-memory">4. Activation Memory</h2>
+<p>长 sequence / 大 micro-batch 时 activation 可能成为主要显存压力。</p>
+<p>策略：</p>
+<ul>
+<li>activation checkpointing；</li>
+<li>sequence parallel；</li>
+<li>selective recompute；</li>
+<li>FlashAttention；</li>
+<li>micro-batch 调整。</li>
+</ul>
+<h2 id="5-global-batch">5. Global Batch</h2>
+<p>[
+B_{global}=B_{micro}\times accumulation\times DP
+]</p>
+<p>修改任何一项后要同步 LR schedule、optimizer steps/token 和日志归一方式。</p>
+<h2 id="6-token-budget">6. 数据与 Token Budget</h2>
+<p>70B 并不意味着 token 越少越好。训练方案需共同确定：</p>
+<ul>
+<li>total tokens；</li>
+<li>data mixture；</li>
+<li>tokenizer；</li>
+<li>curriculum；</li>
+<li>dedup / contamination；</li>
+<li>checkpoint cadence。</li>
+</ul>
+<h2 id="7">7. 稳定性</h2>
+<p>记录：</p>
+<ul>
+<li>loss；</li>
+<li>grad norm；</li>
+<li>activation RMS by layer；</li>
+<li>overflow/NaN；</li>
+<li>LR；</li>
+<li>tokens/s；</li>
+<li>MFU；</li>
+<li>data source distribution。</li>
+</ul>
+<p>一旦 loss spike，要能定位到数据 batch / rank / layer / optimizer step。</p>
+<h2 id="8-checkpoint">8. Checkpoint</h2>
+<p>70B checkpoint 很大，需要：</p>
+<ul>
+<li>sharded save；</li>
+<li>async checkpoint；</li>
+<li>optimizer state；</li>
+<li>RNG state；</li>
+<li>dataloader position；</li>
+<li>exact model/tokenizer/config revision。</li>
+</ul>
+<p>“能恢复权重”不等于“能精确恢复训练”。</p>
+<h2 id="9">9. 故障容错</h2>
+<ul>
+<li>node failure；</li>
+<li>NCCL timeout；</li>
+<li>silent data corruption；</li>
+<li>bad shard；</li>
+<li>checkpoint partial write。</li>
+</ul>
+<p>应设计自动重试和最近健康 checkpoint 回滚。</p>
+<h2 id="10">10. 面试加分</h2>
+<p>不要只回答 Megatron/DeepSpeed 名词。给出：<strong>为什么某并行维放在某拓扑、哪个状态占显存、通信在什么位置发生、怎样验证 scaling efficiency。</strong></p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

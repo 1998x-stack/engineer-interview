@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nagle Algorithm 解决什么？为什么交互式 RPC 常设置 TCP_NODELAY？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>42</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">42</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="41.html">← 41</a><a href="43.html">43 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">Nagle</a><a href="#">Tinygram</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 69 / 100</div>
+    <h1 class="qtitle">Nagle Algorithm 解决什么？为什么交互式 RPC 常设置 TCP_NODELAY？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★☆ · <strong>标签</strong>：Nagle / Tinygram<br />
+<strong>本章</strong>：<span class="srcref">第四章 TCP 性能、窗口与拥塞控制</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>Nagle / Tinygram</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>Nagle 通过抑制大量小而未确认的 TCP Segment 来提高链路效率。对低延迟 RPC、游戏、交互式协议，小消息等待聚合可能增加尾延迟，因此常设置 <code>TCP_NODELAY</code> 禁用 Nagle，但这并不会让 TCP 变成“实时协议”。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>Nagle 与 delayed ACK 的组合在某些模式下会造成明显延迟。</li>
+<li>禁用 Nagle 会增加小包数量和每包开销，需权衡 latency 与 packet rate。</li>
+<li>应用层批处理有时比完全依赖 Nagle 更可控。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>吞吐取决于窗口、RTT、丢包、排队和拥塞算法，不能只用“带宽大”解释性能。</li>
+<li>先区分 rwnd（接收端能力）和 cwnd（网络承载估计），再讨论实际 in-flight 上限。</li>
+<li>拥塞控制算法的目标是动态探测路径可用容量；不同算法对 loss、RTT 与 queue 的解释不同。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-nagle-tinygramtcp_nodelay">V2 深入：Nagle 针对 tinygram，<code>TCP_NODELAY</code> 是延迟/吞吐取舍开关</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>Nagle 的经典目标是在存在未确认小数据时合并新的小 write，避免大量 tiny TCP segments 浪费带宽/处理开销。</li>
+<li>交互式 RPC 常更怕几十毫秒额外等待，因此设置 <code>TCP_NODELAY</code>，但这并不取消 TCP buffering、congestion control 或调度延迟。</li>
+<li>Delayed ACK 与 Nagle 相互作用时可能放大小消息延迟，因此需要理解双方算法，而不是只背一个 socket option。</li>
+</ul>
+<h3 id="batching">应用层 batching</h3>
+<p>现代 RPC framework 往往自己做 coalescing/batching/writev，因为应用更知道 message boundary 和 latency budget。这样可以在关闭 Nagle 的同时仍避免每个字段都变成一个 packet。</p>
+<h3 id="_5">边界与反例</h3>
+<p>一次 <code>write(&lt;MSS)</code> 不代表内核一定立即上线：cwnd/rwnd、qdisc、pacing、scheduler、TLS record 都可能延迟。<code>TCP_NODELAY</code> 只改变 Nagle 相关发送决策。</p>
+<h3 id="_6">线上案例推演</h3>
+<p>小 RPC p99 恰好常出现约一个 delayed-ACK timer 量级延迟时，可以 A/B <code>TCP_NODELAY</code>、抓包看 small segment/ACK timing，并检查框架 batching，而不是只增加线程数。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_7">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“Nagle Algorithm 解决什么？为什么交互式 RPC 常设置 TCP_NODELAY？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 Nagle、Tinygram 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>ss -ti</code>。</li>
+</ol>
+<h2 id="_8">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>ss -ti</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>tc qdisc</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>iperf3</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>nstat -az | grep -i retrans</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1delayed-ack">追问 1：Delayed ACK 是什么？</h3>
+<p><strong>参考回答</strong>：Nagle尝试减少 tiny segments，Delayed ACK减少纯 ACK数量，两者叠加可能增加交互延迟。TCP_NODELAY禁用 Nagle；TCP_CORK更偏向攒满输出；writev/batching可减少系统调用和小 write，但不改变 TCP 的字节流语义。</p>
+<h3 id="2-write-mss">追问 2：为什么一次 write 小于 MSS 不一定马上发包？</h3>
+<p><strong>参考回答</strong>：MSS约束 TCP payload，Path MTU 约束端到端路径可承载的 IP packet。隧道/VPN增加外层头部会降低内层可用 MTU；必要 ICMP 被过滤时可能出现 PMTU black hole。</p>
+<h3 id="3rpc-batching">追问 3：RPC 框架为什么常自己做 batching？</h3>
+<p><strong>参考回答</strong>：Nagle尝试减少 tiny segments，Delayed ACK减少纯 ACK数量，两者叠加可能增加交互延迟。TCP_NODELAY禁用 Nagle；TCP_CORK更偏向攒满输出；writev/batching可减少系统调用和小 write，但不改变 TCP 的字节流语义。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 认为 TCP_NODELAY 能消除所有 TCP 延迟。</li>
+<li>❌ 认为 Nagle 只是“缓存 200ms”。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>写小消息 ping-pong，比较 TCP_NODELAY 开/关下 p50/p99 延迟和 packet count。</p>
+<h3 id="_9">实验验收标准</h3>
+<p>能把吞吐/延迟变化与 RTT、cwnd/rwnd、loss、queue 之一建立可验证联系。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9293.html">RFC 9293 - Transmission Control Protocol (TCP)</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc5681.html">RFC 5681 - TCP Congestion Control</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_11">关联题目</h2>
+<ul>
+<li><span class="srcref">043. TCP_NODELAY 到底改变什么，不改变什么？</span></li>
+<li><span class="srcref">044. BDP 是什么？为什么高带宽长 RTT 链路需要大窗口？</span></li>
+<li><span class="srcref">088. send() 返回成功，是否意味着对端已经收到或处理？</span></li>
+</ul>
+<h2 id="_12">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：Nagle 通过抑制大量小而未确认的 TCP Segment 来提高链路效率。对低延迟 RPC、游戏、交互式协议，小消息等待聚合可能增加尾延迟，因此常设置 <code>TCP_NODELAY</code> 禁用 Nagle，但这并不会让 TCP 变成“实时协议”。</li>
+<li><strong>必须会解释</strong>：Nagle / Tinygram。</li>
+<li><strong>必须避免</strong>：认为 TCP_NODELAY 能消除所有 TCP 延迟。</li>
+<li><strong>必须会验证</strong>：写小消息 ping-pong，比较 TCP_NODELAY 开/关下 p50/p99 延迟和 packet count。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

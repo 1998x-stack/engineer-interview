@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UDP 为什么不存在 TCP 那种“粘包”语义？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>47</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">47</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">基础</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="46.html">← 46</a><a href="48.html">48 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">Datagram</a><a href="#">Message Boundary</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 22 / 100</div>
+    <h1 class="qtitle">UDP 为什么不存在 TCP 那种“粘包”语义？</h1>
+    <blockquote>
+<p><strong>定位</strong>：基础 · <strong>面试频率</strong>：★★★★☆ · <strong>标签</strong>：Datagram / Message Boundary<br />
+<strong>本章</strong>：<span class="srcref">第五章 UDP、QUIC 与 HTTP/3 传输基础</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>Datagram / Message Boundary</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>UDP 保留 datagram 边界：一次 UDP send 形成一个数据报，接收 API 以数据报为单位取消息。TCP 则只保证字节顺序，没有应用消息边界。需要注意 UDP 接收缓冲太小会截断数据报，而不是自动拆成下一次 recv。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>多个 UDP datagram 不会被内核自动拼成一个应用消息。</li>
+<li>一个超大 UDP datagram 可能在 IP 层分片，丢一个 fragment 就导致整个 datagram 丢失。</li>
+<li>应用仍需定义请求 ID、重试和去重等语义。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>UDP 只提供数据报承载；可靠性、流控、拥塞控制、连接迁移等能力是 QUIC 自己实现的。</li>
+<li>HTTP/3 的关键收益不是“UDP 比 TCP 快”，而是 QUIC streams 避免 TCP 单字节流的跨流 HOL。</li>
+<li>QUIC 的用户态部署使协议迭代更快，但仍必须遵守互联网拥塞控制与安全约束。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-udp-datagram">V2 深入：UDP 保留 datagram 边界，但应用仍必须处理截断与大小限制</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>一次 UDP send 形成一个 datagram，receiver 一次接收对应一个 datagram 语义；多个 send 不会像 TCP stream 那样自然合并成一个无边界字节流。</li>
+<li>如果应用 receive buffer 小于 datagram，具体 API 通常返回截断数据并丢弃剩余部分/提供 truncation 标志；无法像 TCP 下一次 read 继续拿“后半包”。</li>
+<li>Datagram boundary 不等于可靠：UDP 仍可 loss、duplicate、reorder。</li>
+</ul>
+<h3 id="_5">大包问题</h3>
+<p>UDP datagram 过大更易触发 IP fragmentation 或超过 path MTU；DNS/QUIC 等协议都会主动控制 datagram size。EDNS0 扩展 DNS UDP payload 能力，但遇到 truncation/网络限制仍可能 fallback 到 TCP。</p>
+<h3 id="quic">与 QUIC 的关系</h3>
+<p>一个 UDP datagram 可以承载一个或多个 QUIC packet（视版本/packet type），而 QUIC stream 的 message/byte-stream 语义建立在 QUIC 层，不是 UDP 自身提供。</p>
+<h3 id="_6">线上案例推演</h3>
+<p>如果 UDP 应用小消息正常、偶发大消息完全消失，检查 application recv buffer、IP fragmentation/PMTU 和 firewall fragment policy；不要把它归结为“UDP 粘包”。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_7">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“UDP 为什么不存在 TCP 那种“粘包”语义？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 Datagram、Message Boundary 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>tcpdump -nn udp</code>。</li>
+</ol>
+<h2 id="_8">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>tcpdump -nn udp</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>curl --http3</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>qlog / QUIC trace</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>Wireshark QUIC</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1udp-recv-buffer-datagram">追问 1：UDP recv buffer 小于 datagram 会怎样？</h3>
+<p><strong>参考回答</strong>：UDP保留 datagram 边界。若接收缓冲区小于一个 datagram，常见 API语义是返回截断后的内容并丢弃该 datagram其余部分；应用应按协议上限准备足够缓冲并检查截断标志。</p>
+<h3 id="2-dns-udp-response">追问 2：为什么 DNS 通常控制 UDP response 大小？</h3>
+<p><strong>参考回答</strong>：DNS既支持 UDP 也支持 TCP。普通查询通常先用 UDP；响应被截断（TC=1）、区域传送或某些大响应场景会使用 TCP。</p>
+<h3 id="3quic-packet-udp-datagram">追问 3：QUIC packet 与 UDP datagram 的关系？</h3>
+<p><strong>参考回答</strong>：UDP保留 datagram 边界。若接收缓冲区小于一个 datagram，常见 API语义是返回截断后的内容并丢弃该 datagram其余部分；应用应按协议上限准备足够缓冲并检查截断标志。 epoll把interest set保存在内核，不需要每轮重新提交全部fd；ET强调边沿变化，必须drain到EAGAIN。EPOLLONESHOT常用于多线程下保证一个fd一次只被一个worker处理。poll在fd数量不大时足够简单可靠，kqueue与epoll都属于事件通知接口但具体语义不同。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 认为 UDP “绝对不会分片”。</li>
+<li>❌ 把 UDP message boundary 等同于可靠消息。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>发送不同长度 UDP datagram，用不同 recv buffer 观察截断与边界。</p>
+<h3 id="_9">实验验收标准</h3>
+<p>能证明 QUIC/UDP 的数据报与 stream 行为，并区分协议自身能力与 UDP 基础能力。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9293.html">RFC 9293 - Transmission Control Protocol (TCP)</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_11">关联题目</h2>
+<ul>
+<li><span class="srcref">046. 如果基于 UDP 实现可靠传输，需要补哪些机制？</span></li>
+<li><span class="srcref">048. QUIC 为什么建立在 UDP 上，而不是直接改 TCP？</span></li>
+</ul>
+<h2 id="_12">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：UDP 保留 datagram 边界：一次 UDP send 形成一个数据报，接收 API 以数据报为单位取消息。TCP 则只保证字节顺序，没有应用消息边界。需要注意 UDP 接收缓冲太小会截断数据报，而不是自动拆成下一次 recv。</li>
+<li><strong>必须会解释</strong>：Datagram / Message Boundary。</li>
+<li><strong>必须避免</strong>：认为 UDP “绝对不会分片”。</li>
+<li><strong>必须会验证</strong>：发送不同长度 UDP datagram，用不同 recv buffer 观察截断与边界。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

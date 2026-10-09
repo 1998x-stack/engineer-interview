@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Slow Start 为什么叫“慢启动”，它的增长其实有多快？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>37</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">37</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="36.html">← 36</a><a href="38.html">38 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">Slow Start</a><a href="#">ssthresh</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 64 / 100</div>
+    <h1 class="qtitle">Slow Start 为什么叫“慢启动”，它的增长其实有多快？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★☆ · <strong>标签</strong>：Slow Start / ssthresh<br />
+<strong>本章</strong>：<span class="srcref">第四章 TCP 性能、窗口与拥塞控制</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>Slow Start / ssthresh</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>Slow Start 是相对“直接以大窗口灌满未知网络”而言谨慎。经典上 cwnd 随 ACK 在每个 RTT 近似指数增长，直到达到 ssthresh 或检测到拥塞，再进入更温和的拥塞避免阶段。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>初始 cwnd 现代实现通常不是 1 MSS，具体遵循实现与标准演进。</li>
+<li>指数增长意味着短连接性能高度受初始窗口和 RTT 影响。</li>
+<li>loss/ECN 会改变 ssthresh、cwnd，并进入相应恢复状态。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>吞吐取决于窗口、RTT、丢包、排队和拥塞算法，不能只用“带宽大”解释性能。</li>
+<li>先区分 rwnd（接收端能力）和 cwnd（网络承载估计），再讨论实际 in-flight 上限。</li>
+<li>拥塞控制算法的目标是动态探测路径可用容量；不同算法对 loss、RTT 与 queue 的解释不同。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-slow-start">V2 深入：Slow Start 的“慢”是相对于一开始就按未知容量全速发送</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>Slow Start 从相对较小的 initial congestion window 出发，通过 ACK clock 快速增加 cwnd；理想化看每 RTT 近似指数增长。</li>
+<li>其目标是在不知道 path capacity 的前提下快速探测，同时避免直接向网络注入一个巨大 burst。</li>
+<li>达到 ssthresh、检测 congestion 或由现代算法的 startup detector 判断后进入更保守增长阶段。</li>
+</ul>
+<h3 id="_5">为什么短请求敏感</h3>
+<p>如果 response 只有几 RTT 就结束，连接可能大部分生命周期都处于 startup，初始窗口与 RTT 对 TTFB/下载完成时间影响很大。Connection reuse/HTTP2/QUIC resumption 可以避免每个小请求重新从冷启动状态开始。</p>
+<h3 id="_6">现代边界</h3>
+<p>CUBIC 可结合 HyStart++ 更早发现 delay increase，BBR 的 startup 又是另一种容量探测逻辑；因此面试时区分“经典 RFC 5681 slow start”与“某算法的具体 startup 实现”。</p>
+<h3 id="_7">线上案例推演</h3>
+<p>高 RTT 用户下载很多几十 KB 对象明显慢，而大文件最终吞吐正常，可能是每个新连接 startup/handshake 成本占比过高；优先验证连接复用和 RTT，而不是只看峰值带宽。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_8">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“Slow Start 为什么叫“慢启动”，它的增长其实有多快？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 Slow Start、ssthresh 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>ss -ti</code>。</li>
+</ol>
+<h2 id="_9">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>ss -ti</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>tc qdisc</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>iperf3</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>nstat -az | grep -i retrans</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1-web-slow-start">追问 1：为什么短 Web 请求受 Slow Start 影响明显？</h3>
+<p><strong>参考回答</strong>：短 Web 请求可能在连接还没增长到稳定 cwnd 前就结束，因此 initial cwnd、RTT 和 connection reuse 对完成时间占比很高。</p>
+<h3 id="2ssthresh">追问 2：ssthresh 如何更新？</h3>
+<p><strong>参考回答</strong>：经典算法在拥塞事件后设置/更新 ssthresh，具体计算与 congestion controller/recovery 相关；不能把一个固定数值当永恒规则。</p>
+<h3 id="3mss">追问 3：拥塞窗口为何以字节/MSS 为单位变化？</h3>
+<p><strong>参考回答</strong>：cwnd 实质约束在途数据量，实现常以字节维护并结合 MSS/SMSS 调整；教材用‘几个 MSS’只是方便表达增长规模。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 机械背 1,2,4,8，不说明它是“每 RTT 近似翻倍”。</li>
+<li>❌ 认为慢启动只在连接第一次建立时发生。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>在带宽足够、RTT 可控的 netem 环境抓取新连接，观察 <code>ss -ti</code> 中 cwnd 随时间增长。</p>
+<h3 id="_10">实验验收标准</h3>
+<p>能把吞吐/延迟变化与 RTT、cwnd/rwnd、loss、queue 之一建立可验证联系。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_11">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9293.html">RFC 9293 - Transmission Control Protocol (TCP)</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc5681.html">RFC 5681 - TCP Congestion Control</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_12">关联题目</h2>
+<ul>
+<li><span class="srcref">038. Fast Retransmit 与 Fast Recovery 分别是什么？</span></li>
+<li><span class="srcref">039. rwnd、cwnd、ssthresh 三者是什么关系？</span></li>
+<li><span class="srcref">040. TCP Reno 与 CUBIC 的核心差异是什么？</span></li>
+</ul>
+<h2 id="_13">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：Slow Start 是相对“直接以大窗口灌满未知网络”而言谨慎。经典上 cwnd 随 ACK 在每个 RTT 近似指数增长，直到达到 ssthresh 或检测到拥塞，再进入更温和的拥塞避免阶段。</li>
+<li><strong>必须会解释</strong>：Slow Start / ssthresh。</li>
+<li><strong>必须避免</strong>：机械背 1,2,4,8，不说明它是“每 RTT 近似翻倍”。</li>
+<li><strong>必须会验证</strong>：在带宽足够、RTT 可控的 netem 环境抓取新连接，观察 <code>ss -ti</code> 中 cwnd 随时间增长。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

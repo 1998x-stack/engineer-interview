@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shared Memory 为什么快？它解决的三个核心问题是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">CUDA / GPU</a><i>∕</i><span>14</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">14</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★☆☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">极高</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="13.html">← 13</a><a href="15.html">15 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">Shared Memory / Reuse</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      CUDA · GPU · 14 / 101</div>
+    <h1 class="qtitle">Shared Memory 为什么快？它解决的三个核心问题是什么？</h1>
+    <blockquote>
+<p><strong>一句话核心</strong>：shared memory 的三个核心用法：跨线程协作、重用 global data、重排访问以获得 coalescing。</p>
+<p><strong>章节</strong>：第 2 章 · GPU Memory Hierarchy<br />
+<strong>难度</strong>：★☆☆ · <strong>频率</strong>：极高 · <strong>标签</strong>：Shared Memory / Reuse</p>
+</blockquote>
+<h2 id="pdf">PDF 基线题解</h2>
+<h2 id="_1">考察意图</h2>
+<p>考察是否知道 shared memory 的真正价值不是“比 global 快”这句口号。</p>
+<h2 id="_2">思路拆解</h2>
+<p>Shared memory 是程序员可控的片上 scratchpad。最典型的价值是：把不规则 global access 转成 coalesced
+load/store；缓存一个 tile 以消除重复 global load；在 block 内线程之间交换数据。</p>
+<h2 id="_3">标准回答</h2>
+<ul>
+<li>显式 staging 可提高 data reuse 和 arithmetic intensity。</li>
+<li>可以先 coalesced 地读入 shared，再按任意索引重排，例如 matrix transpose。</li>
+<li>可以用于 reduction、scan、histogram 等 block 内协作。</li>
+<li>代价包括额外 load/store 指令、barrier、bank conflict，以及 shared-memory capacity 对 occupancy 的限制。</li>
+</ul>
+<h2 id="gotchas">Gotchas：常见失分点</h2>
+<ul>
+<li>把所有 global data 都搬 shared，忽略一次性读取的 copy/sync 成本。</li>
+</ul>
+<h2 id="_4">面试官可能继续追问</h2>
+<ul>
+<li>什么时候 L1 已经足够，不值得手工 shared tiling？</li>
+<li>shared-memory tile 太大有什么副作用？</li>
+</ul>
+<hr />
+<h2 id="_5">深入分析</h2>
+<p>shared memory 的三个核心用法：跨线程协作、重用 global data、重排访问以获得 coalescing。它的主要成本是显式 copy、同步、bank conflict 与 occupancy 占用。</p>
+<h3 id="_6">深入理解：性能首先是“数据在哪里”</h3>
+<p>内存层级题要用 <strong>容量、作用域、管理方式、延迟/带宽、可见性、占用资源</strong> 六个维度比较，而不是简单排序“register 最快、HBM 最慢”。很多优化本质是把数据从低复用、高成本层级搬到高复用、低成本层级，并控制搬运次数。</p>
+<pre><code class="language-text">HBM/DRAM → L2 → L1/Shared → Register
+                ↑ programmer-managed reuse often happens here
+</code></pre>
+<p>同时要记住：register/shared 是稀缺的片上资源，它们会反过来限制 residency；因此数据越靠近计算单元并不自动意味着 kernel 越快。</p>
+<h3 id="_7">性能因果链</h3>
+<pre><code class="language-text">题目现象 / 代码模式
+        ↓
+定位真实硬件行为
+        ↓
+识别主要资源或依赖
+        ↓
+提出一个可证伪优化假设
+        ↓
+修改实现
+        ↓
+Profiler 指标 + Kernel Time 验证
+</code></pre>
+<p>对于本题，建议至少观察：<code>register count / spill</code>、<code>shared-memory usage</code>、<code>L1/L2 hit rate</code>、<code>DRAM bytes</code>。</p>
+<h3 id="_8">架构视角</h3>
+<p>Ampere/Hopper/Blackwell 持续增强 cache 与异步数据移动，但 register/shared 仍是 occupancy 的关键资源。</p>
+<h2 id="30-2">面试回答：30 秒 / 2 分钟 / 深挖</h2>
+<h3 id="30">30 秒</h3>
+<p>shared memory 的三个核心用法：跨线程协作、重用 global data、重排访问以获得 coalescing。</p>
+<h3 id="2">2 分钟</h3>
+<ol>
+<li><strong>先给定义或结论</strong>：直接回答“是什么/为什么”。</li>
+<li><strong>给硬件因果</strong>：把 thread/warp、memory transaction、resource 或 pipeline 对应到硬件行为。</li>
+<li><strong>给 trade-off</strong>：说明优化会消耗什么资源，避免绝对化结论。</li>
+<li><strong>给验证方法</strong>：指出需要用 benchmark/Nsight 的哪些证据确认。</li>
+</ol>
+<h3 id="_9">深挖时必须能回答</h3>
+<ul>
+<li>这个结论在哪些条件下会失效？</li>
+<li>如果换 problem shape / datatype / block size，瓶颈会怎样迁移？</li>
+<li>如果从 Ampere 换到 Hopper/Blackwell，哪些稳定原理不变，哪些实现细节需要重做？</li>
+<li>你会用什么 profiler 指标证明自己的判断？</li>
+</ul>
+<h2 id="_10">实战验证建议</h2>
+<p>建议为本题建立一个最小可复现实验（microbenchmark）：</p>
+<ol>
+<li>写一个<strong>正确但未优化</strong>的 baseline。</li>
+<li>只改变一个变量（访问模式、tile、block size、register budget、pipeline stage 等）。</li>
+<li>使用 CUDA Event 做设备侧计时，至少 warm-up 后重复多次。</li>
+<li>使用 Nsight Compute 收集与本题直接相关的指标：<code>register count / spill</code>、<code>shared-memory usage</code>、<code>L1/L2 hit rate</code>、<code>DRAM bytes</code>。</li>
+<li>把结果写成“假设 → 指标变化 → 时间变化 → 结论”，而不是只保存最终最快参数。</li>
+</ol>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 - 只背术语</td>
+<td>能说出名词，但不能解释硬件原因或适用条件。</td>
+</tr>
+<tr>
+<td>1 - 合格</td>
+<td>定义准确，能给出核心因果关系。</td>
+</tr>
+<tr>
+<td>2 - 良好</td>
+<td>能讨论 trade-off、边界条件，并写出/读懂关键代码。</td>
+</tr>
+<tr>
+<td>3 - 高分</td>
+<td>能把问题映射到 profiler 指标，并说明不同架构/shape 下的策略变化。</td>
+</tr>
+<tr>
+<td>4 - 专家</td>
+<td>能提出可复现实验、量化模型或替代实现，并解释为什么它在目标 GPU 上更优。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_11">自测题</h2>
+<ol>
+<li>不看答案，用 <strong>30 秒</strong>讲清本题。</li>
+<li>画出本题涉及的数据流或线程/warp/SM 关系。</li>
+<li>写一个最小反例，证明“常见口号”并非无条件成立。</li>
+<li>给出一个 Nsight Compute 指标组合，能支持或推翻你的性能判断。</li>
+<li>说明如果目标从 A100/H100 迁移到 B100/B200，你首先重新验证什么。</li>
+</ol>
+<!-- PROFESSIONAL-V2 -->
+<h2 id="v2">专业增强版 V2：机制、量化与验证</h2>
+<blockquote>
+<p>本节是在 PDF 基线题解之上的<strong>仓库扩展</strong>。目标是把“能背答案”升级为“能解释硬件因果、能量化、能用 profiler 证伪”。</p>
+</blockquote>
+<h3 id="1">1. 硬件机制与核心心智模型</h3>
+<p>Shared memory 的三大价值：跨线程复用 global 数据、把不规则 global access 重排成 coalesced transaction、提供 block 内低延迟交换。它是软件管理的 scratchpad，而不是自动 cache。</p>
+<h3 id="2_1">2. 定量推导 / 性能模型</h3>
+<p>若一个 tile 从 global 读取一次后被 $R$ 次复用，理想 global traffic 可从 $R\times Bytes$ 降到约 $Bytes$；收益必须减去 shared load/store 与 barrier 成本。</p>
+<p>面试时不要只报公式。至少说明：公式里的变量对应什么硬件资源、哪些是假设、实际值应该如何由 profiler 或 microbenchmark 得到。</p>
+<h3 id="3">3. 代码 / 白板核心片段</h3>
+<pre><code class="language-cpp">__shared__ float tile[256];
+tile[threadIdx.x] = g[idx];
+__syncthreads();
+// 多次复用 tile[...]
+
+</code></pre>
+<p>白板代码优先保证：<strong>边界正确、同步范围正确、地址模式可解释</strong>。如果为了展示优化而省略边界处理，要主动说明省略条件。</p>
+<h3 id="4-nsight">4. Nsight 证据链：怎样证明你的判断</h3>
+<ul>
+<li><code>DRAM bytes 是否下降</code></li>
+<li><code>Shared load/store throughput</code></li>
+<li><code>Bank conflict 与 barrier stalls</code></li>
+</ul>
+<p>推荐把分析写成四列：</p>
+<table>
+<thead>
+<tr>
+<th>假设</th>
+<th>预期指标变化</th>
+<th>实测指标变化</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当前瓶颈是本题讨论的问题</td>
+<td>指标应出现可预测变化</td>
+<td>benchmark 后填写</td>
+<td>接受 / 推翻假设</td>
+</tr>
+<tr>
+<td>优化应减少对应硬件成本</td>
+<td>时间与因果指标同向改善</td>
+<td>benchmark 后填写</td>
+<td>是否保留优化</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5">5. 架构迁移视角</h3>
+<p>Ampere <code>cp.async</code>、Hopper TMA 让 global→shared 搬运可异步化；shared memory 的核心角色从“手工缓存”进一步变成 software pipeline 的 staging buffer。</p>
+<p>这里要区分两类知识：</p>
+<ul>
+<li><strong>稳定原理</strong>：warp 粒度、数据复用、依赖、Roofline、资源平衡等；</li>
+<li><strong>架构实现</strong>：具体指令、cache/SM 资源、TMA/TMEM/cluster/TCGen05 等。</li>
+</ul>
+<p>面试中如果不确定某代 GPU 的精确容量或吞吐，不要猜数字；说明“会查目标 compute capability / tuning guide 并重新 profile”比报错数字更专业。</p>
+<h3 id="6">6. 可复现实验（建议真的做）</h3>
+<p>对有 8×数据复用的 kernel 比较直接 global reload 与 shared tile；再人为引入 bank conflict，证明“用了 shared”不等于自动更快。</p>
+<p>实验至少记录：GPU 型号、compute capability、CUDA/driver、编译参数、输入 shape/dtype、warm-up、迭代次数、median/p95、correctness tolerance，以及关键 Nsight 指标。</p>
+<h3 id="7">7. 深挖追问树</h3>
+<ol>
+<li>shared memory 何时比 L1 cache 更可控？</li>
+<li>为什么 shared 使用量会降低 occupancy？</li>
+<li>async copy 如何改变 shared tiling 的成本模型？</li>
+</ol>
+<h3 id="8">8. 高分回答检查清单</h3>
+<ul>
+<li>[ ] 先用一句话给出正确结论，而不是先铺背景。</li>
+<li>[ ] 能画出本题涉及的 warp / memory / pipeline 数据流。</li>
+<li>[ ] 能给至少一个公式、数量级或资源约束。</li>
+<li>[ ] 能指出一个“看似优化、实际可能变慢”的反例。</li>
+<li>[ ] 能说出用哪些 Nsight 证据验证。</li>
+<li>[ ] 能区分稳定原理与 Ampere/Hopper/Blackwell 的架构细节。</li>
+<li>[ ] 工程场景下会先与 CUDA Library / CUB / cuBLAS / CUTLASS 等成熟基线比较（适用时）。</li>
+</ul>
+<h2 id="_12">参考资料</h2>
+<ul>
+<li><strong>R2</strong> <a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/">NVIDIA CUDA C++ Best Practices Guide 13.3</a></li>
+</ul>
+<blockquote>
+<p><strong>内容来源说明</strong>：<code>PDF 基线题解</code> 部分来自仓库所附 PDF；“深入分析 / 实战验证 / Rubric”等为仓库扩展内容，用于将题目从记忆型问答升级为性能工程型学习材料。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

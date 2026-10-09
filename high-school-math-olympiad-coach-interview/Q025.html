@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>学生做不等式永远第一反应“暴力展开”，你怎么纠正？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q025</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q025</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q024.html">← Q024</a><a href="Q026.html">Q026 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">教学诊断</a><a href="#">不等式、元认知、策略训练</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 25 / 100</div>
+    <h1 class="qtitle">学生做不等式永远第一反应“暴力展开”，你怎么纠正？</h1>
+    <p><strong>模块：</strong> 代数<br />
+<strong>标签：</strong> 教学诊断 · 难度 ★★★★☆ · 不等式、元认知、策略训练</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>学生做不等式永远第一反应“暴力展开”，你怎么纠正？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>高频真实教学场景，考察能否针对根因而不是针对表面错误处理。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>建立展开前检查清单：齐次、对称、等号、次数、可因式分解、凸性。</li>
+<li>限制一段时间内禁止无目的展开，要求先写结构判断。</li>
+<li>用反例说明展开会丢失哪些信息。</li>
+</ul>
+<p><strong>展开：</strong> “暴力展开”本身不是错误，问题是它发生在结构识别之前。可以规定训练期内每道不等式先写六行诊断：是否齐次、是否对称、等号在哪里、各项次数、可能的标准不等式、是否存在固定和/积。只有给出展开目的（例如为了因式分解成非负项）才允许展开。几周后学生会形成“先看结构、再算”的默认顺序。</p>
+<h3 id="_4">面试追问</h3>
+<p>什么时候暴力展开反而是正确策略？</p>
+<h3 id="_5">常见失分</h3>
+<p>只批评“不要展开”却不给替代流程；让学生背更多不等式名称。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>统计学生每次展开后的产出：是否出现可因式分解、是否减少变量、是否更接近等号结构。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：有诊断、干预和例外；6分：能给检查清单；3分：只说多看结构。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：代数题的“五问”</h3>
+<p>在不等式、方程、多项式和数列问题中，先统一检查：<strong>对象是什么、结构是否齐次/对称、等号或特殊根在哪里、使用的定理条件是否满足、变形是否保留等价性</strong>。竞赛代数最常见的低级失分不是不会定理，而是为了套定理破坏了等号结构或遗漏定义域。</p>
+<p>面试表达时最好同时给出“为什么选这个工具”和“什么信号出现时不用它”。能明确工具的失效边界，比多报几个定理更能体现成熟度。</p>
+<h4 id="_9">技术补充：禁止展开之前先做结构体检</h4>
+<p>可以要求学生在草稿最上方强制写五项：齐次性、对称性、等号猜想、次数、可因式分解点。只有这五项没有提供方向时才允许大规模展开。长期统计会发现，很多暴力展开来自“没有先建立目标表示”，而不是计算能力问题。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>写出所用定理的全部条件与等号条件。</li>
+<li>给出一种不同风格的替代方法，并比较优劣。</li>
+<li>改变一个条件，使原方法失效，并解释原因。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 定义域/正性是否核对</li>
+<li>[ ] 是否先定位等号、根或不动点</li>
+<li>[ ] 变形是否等价且方向正确</li>
+<li>[ ] 能否解释为什么不用另一个常见工具</li>
+<li>[ ] 能否给出反例说明条件必要</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>定理条件、等号/边界、结构选择和证明链完整；能解释替代方法与失效边界。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>主要数学内容正确，少量条件或方法比较未展开。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>会套公式或给标准解，但结构解释弱、条件意识不足。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>关键公式/方向错误，或存在不可修复的等价变形与定义域问题。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>什么时候暴力展开反而是正确策略？</li>
+<li>写出所用定理的全部条件与等号条件。</li>
+<li>给出一种不同风格的替代方法，并比较优劣。</li>
+<li>改变一个条件，使原方法失效，并解释原因。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>把本题整理成一页“定理条件卡”：母式、条件、等号、典型触发信号、一个反例、一个变式。</p>
+<h3 id="v2">专业版 v2：纠正“暴力展开”要替换默认流程，而不是只说“别展开”</h3>
+<h4 id="1">1. 暴力展开为什么会形成</h4>
+<p>展开提供即时动作感：学生至少“在做事”。但它往往增加项数、破坏对称和等号结构，使信息密度下降。</p>
+<h4 id="2-60">2. 给学生一个强制的 60 秒前置协议</h4>
+<p>动笔展开前必须回答：</p>
+<ol>
+<li>是否齐次？</li>
+<li>是否对称/循环？</li>
+<li>等号在哪里？</li>
+<li>总次数是什么？</li>
+<li>能否因式分解或换元？</li>
+<li>目标更像和积、二次型、凸性还是排序？</li>
+</ol>
+<p>只有回答后仍没有结构，再允许展开。</p>
+<h4 id="3_1">3. 用“对照实验”教学</h4>
+<p>选一道题，先展示暴力展开产生 20 项，再展示通过 $p=a+b+c,q=ab+bc+ca$ 或等号导向的两三步解法。让学生看到不是“老师更聪明”，而是表示方法改变了复杂度。</p>
+<h4 id="4">4. 评价标准也要改变</h4>
+<p>作业不只给“答案正确分”，加入“结构识别分”：是否说明等号、为何选工具、是否保留对称。否则学生仍会被结果导向推回暴力路径。</p>
+<h2 id="_15">关联题目</h2>
+<ul>
+<li><span class="srcref">Q011 · 为什么 AM-GM 不是一个“看到乘积就用”的公式？</span></li>
+<li><span class="srcref">Q012 · 怎样系统教授柯西不等式，而不是让学生背十几个形式？</span></li>
+<li><span class="srcref">Q014 · 什么情况下应该齐次化？什么时候齐次化反而让问题更复杂？</span></li>
+</ul>
+<h2 id="_16">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

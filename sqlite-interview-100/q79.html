@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>题 070 WITHOUT ROWID 有哪些限制和语义变化？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">SQLite</a><i>∕</i><span>q79</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q79</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">中</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">高</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q78.html">← q78</a><a href="q80.html">q80 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">WITHOUT ROWID</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      SQLITE · 69 / 100</div>
+    <h1 class="qtitle">题 070 WITHOUT ROWID 有哪些限制和语义变化？</h1>
+    <blockquote>
+<p><strong>章节</strong>：存储引擎与底层原理<br />
+<strong>难度</strong>：中 ｜ <strong>频率</strong>：高 ｜ <strong>标签</strong>：WITHOUT ROWID<br />
+<strong>版本基线</strong>：SQLite 3.53.4（2026-07-24）</p>
+</blockquote>
+<h2 id="1">1. 面试官到底在考什么</h2>
+<p>这道题不只考定义。高质量回答应该体现三层能力：</p>
+<ol>
+<li><strong>语义层</strong>：给出准确结论，明确成立前提。</li>
+<li><strong>实现层</strong>：把结论连接到 SQLite 的 Planner / VDBE / B-Tree / Pager / WAL / VFS 中相关层。</li>
+<li><strong>工程层</strong>：说明何时值得使用、何时会失效，以及如何用实验或诊断工具验证。</li>
+</ol>
+<p>底层题建议始终沿固定链路回答：<strong>SQL → VDBE → B-Tree → Pager/Page Cache → VFS → OS</strong>。表和索引最终都是 B-Tree；B-Tree 以 page 为存储与 I/O 单位；Pager 负责 page cache、事务与文件锁；VFS 隔离操作系统差异。这样能把 ROWID、overflow page、freelist、WAL 和 corruption 风险串成一套统一模型。</p>
+<h2 id="2-30">2. 30 秒标准回答</h2>
+<p>结论必须有 PRIMARY KEY；INTEGER PRIMARY KEY 不再是 rowid alias；不能使用 AUTOINCREMENT；依赖 rowid 的接口不适用。</p>
+<h2 id="3-know-why">3. 原理推导（Know-Why）</h2>
+<p>last_insert_rowid() 与 incremental blob I/O 等 rowid 相关机制在这种表上没有普通含义。设计前要看应用是否依赖稳定整数 surrogate key；如果大量二级索引都要附带很宽的复合 PK，WITHOUT ROWID 反而可能扩大索引。</p>
+<h2 id="4">4. 深入分析</h2>
+<h3 id="41">4.1 关键推导</h3>
+<p>把题目中的 <strong>WITHOUT ROWID 有哪些限制和语义变化</strong> 放回本章的统一模型中分析，而不是孤立背结论。</p>
+<h3 id="42">4.2 关键推导</h3>
+<p>回答时至少覆盖：SQL/Schema 层可观察行为、SQLite 内部实现原因、以及生产环境中的性能或一致性代价。</p>
+<h3 id="43">4.3 关键推导</h3>
+<p>如果面试官改变前提（SQLite 版本、journal mode、rowid/WITHOUT ROWID、数据分布），应重新判断而不是坚持绝对答案。</p>
+<h2 id="5">5. 代码 / 白板 / 可复现实验</h2>
+<h3 id="_1">建议动手实验</h3>
+<pre><code class="language-sql">PRAGMA page_size;
+PRAGMA page_count;
+PRAGMA freelist_count;
+</code></pre>
+<p>用这些指标把“行级 SQL”连接到 page 级存储；若需要更深分析，可结合 <code>dbstat</code> 虚拟表。</p>
+<h2 id="6">6. 边界条件与常见误区</h2>
+<ul>
+<li>⚠ 只为了“新特性”把所有表改 WITHOUT ROWID。</li>
+</ul>
+<p>进一步检查：</p>
+<ul>
+<li>是否把 MySQL/PostgreSQL 的语义直接迁移到了 SQLite？</li>
+<li>是否区分了“SQL 看起来等价”和“Planner 能证明等价”？</li>
+<li>是否把性能优化说成了绝对规则，而没有用 EQP/benchmark 验证？</li>
+<li>是否忽略了连接级 PRAGMA、事务生命周期或构建选项？</li>
+</ul>
+<h2 id="7">7. 面试官继续追问</h2>
+<ul>
+<li>→ 为什么二级索引必须附带 PRIMARY KEY？</li>
+</ul>
+<p>建议继续准备两类追问：</p>
+<ul>
+<li><strong>实现追问</strong>：这个行为最终由哪个 SQLite 子系统负责？</li>
+<li><strong>生产追问</strong>：如果线上出现相反现象，你如何用最小实验定位原因？</li>
+</ul>
+<h2 id="8-checklist">8. 工程实践 Checklist</h2>
+<ul>
+<li>[ ] 画出 SQL→VDBE→B-Tree→Pager→VFS</li>
+<li>[ ] 以 page 而不是 row 思考 I/O</li>
+<li>[ ] 区分 table/index b-tree</li>
+<li>[ ] 避免把逻辑删除等同文件缩小</li>
+</ul>
+<h2 id="9">9. 相关题目</h2>
+<ul>
+<li><span class="srcref">题 069 什么是 WITHOUT ROWID？</span></li>
+</ul>
+<h2 id="10-rubric">10. 面试评分 Rubric</h2>
+<blockquote>
+<p>这部分用于自测，也可以直接给面试官/出题人作为评分参考。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0 分：概念混淆</strong></td>
+<td>把 SQLite 与 client/server 数据库的机制混为一谈，或给出与题目相反的结论。</td>
+</tr>
+<tr>
+<td><strong>1 分：背到结论</strong></td>
+<td>能说出“结论必须有 PRIMARY KEY；INTEGER PRIMARY KEY 不再是 rowid alias；不能使用 AUTOINCREMENT；依赖 rowid 的接口不适用。”，但无法解释为什么、适用前提或如何验证。</td>
+</tr>
+<tr>
+<td><strong>2 分：机制正确</strong></td>
+<td>能把结论连接到本题所属的 SQLite 子系统，并指出至少一个边界条件。</td>
+</tr>
+<tr>
+<td><strong>3 分：工程可用</strong></td>
+<td>能给出最小实验/SQL/EQP/PRAGMA 证据，并讨论性能、正确性或运维权衡。</td>
+</tr>
+<tr>
+<td><strong>4 分：专家级</strong></td>
+<td>能进一步解释源码/文件结构/状态机层面的原因，识别版本敏感点，并对真实生产场景给出可观测、可回归的方案。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>建议口述结构</strong>：先给结论（10 秒）→ 给机制（20～40 秒）→ 给反例/边界（20 秒）→ 如果面试官继续追问，再画白板或给实验。</p>
+<h2 id="11">11. 专业深化：把这题讲到实现层</h2>
+<h3 id="111-sqlite">11.1 本题在 SQLite 整体架构中的位置</h3>
+<pre><code class="language-text">Record
+  ↓ serialized payload
+B-Tree cell
+  ↓
+Database page
+  ↓ (large payload)
+Overflow pages
+  ↓
+Pager / page cache / VFS
+</code></pre>
+<p>这一章需要把“表、索引、行”翻译成实际文件结构：page 是基本管理单位，rowid table 和 index b-tree 的 key/payload 布局不同，超大 payload 可能溢出到 overflow page。</p>
+<p>针对 <strong>“WITHOUT ROWID 有哪些限制和语义变化？”</strong>，还应补充这一条专业判断：</p>
+<blockquote>
+<p>WITHOUT ROWID 会改变主键、AUTOINCREMENT、last_insert_rowid、incremental blob 等语义；迁移不能只看性能测试。</p>
+</blockquote>
+<h3 id="112">11.2 从“结论”推导到“为什么”</h3>
+<p>不要用数据库通识替代 SQLite 机制。建议按下面四层递进：</p>
+<ol>
+<li><strong>SQL/语义层</strong>：先明确本题结论，以及它是否依赖 journal mode、表类型、连接设置、索引结构或 SQLite 版本。</li>
+<li><strong>Planner/执行层</strong>：说明 SQLite 是否需要额外 seek、scan、sort、lock、type conversion、checkpoint 或 constraint check。</li>
+<li><strong>B-Tree/Pager/WAL 层</strong>：如果问题涉及性能或并发，继续说明最终会落到哪些 page、B-Tree、journal/WAL 或 VFS 操作。</li>
+<li><strong>工程层</strong>：给出可以监控的指标和可以复现的最小实验，而不是只说“通常更快/更安全”。</li>
+</ol>
+<h3 id="113">11.3 如何验证，而不是“凭经验回答”</h3>
+<p>结合 <code>PRAGMA page_size</code>、<code>page_count</code>、<code>freelist_count</code>、<code>dbstat</code> 虚表（构建可用时）观察页使用；不要只用 SQL 行数推断文件 I/O。</p>
+<p>推荐形成固定证据链：</p>
+<pre><code class="language-text">假设
+ ↓
+最小可复现数据/两个独立连接/代表性分布
+ ↓
+EXPLAIN QUERY PLAN / typeof() / PRAGMA / 错误码
+ ↓
+耗时、I/O、WAL/page/index 大小等指标
+ ↓
+修改一个变量后复测
+</code></pre>
+<h3 id="114">11.4 性能、正确性与可维护性的三角权衡</h3>
+<p>物理设计影响 cache locality、树高、随机 I/O 和写放大。大 BLOB、宽索引、频繁删除、非合适的 WITHOUT ROWID 都应从 page 级成本而不是抽象 SQL 层判断。</p>
+<p>面试中如果只谈性能，容易漏掉 SQLite 最重要的工程特性：<strong>很多优化本质是在“更少 I/O / 更短锁时间 / 更少重复计算”与“更多存储 / 更复杂 schema / 更强运维责任”之间交换成本。</strong></p>
+<h2 id="12">12. 反例、边界与故障注入</h2>
+<h3 id="121">12.1 必须主动说明的边界</h3>
+<ul>
+<li>不把某个优化策略描述成“永远”。SQLite planner、数据分布、journal mode、编译选项与版本都可能改变结果。</li>
+<li>不把“SQL 语义正确”与“执行计划高效”混为一谈；同样，也不把“计划看起来用了索引”与“真实运行一定更快”混为一谈。</li>
+<li>不把连接级行为当成全局永久设置；<code>foreign_keys</code>、<code>busy_timeout</code>、部分 PRAGMA 和 transaction state 都要结合具体 connection。</li>
+<li>涉及并发时必须区分 <strong>reader/writer、writer/writer、read→write upgrade、checkpoint</strong> 四类冲突。</li>
+<li>涉及 schema/索引时要同时考虑读收益和写放大；涉及维护命令时要考虑锁窗口、磁盘空间与失败恢复。</li>
+</ul>
+<h3 id="122">12.2 建议的故障注入问题</h3>
+<p>把本题结论反过来问自己：</p>
+<ol>
+<li>什么数据分布或并发时序会让“通常正确”的经验失效？</li>
+<li>如果换成 WAL / rollback mode，结论是否变化？</li>
+<li>如果数据量扩大 100 倍，主要成本会从 CPU、B-Tree seek、page I/O、锁等待还是临时排序中哪一项暴露？</li>
+<li>如果应用崩溃在关键步骤中间，SQLite 能恢复什么，应用层还需要恢复什么？</li>
+<li>如何设计一个 20 行以内的 SQL/脚本，让同事复现这一行为？</li>
+</ol>
+<h2 id="13-lab">13. 源码阅读路线与实战 Lab</h2>
+<h3 id="131">13.1 源码入口</h3>
+<p>如果准备高级/源码岗位，不需要一上来通读 <code>sqlite3.c</code>。先围绕本题沿调用链阅读：</p>
+<ul>
+<li><code>src/btree.c / btreeInt.h</code>：B-Tree page/cell</li>
+<li><code>src/pager.c</code>：page cache 与持久化</li>
+<li><code>src/vdbe.c</code>：record 读写 opcode</li>
+<li><code>src/vdbesort.c</code>：临时排序结构</li>
+<li><code>官方 fileformat2.html</code>：磁盘格式权威说明</li>
+</ul>
+<blockquote>
+<p>SQLite 官方发布常见的是 amalgamation <code>sqlite3.c</code>；上面的文件名指 SQLite 源码树中的逻辑模块，便于定位实现。源码行为仍应以目标版本为准。</p>
+</blockquote>
+<ul>
+<li><span class="srcref">统一源码阅读指南</span></li>
+</ul>
+<h3 id="132">13.2 对应章节实验</h3>
+<ul>
+<li><span class="srcref">进入「Page / B-Tree / Freelist Lab」</span></li>
+</ul>
+<p>建议把实验结果（SQLite 版本、schema、数据规模、EQP、耗时）记录到自己的笔记中。面试时能说出“我实际验证过”，通常比单纯背术语更有说服力。</p>
+<h3 id="133">13.3 一分钟复习卡</h3>
+<ul>
+<li><strong>一句话结论</strong>：结论必须有 PRIMARY KEY；INTEGER PRIMARY KEY 不再是 rowid alias；不能使用 AUTOINCREMENT；依赖 rowid 的接口不适用。</li>
+<li><strong>必须解释的 Why</strong>：它为什么由当前 SQLite 子系统的实现产生？</li>
+<li><strong>一个反例/边界</strong>：什么条件变化后不能直接套用这条结论？</li>
+<li><strong>一个验证工具</strong>：本题优先用哪一个——<code>EXPLAIN QUERY PLAN</code>、<code>typeof()</code>、<code>PRAGMA</code>、双连接并发实验、文件大小/page 统计？</li>
+<li><strong>一个生产指标</strong>：延迟、返回行数、事务时长、BUSY、WAL size、page/index size 中哪个最能证明问题？</li>
+</ul>
+<h2 id="14">14. 官方资料与源码阅读</h2>
+<ul>
+<li><a href="https://www.sqlite.org/withoutrowid.html">withoutrowid</a></li>
+<li><a href="https://www.sqlite.org/fileformat2.html">fileformat</a></li>
+</ul>
+<blockquote>
+<p>仓库内容以随附 PDF 为主干，并在此基础上增加工程化推导、实验与官方文档入口。若目标应用使用旧版 SQLite，请优先按目标版本文档核对版本敏感行为。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

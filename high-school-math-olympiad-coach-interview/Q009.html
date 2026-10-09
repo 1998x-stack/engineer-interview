@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>如何判断一道竞赛题是不是“好题”？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q009</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q009</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q008.html">← Q008</a><a href="Q010.html">Q010 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">教研能力</a><a href="#">题目评价、选题、迁移价值</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 9 / 100</div>
+    <h1 class="qtitle">如何判断一道竞赛题是不是“好题”？</h1>
+    <p><strong>模块：</strong> 竞赛体系与教练认知<br />
+<strong>标签：</strong> 教研能力 · 难度 ★★★★☆ · 题目评价、选题、迁移价值</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>如何判断一道竞赛题是不是“好题”？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>考察题目、解法、课程材料的评价能力，是从“教师”到“教练/教研”的分水岭。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>看核心结构是否清晰而非只看难度。</li>
+<li>看是否能产生可迁移方法、变式或多解。</li>
+<li>看条件与结论是否经济，解法是否有必然感。</li>
+</ul>
+<p><strong>展开：</strong> “难”不是好题的充分条件。一道适合教学的好题通常具有较高的<strong>单位时间学习密度</strong>：条件不冗余、关键转折有解释价值、做完后能抽象出方法，并且可通过轻微改变条件产生新的思考。面试时可以进一步区分“竞赛选拔好题”和“课堂教学好题”：前者允许更强的偶然性和综合度，后者更需要突出单一主线并可设计梯度。</p>
+<h3 id="_4">面试追问</h3>
+<p>给你一道很漂亮但学生完成率只有5\%的题，你会不会放进基础班讲义？</p>
+<h3 id="_5">常见失分</h3>
+<p>把“新奇”“偏难”“技巧多”直接等同高质量。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>建立题目评审表：目标方法、前置、预计用时、错误类型、可变式性、复盘价值。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：有多维评价且区分选拔题/教学题；6分：能说出结构和迁移；3分：只谈难度。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：从“回答观点”升级到“给出可执行决策”</h3>
+<p>这类题的高分关键不是表达价值观，而是完成 <strong>事实/现象 → 诊断 → 决策 → 验证指标</strong> 的闭环。回答时尽量给出可观察证据，例如“学生能否在无提示情况下提出小例子”“提示一次后能否迁移”“完整证明的漏洞类型是否下降”，而不是使用“有天赋、很努力、感觉适合”这类不可审查标签。</p>
+<p>建议口述采用四步：<strong>先下结论 → 给判断依据 → 给一个真实课堂/训练动作 → 给复盘指标</strong>。这样面试官可以判断你是否具备真正的教练决策能力，而不只是竞赛经历。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_9">压力训练任务</h3>
+<ol>
+<li>给一个可观察的诊断指标，而不是主观标签。</li>
+<li>说明你的方案在什么条件下会调整。</li>
+<li>把观点转成一周内可以执行的训练动作。</li>
+</ol>
+<h3 id="_10">自检清单</h3>
+<ul>
+<li>[ ] 结论明确且非口号</li>
+<li>[ ] 判断依据可观察</li>
+<li>[ ] 方案可在课堂执行</li>
+<li>[ ] 有验证指标</li>
+<li>[ ] 能说明何时调整方案</li>
+</ul>
+<h3 id="_11">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>结论清晰；判断依据可观察；能落到课程/训练动作；主动给出验证指标和调整条件。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>观点基本正确且有一定教学落地，但证据、指标或边界不够完整。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>能表达常见观点，但主要依赖经验判断，缺少诊断和验证闭环。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>把竞赛等同难题/天赋/题量，或无法解释自己的教育决策。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">二次追问库</h3>
+<ul>
+<li>给你一道很漂亮但学生完成率只有5\%的题，你会不会放进基础班讲义？</li>
+<li>给一个可观察的诊断指标，而不是主观标签。</li>
+<li>说明你的方案在什么条件下会调整。</li>
+<li>把观点转成一周内可以执行的训练动作。</li>
+</ul>
+<h3 id="_13">建议产出物</h3>
+<p>写一页“决策备忘录”：现象、证据、假设、训练动作、两周后复盘指标。</p>
+<h3 id="v2">专业版 v2：好题的价值在“信息密度”，不是单纯难度</h3>
+<h4 id="1">1. 五个评价维度</h4>
+<p>一题是否值得进入核心题库，可以从以下维度评分：</p>
+<ul>
+<li><strong>结构纯度</strong>：是否有一个清晰、可提炼的核心 idea；</li>
+<li><strong>迁移价值</strong>：做完后能否推广到一类问题；</li>
+<li><strong>解法多样性</strong>：是否允许比较不同表征或工具；</li>
+<li><strong>难度来源</strong>：难在结构发现，还是纯计算/偏门知识；</li>
+<li><strong>教学可用性</strong>：是否能设计提示、变式、错误辨析。</li>
+</ul>
+<h4 id="2">2. “难题”不等于“好题”</h4>
+<p>一个需要 40 行机械计算、只靠冷门结论的题，可能很难但教学价值低；一个条件极短、核心观察深刻、能引出多种方法的中等题，反而更适合长期训练。</p>
+<h4 id="3_1">3. 建议为题库建立质量字段</h4>
+<p>例如：<code>core_idea</code>、<code>prerequisite</code>、<code>expected_time</code>、<code>transfer_tags</code>、<code>common_failure</code>、<code>second_solution</code>、<code>variation_value</code>。这样题库从“收藏夹”升级为教研系统。</p>
+<h4 id="4">4. 面试追问可进一步回答</h4>
+<p>如果必须在“名题”和“更贴合本班学生的普通题”之间选，我会优先后者。题目价值取决于学习目标和学生当前瓶颈。</p>
+<h2 id="_14">关联题目</h2>
+<ul>
+<li><span class="srcref">Q008 · 请评价“背结论、背模型、背套路”的竞赛训练。</span></li>
+<li><span class="srcref">Q010 · 如果让你用一年培养一批高一学生冲击省一，你总体怎么设计？</span></li>
+</ul>
+<h2 id="_15">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Java 反序列化代码审计应该关注什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Network Security</a><i>∕</i><span>Q54</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q54</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">5</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q53.html">← Q53</a><a href="Q55.html">Q55 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORK SECURITY · 54 / 100</div>
+    <h1 class="qtitle">Java 反序列化代码审计应该关注什么？</h1>
+    <p>← <span class="srcref">Q53</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q55</span> →</p>
+<h1 id="q54-java">Q54 · Java 反序列化代码审计应该关注什么？</h1>
+<blockquote>
+<p><strong>定位</strong>：本文件完整保留 PDF 对本题的题解结构，并在“扩展解析”部分加入更详细的工程化分析。新增内容用于学习与面试准备，不代表任何公司的内部题库。</p>
+</blockquote>
+<h2 id="_1">题目信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>难度</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>适用岗位</td>
+<td>Java安全 / AppSec</td>
+</tr>
+<tr>
+<td>Framework / 对标</td>
+<td>Serialization Review</td>
+</tr>
+<tr>
+<td>PDF 页码</td>
+<td>第 64 页</td>
+</tr>
+<tr>
+<td>所属章节</td>
+<td>第 6 章 · 代码审计、漏洞研究与软件供应链</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官为什么问这题</h2>
+<p>考察代码级数据流思维和软件供应链全链路风险，而不是仅会运行扫描器。</p>
+<p>通常不仅是在确认“是否知道名词”，还在观察以下能力：</p>
+<ul>
+<li>Source/Propagation/Sanitizer/Sink 在哪里？</li>
+<li>问题发生在自研代码、依赖、构建还是发布链？</li>
+<li>工具结果是否可达、可利用、影响关键资产？</li>
+<li>如何把修复变成 SDLC 的可重复控制？</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p><strong>一句话结论：</strong> 反序列化审计必须同时看“入口、类型、依赖、行为”。</p>
+<p>展开时优先抓住以下三点：</p>
+<ol>
+<li>不可信输入、反序列化 API、允许的类型、classpath/依赖、回调/魔术行为。</li>
+<li>评估框架是否支持 polymorphic type 或自动类型解析。</li>
+<li>修复优先减少对象恢复能力与类型范围。</li>
+</ol>
+<h2 id="2-3">2-3 分钟标准回答</h2>
+<p>首先，不可信输入、反序列化 API、允许的类型、classpath/依赖、回调/魔术行为。
+其次，评估框架是否支持 polymorphic type 或自动类型解析。
+可利用性往往取决于“入口可控 + 类型可达 + 依赖中存在可产生副作用的行为”。所以审计要跨越应用代码与依赖树。
+不要把安全结论绑定到某个著名 gadget 名称；依赖升级后仍需确认入口是否被设计性关闭。
+最后要把回答落到工程闭环：说明根因控制是什么、还能有哪些纵深防御，以及如何通过日志、测试或安全回归证明控制真正生效。</p>
+<hr />
+<h2 id="pdf">PDF 基线内容</h2>
+<blockquote>
+<p>以下部分对应成品 PDF 的本题内容，保持其术语、组织方式与观点。</p>
+</blockquote>
+<h3 id="01">01 · 考点拆解</h3>
+<ul>
+<li>不可信输入、反序列化 API、允许的类型、classpath/依赖、回调/魔术行为。</li>
+<li>评估框架是否支持 polymorphic type 或自动类型解析。</li>
+<li>修复优先减少对象恢复能力与类型范围。</li>
+</ul>
+<h3 id="02">02 · 面试答题主线</h3>
+<ol>
+<li>不可信输入、反序列化 API、允许的类型、classpath/依赖、回调/魔术行为。</li>
+<li>评估框架是否支持 polymorphic type 或自动类型解析。</li>
+<li>修复优先减少对象恢复能力与类型范围。</li>
+<li>把答案收束到可验证的工程控制：说明“如何修复/设计”，并补一句“如何通过日志、测试或回归验证控制真的生效”。</li>
+</ol>
+<h3 id="03">03 · 深度解析</h3>
+<p>可利用性往往取决于“入口可控 + 类型可达 + 依赖中存在可产生副作用的行为”。所以审计要跨越应用代码与依赖树。</p>
+<p>不要把安全结论绑定到某个著名 gadget 名称；依赖升级后仍需确认入口是否被设计性关闭。</p>
+<h3 id="04">04 · 高频追问</h3>
+<ul>
+<li>为什么 classpath 会影响风险？</li>
+<li>签名过的序列化数据能解决什么、不能解决什么？</li>
+</ul>
+<h3 id="05">05 · 易错点</h3>
+<ul>
+<li>只查 ObjectInputStream。</li>
+<li>只升级某个依赖不改设计。</li>
+</ul>
+<h3 id="06">06 · 工程实践</h3>
+<ul>
+<li>扫描所有通用对象反序列化入口。</li>
+<li>迁移到 schema/DTO。</li>
+</ul>
+<h3 id="07">07 · 一句话记忆</h3>
+<blockquote>
+<p>反序列化审计必须同时看“入口、类型、依赖、行为”。</p>
+</blockquote>
+<hr />
+<h2 id="_3">扩展解析：从“会回答”到“会做工程”</h2>
+<h3 id="1">1. 更深一层的原理</h3>
+<p>反序列化风险来自“不可信对象图 + 恢复过程中的副作用”，不能只看一个 API 名称。</p>
+<p>优先使用简单数据格式和严格 schema；必要时限制类型集合、依赖和对象生命周期。</p>
+<p>代码审计应从 sink 反向找 source，或从暴露入口向下追 dataflow；两种方向可交叉验证。</p>
+<p>结论要包含可达性、权限条件、数据转换和真实修复点。</p>
+<h3 id="2">2. 边界条件与面试高分点</h3>
+<ul>
+<li><strong>先定义边界</strong>：明确主体、资产、数据/状态和信任边界，避免把问题描述成绝对结论。</li>
+<li><strong>区分根治与纵深</strong>：根治方案应消除不安全的数据流、权限或协议状态；WAF、告警、限流等通常属于补充控制。</li>
+<li><strong>考虑失败模式</strong>：不仅说明正常路径，还要考虑配置漂移、解析差异、权限过宽、依赖升级和异常条件。</li>
+<li><strong>给验证方式</strong>：安全设计必须能被单元测试、集成测试、审计日志、检测规则或演练验证。</li>
+</ul>
+<h3 id="3">3. 工程化检查清单</h3>
+<ul>
+<li>[ ] 把安全检查前移且与 owner/门禁联动</li>
+<li>[ ] 依赖/SBOM 解决可见性，风险仍需上下文判断</li>
+<li>[ ] Secrets 不进入源代码和长期日志</li>
+<li>[ ] 补丁分析聚焦根因和回归测试</li>
+<li>[ ] 扫描所有通用对象反序列化入口。</li>
+<li>[ ] 迁移到 schema/DTO。</li>
+</ul>
+<h3 id="4">4. 可观测性与证据</h3>
+<p>面试中主动补一句“我会从哪些证据验证”，通常很加分：</p>
+<ul>
+<li>代码仓与审计记录</li>
+<li>CI/CD 日志</li>
+<li>依赖与制品元数据</li>
+<li>扫描结果与代码 owner</li>
+<li>构建 provenance/签名</li>
+</ul>
+<h3 id="5">5. 追问怎么接</h3>
+<h4 id="classpath">追问：为什么 classpath 会影响风险？</h4>
+<p><strong>回答要点：</strong> 先解释导致该现象的协议/信任边界，再说明成立所需条件，最后补充防守侧如何通过配置、日志或测试验证。</p>
+<h4 id="_4">追问：签名过的序列化数据能解决什么、不能解决什么？</h4>
+<p><strong>回答要点：</strong> 先给一句话结论，再用本题的核心原理解释边界条件；最后补充检测/修复/验证三个工程点。</p>
+<h3 id="6">6. 面试官可能继续升级的场景题</h3>
+<ul>
+<li>如果这个问题发生在核心业务而不是测试环境，你会如何调整风险优先级、证据保全和修复节奏？</li>
+<li>如果已有一层安全产品/框架默认保护，你如何验证它真的覆盖了 Serialization Review 的边界，而不是只相信配置名称？</li>
+<li>如果修复会影响兼容性或业务性能，你会如何设计灰度、监控和回滚方案？</li>
+</ul>
+<h3 id="7">7. 常见回答层级</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只能给出名词定义</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能解释基本原理</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能说明成立条件、边界和真实影响</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能给出工程修复、检测和验证</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能处理复杂追问、权衡与系统设计</td>
+</tr>
+</tbody>
+</table>
+<!-- BEGIN PROFESSIONAL_V2 -->
+<h2 id="v2">专业深化 v2：面向高级工程师的题解</h2>
+<blockquote>
+<p>这一节是在 PDF 基线与第一轮扩展之上的第二层深化，重点补齐 <strong>机制、边界、工程决策、证据、验证与追问树</strong>。它不是利用手册，而是面向合法授权的安全工程与面试表达。</p>
+</blockquote>
+<h3 id="a">A. 机制模型：先把问题抽象对</h3>
+<ul>
+<li>Java 反序列化审计首先确认入口格式、信任来源、实际 serializer 和可允许类型。</li>
+<li>再分析 classpath 中的副作用类型/回调可达性，而不是直接假设“存在某库=可利用”。</li>
+<li>最后评估运行权限和网络/文件能力决定影响。</li>
+</ul>
+<h3 id="b">B. 成立条件、边界与典型失效模式</h3>
+<ul>
+<li>签名消息也需验证 producer 信任和 key custody。</li>
+<li>多态 JSON/object mapper 也可能形成类似风险。</li>
+<li>不同依赖版本和配置决定 gadget reachability。</li>
+</ul>
+<h3 id="c">C. 工程设计：从“修一个点”到“设计控制面”</h3>
+<ul>
+<li>外部边界禁用任意对象反序列化。</li>
+<li>类型 allowlist/显式 schema，关闭危险 auto-type。</li>
+<li>移除不必要依赖、最小 runtime 权限。</li>
+<li>为 serializer config 建自动化测试。</li>
+</ul>
+<h3 id="d-detection-evidence">D. Detection &amp; Evidence：如何证明你的判断</h3>
+<ul>
+<li>deserialize call sites、object mapper config、classpath/SBOM。</li>
+<li>producer/channel/authentication。</li>
+<li>runtime process/network/file side effects。</li>
+</ul>
+<p>一个成熟回答要主动区分：<strong>事实（日志/状态）</strong>、<strong>推断（关联分析）</strong>、<strong>假设（尚待验证）</strong>。这能显著降低“看到一个异常就直接下结论”的面试失分。</p>
+<h3 id="e">E. 修复后的验证与回归</h3>
+<ul>
+<li>非允许 type 应稳定拒绝。</li>
+<li>dependency upgrade 后回归。</li>
+<li>内部 queue/session/cache 等入口同样检查。</li>
+</ul>
+<h3 id="f">F. 面试追问树：把一题答成一棵知识树</h3>
+<ol>
+<li>如何证明 gadget 真正 reachable？</li>
+<li>为什么“内网消息”仍不应默认可信？</li>
+<li>签名能解决哪些问题，不能解决哪些？</li>
+</ol>
+<p>回答这些追问时，建议始终使用：<strong>结论 → 原理 → 条件 → 反例/边界 → 工程控制 → 验证</strong>。如果题目涉及生产环境，再补充可用性、兼容性、灰度和回滚。</p>
+<h3 id="g">G. 这道题在真实工作中的“交付物”</h3>
+<p>Serialization review worksheet：entry→producer→serializer→types→classpath→runtime privilege→tests。</p>
+<h3 id="h">H. 一页纸复盘</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>应该能说清楚什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>根因</td>
+<td>对象恢复能力被不可信数据驱动。</td>
+</tr>
+<tr>
+<td>边界</td>
+<td>类型/配置/classpath/producer。</td>
+</tr>
+<tr>
+<td>主要控制</td>
+<td>schema/allowlist + minimal classpath/privilege。</td>
+</tr>
+<tr>
+<td>关键证据</td>
+<td>callsite/config/SBOM/runtime。</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>非允许类型与升级回归。</td>
+</tr>
+</tbody>
+</table>
+<!-- END PROFESSIONAL_V2 -->
+
+<h2 id="_5">复习卡片</h2>
+<ul>
+<li><strong>核心关键词</strong>：Serialization Review</li>
+<li><strong>一句话</strong>：反序列化审计必须同时看“入口、类型、依赖、行为”。</li>
+<li><strong>最容易答错</strong>：只查 ObjectInputStream。</li>
+<li><strong>工程动作</strong>：扫描所有通用对象反序列化入口。</li>
+<li><strong>答题顺序</strong>：定义 -&gt; 原理 -&gt; 边界 -&gt; 风险 -&gt; 检测 -&gt; 修复 -&gt; 验证。</li>
+</ul>
+<h2 id="_6">关联题</h2>
+<ul>
+<li><span class="srcref">Q53 做 SQL 注入代码审计时，你会怎么看？</span></li>
+<li><span class="srcref">Q55 软件供应链攻击是什么？</span></li>
+<li><span class="srcref">Q36 Java 中间件安全为什么长期是面试重点？</span></li>
+<li><span class="srcref">Q52 什么是 Taint Analysis？</span></li>
+</ul>
+<h2 id="_7">参考标准 / 延伸阅读</h2>
+<ul>
+<li>参见仓库 <span class="srcref">官方标准与参考资料</span>。</li>
+</ul>
+<h2 id="_8">安全边界</h2>
+<blockquote>
+<p>本仓库面向合法授权的面试学习、安全工程、检测与防守。涉及攻击技术时聚焦原理、证据、修复和验证，不提供针对真实目标的利用步骤、隐蔽规避或武器化操作。</p>
+</blockquote>
+<hr />
+<p>← <span class="srcref">Q53</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q55</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

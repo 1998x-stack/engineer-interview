@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>什么时候向量法比坐标法更自然？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q035</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q035</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★☆☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q034.html">← Q034</a><a href="Q036.html">Q036 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">方法选择</a><a href="#">向量、仿射、内积</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 35 / 100</div>
+    <h1 class="qtitle">什么时候向量法比坐标法更自然？</h1>
+    <p><strong>模块：</strong> 平面几何<br />
+<strong>标签：</strong> 方法选择 · 难度 ★★★☆☆ · 向量、仿射、内积</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>什么时候向量法比坐标法更自然？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>真正高手不是工具更多，而是更早判断哪种表示能降低问题复杂度。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>平行、共线、中点、重心等仿射关系优先向量。</li>
+<li>垂直/角度可用内积。</li>
+<li>向量可保持坐标无关，减少参数。</li>
+</ul>
+<p><strong>展开：</strong> 若题目主要是点的线性组合，例如中点 $M=(A+B)/2$、重心、平行四边形或三线共点，向量往往直接保留几何本质；坐标法则会额外引入坐标轴选择。只有当需要具体求交点或利用圆的方程时，坐标可能更自然。面试中能说出“向量解决仿射结构、内积处理度量结构”是加分点。</p>
+<h3 id="_4">面试追问</h3>
+<p>为什么仅靠向量线性组合无法直接表达所有圆性质？</p>
+<h3 id="_5">常见失分</h3>
+<p>把向量法和坐标法当完全相同；无目的设基。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>用同一道重心题比较向量解和坐标解，让学生观察“自由度”差异。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：能从仿射/度量区分；6分：会说常见场景；3分：只说计算方便。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：把“灵感”还原成目标结构</h3>
+<p>几何题应尽量用 <strong>目标 → 中间结构 → 可制造条件 → 辅助构造</strong> 来解释。目标是长度比时，优先寻找相似、正弦定理或圆幂；目标是共点/共线时，考虑 Ceva/Menelaus、根轴或投影结构；大量圆与切线则检查圆幂、根轴、反演等。</p>
+<p>教练面试尤其忌讳把关键步骤说成“显然作一条线”。优秀回答要恢复发现链，并说明为什么该构造减少了自由度或把结论翻译成标准结构。</p>
+<h4 id="_9">技术补充：向量法保留了仿射结构</h4>
+<p>中点、重心、平行和共线天然对应线性组合，例如 $\vec P=(1-t)\vec A+t\vec B$；垂直再用内积处理。相比全坐标法，向量可以不固定具体坐标轴，减少无关参数。若问题主要是圆与角度，向量未必最简。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>先口述目标结构，再允许画辅助线。</li>
+<li>尝试给出纯几何与解析/代数方法的比较。</li>
+<li>指出图形退化或点位变化时证明是否仍成立。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 目标已翻译成标准结构</li>
+<li>[ ] 辅助构造有明确目的</li>
+<li>[ ] 角/比/幂关系来源可追踪</li>
+<li>[ ] 退化位置与有向量约定清楚</li>
+<li>[ ] 能比较至少两种表示方法</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>能从目标反推结构；辅助构造有动机；证明严谨；可比较不同表示方法。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>证明正确，但“为什么想到”或退化/方向约定说明不充分。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>能复现标准构造，却较依赖记忆和图形直觉。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>关键共圆/相似/幂关系无依据，或辅助线完全无法解释。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>为什么仅靠向量线性组合无法直接表达所有圆性质？</li>
+<li>先口述目标结构，再允许画辅助线。</li>
+<li>尝试给出纯几何与解析/代数方法的比较。</li>
+<li>指出图形退化或点位变化时证明是否仍成立。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>画一张“发现链”图：目标 → 中间结构 → 需要的角/比/幂 → 构造，并准备第二种方法比较。</p>
+<h3 id="v2">专业版 v2：向量法适合“仿射关系 + 内积”，坐标法适合“具体数值化”</h3>
+<h4 id="1">1. 向量最自然的场景</h4>
+<ul>
+<li>中点、重心、分点：线性组合；</li>
+<li>平行/共线：向量成比例；</li>
+<li>垂直：内积为 0；</li>
+<li>平移结构：不用固定原点坐标。</li>
+</ul>
+<p>例如点 $P$ 在线段 $AB$ 上满足 $AP:PB=m:n$，可直接写</p>
+<p>$$
+\vec p=\frac{n\vec a+m\vec b}{m+n}.
+$$</p>
+<h4 id="2">2. 与坐标法的区别</h4>
+<p>坐标法把每个向量进一步拆成 $(x,y)$，适合明确计算；向量法保留几何不变性，往往参数更少、结构更清晰。</p>
+<h4 id="3_1">3. 一个选择原则</h4>
+<p>如果题目主要由“线性关系”构成，先向量；如果需要交点坐标、距离方程、圆方程等精确量，坐标更合适。</p>
+<h4 id="4">4. 面试加分点</h4>
+<p>说明向量法同样有局限：复杂圆与角关系常需要大量内积展开，此时复数、圆幂或纯几何可能更简洁。</p>
+<h2 id="_15">关联题目</h2>
+<ul>
+<li><span class="srcref">Q033 · 哪些几何题适合坐标法？</span></li>
+<li><span class="srcref">Q034 · 哪些几何题适合复数法？</span></li>
+</ul>
+<h2 id="_16">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

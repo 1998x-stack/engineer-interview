@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>所谓 TCP “粘包/拆包”到底是什么？应用层怎样正确 framing？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>35</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">35</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">基础</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="34.html">← 34</a><a href="36.html">36 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">Byte Stream</a><a href="#">Framing</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 62 / 100</div>
+    <h1 class="qtitle">所谓 TCP “粘包/拆包”到底是什么？应用层怎样正确 framing？</h1>
+    <blockquote>
+<p><strong>定位</strong>：基础 · <strong>面试频率</strong>：★★★★★ · <strong>标签</strong>：Byte Stream / Framing<br />
+<strong>本章</strong>：<span class="srcref">第三章 TCP 连接、状态机与可靠性</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>Byte Stream / Framing</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>TCP 只提供连续字节流，不保留应用 write() 边界，因此接收方一次 read 可能拿到半条消息、一条消息或多条消息。所谓“粘包”不是 TCP 错误，而是应用协议没有明确消息边界。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>常见 framing：固定长度、分隔符、长度前缀、TLV、自描述协议。</li>
+<li>长度前缀协议必须防御恶意超大长度，避免内存分配攻击。</li>
+<li>HTTP/1.1 通过 Content-Length/chunked 等规则界定 body；HTTP/2 则用二进制 frame 长度。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>“粘包/拆包”这个词容易误导。TCP 只承诺有序字节流，不承诺应用 write() 边界；正确的协议设计必须自带 framing，例如 length-prefix、delimiter、TLV 或自描述格式。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>TCP 是有状态的可靠字节流；状态机、序号空间、ACK 语义和定时器是理解所有 TCP 题的共同底座。</li>
+<li>不要把“内核收到”“对端 TCP 确认”“对端应用读到”“业务处理成功”混成一个层次。</li>
+<li>排障时必须把主动关闭方、连接状态、Seq/Ack 时间线和应用生命周期放在一起看。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-tcp-read">V2 深入：“粘包/拆包”是应用错误地把 TCP read 边界当消息边界</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>TCP 只保证有序 byte stream：一次 <code>write()</code> 可能被拆成多个 segment，多次 <code>write()</code> 也可能在 receiver 一次 <code>read()</code> 中同时出现。</li>
+<li>因此应用协议必须显式 framing，不能用 <code>recv()</code> 返回一次就假设得到一个完整业务 message。</li>
+<li>UDP 保留 datagram boundary，所以不存在同一种语义问题，但 datagram 仍可能截断/丢失/乱序。</li>
+</ul>
+<h3 id="framing">Framing 方案</h3>
+<p>常见有固定长度、delimiter、length-prefix、TLV、自描述 framing。Length-prefix parser 应维护 <code>READ_HEADER → parse length → READ_BODY → emit frame</code> 状态，并防御恶意超大 length 导致内存 DoS。</p>
+<p>Protobuf 定义 message serialization，却不会自动告诉 raw TCP stream 下一条 protobuf 从哪个 byte 开始；gRPC 会在 protobuf 之外再增加自己的 message framing。</p>
+<h3 id="_5">工程边界</h3>
+<p>TLS 同样是 stream abstraction；<code>SSL_read()</code> 也不与上层业务 message 一一对应。高性能 parser 通常需要 incremental buffer、partial header/body、multiple frames per read。</p>
+<h3 id="_6">线上案例推演</h3>
+<p>线上偶发 JSON parse error，只在高 QPS 出现，很可能是应用默认“一次 read=一条 JSON”。通过人为把 packet 分片或一次发送多条消息即可稳定复现，这比调 MTU 更能验证根因。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_7">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“所谓 TCP “粘包/拆包”到底是什么？应用层怎样正确 framing？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 Byte Stream、Framing 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>ss -tanpi</code>。</li>
+</ol>
+<h2 id="_8">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>ss -tanpi</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>tcpdump -nn -S</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>nstat -az</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>Wireshark TCP Stream Graph</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1udp">追问 1：UDP 为什么没有同样的粘包语义？</h3>
+<p><strong>参考回答</strong>：TCP不保留 write() 消息边界，应用必须自己 framing。Protobuf定义消息编码但不会自动划分 TCP 字节流边界，通常还需要 length-prefix、delimiter 或上层 RPC frame。</p>
+<h3 id="2protobuf-tcp-framing">追问 2：Protobuf 自身是否自动解决 TCP framing？</h3>
+<p><strong>参考回答</strong>：TCP不保留 write() 消息边界，应用必须自己 framing。Protobuf定义消息编码但不会自动划分 TCP 字节流边界，通常还需要 length-prefix、delimiter 或上层 RPC frame。 gRPC利用HTTP/2多路复用、流控和双向streaming，并在Protobuf消息外再定义自己的 message framing。与REST相比它通常更强类型、二进制高效，但浏览器直连、可读性和生态兼容要权衡；现代gRPC也可有HTTP/3方向实现。</p>
+<h3 id="3">追问 3：半包解析器如何设计状态机？</h3>
+<p><strong>参考回答</strong>：TCP不保留 write() 消息边界，应用必须自己 framing。Protobuf定义消息编码但不会自动划分 TCP 字节流边界，通常还需要 length-prefix、delimiter 或上层 RPC frame。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 试图通过 sleep 或“每次 read 大一点”解决。</li>
+<li>❌ 认为 <code>send()</code> 一次对应对端 <code>recv()</code> 一次。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>写长度前缀 echo 协议，故意把一个消息拆成多次 send、多个消息合并一次 send，验证解析器仍正确。</p>
+<h3 id="_9">实验验收标准</h3>
+<p>能从 TCP 状态、Seq/Ack、重传/窗口和应用 close/read/write 行为形成一致时间线。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9293.html">RFC 9293 - Transmission Control Protocol (TCP)</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_11">关联题目</h2>
+<ul>
+<li><span class="srcref">061. HTTP/1.1 Request/Response 报文结构是什么？</span></li>
+<li><span class="srcref">066. Content-Length 与 chunked transfer encoding 解决什么？</span></li>
+<li><span class="srcref">073. gRPC 为什么常运行在 HTTP/2 上？</span></li>
+</ul>
+<h2 id="_12">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：TCP 只提供连续字节流，不保留应用 write() 边界，因此接收方一次 read 可能拿到半条消息、一条消息或多条消息。所谓“粘包”不是 TCP 错误，而是应用协议没有明确消息边界。</li>
+<li><strong>必须会解释</strong>：Byte Stream / Framing。</li>
+<li><strong>必须避免</strong>：试图通过 sleep 或“每次 read 大一点”解决。</li>
+<li><strong>必须会验证</strong>：写长度前缀 echo 协议，故意把一个消息拆成多次 send、多个消息合并一次 send，验证解析器仍正确。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LightGBM 做时间序列为什么如此常见？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Time Series</a><i>∕</i><span>q044</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q044</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★☆☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q043.html">← q043</a><a href="q045.html">q045 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">LightGBM</a><a href="#">global</a><a href="#">结构化特征</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      TIME SERIES · 44 / 100</div>
+    <h1 class="qtitle">LightGBM 做时间序列为什么如此常见？</h1>
+    <blockquote>
+<p><strong>章节：</strong> 机器学习与大规模 Global Forecasting<br />
+<strong>难度：</strong> ★★★☆☆ ｜ <strong>频率：</strong> ★★★★★<br />
+<strong>关键词：</strong> LightGBM / global / 结构化特征</p>
+<p>[!NOTE]
+<strong>内容来源说明：</strong> “PDF 基线”部分来自仓库附带的《时间序列面试100题_专业详细版_2026.pdf》；“专业扩展”及代码是为 GitHub 版新增的讲解与工程化补充。二者明确分开，便于回溯。</p>
+</blockquote>
+<h2 id="20">20 秒面试回答</h2>
+<p>LightGBM 能高效处理大量 lag/rolling/calendar/categorical-like 特征，特别适合成千上万 SKU/store 的 global forecasting。</p>
+<h2 id="pdf">PDF 基线：核心公式 / 结构</h2>
+<p>$$
+ŷ=f(lags,rolling,calendar,price,promo,IDs)
+$$</p>
+<blockquote>
+<p>若上面的内容是流程或文字而不是严格 LaTeX 公式，请按 PDF 原意理解；PDF 中的记号在此保持不变。</p>
+</blockquote>
+<h2 id="pdf_1">PDF 基线：原理深挖</h2>
+<p>工业优势还包括训练快、解释方便、missing value 友好、CPU inference 快。缺点是需人工设计时间特征，概率输出需 quantile/objective 或后处理。</p>
+<h3 id="pdf_2">PDF 易错点</h3>
+<blockquote>
+<p>认为 GBDT 只能做 tabular，不能做时序。</p>
+</blockquote>
+<h3 id="pdf_3">PDF 高级加分点</h3>
+<blockquote>
+<p>（PDF 未给独立高级加分点。）</p>
+</blockquote>
+<hr />
+<h2 id="github">专业扩展（GitHub 增强版）</h2>
+<h3 id="1">1. 这道题真正考什么</h3>
+<p>机器学习预测的核心不是换模型，而是构造 point-in-time 正确的监督学习样本，并决定 local/global、多步策略与业务 covariates。</p>
+<ul>
+<li>LightGBM 的强项是异构 covariates 与大规模 panel 共享；真正困难通常在特征可用性和 horizon-specific training。</li>
+</ul>
+<h3 id="2-offer">2. 建议使用的“剑指 Offer 式”回答层次</h3>
+<ol>
+<li><strong>先定义</strong>：用一句话说明对象、假设或目标。</li>
+<li><strong>给核心数学结构</strong>：能写公式就写公式；不能写时明确输入、状态和输出。</li>
+<li><strong>解释统计直觉</strong>：说明为什么成立，以及它改变了什么信息。</li>
+<li><strong>指出失败模式</strong>：样本太短、非平稳、结构突变、协变量不可用、泄漏等。</li>
+<li><strong>落到验证与工程</strong>：给出时间正确的 backtest、baseline、监控或 decision metric。</li>
+</ol>
+<h3 id="3">3. 面试官追问树</h3>
+<h3 id="1-m5-gbdt">1. 为什么 M5 中 GBDT 强？</h3>
+<p><strong>回答方向：</strong> 回答时不要停在现象层。先说明其改变的统计/信息条件，再指出对验证或部署的影响。可结合本题核心：LightGBM 能高效处理大量 lag/rolling/calendar/categorical-like 特征，特别适合成千上万 SKU/store 的 global forecasting。</p>
+<h3 id="2-quantile-lightgbm">2. 如何做 quantile LightGBM？</h3>
+<p><strong>回答方向：</strong> 先给可执行流程：诊断数据与可用信息 -&gt; 建 baseline -&gt; 时间正确的回测 -&gt; 误差分解 -&gt; 再决定模型或修复动作。</p>
+<h3 id="4">4. 工程检查清单</h3>
+<ul>
+<li>[ ] 特征构造统一遵循 point-in-time contract。</li>
+<li>[ ] 对每个 horizon 说明 recursive/direct/MIMO 策略。</li>
+<li>[ ] Global model 要评估跨实体泛化、cold start 与 scale normalization。</li>
+</ul>
+<!-- V2_DEEP_DIVE_START -->
+<h2 id="v2">深度专业版 v2：从“会答”到“能推导、能上线”</h2>
+<blockquote>
+<p>这一节是 GitHub 版第二轮扩展，不改写上面的 PDF 基线。目标是把题目扩展到高级算法岗 / Forecasting Scientist / Staff DS 面试所要求的深度。</p>
+</blockquote>
+<h3 id="1_1">1. 核心机制拆解</h3>
+<ol>
+<li>LightGBM 擅长大规模 tabular signal：lags、rolling、calendar、price、promotion、static metadata 可统一输入。</li>
+<li>global training 可让大量 series 共享规律，且 histogram/tree 算法对非线性和交互鲁棒。</li>
+<li>它的优势往往来自强 feature pipeline，而不是“树特别懂时间”。</li>
+</ol>
+<h3 id="2">2. 一条可复用的推理链</h3>
+<p>回答 <strong>“LightGBM 做时间序列为什么如此常见？”</strong> 时，推荐按下面顺序组织，而不是先抛模型名：</p>
+<ol>
+<li><strong>定义对象与信息边界</strong>：目标变量、时间粒度、forecast origin、horizon、当前可用信息分别是什么。</li>
+<li><strong>写最小数学结构</strong>：指出核心随机关系、损失函数或约束。</li>
+<li><strong>说明成立条件</strong>：平稳性、独立性、未来协变量可用性、样本长度、分布假设等。</li>
+<li><strong>给反例或失败模式</strong>：至少说明一种“理论上成立但工程上失败”的情况。</li>
+<li><strong>落到 OOS 证据</strong>：用 rolling / expanding backtest 和强 baseline 证明选择，而不是靠模型复杂度。</li>
+</ol>
+<h3 id="3_1">3. 典型反例、边界与故障模式</h3>
+<ul>
+<li><strong>边界 1：</strong> 不做时间切分就用普通 CV。</li>
+<li><strong>边界 2：</strong> 直接把 timestamp integer 当唯一时间特征，期望模型学出长期趋势外推。</li>
+</ul>
+<blockquote>
+<p><strong>面试习惯：</strong> 只会描述模型“优点”通常是中级答案；主动说出失效条件、可观测症状和修复动作，才更接近高级答案。</p>
+</blockquote>
+<h3 id="4_1">4. 具体业务例子</h3>
+<p>M5 类零售问题中，SKU/store/category 特征+lag/rolling+LightGBM 是非常强的工业基线。</p>
+<p>把例子继续追问到工程层时，至少要回答：<strong>这个变量在预测 cutoff 当时真的可见吗？这个 horizon 的误差由谁承担？模型失败时 fallback 是什么？</strong></p>
+<h3 id="5">5. 高级加分点</h3>
+<p>可用 Tweedie/Poisson/quantile objective 适配计数与概率需求，并按 horizon 训练 direct models。</p>
+<p>这一点不是为了“炫术语”，而是为了说明你能把统计原理、验证协议和生产约束放在同一个框架里。</p>
+<h3 id="6-checklist">6. 监督学习流水线 Checklist</h3>
+<ul>
+<li>[ ] 构造 point-in-time correct features</li>
+<li>[ ] 明确 future covariate availability</li>
+<li>[ ] 按 horizon/segment 做滚动回测</li>
+</ul>
+<p>建议把 checklist 真正落实到实验记录中：每个候选模型保存 <code>data_snapshot / cutoff / feature_version / model_version / horizon / metrics_by_segment</code>，才能复现实验和定位线上偏差。</p>
+<h3 id="8-23">8. 2～3 分钟完整口述参考</h3>
+<blockquote>
+<p><strong>第一句先给结论。</strong> LightGBM 能高效处理大量 lag/rolling/calendar/categorical-like 特征，特别适合成千上万 SKU/store 的 global forecasting。</p>
+<p><strong>第二层解释机制。</strong> 工业优势还包括训练快、解释方便、missing value 友好、CPU inference 快。缺点是需人工设计时间特征，概率输出需 quantile/objective 或后处理。</p>
+<p><strong>第三层补边界。</strong> 这个结论只有在数据生成机制、信息可用性和验证协议匹配时才有意义；我会主动检查本题上面列出的失败模式。</p>
+<p><strong>第四层落到工程。</strong> 最后我会用与生产一致的 rolling backtest、强 baseline 和 horizon/segment 分解指标验证，并记录 point-in-time feature lineage，确保离线提升可以复现到线上。</p>
+</blockquote>
+<h3 id="9-4">9. 自测：面试前必须能脱口而出的 4 个问题</h3>
+<ul>
+<li><strong>定义题：</strong> 不看笔记，能否用 20 秒给出一句准确答案？</li>
+<li><strong>推导题：</strong> 能否写出本题最关键公式，并解释每个符号的统计/业务含义？</li>
+<li><strong>反例题：</strong> 能否给出一个模型表面合理、实际会失败的案例？</li>
+<li><strong>工程题：</strong> 能否说明如何在不泄漏未来的前提下验证，并给出 fallback？</li>
+</ul>
+<!-- V2_DEEP_DIVE_END -->
+
+<h2 id="_1">面试表达模板</h2>
+<blockquote>
+<p><strong>结论：</strong> LightGBM 能高效处理大量 lag/rolling/calendar/categorical-like 特征，特别适合成千上万 SKU/store 的 global forecasting。<br />
+<strong>原理：</strong> 工业优势还包括训练快、解释方便、missing value 友好、CPU inference 快。缺点是需人工设计时间特征，概率输出需 quantile/objective 或后处理。<br />
+<strong>边界：</strong> 说明何时假设会失效，以及如何通过 rolling/expanding backtest 验证。<br />
+<strong>工程：</strong> 把预测时点、特征可用性、horizon、指标和 fallback 说清楚。</p>
+</blockquote>
+<h2 id="_2">关联题</h2>
+<ul>
+<li><span class="srcref">Q043 Random Forest 和 ARIMA 做趋势外推时有什么区别？</span></li>
+<li><span class="srcref">Q045 Local Model 和 Global Model 有什么区别？</span></li>
+</ul>
+<h2 id="_3">延伸阅读</h2>
+<ul>
+<li><a href="https://www.sciencedirect.com/science/article/pii/S0169207021001874">M5 Accuracy competition paper</a></li>
+</ul>
+<hr />
+<p><strong>上一层目标：</strong> 不只会“背答案”，而是能解释 <strong>why / when it fails / how to validate / how to ship</strong>。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

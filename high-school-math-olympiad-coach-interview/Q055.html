@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>数论题试了十几个模数都没进展，下一步做什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q055</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q055</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q054.html">← Q054</a><a href="Q056.html">Q056 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">解题策略</a><a href="#">卡题重启、数论方法选择</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 55 / 100</div>
+    <h1 class="qtitle">数论题试了十几个模数都没进展，下一步做什么？</h1>
+    <p><strong>模块：</strong> 数论<br />
+<strong>标签：</strong> 解题策略 · 难度 ★★★★☆ · 卡题重启、数论方法选择</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>数论题试了十几个模数都没进展，下一步做什么？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>考察面对卡题和未知时是否有稳定的研究行为，而非纯靠灵感。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>停止随机试模，重新读结构。</li>
+<li>检查因式分解、gcd、极值素因子、估值、大小、最小反例。</li>
+<li>尝试从目标反推需要哪种整除信息。</li>
+</ul>
+<p><strong>展开：</strong> 持续换模数通常说明缺乏问题模型。重启时可以问：题目真正要求的是“排除剩余类”还是“精确控制素因子次数”？若是后者，同余天然信息不足，应转向估值；若有两个变量乘积/和，可能先做gcd分解；若涉及正整数解的存在性，可尝试最小反例与下降。优秀解题者的能力之一，是知道<strong>什么时候停止当前方法</strong>。</p>
+<h3 id="_4">面试追问</h3>
+<p>你如何教学生识别“当前方法已经低收益”？</p>
+<h3 id="_5">常见失分</h3>
+<p>坚持“再试一个模数”；或卡住就直接看答案。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>设置10分钟方法预算：每种方向必须记录新获得的信息，没有信息则强制换表示。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：会重构问题而非换参数；6分：能列替代方法；3分：继续试错。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：局部信息与下降结构</h3>
+<p>数论面试题通常在考三件事：能否从整除关系提取 <strong>局部信息（同余/估值）</strong>，能否利用 <strong>结构性分解（gcd、因式分解、韦达）</strong>，以及能否通过 <strong>极小反例/无限下降</strong> 把存在性问题转成矛盾。</p>
+<p>任何引用 LTE、Bézout、欧几里得算法、Legendre 等工具时，都应主动说清条件。数论证明对“条件遗漏”非常敏感，面试官常用追问专门检查这一点。</p>
+<h4 id="_9">技术补充：模数失败通常意味着你缺的是“全局结构”</h4>
+<p>同余擅长排除，但不一定能构造或给出强界。连续尝试很多模数无进展时，应切换到 gcd/因式分解、最大素因子、估值、极小反例、大小估计或把方程视为多项式。面试里主动说明“为什么放弃当前路线”本身就是研究能力的证据。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>明确模数/素数/正整数等条件为何必要。</li>
+<li>尝试用估值、gcd或下降给出第二视角。</li>
+<li>构造一个删除关键条件后的反例。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 变量整数/正整数条件明确</li>
+<li>[ ] 模数或素数选择有理由</li>
+<li>[ ] 定理条件逐项核验</li>
+<li>[ ] 构造的新解仍在可行域</li>
+<li>[ ] 整除与估值结论没有跳步</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>局部信息选择有理由；定理条件逐项核验；整除/估值/下降链完整并能给反例。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>结论和主证明正确，但条件、最小性或可行性验证略简。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>知道相关定理但易机械套用，无法解释模数/素数选择。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>忽略整数性、正性或定理前提，导致证明实质失效。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>你如何教学生识别“当前方法已经低收益”？</li>
+<li>明确模数/素数/正整数等条件为何必要。</li>
+<li>尝试用估值、gcd或下降给出第二视角。</li>
+<li>构造一个删除关键条件后的反例。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>写一份“条件核对证明”：每次使用同余/估值/下降前单独列出前提，并构造删除条件后的反例。</p>
+<h3 id="v2">专业版 v2：模数失效时要切换“信息通道”</h3>
+<p>试了很多模数没有进展，通常意味着题目并不是靠一个局部剩余矛盾解决。下一步可按下列顺序重新扫描：</p>
+<ol>
+<li><strong>因式分解</strong>：能否写成 $(A-B)(A+B)$、差幂、平方差；</li>
+<li><strong>gcd 结构</strong>：两个因子是否几乎互素；</li>
+<li><strong>$p$-进估值</strong>：不是只看模 $p$，而是看 $p^k$ 的精确次数；</li>
+<li><strong>大小估计</strong>：相邻平方/幂之间是否存在空隙；</li>
+<li><strong>最小反例/下降</strong>：一旦有解能否缩小；</li>
+<li><strong>变量对称与根变换</strong>：是否可 Vieta Jumping。</li>
+</ol>
+<h4 id="_15">一个重要复盘问题</h4>
+<p>“我为什么一直试模数？”如果只是因为数论题默认等于同余题，说明方法选择已经固化。教练应训练学生为每个模数写一句预期：我希望这个模数排除哪一类剩余？若没有明确目标，就停止随机搜索。</p>
+<h2 id="_16">关联题目</h2>
+<ul>
+<li><span class="srcref">Q042 · 看到整数方程，第一轮你会检查什么？</span></li>
+<li><span class="srcref">Q044 · 怎样系统选择模数？</span></li>
+<li><span class="srcref">Q051 · 什么叫无限下降法？</span></li>
+</ul>
+<h2 id="_17">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

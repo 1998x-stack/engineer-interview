@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>traceroute 为什么能看到中间路由器？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>9</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">9</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="8.html">← 8</a><a href="10.html">10 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">TTL</a><a href="#">ICMP</a><a href="#">路径诊断</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 36 / 100</div>
+    <h1 class="qtitle">traceroute 为什么能看到中间路由器？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★☆ · <strong>标签</strong>：TTL / ICMP / 路径诊断<br />
+<strong>本章</strong>：<span class="srcref">第一章 网络分层、链路与二层基础</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>TTL / ICMP / 路径诊断</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>traceroute 利用 IP TTL/Hop Limit：先发 TTL=1 的探测包，第一跳减为 0 后返回 ICMP Time Exceeded；再逐步增加 TTL，从而枚举路径。不同实现可用 UDP、ICMP 或 TCP 探测，所以结果会受 ACL、ECMP、NAT 和设备策略影响。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>TTL 的主要目的之一是避免路由环路导致数据包无限循环。</li>
+<li>某跳显示 <code>*</code> 不等于该路由器不存在，可能只是它不回 ICMP。</li>
+<li>ECMP 可能让不同探测包走不同路径，使 traceroute 显示的路径并非单一固定链路。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>始终区分“最终目的”与“当前下一跳”：IP 负责跨网络寻址，二层地址负责当前链路交付。</li>
+<li>回答时要把数据单位说清楚：Application Data → Segment/Datagram → IP Packet → Frame。</li>
+<li>遇到“为什么”题，不只背协议名称，要解释分层如何降低耦合、让每一层独立演进。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-traceroute-ttlhop-limit">V2 深入：traceroute 利用的是 TTL/Hop Limit 的逐跳失效反馈</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>IPv4 TTL / IPv6 Hop Limit 每经一个转发节点递减；到 0 时路由器丢包并通常返回 ICMP Time Exceeded。</li>
+<li>traceroute 通过发送 TTL=1、2、3… 的 probe，逐步让不同 hop 成为“第一个过期点”，从返回 ICMP 的源地址推断路径。</li>
+<li>它观察的是 <strong>probe 的去程 + ICMP 回程组合结果</strong>，并不是精确还原所有转发设备的绝对拓扑。</li>
+</ul>
+<h3 id="_5">实现差异</h3>
+<p>传统 Unix traceroute 常用高端口 UDP probe；Windows <code>tracert</code> 常用 ICMP Echo；也可以用 TCP/443 probe，以穿过只允许 Web 流量的防火墙。不同 probe 的五元组会导致 ECMP hash 不同，因此路径可能不一样。</p>
+<p><code>mtr</code> 在 traceroute 基础上持续探测并统计每 hop latency/loss，但中间 hop ICMP rate-limit 会制造“这个 hop 丢包很高、后续却正常”的假象。</p>
+<h3 id="_6">边界与反例</h3>
+<ul>
+<li>去程和回程可以完全不对称；看到某个 ICMP source 不代表业务回程经过同一路由。</li>
+<li>MPLS、隧道、ICMP filtering 会隐藏某些 hop。</li>
+<li>单个中间 hop 不 reply 并不等于它丢弃了 transit traffic。</li>
+</ul>
+<h3 id="_7">线上案例推演</h3>
+<p>跨地域延迟突增时，比较故障前后的 TCP traceroute/MTR、BGP path 与业务 RTT。如果只某中间 hop 不响应而最终目标 RTT 正常，不应误判该路由器为丢包根因。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_8">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“traceroute 为什么能看到中间路由器？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 TTL、ICMP、路径诊断 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>tcpdump -e -nn</code>。</li>
+</ol>
+<h2 id="_9">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>tcpdump -e -nn</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>ip neigh</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>ip link</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>ip addr</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1-traceroute">追问 1：为什么 traceroute 去程路径不等于回程路径？</h3>
+<p><strong>参考回答</strong>：traceroute通过逐步增加 TTL/Hop Limit 触发中间路由器的 ICMP Time Exceeded；mtr在此基础上持续采样，能观察路径抖动/丢包趋势，但仍受回包策略和 ECMP 影响。</p>
+<h3 id="2mtr-traceroute">追问 2：mtr 比 traceroute 多提供了什么？</h3>
+<p><strong>参考回答</strong>：traceroute通过逐步增加 TTL/Hop Limit 触发中间路由器的 ICMP Time Exceeded；mtr在此基础上持续采样，能观察路径抖动/丢包趋势，但仍受回包策略和 ECMP 影响。</p>
+<h3 id="3-tcp443-traceroute">追问 3：为什么基于 TCP/443 的 traceroute 有时更有用？</h3>
+<p><strong>参考回答</strong>：traceroute通过逐步增加 TTL/Hop Limit 触发中间路由器的 ICMP Time Exceeded；mtr在此基础上持续采样，能观察路径抖动/丢包趋势，但仍受回包策略和 ECMP 影响。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 把 TTL 理解成严格的“秒数寿命”。</li>
+<li>❌ 把每一跳 RTT 直接当作该路由器处理耗时。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>分别用 <code>traceroute</code>、<code>traceroute -T -p 443</code>、<code>mtr</code> 比较同一目标，观察防火墙与路径差异。</p>
+<h3 id="_10">实验验收标准</h3>
+<p>能在抓包或邻居/链路表中验证当前一跳的二层信息，并把它与最终 IP 目的地址区分开。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_11">权威资料 / 延伸阅读</h2>
+<ul>
+<li>本题以 PDF 原始题解与同章权威协议索引为主；详见 <span class="srcref"><code>references/README.md</code></span>。</li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_12">关联题目</h2>
+<ul>
+<li><span class="srcref">008. ping 的完整原理是什么？ping 不通能否说明 TCP 也不通？</span></li>
+<li><span class="srcref">010. 为什么二层需要 VLAN？VLAN 与广播域是什么关系？</span></li>
+</ul>
+<h2 id="_13">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：traceroute 利用 IP TTL/Hop Limit：先发 TTL=1 的探测包，第一跳减为 0 后返回 ICMP Time Exceeded；再逐步增加 TTL，从而枚举路径。不同实现可用 UDP、ICMP 或 TCP 探测，所以结果会受 ACL、ECMP、NAT 和设备策略影响。</li>
+<li><strong>必须会解释</strong>：TTL / ICMP / 路径诊断。</li>
+<li><strong>必须避免</strong>：把 TTL 理解成严格的“秒数寿命”。</li>
+<li><strong>必须会验证</strong>：分别用 <code>traceroute</code>、<code>traceroute -T -p 443</code>、<code>mtr</code> 比较同一目标，观察防火墙与路径差异。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

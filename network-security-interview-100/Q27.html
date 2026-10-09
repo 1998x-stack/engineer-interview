@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JWT 是什么？最常见的设计错误有哪些？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Network Security</a><i>∕</i><span>Q27</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q27</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">3</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q26.html">← Q26</a><a href="Q28.html">Q28 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORK SECURITY · 27 / 100</div>
+    <h1 class="qtitle">JWT 是什么？最常见的设计错误有哪些？</h1>
+    <p>← <span class="srcref">Q26</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q28</span> →</p>
+<h1 id="q27-jwt">Q27 · JWT 是什么？最常见的设计错误有哪些？</h1>
+<blockquote>
+<p><strong>定位</strong>：本文件完整保留 PDF 对本题的题解结构，并在“扩展解析”部分加入更详细的工程化分析。新增内容用于学习与面试准备，不代表任何公司的内部题库。</p>
+</blockquote>
+<h2 id="_1">题目信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>难度</td>
+<td>3/5</td>
+</tr>
+<tr>
+<td>适用岗位</td>
+<td>AppSec / 后端 / 身份安全</td>
+</tr>
+<tr>
+<td>Framework / 对标</td>
+<td>JWT / JOSE</td>
+</tr>
+<tr>
+<td>PDF 页码</td>
+<td>第 34 页</td>
+</tr>
+<tr>
+<td>所属章节</td>
+<td>第 3 章 · 高级 Web、API 与身份安全</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官为什么问这题</h2>
+<p>判断候选人是否从“漏洞点”升级到浏览器安全模型、对象级授权、会话与联合身份的系统视角。</p>
+<p>通常不仅是在确认“是否知道名词”，还在观察以下能力：</p>
+<ul>
+<li>谁是主体？访问哪个对象/能力？</li>
+<li>认证完成后授权在哪里执行？</li>
+<li>Token/Cookie 的生命周期和绑定关系是什么？</li>
+<li>浏览器、Gateway 与后端分别承担什么安全责任？</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p><strong>一句话结论：</strong> JWT 的安全不在“三段式”，而在严格的签名、声明和生命周期验证。</p>
+<p>展开时优先抓住以下三点：</p>
+<ol>
+<li>JWT 是 token format，不等于完整认证协议。</li>
+<li>必须正确验证 signature、alg、key、exp/nbf、iss、aud。</li>
+<li>Payload 默认只是 Base64URL 编码，不是加密。</li>
+</ol>
+<h2 id="2-3">2-3 分钟标准回答</h2>
+<p>首先，JWT 是 token format，不等于完整认证协议。
+其次，必须正确验证 signature、alg、key、exp/nbf、iss、aud。
+JWT 的优势是可携带签名声明，但代价是撤销与生命周期管理更复杂。不要把过多敏感信息放进 payload，也不要用超长有效期换取“无状态”。
+关键是明确 token 类型和用途：access token、ID token、refresh token 具有不同受众和验证规则。
+最后要把回答落到工程闭环：说明根因控制是什么、还能有哪些纵深防御，以及如何通过日志、测试或安全回归证明控制真正生效。</p>
+<hr />
+<h2 id="pdf">PDF 基线内容</h2>
+<blockquote>
+<p>以下部分对应成品 PDF 的本题内容，保持其术语、组织方式与观点。</p>
+</blockquote>
+<h3 id="01">01 · 考点拆解</h3>
+<ul>
+<li>JWT 是 token format，不等于完整认证协议。</li>
+<li>必须正确验证 signature、alg、key、exp/nbf、iss、aud。</li>
+<li>Payload 默认只是 Base64URL 编码，不是加密。</li>
+</ul>
+<h3 id="02">02 · 面试答题主线</h3>
+<ol>
+<li>JWT 是 token format，不等于完整认证协议。</li>
+<li>必须正确验证 signature、alg、key、exp/nbf、iss、aud。</li>
+<li>Payload 默认只是 Base64URL 编码，不是加密。</li>
+<li>把答案收束到可验证的工程控制：说明“如何修复/设计”，并补一句“如何通过日志、测试或回归验证控制真的生效”。</li>
+</ol>
+<h3 id="03">03 · 深度解析</h3>
+<p>JWT 的优势是可携带签名声明，但代价是撤销与生命周期管理更复杂。不要把过多敏感信息放进 payload，也不要用超长有效期换取“无状态”。</p>
+<p>关键是明确 token 类型和用途：access token、ID token、refresh token 具有不同受众和验证规则。</p>
+<h3 id="04">04 · 高频追问</h3>
+<ul>
+<li>JWT 如何撤销？</li>
+<li>为什么一定要校验 aud/iss？</li>
+</ul>
+<h3 id="05">05 · 易错点</h3>
+<ul>
+<li>只验证“能 decode”。</li>
+<li>把 payload 当加密数据。</li>
+</ul>
+<h3 id="06">06 · 工程实践</h3>
+<ul>
+<li>为不同 token 类型建立独立 validator。</li>
+<li>设计 key rotation 与 kid 管理流程。</li>
+</ul>
+<h3 id="07">07 · 一句话记忆</h3>
+<blockquote>
+<p>JWT 的安全不在“三段式”，而在严格的签名、声明和生命周期验证。</p>
+</blockquote>
+<hr />
+<h2 id="_3">扩展解析：从“会回答”到“会做工程”</h2>
+<h3 id="1">1. 更深一层的原理</h3>
+<p>JWT 是一种 token 表示格式；真正的安全性来自签名验证、算法/密钥选择、issuer/audience/time claims 与生命周期。</p>
+<p>Payload 默认是编码而非加密，不能放入仅靠“别人看不懂”来保护的敏感信息。</p>
+<h3 id="2">2. 边界条件与面试高分点</h3>
+<ul>
+<li><strong>先定义边界</strong>：明确主体、资产、数据/状态和信任边界，避免把问题描述成绝对结论。</li>
+<li><strong>区分根治与纵深</strong>：根治方案应消除不安全的数据流、权限或协议状态；WAF、告警、限流等通常属于补充控制。</li>
+<li><strong>考虑失败模式</strong>：不仅说明正常路径，还要考虑配置漂移、解析差异、权限过宽、依赖升级和异常条件。</li>
+<li><strong>给验证方式</strong>：安全设计必须能被单元测试、集成测试、审计日志、检测规则或演练验证。</li>
+</ul>
+<h3 id="3">3. 工程化检查清单</h3>
+<ul>
+<li>[ ] 认证与授权明确分离</li>
+<li>[ ] 对象级授权靠后端业务上下文完成</li>
+<li>[ ] Token 最小权限、短生命周期、严格受众/签发方校验</li>
+<li>[ ] 浏览器策略作为边界的一部分但不替代服务端控制</li>
+<li>[ ] 为不同 token 类型建立独立 validator。</li>
+<li>[ ] 设计 key rotation 与 kid 管理流程。</li>
+</ul>
+<h3 id="4">4. 可观测性与证据</h3>
+<p>面试中主动补一句“我会从哪些证据验证”，通常很加分：</p>
+<ul>
+<li>IdP/认证日志</li>
+<li>API Gateway/应用访问日志</li>
+<li>对象级授权拒绝事件</li>
+<li>Session/Token 生命周期事件</li>
+</ul>
+<h3 id="5">5. 追问怎么接</h3>
+<h4 id="jwt">追问：JWT 如何撤销？</h4>
+<p><strong>回答要点：</strong> 按“资产/主体 -&gt; 信任边界 -&gt; 控制点 -&gt; 可观测性 -&gt; 回归验证”组织答案；优先给结构化、最小权限和默认拒绝的工程方案。</p>
+<h4 id="audiss">追问：为什么一定要校验 aud/iss？</h4>
+<p><strong>回答要点：</strong> 先解释导致该现象的协议/信任边界，再说明成立所需条件，最后补充防守侧如何通过配置、日志或测试验证。</p>
+<h3 id="6">6. 面试官可能继续升级的场景题</h3>
+<ul>
+<li>如果这个问题发生在核心业务而不是测试环境，你会如何调整风险优先级、证据保全和修复节奏？</li>
+<li>如果已有一层安全产品/框架默认保护，你如何验证它真的覆盖了 JWT / JOSE 的边界，而不是只相信配置名称？</li>
+<li>如果修复会影响兼容性或业务性能，你会如何设计灰度、监控和回滚方案？</li>
+</ul>
+<h3 id="7">7. 常见回答层级</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只能给出名词定义</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能解释基本原理</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能说明成立条件、边界和真实影响</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能给出工程修复、检测和验证</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能处理复杂追问、权衡与系统设计</td>
+</tr>
+</tbody>
+</table>
+<!-- BEGIN PROFESSIONAL_V2 -->
+<h2 id="v2">专业深化 v2：面向高级工程师的题解</h2>
+<blockquote>
+<p>这一节是在 PDF 基线与第一轮扩展之上的第二层深化，重点补齐 <strong>机制、边界、工程决策、证据、验证与追问树</strong>。它不是利用手册，而是面向合法授权的安全工程与面试表达。</p>
+</blockquote>
+<h3 id="a">A. 机制模型：先把问题抽象对</h3>
+<ul>
+<li>JWT 是 token format；JWS 提供签名完整性/来源验证，JWE 才涉及加密，不能把“JWT”直接等同“加密 token”。</li>
+<li>验证 JWT 不只是验签：还需校验算法、issuer、audience、时间、key selection 与业务 claims。</li>
+<li>JWT 的无状态优势会把 revocation、权限变更和密钥轮换变成系统设计问题。</li>
+</ul>
+<h3 id="b">B. 成立条件、边界与典型失效模式</h3>
+<ul>
+<li>payload 默认可读，不能存放仅靠“别人看不到”保护的秘密。</li>
+<li>同一 key/issuer 的 token 若 audience 校验松散，可能跨服务误用。</li>
+<li>长生命周期 token 会扩大泄露窗口；短 token + refresh/session 管理更常见。</li>
+</ul>
+<h3 id="c">C. 工程设计：从“修一个点”到“设计控制面”</h3>
+<ul>
+<li>验证端固定允许算法，不从不可信 header 动态接受任意算法。</li>
+<li>严格 iss/aud/exp/nbf 与 token type；不同用途 token 分离。</li>
+<li>通过受控 JWKS/key rotation 管理公钥，并处理 kid/缓存边界。</li>
+<li>敏感权限变化依赖短生命周期、revocation/session 或实时授权，而不是长期 claim。</li>
+</ul>
+<h3 id="d-detection-evidence">D. Detection &amp; Evidence：如何证明你的判断</h3>
+<ul>
+<li>认证日志记录 token issuer/audience/key id/result，不记录完整 token。</li>
+<li>JWKS/key rotation audit 与异常签名失败趋势。</li>
+<li>API gateway/backend 对 claims 的使用需可追踪。</li>
+</ul>
+<p>一个成熟回答要主动区分：<strong>事实（日志/状态）</strong>、<strong>推断（关联分析）</strong>、<strong>假设（尚待验证）</strong>。这能显著降低“看到一个异常就直接下结论”的面试失分。</p>
+<h3 id="e">E. 修复后的验证与回归</h3>
+<ul>
+<li>测试错误 issuer/audience/expired/wrong algorithm/unknown key 均默认拒绝。</li>
+<li>密钥轮换演练验证旧/新 key 重叠窗口和缓存刷新。</li>
+<li>确认 access token 与 ID token 不会被混用。</li>
+</ul>
+<h3 id="f">F. 面试追问树：把一题答成一棵知识树</h3>
+<ol>
+<li>JWT 为什么不能天然支持即时注销？</li>
+<li>ID Token 和 Access Token 为什么不能互换？</li>
+<li>JWKS 缓存与 key rotation 如何避免可用性问题？</li>
+</ol>
+<p>回答这些追问时，建议始终使用：<strong>结论 → 原理 → 条件 → 反例/边界 → 工程控制 → 验证</strong>。如果题目涉及生产环境，再补充可用性、兼容性、灰度和回滚。</p>
+<h3 id="g">G. 这道题在真实工作中的“交付物”</h3>
+<p>JWT validation profile：token type、alg、iss/aud、TTL、key rotation、revocation strategy 和 negative tests。</p>
+<h3 id="h">H. 一页纸复盘</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>应该能说清楚什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>根因</td>
+<td>JWT 只是承载 claims 的格式，安全取决于严格验证与生命周期。</td>
+</tr>
+<tr>
+<td>边界</td>
+<td>可读 payload、audience、revocation、key rotation。</td>
+</tr>
+<tr>
+<td>主要控制</td>
+<td>固定算法 + claims 校验 + 短生命周期 + 密钥治理。</td>
+</tr>
+<tr>
+<td>关键证据</td>
+<td>validation result/key id/issuer audit。</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>负向 claims 与轮换测试。</td>
+</tr>
+</tbody>
+</table>
+<!-- END PROFESSIONAL_V2 -->
+
+<h2 id="_4">复习卡片</h2>
+<ul>
+<li><strong>核心关键词</strong>：JWT / JOSE</li>
+<li><strong>一句话</strong>：JWT 的安全不在“三段式”，而在严格的签名、声明和生命周期验证。</li>
+<li><strong>最容易答错</strong>：只验证“能 decode”。</li>
+<li><strong>工程动作</strong>：为不同 token 类型建立独立 validator。</li>
+<li><strong>答题顺序</strong>：定义 -&gt; 原理 -&gt; 边界 -&gt; 风险 -&gt; 检测 -&gt; 修复 -&gt; 验证。</li>
+</ul>
+<h2 id="_5">关联题</h2>
+<ul>
+<li><span class="srcref">Q28 Cookie、Session、JWT 的区别是什么？</span></li>
+<li><span class="srcref">Q26 水平越权、垂直越权、未授权访问分别是什么？</span></li>
+<li><span class="srcref">Q25 什么是 IDOR / BOLA？为什么它如此常见？</span></li>
+<li><span class="srcref">Q29 OAuth 2.0 与 OpenID Connect 有什么区别？</span></li>
+</ul>
+<h2 id="_6">参考标准 / 延伸阅读</h2>
+<ul>
+<li><a href="https://owasp.org/Top10/2025/">OWASP Top 10:2025</a> - 2025 Web 应用风险总览；A01 Broken Access Control，A03 Software Supply Chain Failures，A05 Injection。</li>
+<li><a href="https://owasp.org/www-project-application-security-verification-standard/">OWASP ASVS 5.0.0</a> - 2025-05-30 发布；用于 Web 应用技术安全控制验证与安全开发要求。</li>
+</ul>
+<h2 id="_7">安全边界</h2>
+<blockquote>
+<p>本仓库面向合法授权的面试学习、安全工程、检测与防守。涉及攻击技术时聚焦原理、证据、修复和验证，不提供针对真实目标的利用步骤、隐蔽规避或武器化操作。</p>
+</blockquote>
+<hr />
+<p>← <span class="srcref">Q26</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q28</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

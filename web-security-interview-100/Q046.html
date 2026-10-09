@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>innerHTML 和 textContent 的安全差异？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Web Security</a><i>∕</i><span>Q046</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q046</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">基础-中级</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q045.html">← Q045</a><a href="Q047.html">Q047 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">innerhtml</a><a href="#">textcontent</a><a href="#">dom-sink</a><a href="#">html-parser</a><a href="#">safe-dom-api</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      WEB SECURITY · APP · 48 / 103</div>
+    <h1 class="qtitle">innerHTML 和 textContent 的安全差异？</h1>
+    <blockquote>
+<p><strong>母版一句话结论（PDF）</strong><br />
+textContent 把数据当文本，innerHTML 会再次调用 HTML parser。能使用非解释型 API 时，通常比“先清洗再解释”更稳健。</p>
+<p>来源：<a href="docs/pdf/web-security-interview-100-2026.pdf">PDF 第 98 页</a>。本页的“PDF 母版题解”来自原手册；“GitHub 增强版”是在用户要求下新增的工程化扩展与 2026 公开标准校准。</p>
+</blockquote>
+<h2 id="_1">元信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>章节</td>
+<td>XSS、CSRF、CORS 与浏览器安全</td>
+</tr>
+<tr>
+<td>难度</td>
+<td>基础-中级</td>
+</tr>
+<tr>
+<td>高频度</td>
+<td>★★★★★</td>
+</tr>
+<tr>
+<td>能力层级</td>
+<td>原理 + 工程</td>
+</tr>
+<tr>
+<td>核心概念</td>
+<td><code>innerHTML</code>, <code>textContent</code>, <code>DOM Sink</code>, <code>HTML Parser</code>, <code>Safe DOM API</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="pdf">PDF 母版题解</h2>
+<h3 id="1">1. 面试官在考什么</h3>
+<p>不是只考定义。 这道题通常同时观察你是否能：①识别安全边界；②解释根因；③知道常见错误做法为什么失效；④给出可落地、可验证的工程控制。</p>
+<h3 id="2">2. 原理与机制</h3>
+<p>textContent 把数据当文本，innerHTML 会再次调用 HTML parser。能使用非解释型 API 时，通常比“先清洗再解释”更稳健。textContent 只构造文本节点；innerHTML 会触发 HTML parser。安全 API 的价值在于从能力层取消“解释输入”的机会，而不是依赖过滤器完美识别所有危险语法。浏览器安全的关键是区分 origin、site、navigation、credential attachment 与 response readability。SOP/CORS/CSRF/SameSite/CSP 彼此作用在不同阶段，混为一谈是常见面试失分点。Browser security = origin/site rules + credential attachment + parsing context + response</p>
+<p><strong>抽象模型</strong></p>
+<p>readability.</p>
+<h3 id="3">3. 工程防御与设计原则</h3>
+<ul>
+<li>
+<p>使用框架默认安全转义与非解释型 DOM API</p>
+</li>
+<li>
+<p>按上下文编码/清洗</p>
+</li>
+<li>
+<p>CSP/Trusted Types/SameSite 作为纵深防御</p>
+</li>
+<li>
+<p>对跨站读写与凭据携带分别建模</p>
+</li>
+<li>
+<p>把控制写成可测试安全不变量，并为失败路径、边界条件和回归场景补充自动化测试。</p>
+</li>
+</ul>
+<h3 id="4-gotchas">4. 常见错误答案 / Gotchas</h3>
+<ul>
+<li>
+<p>误区：混淆 origin 与 site</p>
+</li>
+<li>
+<p>误区：把 CORS 当授权、把 SameSite 当完整 CSRF 防护</p>
+</li>
+<li>
+<p>误区：只修反射点，不检查 DOM source→sink 与第三方组件</p>
+</li>
+</ul>
+<h3 id="5">5. 面试追问</h3>
+<ul>
+<li>
+<p>SOP、CORS、CSRF、SameSite 各自作用在哪个阶段？</p>
+</li>
+<li>
+<p>CSP 能否替代编码？</p>
+</li>
+<li>
+<p>前端框架默认安全机制在哪些 escape hatch 会失效？</p>
+</li>
+</ul>
+<h3 id="6">6. 一分钟回答模板</h3>
+<p>先给结论：textContent 把数据当文本，innerHTML 会再次调用 HTML parser。能使用非解释型 API 时，通常比“先清洗再解释”更稳健。 然后我会从安全边界解释机制：textContent 只构造文本节点；innerHTML 会触发HTML parser。安全 API 的价值在于从能力层取消“解释输入”的机会，而不是依赖过滤器完美识别所有危险语法。 工程上不会只做单点补丁，而会落实为服务端/平台层控制、最小权限、异常路径和回归测试；最后再说明这个机制不能解决什么，以及如何通过日志、测试或代码审计验证控制确实生效。</p>
+<h3 id="7">7. 复习检查</h3>
+<ul>
+<li>
+<p>□ 我能否用自己的话解释“根因”而不是背定义？</p>
+</li>
+<li>
+<p>□ 我能否给出至少一个错误防御，并解释为什么错误？</p>
+</li>
+<li>
+<p>□ 我能否把修复方案转成可验证的测试或代码审计检查点？</p>
+</li>
+</ul>
+<hr />
+<h2 id="github">GitHub 增强版：深度展开</h2>
+<p><code>textContent</code> 把输入当文本节点；<code>innerHTML</code> 会触发 HTML parser，把字符串解释成 DOM。只需展示文本时，非解释型 API 是更强的安全默认。</p>
+<p>并非所有 DOM API 都安全：属性、URL、style、事件处理器各自有语义，需要按属性类型评估。</p>
+<p>安全设计应尽量减少“先 sanitize 再解释”的路径，把动态数据限制在明确的数据槽位。</p>
+<h3 id="security-invariants">安全不变量（Security Invariants）</h3>
+<ul>
+<li><strong>纯文本展示不得调用 HTML parser。</strong></li>
+<li><strong>危险 DOM sink 应被集中、审计和尽量减少。</strong></li>
+</ul>
+<h3 id="_2">代码审计 / 设计评审 / 测试视角</h3>
+<ul>
+<li>搜索 innerHTML/outerHTML/insertAdjacentHTML/document.write 等高风险 sink。</li>
+<li>能改为 textContent/createTextNode 的位置直接重构。</li>
+<li>对必须 HTML 的位置集中 sanitizer 并禁止任意脚本/事件/危险 URL scheme。</li>
+</ul>
+<h3 id="gotchas">新增 Gotchas</h3>
+<ul>
+<li>把所有 <code>setAttribute</code> 都视为同等安全。</li>
+<li>用正则“清理 HTML”。</li>
+</ul>
+<h3 id="_3">新增高阶追问</h3>
+<ul>
+<li>为什么 DOMPurify 等 sanitizer 仍需正确配置？</li>
+<li>Trusted Types 如何约束这些 sink？</li>
+</ul>
+<h2 id="v2-appsec">专业增强版 V2：从面试答案到 AppSec 工程</h2>
+<blockquote>
+<p>本节是在 PDF 母版和前述 GitHub 增强版基础上的第二轮扩展。重点不再是“记住漏洞名”，而是训练 <strong>Threat Modeling → Secure Design → Code Review → Verification → Operations</strong> 的完整闭环。</p>
+</blockquote>
+<h3 id="81">8.1 威胁建模：先定义资产、主体与边界</h3>
+<p>本题应放在 <strong>Origin/Site、DOM Source/Sink、自动携带凭据与浏览器执行策略</strong> 中理解。与本题直接相关的核心资产包括：<strong>用户会话、页面 DOM、跨源敏感响应、浏览器可执行上下文</strong>。</p>
+<p>推荐用下面的最小威胁模型回答：</p>
+<pre><code class="language-text">Untrusted / Lower-trust Actor
+        │
+        │ input / identity / state transition
+        ▼
+Trust Boundary / Parser / Policy / Capability
+        │
+        │ security decision
+        ▼
+Protected Asset / Sensitive Action / Privileged Capability
+</code></pre>
+<p>典型失败模式是：<strong>把字符串放入可执行上下文，或错误依赖浏览器自动行为来表达用户意图</strong>。因此真正需要保护的不是某个字符串或某个 UI 控件，而是“跨边界之后系统仍然满足哪些安全属性”。</p>
+<h3 id="82">8.2 关键安全不变量：把最佳实践变成可测试规则</h3>
+<ul>
+<li><strong>Invariant 1</strong>：纯文本展示不得调用 HTML parser。</li>
+<li><strong>Invariant 2</strong>：危险 DOM sink 应被集中、审计和尽量减少。</li>
+</ul>
+<p>高级面试回答要进一步说明：<strong>安全不变量应在最靠近关键资源/危险能力的位置再次成立</strong>。网关、WAF、前端或 SDK 可以提供前置保护，但不能成为唯一的最终安全边界。</p>
+<h3 id="83-failure-chain">8.3 失败链（Failure Chain）分析</h3>
+<pre><code class="language-text">入口数据/身份/状态
+    ↓
+规范化、解析或对象绑定
+    ↓
+安全检查缺失 / 检查位置错误 / 检查与执行语义不一致
+    ↓
+敏感资源、解释器、内部能力或业务状态被访问
+    ↓
+机密性 / 完整性 / 可用性 / 租户隔离 / 业务不变量受损
+</code></pre>
+<p>分析时建议逐项回答：</p>
+<ol>
+<li><strong>Source 是什么</strong>：HTTP 参数、Cookie、Header、JWT claim、数据库旧值、消息、第三方 API，还是管理员配置？</li>
+<li><strong>中间发生了什么 Transform</strong>：decode、normalize、deserialize、ORM binding、proxy rewrite、cache keying、模板渲染？</li>
+<li><strong>谁做安全决策</strong>：浏览器、CDN、WAF、网关、Controller、Service、Policy Engine、数据库？</li>
+<li><strong>真正的 Sink/Asset 在哪</strong>：数据对象、系统能力、内部网络、文件系统、敏感业务动作还是跨租户资源？</li>
+<li><strong>Decision 与 Execution 是否使用相同语义</strong>：这是很多高阶漏洞的共同根因。</li>
+</ol>
+<h3 id="84">8.4 代码审计：从关键词搜索升级为数据流与控制流审计</h3>
+<p>与本题相关的重点概念：<code>innerhtml</code>、<code>textcontent</code>、<code>dom-sink</code>、<code>html-parser</code>、<code>safe-dom-api</code>。审计时不要只搜漏洞名称，而应建立下列视图：</p>
+<pre><code class="language-text">Entry Point
+  ├─ Authentication Context
+  ├─ Authorization / Validation
+  ├─ Normalization / Parsing
+  ├─ Business State
+  └─ Sensitive Sink / Capability
+</code></pre>
+<p>建议审计步骤：</p>
+<ul>
+<li><strong>先找入口与调用图</strong>：HTTP handler、GraphQL resolver、WebSocket message handler、后台任务、Webhook、CLI/管理接口。</li>
+<li><strong>再找安全上下文的来源</strong>：当前用户、tenant、role、scopes、session、trusted proxy、配置环境。</li>
+<li><strong>检查控制是否集中且一致</strong>：是否存在“某些路由有 middleware、另一些内部入口没有”的分叉。</li>
+<li><strong>检查 TOCTOU/异步边界</strong>：安全检查与真正执行之间是否跨事务、队列或服务。</li>
+<li><strong>检查失败路径</strong>：超时、依赖不可用、解析失败、空值、部分成功时是否 fail secure。</li>
+</ul>
+<h3 id="85">8.5 架构设计：控制应该放在哪里</h3>
+<p>本章推荐的总体设计原则是：<strong>上下文安全输出 + 安全 DOM API + 浏览器防御纵深（CSP/Trusted Types/SameSite）</strong>。</p>
+<p>可以把控制拆成四层：</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>目标</th>
+<th>本题评审重点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Edge / Browser</td>
+<td>降低明显恶意或错误流量</td>
+<td>不能把它当最终授权/业务安全边界</td>
+</tr>
+<tr>
+<td>Application / Policy</td>
+<td>建立可信身份与策略决策</td>
+<td>决策输入必须来自可信上下文</td>
+</tr>
+<tr>
+<td>Domain / Data</td>
+<td>强制业务与资源不变量</td>
+<td>最靠近资产处再次校验</td>
+</tr>
+<tr>
+<td>Runtime / Operations</td>
+<td>限制缺陷影响并提供证据</td>
+<td>最小权限、隔离、日志、告警、回滚</td>
+</tr>
+</tbody>
+</table>
+<h3 id="86">8.6 安全验证矩阵：如何证明“真的修好了”</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">#</th>
+<th>验证动作</th>
+<th>期望证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>审计危险 DOM sink 与原始 HTML 渲染点</td>
+<td>形成可重复、可审计的证据</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>CSP/Trusted Types 在报告模式与强制模式下验证</td>
+<td>形成可重复、可审计的证据</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>CSRF 测试覆盖 Cookie 自动携带、Origin/Token/SameSite 组合</td>
+<td>形成可重复、可审计的证据</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>跨源测试区分“请求能否发送”和“响应能否读取”</td>
+<td>形成可重复、可审计的证据</td>
+</tr>
+</tbody>
+</table>
+<p>进一步建议把验证拆成四个层次：</p>
+<ul>
+<li><strong>Unit</strong>：证明单个 policy/validator/serializer 在边界输入下行为正确。</li>
+<li><strong>Integration</strong>：证明框架、代理、数据库、浏览器等真实组合仍保持同一安全语义。</li>
+<li><strong>Negative Regression</strong>：为曾经的失败条件建立永久回归测试。</li>
+<li><strong>Runtime Evidence</strong>：日志、指标和告警能看到拒绝、异常、策略漂移与重复攻击趋势。</li>
+</ul>
+<h3 id="87">8.7 专业补充：容易被忽略的工程细节</h3>
+<ul>
+<li>安全 API 的价值在于直接取消解释行为，而不是依赖后续 sanitizer 修补。</li>
+<li>当业务确实需要 HTML 时，应使用成熟 sanitizer，并配合 Trusted Types/CSP 作为防御纵深。</li>
+</ul>
+<h3 id="88-seniorstaff">8.8 设计权衡：Senior/Staff 面试应该说什么</h3>
+<p>严格客户端策略可能影响第三方脚本、兼容性和前端开发效率，需要平台化治理。</p>
+<p>成熟回答应避免“安全永远越严格越好”的绝对化表述，而要讨论：</p>
+<ul>
+<li>控制的<strong>安全收益</strong>；</li>
+<li>对兼容性、性能、开发效率和运维复杂度的影响；</li>
+<li>是否存在更容易证明正确的设计；</li>
+<li>控制失败时是否有第二道边界；</li>
+<li>是否能通过平台能力把正确做法变成默认路径。</li>
+</ul>
+<h3 id="89">8.9 防御性案例推演</h3>
+<p>假设一个生产系统已经部署了针对本题的修复，不应只问“正常请求是否成功”。评审应同时构造：</p>
+<pre><code class="language-text">正常主体 + 正常资源/状态     → 允许
+正常主体 + 非本人资源/非法状态 → 拒绝
+异常/缺失安全上下文           → 拒绝或进入安全降级
+依赖超时/解析失败              → 不得 fail-open
+并发/重试/重复消息             → 不得破坏业务不变量
+旧客户端/旧 API 版本           → 不得绕过新控制
+</code></pre>
+<p>这套推演能把“漏洞修复”升级为“系统安全属性验证”。</p>
+<h3 id="810">8.10 面试回答分层</h3>
+<p><strong>30 秒版</strong>：给出根因 + 一条最重要安全不变量。</p>
+<p><strong>2 分钟版</strong>：补充信任边界、错误防御、正确控制层级和一个验证方法。</p>
+<p><strong>5 分钟高级版</strong>：再加入架构权衡、异常路径、回归证据、可观测性和与相邻漏洞的边界。</p>
+<p>面试官真正区分候选人的地方，通常不是能否说出漏洞定义，而是能否回答：</p>
+<blockquote>
+<p><strong>“你如何证明这个系统在真实架构、异常状态和未来代码变更下仍然保持安全？”</strong></p>
+</blockquote>
+<h2 id="_4">标准映射</h2>
+<ul>
+<li><code>A05:2025 Injection</code></li>
+<li><code>CWE-79 XSS</code></li>
+</ul>
+<h2 id="pdf_1">PDF 引用体系 / 延伸阅读</h2>
+<ul>
+<li>[S3] <a href="https://cwe.mitre.org/top25/archive/2025/2025_cwe_top25.html">2025 CWE Top 25</a></li>
+<li>[S4] <a href="https://cheatsheetseries.owasp.org/">OWASP Cheat Sheet Series</a></li>
+<li>[S5] <a href="https://portswigger.net/web-security/all-topics">PortSwigger Web Security Academy</a></li>
+</ul>
+<blockquote>
+<p>说明：OWASP Top 10 是风险意识清单，不是完整测试标准；实际工程验收建议同时使用 ASVS 与 WSTG。</p>
+</blockquote>
+<h2 id="_5">关联题目</h2>
+<ul>
+<li><span class="srcref">Q045 React/Vue 会不会天然消灭 XSS？</span></li>
+<li><span class="srcref">Q047 CSP 能不能替代 XSS 修复？</span></li>
+<li><span class="srcref">Q044 为什么 XSS 不能靠统一 HTML Escape 完全解决？</span></li>
+<li><span class="srcref">Q048 CSP nonce 有什么意义？</span></li>
+<li><span class="srcref">Q049 什么是 Trusted Types？</span></li>
+</ul>
+<h2 id="_6">面试自测</h2>
+<ul>
+<li>[ ] 我能在 30 秒内给出一句话结论。</li>
+<li>[ ] 我能解释“根因”与“表象”的区别。</li>
+<li>[ ] 我能说出至少两个错误防御以及为什么无效。</li>
+<li>[ ] 我能给出一条可测试的安全不变量。</li>
+<li>[ ] 我能从代码审计或架构评审角度指出验证位置。</li>
+<li>[ ] 我能说明该机制的边界：它解决什么、不能解决什么。</li>
+</ul>
+<hr />
+<p><strong>安全边界</strong>：本仓库用于合法、授权的安全学习、面试与防御性工程实践；不包含针对真实目标的破坏性操作步骤。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

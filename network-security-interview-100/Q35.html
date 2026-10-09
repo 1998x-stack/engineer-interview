@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Linux/Windows 提权问题应该怎样回答才专业？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Network Security</a><i>∕</i><span>Q35</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q35</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">4</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q34.html">← Q34</a><a href="Q36.html">Q36 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORK SECURITY · 35 / 100</div>
+    <h1 class="qtitle">Linux/Windows 提权问题应该怎样回答才专业？</h1>
+    <p>← <span class="srcref">Q34</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q36</span> →</p>
+<h1 id="q35-linuxwindows">Q35 · Linux/Windows 提权问题应该怎样回答才专业？</h1>
+<blockquote>
+<p><strong>定位</strong>：本文件完整保留 PDF 对本题的题解结构，并在“扩展解析”部分加入更详细的工程化分析。新增内容用于学习与面试准备，不代表任何公司的内部题库。</p>
+</blockquote>
+<h2 id="_1">题目信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>难度</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>适用岗位</td>
+<td>渗透 / 蓝队 / 主机安全</td>
+</tr>
+<tr>
+<td>Framework / 对标</td>
+<td>Privilege Boundary</td>
+</tr>
+<tr>
+<td>PDF 页码</td>
+<td>第 43 页</td>
+</tr>
+<tr>
+<td>所属章节</td>
+<td>第 4 章 · Linux、Windows、主机与中间件安全</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官为什么问这题</h2>
+<p>考察主机调查、证据意识、进程/身份/网络关联能力，以及对中间件与配置风险的理解。</p>
+<p>通常不仅是在确认“是否知道名词”，还在观察以下能力：</p>
+<ul>
+<li>主机角色是什么？</li>
+<li>哪些证据易失、应先保全？</li>
+<li>异常行为如何与身份和网络关联？</li>
+<li>处置动作会不会破坏证据或业务？</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p><strong>一句话结论：</strong> 提权题的核心是“哪条信任边界被错误打开了”。</p>
+<p>展开时优先抓住以下三点：</p>
+<ol>
+<li>从当前身份、权限边界、错误配置、凭证暴露、易受攻击组件、信任关系分析。</li>
+<li>防守重点是补丁、最小权限、凭证卫生、权限配置和隔离。</li>
+<li>不需要把回答变成具体提权手册。</li>
+</ol>
+<h2 id="2-3">2-3 分钟标准回答</h2>
+<p>首先，从当前身份、权限边界、错误配置、凭证暴露、易受攻击组件、信任关系分析。
+其次，防守重点是补丁、最小权限、凭证卫生、权限配置和隔离。
+面试官更看重你能否系统枚举“为什么低权限主体能跨越边界”。可能来源包括过宽 sudo/服务权限、凭证留存、服务配置、内核/驱动漏洞和不安全自动化。
+高分答案会强调优先修复可复用的系统性原因，而不是只修某个单点。
+最后要把回答落到工程闭环：说明根因控制是什么、还能有哪些纵深防御，以及如何通过日志、测试或安全回归证明控制真正生效。</p>
+<hr />
+<h2 id="pdf">PDF 基线内容</h2>
+<blockquote>
+<p>以下部分对应成品 PDF 的本题内容，保持其术语、组织方式与观点。</p>
+</blockquote>
+<h3 id="01">01 · 考点拆解</h3>
+<ul>
+<li>从当前身份、权限边界、错误配置、凭证暴露、易受攻击组件、信任关系分析。</li>
+<li>防守重点是补丁、最小权限、凭证卫生、权限配置和隔离。</li>
+<li>不需要把回答变成具体提权手册。</li>
+</ul>
+<h3 id="02">02 · 面试答题主线</h3>
+<ol>
+<li>从当前身份、权限边界、错误配置、凭证暴露、易受攻击组件、信任关系分析。</li>
+<li>防守重点是补丁、最小权限、凭证卫生、权限配置和隔离。</li>
+<li>不需要把回答变成具体提权手册。</li>
+<li>把答案收束到可验证的工程控制：说明“如何修复/设计”，并补一句“如何通过日志、测试或回归验证控制真的生效”。</li>
+</ol>
+<h3 id="03">03 · 深度解析</h3>
+<p>面试官更看重你能否系统枚举“为什么低权限主体能跨越边界”。可能来源包括过宽 sudo/服务权限、凭证留存、服务配置、内核/驱动漏洞和不安全自动化。</p>
+<p>高分答案会强调优先修复可复用的系统性原因，而不是只修某个单点。</p>
+<h3 id="04">04 · 高频追问</h3>
+<ul>
+<li>配置错误与漏洞提权有什么区别？</li>
+<li>为什么服务账号最小权限很重要？</li>
+</ul>
+<h3 id="05">05 · 易错点</h3>
+<ul>
+<li>只背工具/命令。</li>
+<li>只从攻击视角不谈根因与修复。</li>
+</ul>
+<h3 id="06">06 · 工程实践</h3>
+<ul>
+<li>为 Linux/Windows 各列一个 privilege boundary checklist。</li>
+<li>审计服务账号、sudo/ACL 和关键服务权限。</li>
+</ul>
+<h3 id="07">07 · 一句话记忆</h3>
+<blockquote>
+<p>提权题的核心是“哪条信任边界被错误打开了”。</p>
+</blockquote>
+<hr />
+<h2 id="_3">扩展解析：从“会回答”到“会做工程”</h2>
+<h3 id="1">1. 更深一层的原理</h3>
+<p>面试中应从“当前身份 -&gt; 权限边界 -&gt; 错误配置/漏洞/凭证 -&gt; 影响”解释提权，而不是背命令。</p>
+<p>防守优先补丁、最小权限、凭证隔离、危险权限治理和 EDR 行为检测。</p>
+<h3 id="2">2. 边界条件与面试高分点</h3>
+<ul>
+<li><strong>先定义边界</strong>：明确主体、资产、数据/状态和信任边界，避免把问题描述成绝对结论。</li>
+<li><strong>区分根治与纵深</strong>：根治方案应消除不安全的数据流、权限或协议状态；WAF、告警、限流等通常属于补充控制。</li>
+<li><strong>考虑失败模式</strong>：不仅说明正常路径，还要考虑配置漂移、解析差异、权限过宽、依赖升级和异常条件。</li>
+<li><strong>给验证方式</strong>：安全设计必须能被单元测试、集成测试、审计日志、检测规则或演练验证。</li>
+</ul>
+<h3 id="3">3. 工程化检查清单</h3>
+<ul>
+<li>[ ] 基线与最小权限</li>
+<li>[ ] 集中日志与时间同步</li>
+<li>[ ] 高价值主机加强隔离和身份控制</li>
+<li>[ ] 事件处理先定界后处置</li>
+<li>[ ] 为 Linux/Windows 各列一个 privilege boundary checklist。</li>
+<li>[ ] 审计服务账号、sudo/ACL 和关键服务权限。</li>
+</ul>
+<h3 id="4">4. 可观测性与证据</h3>
+<p>面试中主动补一句“我会从哪些证据验证”，通常很加分：</p>
+<ul>
+<li>EDR 进程树</li>
+<li>系统/认证/PowerShell/应用日志</li>
+<li>网络连接</li>
+<li>文件与配置变更</li>
+<li>持久化与服务变更</li>
+</ul>
+<h3 id="5">5. 追问怎么接</h3>
+<h4 id="_4">追问：配置错误与漏洞提权有什么区别？</h4>
+<p><strong>回答要点：</strong> 从目标、数据/状态位置、信任模型、可见性和适用场景五个维度对比，避免只列名词定义。</p>
+<h4 id="_5">追问：为什么服务账号最小权限很重要？</h4>
+<p><strong>回答要点：</strong> 先解释导致该现象的协议/信任边界，再说明成立所需条件，最后补充防守侧如何通过配置、日志或测试验证。</p>
+<h3 id="6">6. 面试官可能继续升级的场景题</h3>
+<ul>
+<li>如果这个问题发生在核心业务而不是测试环境，你会如何调整风险优先级、证据保全和修复节奏？</li>
+<li>如果已有一层安全产品/框架默认保护，你如何验证它真的覆盖了 Privilege Boundary 的边界，而不是只相信配置名称？</li>
+<li>如果修复会影响兼容性或业务性能，你会如何设计灰度、监控和回滚方案？</li>
+</ul>
+<h3 id="7">7. 常见回答层级</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只能给出名词定义</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能解释基本原理</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能说明成立条件、边界和真实影响</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能给出工程修复、检测和验证</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能处理复杂追问、权衡与系统设计</td>
+</tr>
+</tbody>
+</table>
+<!-- BEGIN PROFESSIONAL_V2 -->
+<h2 id="v2">专业深化 v2：面向高级工程师的题解</h2>
+<blockquote>
+<p>这一节是在 PDF 基线与第一轮扩展之上的第二层深化，重点补齐 <strong>机制、边界、工程决策、证据、验证与追问树</strong>。它不是利用手册，而是面向合法授权的安全工程与面试表达。</p>
+</blockquote>
+<h3 id="a">A. 机制模型：先把问题抽象对</h3>
+<ul>
+<li>提权题的专业回答应围绕 privilege boundary：当前主体拥有什么、缺什么、哪些信任/配置允许跨越边界。</li>
+<li>来源可归类为 misconfiguration、credential exposure、vulnerable component、delegation/trust、excessive permissions。</li>
+<li>防守价值在于理解为何低权限主体能获得更高能力，并修复根因。</li>
+</ul>
+<h3 id="b">B. 成立条件、边界与典型失效模式</h3>
+<ul>
+<li>“本地管理员/root”本身仍可能受容器、SELinux/AppArmor、域/云控制面等更高边界约束。</li>
+<li>补丁只解决已知实现缺陷，不解决 sudo/service ACL/secret 等配置问题。</li>
+<li>检测单个命令无法覆盖提权，需看 token/权限变化与配置修改。</li>
+</ul>
+<h3 id="c">C. 工程设计：从“修一个点”到“设计控制面”</h3>
+<ul>
+<li>主机/服务运行最小权限，管理操作使用 JIT/JEA/PAM 类机制。</li>
+<li>持续审计 sudoers、service permissions、scheduled tasks、local groups 等高风险配置。</li>
+<li>Secrets 与管理员凭据隔离，减少可复用高权凭据落地。</li>
+<li>对高风险系统启用强制访问控制/应用隔离等纵深。</li>
+</ul>
+<h3 id="d-detection-evidence">D. Detection &amp; Evidence：如何证明你的判断</h3>
+<ul>
+<li>身份/token/integrity level/UID 变化。</li>
+<li>高权限进程 parent-child 与服务/任务修改。</li>
+<li>sudo/UAC/local group/service ACL audit。</li>
+</ul>
+<p>一个成熟回答要主动区分：<strong>事实（日志/状态）</strong>、<strong>推断（关联分析）</strong>、<strong>假设（尚待验证）</strong>。这能显著降低“看到一个异常就直接下结论”的面试失分。</p>
+<h3 id="e">E. 修复后的验证与回归</h3>
+<ul>
+<li>基线扫描验证关键权限配置符合策略。</li>
+<li>权限变更后用 deny tests 证明低权主体不能跨界。</li>
+<li>演练 credential compromise 场景验证 JIT/隔离能限制影响。</li>
+</ul>
+<h3 id="f">F. 面试追问树：把一题答成一棵知识树</h3>
+<ol>
+<li>“提权”与“获得另一个高权限凭据”有什么差别？</li>
+<li>为什么最小权限仍需要 credential hygiene？</li>
+<li>容器内 root 与宿主机 root 是同一个边界吗？</li>
+</ol>
+<p>回答这些追问时，建议始终使用：<strong>结论 → 原理 → 条件 → 反例/边界 → 工程控制 → 验证</strong>。如果题目涉及生产环境，再补充可用性、兼容性、灰度和回滚。</p>
+<h3 id="g">G. 这道题在真实工作中的“交付物”</h3>
+<p>Privilege boundary map + hardening baseline + admin/JIT access policy + deny regression tests。</p>
+<h3 id="h">H. 一页纸复盘</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>应该能说清楚什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>根因</td>
+<td>错误信任、配置、凭据或漏洞使主体跨越权限边界。</td>
+</tr>
+<tr>
+<td>边界</td>
+<td>多层权限模型与不同控制面。</td>
+</tr>
+<tr>
+<td>主要控制</td>
+<td>最小权限 + 配置治理 + JIT/PAM + secret 隔离。</td>
+</tr>
+<tr>
+<td>关键证据</td>
+<td>token/UID、privileged process、ACL/group changes。</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>deny tests 与权限基线。</td>
+</tr>
+</tbody>
+</table>
+<!-- END PROFESSIONAL_V2 -->
+
+<h2 id="_6">复习卡片</h2>
+<ul>
+<li><strong>核心关键词</strong>：Privilege Boundary</li>
+<li><strong>一句话</strong>：提权题的核心是“哪条信任边界被错误打开了”。</li>
+<li><strong>最容易答错</strong>：只背工具/命令。</li>
+<li><strong>工程动作</strong>：为 Linux/Windows 各列一个 privilege boundary checklist。</li>
+<li><strong>答题顺序</strong>：定义 -&gt; 原理 -&gt; 边界 -&gt; 风险 -&gt; 检测 -&gt; 修复 -&gt; 验证。</li>
+</ul>
+<h2 id="_7">关联题</h2>
+<ul>
+<li><span class="srcref">Q34 什么是 Persistence？蓝队如何理解它？</span></li>
+<li><span class="srcref">Q36 Java 中间件安全为什么长期是面试重点？</span></li>
+<li><span class="srcref">Q33 如何判断一个异常进程是否值得调查？</span></li>
+<li><span class="srcref">Q37 Redis 未授权访问为什么危险？正确修复方式是什么？</span></li>
+</ul>
+<h2 id="_8">参考标准 / 延伸阅读</h2>
+<ul>
+<li>参见仓库 <span class="srcref">官方标准与参考资料</span>。</li>
+</ul>
+<h2 id="_9">安全边界</h2>
+<blockquote>
+<p>本仓库面向合法授权的面试学习、安全工程、检测与防守。涉及攻击技术时聚焦原理、证据、修复和验证，不提供针对真实目标的利用步骤、隐蔽规避或武器化操作。</p>
+</blockquote>
+<hr />
+<p>← <span class="srcref">Q34</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q36</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

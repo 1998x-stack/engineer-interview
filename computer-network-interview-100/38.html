@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fast Retransmit 与 Fast Recovery 分别是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>38</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">38</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="37.html">← 37</a><a href="39.html">39 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">Reno</a><a href="#">Loss Recovery</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 65 / 100</div>
+    <h1 class="qtitle">Fast Retransmit 与 Fast Recovery 分别是什么？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★☆ · <strong>标签</strong>：Reno / Loss Recovery<br />
+<strong>本章</strong>：<span class="srcref">第四章 TCP 性能、窗口与拥塞控制</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>Reno / Loss Recovery</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>Fast Retransmit 通过重复 ACK 等信号在 RTO 到期前重传疑似丢失段；Fast Recovery 则是在确认网络仍有数据流动后，避免像超时那样把发送速率降到极低，尽快恢复拥塞窗口。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>Reno 时代的经典规则是 3 duplicate ACK 触发快速重传。</li>
+<li>超时通常代表更严重的拥塞/ACK 时钟中断，因此窗口缩减更激进。</li>
+<li>现代 Linux 的 recovery 还会结合 SACK、PRR、RACK 等机制。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>吞吐取决于窗口、RTT、丢包、排队和拥塞算法，不能只用“带宽大”解释性能。</li>
+<li>先区分 rwnd（接收端能力）和 cwnd（网络承载估计），再讨论实际 in-flight 上限。</li>
+<li>拥塞控制算法的目标是动态探测路径可用容量；不同算法对 loss、RTT 与 queue 的解释不同。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-fast-retransmit-fast-recovery">V2 深入：Fast Retransmit 负责“发现并重传”，Fast Recovery 负责“如何继续发”</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>Duplicate ACK 表明 receiver 仍在收到后续数据，却缺前面的 gap，因此 sender 可以在 RTO 前推断 loss 并重传。</li>
+<li>Fast Recovery 的目标是在单个/少量 loss 后不要完全把管道清空，而是根据 ACK 继续估计网络中仍有多少数据在飞。</li>
+<li>Reno/NewReno/PRR 等对 loss recovery 中 cwnd/发送额度的计算不同，不能把所有现代 TCP 都说成同一个“3 dupACK 后 cwnd/2”公式。</li>
+</ul>
+<h3 id="newreno">NewReno 与多丢包</h3>
+<p>Reno 在一个 window 多 packet loss 时恢复效率差；NewReno 借 partial ACK 改进，而 SACK/现代 recovery 能更明确知道多个 hole。PRR 进一步控制 recovery 期间发多少新数据，使发送更贴近目标 ssthresh。</p>
+<h3 id="_5">线上案例推演</h3>
+<p>抓包中大量 duplicate ACK 后快速重传，但 connection 没有明显停顿，说明 fast recovery 在工作；若频繁触发 RTO 则影响通常更重，应继续查严重 loss、ACK path 或 RTT variance。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_6">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“Fast Retransmit 与 Fast Recovery 分别是什么？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 Reno、Loss Recovery 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>ss -ti</code>。</li>
+</ol>
+<h2 id="_7">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>ss -ti</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>tc qdisc</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>iperf3</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>nstat -az | grep -i retrans</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1-dupack">追问 1：为什么 dupACK 表明网络可能仍能传包？</h3>
+<p><strong>参考回答</strong>：TCP ACK通常是累计确认：ACK=N表示 N 之前连续字节已收到。乱序时 ACK 可能停在缺口处并产生重复 ACK；SACK可额外报告已收到的非连续区间。</p>
+<h3 id="2prr">追问 2：PRR 解决了什么？</h3>
+<p><strong>参考回答</strong>：Fast Retransmit在较强丢包迹象出现时不等 RTO就重传；Fast Recovery/PRR控制恢复阶段允许发送的数据量。NewReno改进了一个窗口内多丢包时的恢复行为。</p>
+<h3 id="3newreno-reno">追问 3：NewReno 与 Reno 在多丢包恢复上有什么差别？</h3>
+<p><strong>参考回答</strong>：Fast Retransmit在较强丢包迹象出现时不等 RTO就重传；Fast Recovery/PRR控制恢复阶段允许发送的数据量。NewReno改进了一个窗口内多丢包时的恢复行为。 Reno拥塞避免近似按 RTT线性增长，CUBIC以立方函数随距上次拥塞点的时间调节窗口，更适合高 BDP 链路，同时保留 Reno-friendly 兼容区域。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 把 Fast Retransmit 和 Fast Recovery 合并成一个概念。</li>
+<li>❌ 认为快速恢复“不降低 cwnd”。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>注入单包丢失与持续丢失，比较是否进入 fast retransmit 以及何时落到 RTO。</p>
+<h3 id="_8">实验验收标准</h3>
+<p>能把吞吐/延迟变化与 RTT、cwnd/rwnd、loss、queue 之一建立可验证联系。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9293.html">RFC 9293 - Transmission Control Protocol (TCP)</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc5681.html">RFC 5681 - TCP Congestion Control</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_10">关联题目</h2>
+<ul>
+<li><span class="srcref">033. 超时重传、快速重传和 SACK 分别解决什么？</span></li>
+<li><span class="srcref">037. Slow Start 为什么叫“慢启动”，它的增长其实有多快？</span></li>
+<li><span class="srcref">040. TCP Reno 与 CUBIC 的核心差异是什么？</span></li>
+</ul>
+<h2 id="_11">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：Fast Retransmit 通过重复 ACK 等信号在 RTO 到期前重传疑似丢失段；Fast Recovery 则是在确认网络仍有数据流动后，避免像超时那样把发送速率降到极低，尽快恢复拥塞窗口。</li>
+<li><strong>必须会解释</strong>：Reno / Loss Recovery。</li>
+<li><strong>必须避免</strong>：把 Fast Retransmit 和 Fast Recovery 合并成一个概念。</li>
+<li><strong>必须会验证</strong>：注入单包丢失与持续丢失，比较是否进入 fast retransmit 以及何时落到 RTO。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

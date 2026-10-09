@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>epoll LT 与 ET 有什么区别？ET 为什么要求“读到 EAGAIN”？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>85</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">85</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="84.html">← 84</a><a href="86.html">86 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">epoll</a><a href="#">LT</a><a href="#">ET</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 85 / 100</div>
+    <h1 class="qtitle">epoll LT 与 ET 有什么区别？ET 为什么要求“读到 EAGAIN”？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★★ · <strong>标签</strong>：epoll / LT / ET<br />
+<strong>本章</strong>：<span class="srcref">第九章 Socket、epoll 与 Linux 网络栈</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>epoll / LT / ET</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>LT 只要 fd 仍处于可读/可写状态就会持续报告；ET 更强调状态从未就绪到就绪的边沿变化，因此处理一次 EPOLLIN 时通常要循环 read，直到返回 EAGAIN，确保把当前可读数据 drain 完，否则剩余数据可能长时间没有新的边沿提醒。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>ET 可减少重复事件但增加状态机复杂度。</li>
+<li>对写事件同理：应尽量 flush 到 EAGAIN，再根据剩余 buffer 决定是否继续订阅 EPOLLOUT。</li>
+<li>无论 LT/ET 都必须正确处理 EOF、ERR、HUP。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>ET 的核心不是“通知次数少”，而是状态边沿语义要求应用在一次 wakeup 中尽量排空当前可读/可写状态。若没有读到 EAGAIN 就返回，后续可能没有新的 edge 帮你再次唤醒。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>高并发网络程序的关键是把“等待就绪”和“真正读写数据”分开，epoll 通知 readiness，而不是替应用完成 read/write。</li>
+<li>ET 模式的正确性依赖 nonblocking + drain-until-EAGAIN；任何阻塞系统调用都可能卡住整个 event loop。</li>
+<li>性能优化必须追踪数据路径：NIC queue → softirq/NAPI → protocol stack → socket queue → userspace。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-lt-et">V2 深入：LT 报“状态仍为真”，ET 报“状态发生边沿变化”</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>LT 下，只要 receive buffer 仍可读，后续 <code>epoll_wait</code> 仍可能继续报告 readable；遗漏一次 read 通常还有机会再次收到事件。</li>
+<li>ET 下，应用应在收到 edge 后循环处理到 <code>EAGAIN</code>，把当前可消费状态 drain 掉；只读一次可能留下数据却没有新的 edge，造成连接“假死”。</li>
+<li>ET 的正确性依赖 nonblocking + 循环 drain + 完整 partial-read/write 状态机。</li>
+</ul>
+<h3 id="epolloneshot">EPOLLONESHOT</h3>
+<p>多线程 worker 处理同一个 fd 时，可用 ONESHOT 防止同一 fd 同时被多个线程重复处理；handler 完成后需要 rearm。它解决的是并发事件所有权，不等于 ET 本身。</p>
+<h3 id="et">ET 不一定更快</h3>
+<p>LT 的额外重复 wakeup 在正确 drain 的服务里也可能很少；ET 则增加状态机复杂度。选型应根据 workload、框架成熟度，而不是把 ET 当高级版必选。</p>
+<h3 id="_5">线上案例推演</h3>
+<p>ET server 在大 response/请求 burst 下偶发永不继续读，最常见 bug 就是每次 event 只 <code>recv()</code> 一次；抓包显示数据已到本机、recv-q 非空但应用不再醒来。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_6">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“epoll LT 与 ET 有什么区别？ET 为什么要求“读到 EAGAIN”？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 epoll、LT、ET 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>ss -tanp</code>。</li>
+</ol>
+<h2 id="_7">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>strace -e epoll_wait,read,recvfrom</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>perf trace / bpftrace</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>ss -tin</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>最小ET server + EAGAIN日志</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1et">追问 1：ET 下只读一次会发生什么？</h3>
+<p><strong>参考回答</strong>：epoll把interest set保存在内核，不需要每轮重新提交全部fd；ET强调边沿变化，必须drain到EAGAIN。EPOLLONESHOT常用于多线程下保证一个fd一次只被一个worker处理。poll在fd数量不大时足够简单可靠，kqueue与epoll都属于事件通知接口但具体语义不同。</p>
+<h3 id="2epolloneshot">追问 2：EPOLLONESHOT 解决什么？</h3>
+<p><strong>参考回答</strong>：epoll把interest set保存在内核，不需要每轮重新提交全部fd；ET强调边沿变化，必须drain到EAGAIN。EPOLLONESHOT常用于多线程下保证一个fd一次只被一个worker处理。poll在fd数量不大时足够简单可靠，kqueue与epoll都属于事件通知接口但具体语义不同。</p>
+<h3 id="3-et">追问 3：为什么 ET 不必然更快？</h3>
+<p><strong>参考回答</strong>：epoll把interest set保存在内核，不需要每轮重新提交全部fd；ET强调边沿变化，必须drain到EAGAIN。EPOLLONESHOT常用于多线程下保证一个fd一次只被一个worker处理。poll在fd数量不大时足够简单可靠，kqueue与epoll都属于事件通知接口但具体语义不同。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 把 ET 解释成“只通知一次，永远不再通知”。</li>
+<li>❌ 没有处理 partial read/write。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>构造一次写入 1MB 的客户端，ET server 每次只读 1KB，观察未 drain 时事件行为，再修复为循环到 EAGAIN。</p>
+<h3 id="_8">实验验收标准</h3>
+<p>能看到 readiness、EAGAIN、socket queue、softirq/CPU 等至少一层系统证据。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://man7.org/linux/man-pages/man7/socket.7.html">Linux man-pages - socket(7)</a></li>
+<li><a href="https://man7.org/linux/man-pages/man7/epoll.7.html">Linux man-pages - epoll(7)</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_10">关联题目</h2>
+<ul>
+<li><span class="srcref">082. Blocking Socket 与 Non-blocking Socket 的核心区别是什么？</span></li>
+<li><span class="srcref">084. select、poll、epoll 的核心差异是什么？</span></li>
+<li><span class="srcref">086. 为什么 epoll ET 几乎总与 nonblocking socket 搭配？</span></li>
+</ul>
+<h2 id="_11">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：LT 只要 fd 仍处于可读/可写状态就会持续报告；ET 更强调状态从未就绪到就绪的边沿变化，因此处理一次 EPOLLIN 时通常要循环 read，直到返回 EAGAIN，确保把当前可读数据 drain 完，否则剩余数据可能长时间没有新的边沿提醒。</li>
+<li><strong>必须会解释</strong>：epoll / LT / ET。</li>
+<li><strong>必须避免</strong>：把 ET 解释成“只通知一次，永远不再通知”。</li>
+<li><strong>必须会验证</strong>：构造一次写入 1MB 的客户端，ET server 每次只读 1KB，观察未 drain 时事件行为，再修复为循环到 EAGAIN。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ILP 与 TLP 有什么区别？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">CUDA / GPU</a><i>∕</i><span>48</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">48</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">极高</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="47.html">← 47</a><a href="49.html">49 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">ILP / TLP</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      CUDA · GPU · 48 / 101</div>
+    <h1 class="qtitle">ILP 与 TLP 有什么区别？</h1>
+    <blockquote>
+<p><strong>一句话核心</strong>：TLP 用更多 warps/threads 隐藏延迟，ILP 用同一 thread/warp 内的独立指令填充流水。</p>
+<p><strong>章节</strong>：第 5 章 · Occupancy、Register 与 Latency Hiding<br />
+<strong>难度</strong>：★★☆ · <strong>频率</strong>：极高 · <strong>标签</strong>：ILP / TLP</p>
+</blockquote>
+<h2 id="pdf">PDF 基线题解</h2>
+<h2 id="_1">考察意图</h2>
+<p>考察延迟隐藏的两条路线。</p>
+<h2 id="_2">思路拆解</h2>
+<p>TLP 依靠更多 warps/threads 在一个 warp 等待时切换；ILP 依靠同一 thread/warp 中多个独立指令，让流水线有别的工
+作可发射。二者常与 register 使用互相制约。</p>
+<h2 id="_3">标准回答</h2>
+<ul>
+<li>TLP 的代理指标包括 occupancy、eligible warps。</li>
+<li>ILP 常来自 loop unroll、multiple accumulators、software pipelining。</li>
+<li>增加 ILP 往往增加 registers；增加 TLP 往往要求控制 per-thread resources。</li>
+<li>高性能 GEMM 通常不是追求最大 TLP，而是用很强 ILP + 足够 TLP。</li>
+</ul>
+<h2 id="gotchas">Gotchas：常见失分点</h2>
+<ul>
+<li>把 unroll 只理解成减少 loop overhead。</li>
+</ul>
+<h2 id="_4">面试官可能继续追问</h2>
+<ul>
+<li>为什么 multiple accumulators 能隐藏 FMA latency？</li>
+<li>如何从 scheduler metrics 判断缺 ILP 还是缺 warps？</li>
+</ul>
+<hr />
+<h2 id="_5">深入分析</h2>
+<p>TLP 用更多 warps/threads 隐藏延迟，ILP 用同一 thread/warp 内的独立指令填充流水。ILP 通常需要更多 register，因此和 TLP 存在资源竞争。</p>
+<h3 id="occupancy-latency-hiding">深入理解：Occupancy 只是 latency hiding 的一个代理变量</h3>
+<p>Occupancy 题最重要的结论是：<strong>目标不是 occupancy，而是 throughput</strong>。增加 resident warps 可以帮助隐藏 latency，但会和 register/thread、shared/block、tile size、ILP 发生资源竞争。</p>
+<p>一个成熟的回答应讨论：</p>
+<pre><code class="language-text">registers/thread ↑ → ILP/data reuse 可能 ↑ → blocks/SM 可能 ↓
+shared/block ↑    → reuse 可能 ↑       → blocks/SM 可能 ↓
+warps/SM ↑         → latency hiding ↑   → 每线程资源预算可能 ↓
+</code></pre>
+<p>因此调优必须用真实 benchmark 与 profiler 验证，而不能把 occupancy calculator 当最终答案。</p>
+<h3 id="_6">性能因果链</h3>
+<pre><code class="language-text">题目现象 / 代码模式
+        ↓
+定位真实硬件行为
+        ↓
+识别主要资源或依赖
+        ↓
+提出一个可证伪优化假设
+        ↓
+修改实现
+        ↓
+Profiler 指标 + Kernel Time 验证
+</code></pre>
+<p>对于本题，建议至少观察：<code>theoretical/achieved occupancy</code>、<code>registers/thread</code>、<code>shared/block</code>、<code>eligible warps / issue slots</code>、<code>local-memory traffic</code>。</p>
+<h3 id="_7">架构视角</h3>
+<p>不同 compute capability 的 SM 资源上限不同；面试时应强调“先查目标架构限制，再算 residency”。</p>
+<h2 id="30-2">面试回答：30 秒 / 2 分钟 / 深挖</h2>
+<h3 id="30">30 秒</h3>
+<p>TLP 用更多 warps/threads 隐藏延迟，ILP 用同一 thread/warp 内的独立指令填充流水。</p>
+<h3 id="2">2 分钟</h3>
+<ol>
+<li><strong>先给定义或结论</strong>：直接回答“是什么/为什么”。</li>
+<li><strong>给硬件因果</strong>：把 thread/warp、memory transaction、resource 或 pipeline 对应到硬件行为。</li>
+<li><strong>给 trade-off</strong>：说明优化会消耗什么资源，避免绝对化结论。</li>
+<li><strong>给验证方法</strong>：指出需要用 benchmark/Nsight 的哪些证据确认。</li>
+</ol>
+<h3 id="_8">深挖时必须能回答</h3>
+<ul>
+<li>这个结论在哪些条件下会失效？</li>
+<li>如果换 problem shape / datatype / block size，瓶颈会怎样迁移？</li>
+<li>如果从 Ampere 换到 Hopper/Blackwell，哪些稳定原理不变，哪些实现细节需要重做？</li>
+<li>你会用什么 profiler 指标证明自己的判断？</li>
+</ul>
+<h2 id="_9">实战验证建议</h2>
+<p>建议为本题建立一个最小可复现实验（microbenchmark）：</p>
+<ol>
+<li>写一个<strong>正确但未优化</strong>的 baseline。</li>
+<li>只改变一个变量（访问模式、tile、block size、register budget、pipeline stage 等）。</li>
+<li>使用 CUDA Event 做设备侧计时，至少 warm-up 后重复多次。</li>
+<li>使用 Nsight Compute 收集与本题直接相关的指标：<code>theoretical/achieved occupancy</code>、<code>registers/thread</code>、<code>shared/block</code>、<code>eligible warps / issue slots</code>、<code>local-memory traffic</code>。</li>
+<li>把结果写成“假设 → 指标变化 → 时间变化 → 结论”，而不是只保存最终最快参数。</li>
+</ol>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 - 只背术语</td>
+<td>能说出名词，但不能解释硬件原因或适用条件。</td>
+</tr>
+<tr>
+<td>1 - 合格</td>
+<td>定义准确，能给出核心因果关系。</td>
+</tr>
+<tr>
+<td>2 - 良好</td>
+<td>能讨论 trade-off、边界条件，并写出/读懂关键代码。</td>
+</tr>
+<tr>
+<td>3 - 高分</td>
+<td>能把问题映射到 profiler 指标，并说明不同架构/shape 下的策略变化。</td>
+</tr>
+<tr>
+<td>4 - 专家</td>
+<td>能提出可复现实验、量化模型或替代实现，并解释为什么它在目标 GPU 上更优。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">自测题</h2>
+<ol>
+<li>不看答案，用 <strong>30 秒</strong>讲清本题。</li>
+<li>画出本题涉及的数据流或线程/warp/SM 关系。</li>
+<li>写一个最小反例，证明“常见口号”并非无条件成立。</li>
+<li>给出一个 Nsight Compute 指标组合，能支持或推翻你的性能判断。</li>
+<li>说明如果目标从 A100/H100 迁移到 B100/B200，你首先重新验证什么。</li>
+</ol>
+<!-- PROFESSIONAL-V2 -->
+<h2 id="v2">专业增强版 V2：机制、量化与验证</h2>
+<blockquote>
+<p>本节是在 PDF 基线题解之上的<strong>仓库扩展</strong>。目标是把“能背答案”升级为“能解释硬件因果、能量化、能用 profiler 证伪”。</p>
+</blockquote>
+<h3 id="1">1. 硬件机制与核心心智模型</h3>
+<p>TLP 用更多独立 warps/threads 隐藏延迟；ILP 让同一 thread/warp 同时拥有多个互不依赖指令链。增加 ILP 通常增加 register pressure，增加 TLP 又要求更多 residency，因此二者存在资源 trade-off。</p>
+<h3 id="2_1">2. 定量推导 / 性能模型</h3>
+<p>若单条依赖链 latency 为 $L$、每 warp 有 $k$ 条独立链，理论可把同 warp 可发射机会扩大约 $k$ 倍；仍需 scheduler 与功能单元容量支持。</p>
+<p>面试时不要只报公式。至少说明：公式里的变量对应什么硬件资源、哪些是假设、实际值应该如何由 profiler 或 microbenchmark 得到。</p>
+<h3 id="3">3. 代码 / 白板核心片段</h3>
+<pre><code class="language-cpp">// ILP: 4 个独立 accumulator
+acc0 += a0*b0; acc1 += a1*b1;
+acc2 += a2*b2; acc3 += a3*b3;
+</code></pre>
+<p>白板代码优先保证：<strong>边界正确、同步范围正确、地址模式可解释</strong>。如果为了展示优化而省略边界处理，要主动说明省略条件。</p>
+<h3 id="4-nsight">4. Nsight 证据链：怎样证明你的判断</h3>
+<ul>
+<li><code>Eligible warps</code></li>
+<li><code>Dependency/scoreboard stalls</code></li>
+<li><code>Registers/thread 与 IPC/issue utilization</code></li>
+</ul>
+<p>推荐把分析写成四列：</p>
+<table>
+<thead>
+<tr>
+<th>假设</th>
+<th>预期指标变化</th>
+<th>实测指标变化</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当前瓶颈是本题讨论的问题</td>
+<td>指标应出现可预测变化</td>
+<td>benchmark 后填写</td>
+<td>接受 / 推翻假设</td>
+</tr>
+<tr>
+<td>优化应减少对应硬件成本</td>
+<td>时间与因果指标同向改善</td>
+<td>benchmark 后填写</td>
+<td>是否保留优化</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5">5. 架构迁移视角</h3>
+<p>Tensor Core kernels 常同时依赖 warp-level TLP 与每 warp 多 stage/多 accumulator 的 ILP；software pipeline 进一步提供 memory/computation overlap。</p>
+<p>这里要区分两类知识：</p>
+<ul>
+<li><strong>稳定原理</strong>：warp 粒度、数据复用、依赖、Roofline、资源平衡等；</li>
+<li><strong>架构实现</strong>：具体指令、cache/SM 资源、TMA/TMEM/cluster/TCGen05 等。</li>
+</ul>
+<p>面试中如果不确定某代 GPU 的精确容量或吞吐，不要猜数字；说明“会查目标 compute capability / tuning guide 并重新 profile”比报错数字更专业。</p>
+<h3 id="6">6. 可复现实验（建议真的做）</h3>
+<p>对 reduction/dot kernel 使用 1/2/4/8 accumulators，观察 dependency stalls 降低与 register pressure 上升。</p>
+<p>实验至少记录：GPU 型号、compute capability、CUDA/driver、编译参数、输入 shape/dtype、warm-up、迭代次数、median/p95、correctness tolerance，以及关键 Nsight 指标。</p>
+<h3 id="7">7. 深挖追问树</h3>
+<ol>
+<li>为什么多个 accumulator 能加速 reduction？</li>
+<li>ILP 能否在 occupancy 很低时补偿？</li>
+<li>怎样从 stall reason 识别依赖链太长？</li>
+</ol>
+<h3 id="8">8. 高分回答检查清单</h3>
+<ul>
+<li>[ ] 先用一句话给出正确结论，而不是先铺背景。</li>
+<li>[ ] 能画出本题涉及的 warp / memory / pipeline 数据流。</li>
+<li>[ ] 能给至少一个公式、数量级或资源约束。</li>
+<li>[ ] 能指出一个“看似优化、实际可能变慢”的反例。</li>
+<li>[ ] 能说出用哪些 Nsight 证据验证。</li>
+<li>[ ] 能区分稳定原理与 Ampere/Hopper/Blackwell 的架构细节。</li>
+<li>[ ] 工程场景下会先与 CUDA Library / CUB / cuBLAS / CUTLASS 等成熟基线比较（适用时）。</li>
+</ul>
+<h2 id="_11">参考资料</h2>
+<ul>
+<li><strong>R2</strong> <a href="https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/">NVIDIA CUDA C++ Best Practices Guide 13.3</a></li>
+<li><strong>R4</strong> <a href="https://docs.nvidia.com/nsight-compute/">NVIDIA Nsight Compute - Kernel Profiling Guide</a></li>
+</ul>
+<blockquote>
+<p><strong>内容来源说明</strong>：<code>PDF 基线题解</code> 部分来自仓库所附 PDF；“深入分析 / 实战验证 / Rubric”等为仓库扩展内容，用于将题目从记忆型问答升级为性能工程型学习材料。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

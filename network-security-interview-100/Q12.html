@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SQL 注入的本质是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Network Security</a><i>∕</i><span>Q12</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q12</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">2</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q11.html">← Q11</a><a href="Q13.html">Q13 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORK SECURITY · 12 / 100</div>
+    <h1 class="qtitle">SQL 注入的本质是什么？</h1>
+    <p>← <span class="srcref">Q11</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q13</span> →</p>
+<h1 id="q12-sql">Q12 · SQL 注入的本质是什么？</h1>
+<blockquote>
+<p><strong>定位</strong>：本文件完整保留 PDF 对本题的题解结构，并在“扩展解析”部分加入更详细的工程化分析。新增内容用于学习与面试准备，不代表任何公司的内部题库。</p>
+</blockquote>
+<h2 id="_1">题目信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>难度</td>
+<td>2/5</td>
+</tr>
+<tr>
+<td>适用岗位</td>
+<td>渗透 / AppSec / 安全研发</td>
+</tr>
+<tr>
+<td>Framework / 对标</td>
+<td>OWASP A05 Injection</td>
+</tr>
+<tr>
+<td>PDF 页码</td>
+<td>第 18 页</td>
+</tr>
+<tr>
+<td>所属章节</td>
+<td>第 2 章 · Web 安全核心漏洞</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官为什么问这题</h2>
+<p>考察候选人能否用“Source -&gt; Propagation -&gt; Parser/Sink -&gt; Impact”解释漏洞根因，并给出可验证的修复。</p>
+<p>通常不仅是在确认“是否知道名词”，还在观察以下能力：</p>
+<ul>
+<li>不可信数据从哪里进入？</li>
+<li>最终进入什么解析/执行上下文？</li>
+<li>数据与代码/结构是否真正分离？</li>
+<li>根治控制与纵深防御分别是什么？</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p><strong>一句话结论：</strong> SQLi 的核心不是字符，而是“数据被解释成了 SQL 代码”。</p>
+<p>展开时优先抓住以下三点：</p>
+<ol>
+<li>本质是“不可信数据进入 SQL 语法上下文”。</li>
+<li>参数化查询让数据和代码分离。</li>
+<li>WAF/关键字过滤只能作为补充，不能替代正确的查询构造。</li>
+</ol>
+<h2 id="2-3">2-3 分钟标准回答</h2>
+<p>首先，本质是“不可信数据进入 SQL 语法上下文”。
+其次，参数化查询让数据和代码分离。
+可以用统一模型理解：Source 是 HTTP/消息/文件输入，Propagation 是业务拼接与格式化，Sink 是数据库执行函数。只要数据最终被解析器当成 SQL 结构，就存在注入风险。
+工程上还需关注数据库账号权限，避免应用账号拥有超出业务所需的 DDL、文件或高权限能力，以降低单点漏洞影响。
+最后要把回答落到工程闭环：说明根因控制是什么、还能有哪些纵深防御，以及如何通过日志、测试或安全回归证明控制真正生效。</p>
+<hr />
+<h2 id="pdf">PDF 基线内容</h2>
+<blockquote>
+<p>以下部分对应成品 PDF 的本题内容，保持其术语、组织方式与观点。</p>
+</blockquote>
+<h3 id="01">01 · 考点拆解</h3>
+<ul>
+<li>本质是“不可信数据进入 SQL 语法上下文”。</li>
+<li>参数化查询让数据和代码分离。</li>
+<li>WAF/关键字过滤只能作为补充，不能替代正确的查询构造。</li>
+</ul>
+<h3 id="02">02 · 面试答题主线</h3>
+<ol>
+<li>本质是“不可信数据进入 SQL 语法上下文”。</li>
+<li>参数化查询让数据和代码分离。</li>
+<li>WAF/关键字过滤只能作为补充，不能替代正确的查询构造。</li>
+<li>把答案收束到可验证的工程控制：说明“如何修复/设计”，并补一句“如何通过日志、测试或回归验证控制真的生效”。</li>
+</ol>
+<h3 id="03">03 · 深度解析</h3>
+<p>可以用统一模型理解：Source 是 HTTP/消息/文件输入，Propagation 是业务拼接与格式化，Sink 是数据库执行函数。只要数据最终被解析器当成 SQL 结构，就存在注入风险。</p>
+<p>工程上还需关注数据库账号权限，避免应用账号拥有超出业务所需的 DDL、文件或高权限能力，以降低单点漏洞影响。</p>
+<h3 id="04">04 · 高频追问</h3>
+<ul>
+<li>ORM 是否绝对不会 SQL 注入？</li>
+<li>二阶注入为什么难发现？</li>
+</ul>
+<h3 id="05">05 · 易错点</h3>
+<ul>
+<li>只背“单引号”。</li>
+<li>把 WAF 当根治方案。</li>
+</ul>
+<h3 id="06">06 · 工程实践</h3>
+<ul>
+<li>在代码审计中标记所有 query construction 与 execute sink。</li>
+<li>写安全版本的参数化查询与动态排序 allowlist。</li>
+</ul>
+<h3 id="07">07 · 一句话记忆</h3>
+<blockquote>
+<p>SQLi 的核心不是字符，而是“数据被解释成了 SQL 代码”。</p>
+</blockquote>
+<hr />
+<h2 id="_3">扩展解析：从“会回答”到“会做工程”</h2>
+<h3 id="1">1. 更深一层的原理</h3>
+<p>统一用“数据是否进入 SQL grammar”判断风险，避免把单引号或特定数据库语法当成漏洞定义。</p>
+<p>参数化解决 value 绑定；动态 identifier/排序结构应由固定映射控制。</p>
+<h3 id="2">2. 边界条件与面试高分点</h3>
+<ul>
+<li><strong>先定义边界</strong>：明确主体、资产、数据/状态和信任边界，避免把问题描述成绝对结论。</li>
+<li><strong>区分根治与纵深</strong>：根治方案应消除不安全的数据流、权限或协议状态；WAF、告警、限流等通常属于补充控制。</li>
+<li><strong>考虑失败模式</strong>：不仅说明正常路径，还要考虑配置漂移、解析差异、权限过宽、依赖升级和异常条件。</li>
+<li><strong>给验证方式</strong>：安全设计必须能被单元测试、集成测试、审计日志、检测规则或演练验证。</li>
+</ul>
+<h3 id="3">3. 工程化检查清单</h3>
+<ul>
+<li>[ ] 首选结构化 API、参数化和上下文编码</li>
+<li>[ ] 授权在可信服务端执行</li>
+<li>[ ] 对出站网络、文件、解析器实施最小能力</li>
+<li>[ ] 修复后建立单元/集成/安全回归测试</li>
+<li>[ ] 在代码审计中标记所有 query construction 与 execute sink。</li>
+<li>[ ] 写安全版本的参数化查询与动态排序 allowlist。</li>
+</ul>
+<h3 id="4">4. 可观测性与证据</h3>
+<p>面试中主动补一句“我会从哪些证据验证”，通常很加分：</p>
+<ul>
+<li>HTTP/反向代理日志</li>
+<li>应用审计日志</li>
+<li>数据库/下游服务异常</li>
+<li>WAF 仅作为辅助信号</li>
+<li>安全测试回归结果</li>
+</ul>
+<h3 id="5">5. 追问怎么接</h3>
+<h4 id="orm-sql">追问：ORM 是否绝对不会 SQL 注入？</h4>
+<p><strong>回答要点：</strong> 先给结论“取决于边界条件”，再列出哪些条件下成立、哪些情况下失效，以及应如何验证而不是绝对化回答。</p>
+<h4 id="_4">追问：二阶注入为什么难发现？</h4>
+<p><strong>回答要点：</strong> 先解释导致该现象的协议/信任边界，再说明成立所需条件，最后补充防守侧如何通过配置、日志或测试验证。</p>
+<h3 id="6">6. 面试官可能继续升级的场景题</h3>
+<ul>
+<li>如果这个问题发生在核心业务而不是测试环境，你会如何调整风险优先级、证据保全和修复节奏？</li>
+<li>如果已有一层安全产品/框架默认保护，你如何验证它真的覆盖了 OWASP A05 Injection 的边界，而不是只相信配置名称？</li>
+<li>如果修复会影响兼容性或业务性能，你会如何设计灰度、监控和回滚方案？</li>
+</ul>
+<h3 id="7">7. 常见回答层级</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只能给出名词定义</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能解释基本原理</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能说明成立条件、边界和真实影响</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能给出工程修复、检测和验证</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能处理复杂追问、权衡与系统设计</td>
+</tr>
+</tbody>
+</table>
+<!-- BEGIN PROFESSIONAL_V2 -->
+<h2 id="v2">专业深化 v2：面向高级工程师的题解</h2>
+<blockquote>
+<p>这一节是在 PDF 基线与第一轮扩展之上的第二层深化，重点补齐 <strong>机制、边界、工程决策、证据、验证与追问树</strong>。它不是利用手册，而是面向合法授权的安全工程与面试表达。</p>
+</blockquote>
+<h3 id="a">A. 机制模型：先把问题抽象对</h3>
+<ul>
+<li>SQLi 统一判断标准是“不可信数据是否进入 SQL grammar”，而不是是否出现单引号。</li>
+<li>Source 可来自 HTTP、消息队列、文件或数据库二次读取；Sink 是最终能执行 SQL 的接口。</li>
+<li>参数化把 value 与 SQL structure 分离；动态表名、列名、排序方向等结构元素必须用固定映射/allowlist。</li>
+</ul>
+<h3 id="b">B. 成立条件、边界与典型失效模式</h3>
+<ul>
+<li>ORM 只有在使用参数绑定路径时才提供保护；raw query、字符串拼接和动态表达式仍需审查。</li>
+<li>二阶注入说明 Source 与 Sink 可能不在同一请求：数据先被存储，后续又被拼入 SQL。</li>
+<li>数据库权限决定漏洞爆炸半径；同一注入在只读最小权限账号与高权限账号上的风险不同。</li>
+</ul>
+<h3 id="c">C. 工程设计：从“修一个点”到“设计控制面”</h3>
+<ul>
+<li>所有 query construction 统一走安全数据访问层，禁止业务代码散落拼接。</li>
+<li>identifier 类动态需求使用枚举→固定 SQL 片段映射。</li>
+<li>数据库账号按服务/环境分离并执行最小权限。</li>
+<li>SAST/代码审查重点建模 source-propagation-sink，而不是关键字搜索。</li>
+</ul>
+<h3 id="d-detection-evidence">D. Detection &amp; Evidence：如何证明你的判断</h3>
+<ul>
+<li>应用层记录 query template/operation，而不是记录敏感完整 SQL 参数。</li>
+<li>数据库审计关注异常语句类型、错误、访问对象和权限使用。</li>
+<li>WAF/网关信号可辅助关联，但不能作为是否存在 SQLi 的唯一证据。</li>
+</ul>
+<p>一个成熟回答要主动区分：<strong>事实（日志/状态）</strong>、<strong>推断（关联分析）</strong>、<strong>假设（尚待验证）</strong>。这能显著降低“看到一个异常就直接下结论”的面试失分。</p>
+<h3 id="e">E. 修复后的验证与回归</h3>
+<ul>
+<li>单元测试验证危险输入始终作为参数值处理。</li>
+<li>对动态排序、搜索、报表等最容易产生动态 SQL 的路径做专项回归。</li>
+<li>复测数据库权限：即使应用层出现缺陷，也不应获得业务不需要的能力。</li>
+</ul>
+<h3 id="f">F. 面试追问树：把一题答成一棵知识树</h3>
+<ol>
+<li>为什么 PreparedStatement 不能直接参数化表名和 ORDER BY 方向？</li>
+<li>二阶注入为什么容易逃过单请求扫描？</li>
+<li>如何在大型代码库里系统找到 SQL 构造风险而不是手工 grep？</li>
+</ol>
+<p>回答这些追问时，建议始终使用：<strong>结论 → 原理 → 条件 → 反例/边界 → 工程控制 → 验证</strong>。如果题目涉及生产环境，再补充可用性、兼容性、灰度和回滚。</p>
+<h3 id="g">G. 这道题在真实工作中的“交付物”</h3>
+<p>SQL 查询安全规范 + data-access lint/SAST 规则 + 动态 identifier allowlist + 数据库最小权限矩阵 + regression tests。</p>
+<h3 id="h">H. 一页纸复盘</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>应该能说清楚什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>根因</td>
+<td>数据被 SQL 解析器当成结构而非值。</td>
+</tr>
+<tr>
+<td>边界</td>
+<td>raw query、动态 identifier、二阶数据流会绕过“已用 ORM”的简单判断。</td>
+</tr>
+<tr>
+<td>主要控制</td>
+<td>参数化 + 固定映射 + 最小权限。</td>
+</tr>
+<tr>
+<td>关键证据</td>
+<td>query template/DB audit/应用异常。</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>动态 SQL 专项测试与权限回归。</td>
+</tr>
+</tbody>
+</table>
+<!-- END PROFESSIONAL_V2 -->
+
+<h2 id="_5">复习卡片</h2>
+<ul>
+<li><strong>核心关键词</strong>：OWASP A05 Injection</li>
+<li><strong>一句话</strong>：SQLi 的核心不是字符，而是“数据被解释成了 SQL 代码”。</li>
+<li><strong>最容易答错</strong>：只背“单引号”。</li>
+<li><strong>工程动作</strong>：在代码审计中标记所有 query construction 与 execute sink。</li>
+<li><strong>答题顺序</strong>：定义 -&gt; 原理 -&gt; 边界 -&gt; 风险 -&gt; 检测 -&gt; 修复 -&gt; 验证。</li>
+</ul>
+<h2 id="_6">关联题</h2>
+<ul>
+<li><span class="srcref">Q13 使用 Prepared Statement 后是否绝对没有 SQL 注入？</span></li>
+<li><span class="srcref">Q11 给你一个 Web 系统，你的安全测试总体思路是什么？</span></li>
+<li><span class="srcref">Q53 做 SQL 注入代码审计时，你会怎么看？</span></li>
+<li><span class="srcref">Q14 XSS 的本质与三种主要类型是什么？</span></li>
+</ul>
+<h2 id="_7">参考标准 / 延伸阅读</h2>
+<ul>
+<li><a href="https://owasp.org/Top10/2025/">OWASP Top 10:2025</a> - 2025 Web 应用风险总览；A01 Broken Access Control，A03 Software Supply Chain Failures，A05 Injection。</li>
+<li><a href="https://owasp.org/www-project-application-security-verification-standard/">OWASP ASVS 5.0.0</a> - 2025-05-30 发布；用于 Web 应用技术安全控制验证与安全开发要求。</li>
+</ul>
+<h2 id="_8">安全边界</h2>
+<blockquote>
+<p>本仓库面向合法授权的面试学习、安全工程、检测与防守。涉及攻击技术时聚焦原理、证据、修复和验证，不提供针对真实目标的利用步骤、隐蔽规避或武器化操作。</p>
+</blockquote>
+<hr />
+<p>← <span class="srcref">Q11</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q13</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

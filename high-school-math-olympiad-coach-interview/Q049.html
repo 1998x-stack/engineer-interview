@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>如何处理线性丢番图方程 $ax+by=c$？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q049</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q049</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★☆☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q048.html">← Q048</a><a href="Q050.html">Q050 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">数学专业</a><a href="#">Bézout、整数解、参数化</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 49 / 100</div>
+    <h1 class="qtitle">如何处理线性丢番图方程 $ax+by=c$？</h1>
+    <p><strong>模块：</strong> 数论<br />
+<strong>标签：</strong> 数学专业 · 难度 ★★★☆☆ · Bézout、整数解、参数化</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>如何处理线性丢番图方程 $ax+by=c$？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>存在整数解当且仅当$\gcd(a,b)\mid c$。</li>
+<li>用扩展欧几里得求一个特解。</li>
+<li>写出全体解并处理正整数/范围条件。</li>
+</ul>
+<p><strong>展开：</strong> 设 $d=\gcd(a,b)$。必要性来自 $ax+by$ 必被$d$整除；充分性由Bézout：存在 $u,v$ 使 $au+bv=d$，乘 $c/d$ 得特解。若 $(x_0,y_0)$ 是一组解，则全体整数解为 $x=x_0+(b/d)t,\ y=y_0-(a/d)t$。竞赛题往往真正难在最后一步：利用正性、大小或最值约束筛选参数$t$。</p>
+<h3 id="_4">面试追问</h3>
+<p>如果要求正整数解个数，如何把问题转成参数区间计数？</p>
+<h3 id="_5">常见失分</h3>
+<p>只给存在条件；全解参数步长写错。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>先把“存在—构造—全解—附加约束”四阶段固定化。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：四阶段完整；6分：会求全解；3分：只会特解。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：局部信息与下降结构</h3>
+<p>数论面试题通常在考三件事：能否从整除关系提取 <strong>局部信息（同余/估值）</strong>，能否利用 <strong>结构性分解（gcd、因式分解、韦达）</strong>，以及能否通过 <strong>极小反例/无限下降</strong> 把存在性问题转成矛盾。</p>
+<p>任何引用 LTE、Bézout、欧几里得算法、Legendre 等工具时，都应主动说清条件。数论证明对“条件遗漏”非常敏感，面试官常用追问专门检查这一点。</p>
+<h4 id="_9">技术补充：线性丢番图方程先判存在，再参数化</h4>
+<p>$ax+by=c$ 有整数解当且仅当 $d=\gcd(a,b)$ 整除 $c$。由扩展欧几里得先找 $au+bv=d$，乘 $c/d$ 得一组特解；通解为 $x=x_0+(b/d)t,\ y=y_0-(a/d)t$。若还要求正整数或范围，再把这些约束转成 $t$ 的区间。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>明确模数/素数/正整数等条件为何必要。</li>
+<li>尝试用估值、gcd或下降给出第二视角。</li>
+<li>构造一个删除关键条件后的反例。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 变量整数/正整数条件明确</li>
+<li>[ ] 模数或素数选择有理由</li>
+<li>[ ] 定理条件逐项核验</li>
+<li>[ ] 构造的新解仍在可行域</li>
+<li>[ ] 整除与估值结论没有跳步</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>局部信息选择有理由；定理条件逐项核验；整除/估值/下降链完整并能给反例。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>结论和主证明正确，但条件、最小性或可行性验证略简。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>知道相关定理但易机械套用，无法解释模数/素数选择。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>忽略整数性、正性或定理前提，导致证明实质失效。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>如果要求正整数解个数，如何把问题转成参数区间计数？</li>
+<li>明确模数/素数/正整数等条件为何必要。</li>
+<li>尝试用估值、gcd或下降给出第二视角。</li>
+<li>构造一个删除关键条件后的反例。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>写一份“条件核对证明”：每次使用同余/估值/下降前单独列出前提，并构造删除条件后的反例。</p>
+<h3 id="v2">专业版 v2：线性丢番图方程要先判存在，再参数化全部解</h3>
+<p>方程</p>
+<p>$$
+ax+by=c,
+$$</p>
+<p>其中 $a,b,c\in\mathbb Z$。</p>
+<h4 id="1">1. 存在条件</h4>
+<p>设 $d=\gcd(a,b)$。必要且充分条件是</p>
+<p>$$
+d\mid c.
+$$</p>
+<p>必要性显然；充分性由 Bézout：存在 $u,v$ 使 $au+bv=d$，乘以 $c/d$ 即得一个特解。</p>
+<h4 id="2">2. 全部整数解</h4>
+<p>若 $(x_0,y_0)$ 是一个特解，则</p>
+<p>$$
+x=x_0+\frac bd t,\qquad y=y_0-\frac ad t,
+\quad t\in\mathbb Z.
+$$</p>
+<h4 id="3_1">3. 竞赛中常有附加条件</h4>
+<p>若还要求 $x,y&gt;0$、有界、最小值等，就把上述参数式代入，转成对整数参数 $t$ 的区间问题。</p>
+<h4 id="4">4. 教学价值</h4>
+<p>这是一个非常完整的“存在性 → 构造一个解 → 描述所有解 → 施加额外约束”的范例。</p>
+<h2 id="_15">关联题目</h2>
+<ul>
+<li><span class="srcref">Q045 · 证明 Euclid 引理：若素数 $p\mid ab$，则 $p\mid a$ 或 $p\mid b$。</span></li>
+<li><span class="srcref">Q048 · 如何证明 $\gcd(a,b)=\gcd(a,b-ka)$？</span></li>
+</ul>
+<h2 id="_16">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

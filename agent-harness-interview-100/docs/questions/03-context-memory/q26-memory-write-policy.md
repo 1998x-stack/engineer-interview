@@ -1,0 +1,284 @@
+---
+id: q26
+title: "Agent 应该什么时候写 Memory？"
+chapter: 3
+difficulty: "★★★☆☆"
+frequency: "★★★★☆"
+role: "Agent / Applied AI"
+source_pdf_page: 28
+tags: [03-context-memory, agent-harness, interview, memory, agents]
+status: expanded
+---
+
+# Q26. Agent 应该什么时候写 Memory？
+
+> **一句话结论**：Memory 写入是策略问题：未来价值、稳定性、置信度、作用域和隐私必须同时满足。
+>
+> **难度**：★★★☆☆　**高频**：★★★★☆　**岗位**：Agent / Applied AI　**PDF**：第 28 页起
+
+[← Q25](q25-short-vs-long-term-memory.md) · [章节目录](README.md) · [Q27 →](q27-rag-vs-agentic-search.md)
+
+> **内容分层**：第 1–13 节以 PDF 原稿为主并做结构化整理；第 14 节是 Repo v1.1 的工程扩展，结合公开一手资料与系统设计方法补强。
+
+
+## 1. 面试官真正想考什么
+
+你是否真正理解 context 是 runtime state 的投影，而不是聊天记录的别名。
+
+**更深一层：** Memory Write Policy 要同时考虑 salience、future utility、confidence、scope、privacy 与 TTL。
+
+## 2. Know-Why：为什么这是 Harness 问题
+
+上下文是有限资源。稳定 Harness 会把长期事实、任务状态和临时观察分开，并让每一轮只携带对当前决策最有价值的信息。针对本题，关键不是记住术语，而是识别系统中的“控制点”：Memory 写入是策略问题：未来价值、稳定性、置信度、作用域和隐私必须同时满足。 这类控制点一旦缺失，模型即使单次推理正确，也可能因为重试、上下文污染、环境状态、权限或错误反馈而在真实任务中失败。
+
+### 三条工程不变量
+
+1. Context 是预算，不是仓库；只放当前决策真正需要的信息。
+2. Memory 不是 task state；任务真相必须放在可持久化、可版本化状态中。
+3. 压缩、检索、缓存都必须处理陈旧与信息损失。
+
+这些不变量不是“最佳实践口号”，而是用来约束设计空间的。面试时如果方案违反其中一条，应主动解释为什么值得承担风险，以及如何用实验和监控把风险显式化。
+
+## 3. Know-How：怎样落到生产系统
+
+- salience filter + structured extraction + dedupe + expiration + user control。
+
+- 把这一机制做成可配置、可追踪、可评测的 runtime primitive。
+
+### 推荐的工程 Artifact
+
+建议画 Context Builder 数据流，并标注每类信息的来源、TTL、token budget、可信度与 invalidation。
+
+### 本章参考架构
+
+```mermaid
+flowchart TB
+  Q[Current Decision] --> CB[Context Builder]
+  H[Recent History] --> CB
+  M[Memory Retrieval] --> CB
+  R[RAG / Search] --> CB
+  S[Task State] --> CB
+  T[Tool Docs] --> CB
+  CB --> L[LLM]
+  L --> A[Action]
+```
+
+> 图是本章公共心智模型；回答本题时只展开与题目相关的节点，避免把所有组件一次性画满。
+
+## 3A. Production Deep Dive：把概念变成系统协议
+
+### 3A.1 核心机制
+
+Memory write policy 决定什么值得持久化，应考虑 future utility、confidence、scope、privacy、TTL
+
+**Source of Truth：** Memory record + provenance。在面试中主动指出这一点很重要，因为 Agent 的自然语言状态只是“认知状态”，真正能决定是否继续、是否重试、是否完成的通常是外部持久状态或环境。
+
+### 3A.2 推荐状态 / 数据模型
+
+```text
+ContextItem { item_id, kind, source, version, token_cost, relevance }
+TaskState { run_id, goal, plan, progress, environment_ref }
+MemoryRecord { memory_id, scope, content_ref, confidence, ttl, provenance }
+RetrievalTrace { query, candidates, selected, scores, timestamp }
+```
+
+这不是要求所有系统都使用同一 schema；重点是把本题涉及的**身份、版本、状态、结果引用和恢复语义**从自然语言中提取出来，变成可验证 contract。
+
+### 3A.3 具体故障场景
+
+> **Scenario**：模型把猜测写成长期事实，之后反复强化
+
+排查时不要只看最终回答。建议从 `goal/version → model decision → policy → tool/action → environment mutation → persisted state → grader` 顺序追踪，确认“模型认为发生了什么”与“环境实际发生了什么”在哪一步分叉。
+
+### 3A.4 可证伪实验
+
+**Experiment：** 注入低置信信息，验证 write gate 与纠错流程。
+
+一个好的 Harness 改动必须能写成可证伪假设，例如：“如果这个机制解决了目标 failure mode，那么在固定 model/task/env 后，专项指标应改善；如果没有改善，就不应把复杂度长期留在 runtime。”
+
+**Success criterion / SLO：** false-memory persistence 降低。
+
+### 3A.5 Production Checklist
+
+- [ ] 区分 task state、memory、retrieved context、raw history
+- [ ] 每个 context item 有 provenance/version/token cost
+- [ ] 写 memory 有 policy，读 memory 有 relevance/TTL
+- [ ] compaction/reset 后能验证关键事实未丢失
+- [ ] 缓存有 invalidation 与 stale-context 检测
+
+## 4. Failure Modes：低分答案与真实故障
+
+- 每轮自动保存全部对话
+
+### 生产环境再多想三层
+
+- **Detectability**：这个失败在 trace / state diff / tool result / grader 中留下什么证据？
+- **Recoverability**：失败后是 retry、replan、compensate、rollback、ask human，还是 terminate？
+- **Blast Radius**：错误最多影响一次 tool call、一个 run、一个 tenant，还是外部真实世界？
+
+## 5. Trade-offs：不要只讲“最佳方案”
+
+更多上下文提升召回，但降低信噪比并增加成本；更激进压缩降低成本，却可能丢失未来才显重要的细节。
+
+面试中建议明确给出 baseline，并说明新机制增加了什么复杂度、成本或延迟。只有当它针对一个可观测 failure mode，并带来可测量收益时，才值得进入 Harness。
+
+## 6. 最小 Eval：怎样证明设计有效
+
+一个可复用的最小实验框架：
+
+1. 固定 task set、model version、environment version。
+2. 只改变本题讨论的一个 Harness 变量。
+3. 每个 task 运行多 trial，记录 outcome + trace。
+4. 按 failure taxonomy 聚类，不只比较平均分。
+5. 同时报告质量、稳定性、延迟、token/cost 和安全指标。
+
+### 建议观测指标
+
+- `context tokens per successful task`
+- `retrieval precision/recall proxy`
+- `stale-context rate`
+- `compaction loss rate`
+- `memory retrieval hit rate`
+
+**本题专项 Eval：** 建议画 Context Builder 数据流，并标注每类信息的来源、TTL、token budget、可信度与 invalidation。
+
+## 7. 面试追问
+
+- 如果这个机制失败，你会在 Trace 中看到什么证据？
+
+- 如何构造一个最小 Eval 来证明你的设计真的比 baseline 更好？
+
+- 哪些信息应该保留原文引用，哪些可以摘要，哪些必须外置？
+
+建议继续自问：
+
+- 这个设计里**谁拥有最终真相**：模型、数据库、环境、grader，还是人工？
+- 如果请求在任意一步 crash，**恢复点**在哪里？
+- 如果模型能力提升一代，这个 Harness 机制还需要吗？怎样做 ablation？
+
+## 8. 90 秒回答版本
+
+先给结论：Memory 写入是策略问题：未来价值、稳定性、置信度、作用域和隐私必须同时满足。 Memory Write Policy 要同时考虑 salience、future utility、confidence、scope、privacy 与 TTL。 建议画 Context Builder 数据流，并标注每类信息的来源、TTL、token budget、可信度与 invalidation。
+
+## 9. 5 分钟深挖版本
+
+5 分钟展开时，按 `结论 → failure mode → 最小设计 → 数据/状态语义 → trade-off → eval/metrics` 六步回答。本题的关键工程焦点是：Memory Write Policy 要同时考虑 salience、future utility、confidence、scope、privacy 与 TTL。 具体落地时，优先产出：建议画 Context Builder 数据流，并标注每类信息的来源、TTL、token budget、可信度与 invalidation。
+
+## 10. PDF 原稿中的工程证据 / 研究结论
+
+_PDF 原稿未单列此节。_
+
+> 本节只整理 PDF 原稿已有证据；下面“扩展阅读”是本仓库新增的外部资料，不与 PDF 原始内容混淆。
+
+## 11. Offer 级回答结构
+
+建议用 4 段式回答：①先给结论和适用边界；②解释 failure mode，也就是“为什么需要它”；③给出最小实现和关键数据结构；④主动给出 trade-off + eval 指标。这样能把概念答案升级为工程答案。
+
+可以进一步升级为 6 段：`结论 → Why/Failure → How/Data Model → Recovery/Security → Trade-off → Eval/SLO`。
+
+## 12. 扩展阅读（Repo 增补）
+
+- [Anthropic - Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+- [Anthropic - Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval)
+
+## 13. 关联题
+
+- 本章：[第三章 Context Engineering 与 Memory](README.md)
+- [Q25. Short-term Memory 和 Long-term Memory 应如何设计？](q25-short-vs-long-term-memory.md)
+- [Q27. RAG 和 Agentic Search 有什么区别？](q27-rag-vs-agentic-search.md)
+
+## 14. 专业深挖：把“会回答”升级为“会设计”
+
+### 14.1 核心判断与边界
+
+**核心判断：** Memory Write Policy 是防止长期污染的关键：只有未来可复用且可信的信息才值得持久化。
+
+**必须讲清的边界：** “模型觉得重要”不能作为唯一写入条件；需要规则、验证、scope 和 TTL。
+
+这意味着面试时不能只描述一个 happy path。应先明确 **source of truth、可接受的错误语义、不可违反的不变量、恢复策略**，再谈具体框架。Context 是有限推理预算；事实状态、历史文本、长期记忆和检索证据必须分层。
+
+### 14.2 设计审查：上线前必须回答的问题
+
+- [ ] 来源/provenance 是否保留
+- [ ] 是否存在 stale/conflict
+- [ ] 压缩是否可验证
+- [ ] memory scope/TTL 是否明确
+- [ ] cache key 是否包含版本/租户
+
+对于本题，还要额外确认：
+
+1. **最坏情况下会错成什么样？** 不只问“会不会失败”，而是问错误是否会变成重复副作用、状态漂移、越权、成本爆炸或不可恢复。
+2. **系统如何知道自己错了？** 至少需要一个环境信号、结构化状态、grader 或 trace 证据，而不是模型自我反省。
+3. **失败后下一步是否确定？** retry、repair、reconcile、compensate、rollback、ask-human、terminate 应尽量由错误类型和策略决定。
+4. **模型升级后是否仍需要这层机制？** 若答案无法用 ablation 验证，Harness 很容易累积成永久技术债。
+
+### 14.3 推荐的实现接口 / 状态语义
+
+```python
+class ContextItem:
+    source: str
+    payload_ref: str
+    relevance: float
+    confidence: float
+    freshness: float
+    pinned: bool
+```
+
+本题最值得落到白板或代码里的 Artifact 是：**实现 write gate：salience×confidence×future_value×scope。**
+
+建议所有关键对象都带 `run_id / version / timestamp / provenance`；涉及副作用时再加入 `operation_id / idempotency_key`，涉及安全时加入 `principal / tenant / policy_version`。这样 trace、checkpoint、audit 和 eval 才能关联成同一条因果链。
+
+### 14.4 Fault Injection：如何主动证明系统能扛住坏情况
+
+**故障注入场景：** 让模型把猜测/临时状态写成长记忆，再观察后续错误。
+
+专业的 Harness 测试不应该只做“模型有没有回答对”，而应把故障点插到**状态提交边界、网络边界、权限边界、上下文转换边界**。测试成功的标准不是“不报错”，而是：
+
+- 最终状态可解释；
+- 不产生不可接受的重复副作用；
+- trace 能定位失败阶段；
+- recovery 不依赖人工猜测；
+- 若无法自动恢复，系统能安全停在可人工处理的状态。
+
+### 14.5 可证伪实验 / Ablation
+
+**实验：** 比较 always-write、model-select、policy-gated 三策略。
+
+建议用 paired trials：固定 task set、model、environment、seed policy 和 grader，只改变本题对应的 Harness primitive。至少运行足够多 trial 以看到方差，并同时报告均值与分位数/置信区间。若方案只提升平均 solve-rate，却显著恶化尾延迟、成本或高风险错误率，应明确写成 trade-off，而不是宣布“全面提升”。
+
+### 14.6 指标：至少同时看质量、稳定性和系统代价
+
+| 指标 | Why | 建议切片 |
+|---|---|---|
+| `write_precision` | 衡量本题设计是否真的改善，而不是只增加 Harness 复杂度 | 建议按 task type / risk / model version 分桶 |
+| `harmful_memory_rate` | 衡量本题设计是否真的改善，而不是只增加 Harness 复杂度 | 建议按 task type / risk / model version 分桶 |
+| `reuse_hit_rate` | 衡量本题设计是否真的改善，而不是只增加 Harness 复杂度 | 建议按 task type / risk / model version 分桶 |
+
+除了专项指标，建议保留四个全局指标：`verified_success_rate`、`cost_per_success`、`p95_end_to_end_latency`、`human_intervention_rate`。安全敏感题再增加 `unsafe_action_rate` 或 `policy_escape_rate`。
+
+### 14.7 Debugging Playbook
+
+遇到失败时按以下顺序缩小范围：
+
+1. **重放输入与版本**：确认 model / prompt / tools / harness / environment / grader 是否完全一致；
+2. **定位第一个分叉点**：从 trace 中找出预期轨迹与失败轨迹首次不同的 model decision、tool result 或 state transition；
+3. **区分认知错误与系统错误**：模型“想错了”与工具实际执行失败必须分开；
+4. **检查状态提交窗口**：尤其关注 action 已发生但 result/checkpoint 未持久化的窗口；
+5. **构造最小复现**：删掉无关上下文和工具，把 failure 固化成 regression case；
+6. **做单变量修复**：修改 schema/context/policy/runtime 中最小的一项，再跑原始失败集。
+
+### 14.8 Senior / Staff 级回答信号
+
+高级回答会加入 user control、delete/forget、provenance 和 conflict resolution。
+
+面试官通常会继续追问“为什么不是更简单的方案”。因此答案中应主动给出 **baseline → failure evidence → mechanism → measurable gain → added complexity → rollback/ablation plan**，这比只列组件更能体现 Agent Systems 能力。
+
+### 14.9 进一步阅读（Repo 研究层，不等同 PDF 原稿）
+
+- [Anthropic - Effective context engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+- [Anthropic - Contextual Retrieval](https://www.anthropic.com/news/contextual-retrieval)
+- [OpenAI Agents SDK - Sessions](https://openai.github.io/openai-agents-python/sessions/)
+
+---
+
+[← Q25](q25-short-vs-long-term-memory.md) · [章节目录](README.md) · [Q27 →](q27-rag-vs-agentic-search.md)

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>什么情况下使用容斥原理？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q064</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q064</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★☆☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q063.html">← Q063</a><a href="Q065.html">Q065 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">数学专业</a><a href="#">容斥、重叠限制、计数</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 64 / 100</div>
+    <h1 class="qtitle">什么情况下使用容斥原理？</h1>
+    <p><strong>模块：</strong> 组合数学<br />
+<strong>标签：</strong> 数学专业 · 难度 ★★★☆☆ · 容斥、重叠限制、计数</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>什么情况下使用容斥原理？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>多个“坏事件”相互重叠且直接排除会重复扣除。</li>
+<li>从总数减单坏，加双坏，交替修正。</li>
+<li>先定义事件集合再写公式。</li>
+</ul>
+<p><strong>展开：</strong> 容斥适合“避免若干条件”的问题。直接把每个坏条件数量相减会把同时违反多个条件的对象扣多次，因此需要交替补回交集。真正的技巧是选择事件：若事件定义得过细，交集计算爆炸；若定义得合理，交集往往具有统一形式。竞赛面试中应强调“公式容易，事件设计难”。</p>
+<h3 id="_4">面试追问</h3>
+<p>错排问题中，为什么令$A_i=$“第$i$人坐回原位”是自然事件？</p>
+<h3 id="_5">常见失分</h3>
+<p>符号正负错；忘记全集；事件定义导致交集无法计算。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>先画Venn图解释三集合，再推广到一般形式，减少纯记忆。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：适用场景、事件设计和原理清楚；6分：会公式；3分：机械容斥。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：先建模，再选工具</h3>
+<p>组合题的第一步不是背“抽屉/染色/极值/概率法”，而是定义 <strong>对象、关系、状态、允许操作和目标性质</strong>。随后判断目标更接近：存在性、计数、不可达性、终止性、匹配或同色结构。</p>
+<p>建议用“<strong>对象是什么 → 我想保持/优化什么量 → 为什么这个量约束目标 → 结论如何落地</strong>”来讲。组合解法的漂亮之处通常在模型，而不是计算。</p>
+<h4 id="_9">技术补充：容斥适合“多个坏事件重叠”</h4>
+<p>$|\cup A_i|$ 的交替和通过每个元素被计数 $\binom r1-\binom r2+\cdots=1$ 来解释。实际难点是交集大小是否可算；若高阶交集结构复杂，容斥可能不是好工具。可与补集、错排、莫比乌斯反演的初步思想联系。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>先定义对象、关系与状态，再说定理名。</li>
+<li>给出小规模例子验证模型。</li>
+<li>说明你的证明是构造性的还是仅证明存在。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 对象与关系定义清楚</li>
+<li>[ ] 小规模样例与边界检查</li>
+<li>[ ] 不变量/极值量的变化已验证</li>
+<li>[ ] 计数对象没有漏计或重计</li>
+<li>[ ] 存在性与构造性结论区分清楚</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>建模对象明确；工具选择由目标性质驱动；计数/不变量逻辑完整；能解释构造性。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>核心方法正确，但模型解释或边界检查不够充分。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>会报定理名并做常规应用，难以处理“隐形抽屉/状态”等建模环节。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>漏计/重计、错误不变量或无法把题意翻译成组合对象。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>错排问题中，为什么令$A_i=$“第$i$人坐回原位”是自然事件？</li>
+<li>先定义对象、关系与状态，再说定理名。</li>
+<li>给出小规模例子验证模型。</li>
+<li>说明你的证明是构造性的还是仅证明存在。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>写一张“建模卡”：对象、关系、状态、候选不变量/极值量、目标性质、小规模验证。</p>
+<h3 id="v2">专业版 v2：容斥适合“多个禁止条件发生重叠”的计数</h3>
+<p>两集合：</p>
+<p>$$
+|A\cup B|=|A|+|B|-|A\cap B|.
+$$</p>
+<p>一般形式：</p>
+<p>$$
+\left|\bigcup_{i=1}^nA_i\right|
+=\sum|A_i|-\sum|A_i\cap A_j|+\sum|A_i\cap A_j\cap A_k|-\cdots.
+$$</p>
+<h4 id="_15">为什么符号交替</h4>
+<p>一个同时属于 $r$ 个集合的对象，在前 $t$ 阶被计数的总系数为组合数交替和，最终恰好为 1。</p>
+<h4 id="_16">典型场景</h4>
+<ul>
+<li>排列中禁止固定点（错排）；</li>
+<li>计数不被若干素数整除的整数；</li>
+<li>多个属性至少一个发生。</li>
+</ul>
+<h4 id="_17">使用前检查</h4>
+<p>如果交集结构极复杂，直接容斥可能不可行。此时可考虑补集、递推、生成函数或 rook polynomial 等更结构化方法。</p>
+<h4 id="_18">教学重点</h4>
+<p>先定义“坏事件”集合，再写容斥；不先定义集合直接套符号，极易漏交集。</p>
+<h2 id="_19">关联题目</h2>
+<ul>
+<li><span class="srcref">Q062 · 不用代数展开解释 $\sum_{k=0}^n\binom nk=2^n$。</span></li>
+<li><span class="srcref">Q069 · 什么是生成函数？高中竞赛中什么时候值得使用？</span></li>
+</ul>
+<h2 id="_20">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

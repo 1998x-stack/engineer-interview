@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>请解释 Hall 婚姻定理的直觉。 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q065</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q065</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q064.html">← Q064</a><a href="Q066.html">Q066 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">数学专业</a><a href="#">匹配、Hall、局部条件</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 65 / 100</div>
+    <h1 class="qtitle">请解释 Hall 婚姻定理的直觉。</h1>
+    <p><strong>模块：</strong> 组合数学<br />
+<strong>标签：</strong> 数学专业 · 难度 ★★★★★ · 匹配、Hall、局部条件</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>请解释 Hall 婚姻定理的直觉。</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>任意左侧集合$S$的可选邻居必须至少有$|S|$个。</li>
+<li>这是完美匹配存在的必要且充分条件。</li>
+<li>直觉是任何子群都不能争抢太少的资源。</li>
+</ul>
+<p><strong>展开：</strong> Hall条件 $|N(S)|\ge|S|$ 的直觉非常朴素：若某$k$个人总共只能选择少于$k$个对象，无论如何都无法一一匹配。令人深刻的是，这个显然必要的条件也充分。竞赛中使用时，难点往往不是引用定理，而是证明对<strong>所有子集</strong>$S$都满足邻居下界，通常需要双计数、度数或反证。</p>
+<h3 id="_4">面试追问</h3>
+<p>如果题目是正则二分图，如何快速验证Hall条件？</p>
+<h3 id="_5">常见失分</h3>
+<p>只会背条件；不理解“任意子集”而只检查单点。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>先用真实分配场景画二分图，再把资源拥堵翻译成Hall不等式。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：必要性直觉+充分性用途+验证方法；6分：会定理；3分：条件模糊。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：先建模，再选工具</h3>
+<p>组合题的第一步不是背“抽屉/染色/极值/概率法”，而是定义 <strong>对象、关系、状态、允许操作和目标性质</strong>。随后判断目标更接近：存在性、计数、不可达性、终止性、匹配或同色结构。</p>
+<p>建议用“<strong>对象是什么 → 我想保持/优化什么量 → 为什么这个量约束目标 → 结论如何落地</strong>”来讲。组合解法的漂亮之处通常在模型，而不是计算。</p>
+<h4 id="hall">技术补充：Hall 条件的难点是验证所有子集</h4>
+<p>定理说二分图从左侧到右侧存在饱和匹配，当且仅当任意 $S$ 满足 $|N(S)|\ge|S|$。应用时通常不逐个枚举 $S$，而是利用度数、区间结构、凸性或反证找到“最坏子集”。教学可先展示必要性，再用增广路直觉解释充分性。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_9">压力训练任务</h3>
+<ol>
+<li>先定义对象、关系与状态，再说定理名。</li>
+<li>给出小规模例子验证模型。</li>
+<li>说明你的证明是构造性的还是仅证明存在。</li>
+</ol>
+<h3 id="_10">自检清单</h3>
+<ul>
+<li>[ ] 对象与关系定义清楚</li>
+<li>[ ] 小规模样例与边界检查</li>
+<li>[ ] 不变量/极值量的变化已验证</li>
+<li>[ ] 计数对象没有漏计或重计</li>
+<li>[ ] 存在性与构造性结论区分清楚</li>
+</ul>
+<h3 id="_11">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>建模对象明确；工具选择由目标性质驱动；计数/不变量逻辑完整；能解释构造性。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>核心方法正确，但模型解释或边界检查不够充分。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>会报定理名并做常规应用，难以处理“隐形抽屉/状态”等建模环节。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>漏计/重计、错误不变量或无法把题意翻译成组合对象。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">二次追问库</h3>
+<ul>
+<li>如果题目是正则二分图，如何快速验证Hall条件？</li>
+<li>先定义对象、关系与状态，再说定理名。</li>
+<li>给出小规模例子验证模型。</li>
+<li>说明你的证明是构造性的还是仅证明存在。</li>
+</ul>
+<h3 id="_13">建议产出物</h3>
+<p>写一张“建模卡”：对象、关系、状态、候选不变量/极值量、目标性质、小规模验证。</p>
+<h3 id="v2hall">专业版 v2：Hall 定理把“局部资源不拥堵”提升为全局匹配存在</h3>
+<p>设二分图左侧为 $L$、右侧为 $R$。Hall 条件：对任意 $S\subseteq L$，</p>
+<p>$$
+|N(S)|\ge |S|.
+$$</p>
+<p>则存在匹配饱和整个 $L$。</p>
+<h4 id="_14">必要性非常直观</h4>
+<p>若某 $k$ 个左侧点一共只有少于 $k$ 个可选邻居，它们不可能各自匹配到不同对象。</p>
+<h4 id="_15">深刻之处在充分性</h4>
+<p>“没有任何局部拥堵”竟然足以保证全局方案。可通过增广路或归纳证明理解。</p>
+<h4 id="_16">正则二分图的快速验证</h4>
+<p>若图两侧适当正则，例如左侧每点度 $d$、右侧每点度不超过 $d$，对 $S$ 计边：</p>
+<p>$$
+d|S|\le d|N(S)|,
+$$</p>
+<p>所以 $|N(S)|\ge|S|$。</p>
+<h4 id="_17">面试高分点</h4>
+<p>强调真正应用难点是证明“对所有 $S$”，通常依赖度数双计数、区间结构或最坏子集，而非枚举。</p>
+<h2 id="_18">关联题目</h2>
+<ul>
+<li><span class="srcref">Q061 · 请解释双计数。</span></li>
+<li><span class="srcref">Q066 · 为什么图论能解决看起来没有“图”的题？</span></li>
+</ul>
+<h2 id="_19">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

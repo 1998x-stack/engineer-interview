@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crawler 最重要的指标是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Crawler &amp; Anti-Crawler</a><i>∕</i><span>Q081</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q081</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★☆☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q080.html">← Q080</a><a href="Q082.html">Q082 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      CRAWLER · 81 / 100</div>
+    <h1 class="qtitle">Crawler 最重要的指标是什么？</h1>
+    <blockquote>
+<p><strong>难度：</strong> ★★★☆☆<br />
+<strong>章节：</strong> 第九章  稳定性、可观测性与数据质量<br />
+<strong>定位：</strong> 面试回答 + 原理理解 + 生产工程。</p>
+</blockquote>
+<h2 id="_1">考察点</h2>
+<ul>
+<li>业务指标</li>
+<li>系统指标</li>
+<li>数据质量指标</li>
+</ul>
+<h2 id="60-90">60-90 秒推荐回答</h2>
+<p>requests/sec 只是局部吞吐。成熟 crawler 更关注 UsefulItems/sec、fetch success、parse success、items/page、字段缺失率、duplicate ratio、freshness lag、queue lag、p95/p99 latency 和字节成本。</p>
+<p>指标应分层：网络层、解析层、数据层、调度层和业务层。</p>
+<h2 id="_2">原理深挖</h2>
+<p>只有把“抓到了多少有用且新鲜的数据”作为最终目标，优化才不会被局部 QPS 带偏。</p>
+<h3 id="_3">北极星指标</h3>
+<ul>
+<li>requests/sec 只是资源指标。更接近业务价值的是 useful_items/sec 与 freshness-adjusted valid records。</li>
+<li>建议建立 Fetch SLO、Parse SLO、Data Quality SLO 三层，避免传输成功掩盖数据失败。</li>
+</ul>
+<h3 id="github">GitHub 增强版：进一步理解</h3>
+<ol>
+<li>Crawler 的生产 SLO 应围绕“有效数据”而不是“请求成功”：fetch_success、parse_success、required-field completeness、freshness lag、duplicate rate、queue age 需要共同观察。</li>
+<li>最危险的故障往往不是 crash，而是 silent data corruption。每个 parser 都应有 fixture 回归、分布监控和 canary 发布。</li>
+<li>排障需要把系统分为入口、网络、远端、解析、浏览器、队列、存储七层，通过指标和 trace 缩小范围，而不是凭经验先猜“被反爬”。</li>
+</ol>
+<h2 id="_4">高级面试扩展</h2>
+<h3 id="1">1. 核心边界</h3>
+<p>可靠性题的核心是：<strong>系统必须能发现“自己看起来成功但数据已经错了”</strong>。因此 transport success、parse success、semantic validity、business usefulness 应拆成不同 SLO。</p>
+<p>针对 <strong>Crawler 最重要的指标是什么？</strong>，面试时建议先明确讨论边界：业务指标、系统指标、数据质量指标。如果不先定义这些边界，后面的“最佳实践”很容易变成只对某个库、某个站点或某个规模成立的经验。</p>
+<h3 id="2">2. 机制链路</h3>
+<p><code>Fetch Metrics → Parse/Schema Metrics → Data-quality Signals → Trace/Logs → Alert → Quarantine/Replay</code>。监控必须贯穿 URL 的端到端 lineage。</p>
+<h3 id="3">3. 本题进一步深挖</h3>
+<ol>
+<li>顶层指标应接近 <code>useful fresh items / cost</code>，底层再拆 fetch success、parse validity、duplicate、freshness lag、queue age、cost/page。单看 requests/s 容易优化错目标。</li>
+</ol>
+<h3 id="4-trade-off">4. Trade-off 矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>决策维度</th>
+<th>收益</th>
+<th>代价 / 风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>灵敏度 vs 告警噪声</td>
+<td>阈值低能早发现</td>
+<td>A/B 实验和自然波动会误报</td>
+</tr>
+<tr>
+<td>Fail-open vs Fail-closed</td>
+<td>继续产出保持覆盖</td>
+<td>可能传播静默坏数据</td>
+</tr>
+<tr>
+<td>保留原始数据 vs 成本</td>
+<td>可重放/审计</td>
+<td>存储与隐私治理成本</td>
+</tr>
+</tbody>
+</table>
+<p>面试中不要只说“方案 A 更好”。更专业的表达是：<strong>在什么约束下 A 优于 B；规模、延迟、准确性或合规约束变化后，决策是否需要反转。</strong></p>
+<h3 id="5-fmea">5. 典型失败模式（FMEA）</h3>
+<table>
+<thead>
+<tr>
+<th>Failure Mode</th>
+<th>常见原因</th>
+<th>检测 / 缓解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200 假成功</td>
+<td>登录页/错误模板</td>
+<td>semantic validator + template fingerprint</td>
+</tr>
+<tr>
+<td>Silent Corruption</td>
+<td>字段空值但任务成功</td>
+<td>field distribution SLO + quarantine</td>
+</tr>
+<tr>
+<td>Retry Storm</td>
+<td>故障期间放大压力</td>
+<td>error-class policy + exponential backoff/jitter/circuit breaker</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6">6. 如何验证方案</h3>
+<p>对 parser drift、目标站 429/503、DNS、DB 慢、对象存储慢、browser crash 注入故障；验证告警是否先于业务数据事故。</p>
+<p>建议至少覆盖三类验证：</p>
+<ul>
+<li><strong>Correctness</strong>：协议/算法/业务语义是否正确；</li>
+<li><strong>Resilience</strong>：超时、重试、进程崩溃、依赖变慢时是否可恢复；</li>
+<li><strong>Scale</strong>：数据量或并发扩大 10 倍时，状态、内存、网络和远端预算哪个先成为瓶颈。</li>
+</ul>
+<h3 id="7">7. 高级候选人的回答结构</h3>
+<ol>
+<li><strong>先给定义/结论</strong>：20 秒内回答题面，不绕圈。</li>
+<li><strong>讲机制</strong>：用状态机、数据流或关键公式解释为什么。</li>
+<li><strong>讲 Trade-off</strong>：至少指出一个“收益 ↔ 代价”。</li>
+<li><strong>落到生产</strong>：给出一个指标、一个失败模式、一个验证方式。</li>
+<li><strong>主动给边界</strong>：说明什么规模/场景下需要换方案。</li>
+</ol>
+<h3 id="8">8. 实战演练</h3>
+<blockquote>
+<p>设计一次 parser 改版的 canary + data-quality SLO，要求在“服务仍返回 200、字段开始静默缺失”时 10 分钟内发现。</p>
+</blockquote>
+<p>完成后尝试用 <strong>3 分钟口述 + 1 张架构/状态图 + 3 个指标</strong> 复盘。如果只能写代码却说不清约束、失败模式和验证方法，通常还没有达到高级面试要求。</p>
+<h2 id="_5">工程化落地</h2>
+<h3 id="review-checklist">设计 / Review Checklist</h3>
+<ul>
+<li>[ ] 定义传输/解析/数据三层 SLO</li>
+<li>[ ] 全链路 trace + structured error</li>
+<li>[ ] fixture 回归 + canary</li>
+<li>[ ] Retry 有预算且带 jitter</li>
+<li>[ ] DLQ 可 replay</li>
+</ul>
+<h3 id="_6">建议监控的指标</h3>
+<ul>
+<li><code>fetch success</code></li>
+<li><code>parse success</code></li>
+<li><code>data completeness</code></li>
+<li><code>freshness lag</code></li>
+<li><code>DLQ rate</code></li>
+<li><code>queue age</code></li>
+</ul>
+<h3 id="_7">示例 / 伪代码</h3>
+<pre><code class="language-text">trace spans:
+queue_wait -&gt; dns -&gt; connect -&gt; tls -&gt; ttfb -&gt; download
+          -&gt; parse -&gt; validate -&gt; dedup -&gt; store
+
+metrics should correlate by: host, page_type, spider_version, parser_version
+</code></pre>
+<h2 id="gotchas">常见误区与 Gotchas</h2>
+<ul>
+<li>只看 HTTP 成功率和 QPS。</li>
+</ul>
+<p>补充检查：</p>
+<ul>
+<li>不要把单机可运行等同于生产可扩展。</li>
+<li>不要只描述“怎么做”，还要说明 <strong>为什么、代价、失败时如何观测</strong>。</li>
+<li>涉及站点侧风控/挑战时，本仓库以防守与合规设计为边界，不提供规避访问控制或验证码的操作步骤。</li>
+</ul>
+<h2 id="_8">面试追问拆解</h2>
+<h3 id="1-freshness-sla">追问 1：什么是 freshness SLA？</h3>
+<p><strong>参考回答：</strong> freshness SLA 可以定义“重要页面从真实变化到平台观察到变化的 P95/P99 延迟”，或不同 priority class 的最大 stale age。</p>
+<p><strong>面试展开：</strong> 说明关键假设 → 给机制/数据结构或状态机 → 指出一个 trade-off → 补一个生产指标或失败模式。</p>
+<h3 id="2-item-useful">追问 2：如何定义一条 item 的 useful？</h3>
+<p><strong>参考回答：</strong> useful item 至少满足抓取成功、业务 Schema 有效、非重复/可归并、时间新鲜、来源合规且下游真正消费。顶层指标应接近 useful items/成本，而不是 requests/s。</p>
+<p><strong>面试展开：</strong> 说明关键假设 → 给机制/数据结构或状态机 → 指出一个 trade-off → 补一个生产指标或失败模式。</p>
+<p>标或失败模式。</p>
+<h2 id="_9">面试官评分参考</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础</td>
+<td>能准确回答题面，不混淆核心术语。</td>
+</tr>
+<tr>
+<td>中级</td>
+<td>能解释机制、边界与至少一个工程权衡，并能关联 业务指标。</td>
+</tr>
+<tr>
+<td>高级</td>
+<td>能给出生产化设计、指标/失败模式/容量意识，并说明方案在不同规模或约束下为何变化。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">一句话记忆</h2>
+<blockquote>
+<p>爬虫 KPI 应从“请求数量”升级为“有用数据产出与新鲜度”。</p>
+</blockquote>
+<h2 id="_11">延伸阅读</h2>
+<ul>
+<li><a href="https://opentelemetry.io/docs/">OpenTelemetry - Documentation</a></li>
+<li><a href="https://sre.google/sre-book/monitoring-distributed-systems/">Google SRE Book - Monitoring Distributed Systems</a></li>
+</ul>
+<hr />
+<blockquote>
+<p>来源说明：本页“推荐回答 / 深度解析 / 易错点 / 原始追问 / 一句话记忆”来自项目 PDF 内容基线；其余“工程化增强”是仓库版扩展。</p>
+</blockquote>
+<p>← <span class="srcref">Q080 如何设计反爬系统的 Feature Pipeline？</span> | <span class="srcref">Q082 为什么 HTTP 200 不能代表抓取成功？</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

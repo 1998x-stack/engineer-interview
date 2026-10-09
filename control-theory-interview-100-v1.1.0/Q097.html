@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>控制系统出现振荡，怎样区分是“增益太高”还是结构问题？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Control Theory</a><i>∕</i><span>Q097</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q097</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">工程</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q096.html">← Q096</a><a href="Q098.html">Q098 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">nonlinear-control</a><a href="#">lyapunov</a><a href="#">sliding-mode</a><a href="#">debugging</a><a href="#">nyquist</a><a href="#">sampling</a><a href="#">anti-windup</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      CONTROL · 97 / 100</div>
+    <h1 class="qtitle">控制系统出现振荡，怎样区分是“增益太高”还是结构问题？</h1>
+    <blockquote>
+<p><strong>难度</strong>：工程 · <strong>高频度</strong>：★★★★★ · <strong>PDF 页码</strong>：85 · <strong>章节</strong>：非线性与系统级工程面试</p>
+<p>导航：<span class="srcref">← Q096</span> · <span class="srcref">题库总索引</span> · <span class="srcref">Q098 →</span></p>
+</blockquote>
+<h2 id="_1">面试官为什么问这题</h2>
+<p>这道题属于 <strong>非线性与系统级工程面试</strong> 的核心知识链。面试官通常不只检查定义，而是通过连续追问观察你是否能把<strong>数学结构、物理直觉、工程约束和验证方法</strong>连接起来。建议先用 30 秒给结论，再根据追问展开公式与边界条件。</p>
+<hr />
+<h2 id="pdf">PDF 原始内容（完整保留）</h2>
+<blockquote>
+<p>本节逐项保留 PDF 中该题的结构化内容；后面的“仓库增强”属于扩展讲解。</p>
+</blockquote>
+<h3 id="_2">标准回答</h3>
+<p>先测振荡频率并与 loop crossover、机械共振、采样 Nyquist、sensor filter cutoff 比较。降低整体 gain 若频率/幅值明显变化，可能是稳定裕度问题；若振荡锁定在固定结构频率，可能是柔性模态；若接近半采样频率，考虑 discrete delay/aliasing；若只在饱和出现，考虑 limit cycle/windup。应同时看 command、actual actuator、measurement raw/filtered 和 timing。</p>
+<h3 id="_3">公式与推导</h3>
+<p>诊断核心是频率定位：
+$$
+\omega_{osc}\stackrel{?}{\approx}\omega_{gc},\;\omega_{res},\;\pi/T_s.
+$$</p>
+<h3 id="_4">工程直觉</h3>
+<p>振荡频率是“故障指纹”。先找到它属于哪个物理/数字时间尺度，再决定调 gain、加 notch 还是改时序。</p>
+<h3 id="gotcha">常见误区 / Gotcha</h3>
+<p>盲目降 Kp 可能只是掩盖 sensor delay、符号错误或结构共振，不应作为唯一诊断动作。</p>
+<h3 id="_5">高频追问</h3>
+<ul>
+<li>如何用 injected sine / FRF 定位共振？</li>
+<li>为什么 limit cycle 不一定来自线性不稳定？</li>
+<li>notch filter 的相位副作用是什么？</li>
+</ul>
+<h3 id="30">30 秒口述版</h3>
+<blockquote>
+<p>先用振荡频率做定位：crossover 附近看 margin，固定机械频率看共振，Nyquist 附近看采样，饱和工况看 windup/limit cycle；再有针对性处理。</p>
+</blockquote>
+<hr />
+<h2 id="_6">仓库增强：深度展开</h2>
+<p>非线性控制题最重要的是说明<strong>局部结论和全局结论的边界</strong>。Jacobian 线性化给局部模型，Lyapunov 可以直接证明更大区域的稳定性，feedback linearization/backstepping/sliding mode 则利用结构主动设计非线性反馈。</p>
+<p>系统级工程题则考证据链。优秀调试不是“猜一个参数再试”，而是从日志、频谱、残差、饱和统计和时序数据提出可证伪假设，再通过 A/B 实验把根因固化成 regression test。</p>
+<h3 id="_7">针对本题的进一步理解</h3>
+<p>诊断振荡时先找频率归属，再找能量来源。频率接近 crossover、机械共振或 Nyquist 各自对应不同根因树。</p>
+<p>从面试表达角度，建议把本题组织成四层：</p>
+<ol>
+<li><strong>定义层</strong>：先说明对象、变量和适用条件；</li>
+<li><strong>数学层</strong>：给最小但足够的关键公式，并解释每一项；</li>
+<li><strong>物理层</strong>：把公式映射成能量、时间尺度、频率或信息流；</li>
+<li><strong>工程层</strong>：主动说明噪声、延迟、饱和、模型误差或采样等边界。</li>
+</ol>
+<h3 id="_8">工程场景</h3>
+<p>以机械臂为例，大范围运动时惯性矩阵与重力项显著非线性；局部线性控制可做定点稳定，而 computed-torque/feedback-linearization 类方法会显式利用动力学结构。</p>
+<p>将这个场景与当前问题连接时，重点不是套算法名称，而是问：<strong>这个概念会改变哪个闭环信号路径、哪个动态时间尺度、哪个约束余量？</strong> 这能把抽象理论转成可验证的设计判断。</p>
+<h2 id="v2">专家版扩展 v2</h2>
+<blockquote>
+<p><strong>内容边界</strong>：本节是仓库第二版扩展，基于经典控制理论与工程实践补充；它不改写上面的 PDF 原始内容。若扩展结论需要额外假设，会在正文中显式说明。</p>
+</blockquote>
+<h3 id="1">1. 核心边界：非线性与系统级验证</h3>
+<p>局部线性结论、全局稳定性、执行器非线性和现场数据诊断必须区分。工程问题最终要落到可验证假设和安全试验。</p>
+<p><strong>针对 Q097 的专家补充：</strong> 振荡频率是定位关键：若接近 crossover，常与 margin/gain 有关；若贴近机械/传感器共振，可能是结构模态；若幅值固定且频率随幅值/非线性变化，可能是 limit cycle。FRF/injected sine 能把‘猜参数’变成证据。</p>
+<h3 id="2">2. 推导路线与适用条件</h3>
+<ol>
+<li>明确非线性结构、平衡点/轨迹和约束。</li>
+<li>选择 Lyapunov、feedback linearization、sliding/backstepping 或诊断 residual 建立可证明/可证伪链。</li>
+<li>最后检查 region of attraction、saturation、sensor/actuator dynamics 和实机安全验证。</li>
+</ol>
+<p>在白板面试中，建议把“公式”与“成立条件”写在同一块区域。例如写出一个二阶近似或稳定性结论后，紧跟一句：<strong>假设高阶模态足够远、没有显著 RHP 零点/纯延迟、执行器未饱和</strong>。这能明显区分“会背公式”和“会使用模型”。</p>
+<h3 id="3">3. 一个可计算的小例子</h3>
+<p>构造一个含 saturation、10–20 ms delay、measurement noise 的二阶/倒立摆最小模型。先在理想条件下验证理论，再逐个打开非线性和实现因素；每次只改一个变量并记录 residual，从而区分理论失效与实现失效。</p>
+<p>这个例子的目的不是训练固定数字，而是练习从 <strong>模型 → 指标 → 非理想因素 → 结论变化</strong> 的完整链路。建议在 Python/MATLAB 中把关键参数做 sweep，而不是只跑一个点。</p>
+<h3 id="4">4. 工程验证矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>验证层</th>
+<th>建议实验</th>
+<th>想证明什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Theory</td>
+<td>Lyapunov/非线性条件</td>
+<td>证明或局部边界</td>
+</tr>
+<tr>
+<td>Non-ideal</td>
+<td>saturation/delay/noise</td>
+<td>发现 limit cycle</td>
+</tr>
+<tr>
+<td>Evidence</td>
+<td>logs/FRF/residual</td>
+<td>形成可证伪根因</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5">5. 高频追问详答</h3>
+<h4 id="1-injected-sine-frf">1. 如何用 injected sine / FRF 定位共振？</h4>
+<p>在安全幅值下对闭环/开环注入单频或 multisine，测量 input-output gain/phase；若振荡频率附近出现尖锐 resonance 或 phase cliff，就能区分单纯 gain tuning 与结构模态问题。</p>
+<h4 id="2-limit-cycle">2. 为什么 limit cycle 不一定来自线性不稳定？</h4>
+<p>Limit cycle 可以由 saturation、deadzone、relay、quantization、friction 等非线性产生，即使线性化闭环极点全部稳定。其幅频往往依赖振幅，可用 describing function 或时域非线性仿真分析。</p>
+<h4 id="3-notch-filter">3. notch filter 的相位副作用是什么？</h4>
+<p>Notch 的 pole/zero 对在抑制频率附近会引入快速相位变化和群延迟；阻尼/中心频率设置不当可能降低 crossover PM。共振漂移时，原本的 notch 还可能在错误频率制造相位问题。</p>
+<h3 id="6">6. 反例与失效条件</h3>
+<ul>
+<li><strong>模型层失效</strong>：如果出现未建模柔性模态、显著时延、RHP 零点、强耦合或工作点迁移，原题中的低阶/线性结论可能只在局部成立。</li>
+<li><strong>实现层失效</strong>：sampling、quantization、filter、scheduler、actuator saturation/rate limit 会改变实际闭环，不应被当作“软件细节”。</li>
+<li><strong>评价层失效</strong>：只看一个 step response 或单一 PM/GM 容易漏掉噪声、控制努力、内部状态和 worst-case parameter spread。</li>
+<li><strong>验证原则</strong>：每个重要结论至少对应一个可证伪预测；例如“若根因是 delay margin 不足，则降低 crossover 或减少 latency 后振荡应系统性减弱”。</li>
+</ul>
+<h3 id="7">7. 面试回答的三档深度</h3>
+<p><strong>30 秒：</strong> 先复述上面的“30 秒口述版”，只讲定义、关键公式和一个 trade-off。</p>
+<p><strong>2 分钟：</strong> 增加推导路线中的 2–3 步，并主动说明一个适用条件/反例；这是大多数技术面最合适的深度。</p>
+<p><strong>5 分钟以上：</strong> 画框图或 pole/Bode/state diagram，把工程验证矩阵讲出来；如果面试官继续追问，再进入数值例子、robustness 或 implementation details。</p>
+<h3 id="8">8. 自测题</h3>
+<ol>
+<li>不看笔记，用 60 秒回答：<strong>控制系统出现振荡，怎样区分是“增益太高”还是结构问题？</strong></li>
+<li>把答案中的一个理想假设替换成非理想条件（delay / saturation / noise / model uncertainty / sampling），结论如何变化？</li>
+<li>给出一个你会记录的日志/频域/状态变量，用于验证答案不是纸面推导。</li>
+</ol>
+<hr />
+<h2 id="checklist">白板推导 Checklist</h2>
+<ul>
+<li>[ ] 明确局部/全局稳定结论</li>
+<li>[ ] 给 Lyapunov/非线性结构或诊断证据链</li>
+<li>[ ] 说明执行器/传感器约束</li>
+<li>[ ] 给仿真-HIL-实机验证闭环</li>
+</ul>
+<p>如果公式较长，面试时不必把每一步代数全部写完；但必须说明<strong>从什么方程出发、用了什么假设、最终结论依赖什么条件</strong>。</p>
+<h2 id="_9">追问展开与答题提示</h2>
+<h3 id="1-injected-sine-frf_1">1. 如何用 injected sine / FRF 定位共振？</h3>
+<p><strong>答题提示：</strong> 先给严格定义或关键公式，再补物理直觉和一个工程边界；若问题涉及参数选择，主动说明 trade-off 与验证方法。</p>
+<h3 id="2-limit-cycle_1">2. 为什么 limit cycle 不一定来自线性不稳定？</h3>
+<p><strong>答题提示：</strong> 先给严格定义或关键公式，再补物理直觉和一个工程边界；若问题涉及参数选择，主动说明 trade-off 与验证方法。</p>
+<h3 id="3-notch-filter_1">3. notch filter 的相位副作用是什么？</h3>
+<p><strong>答题提示：</strong> 先给严格定义或关键公式，再补物理直觉和一个工程边界；若问题涉及参数选择，主动说明 trade-off 与验证方法。</p>
+<h2 id="_10">实验 / 仿真建议</h2>
+<ul>
+<li>先建立一个<strong>最小可复现实验</strong>，只保留与本题相关的动态；</li>
+<li>同时画时域与频域结果，不要只看单一阶跃曲线；</li>
+<li>对关键参数做至少一个数量级内的 sweep，观察结论是否稳健；</li>
+<li>主动加入一种非理想因素（noise / delay / saturation / model error / sampling），验证理论边界；</li>
+<li>将结论写成“可证伪预测”，例如：如果根因是 phase margin 不足，那么降低 crossover 后振荡应按可预期方式减弱。</li>
+</ul>
+<p>仓库中的 <a href="../../examples/python/"><code>examples/python</code></a> 提供按章节组织的最小实验脚本，可作为本题的起点。</p>
+<h2 id="_11">面试评分点</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>及格</td>
+<td>能给出正确定义和核心结论</td>
+</tr>
+<tr>
+<td>良好</td>
+<td>能写关键公式并解释物理意义</td>
+</tr>
+<tr>
+<td>优秀</td>
+<td>能指出公式适用条件、工程 trade-off 和常见失败模式</td>
+</tr>
+<tr>
+<td>资深</td>
+<td>能把问题放回完整闭环架构，并提出可验证的设计/调试方法</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_12">相关题目</h2>
+<ul>
+<li><span class="srcref">Q096. 为什么 actuator saturation / rate limit 是控制面试必须会的非线性？</span></li>
+<li><span class="srcref">Q098. 仿真稳定但实机振荡，系统化排查顺序是什么？</span></li>
+<li><span class="srcref">Q091. Lyapunov 稳定性为什么能在不求解析解时证明稳定？</span></li>
+<li><span class="srcref">Q092. 线性系统的 Lyapunov 方程如何判断稳定？</span></li>
+<li><span class="srcref">Q093. Feedback Linearization 和普通 Jacobian 线性化有什么区别？</span></li>
+</ul>
+<h2 id="_13">参考资料</h2>
+<ul>
+<li><a href="https://undergraduate.catalog.berkeley.edu/courses/1613771">UC Berkeley ENGIN 250A / EE C222 Nonlinear Systems</a> — Lyapunov、backstepping、feedback linearization、sliding mode。</li>
+</ul>
+<blockquote>
+<p>参考资料用于扩展与核验；本题“PDF 原始内容”以仓库随附 PDF 为准。公开资料不会被用来悄悄改写 PDF 原文。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

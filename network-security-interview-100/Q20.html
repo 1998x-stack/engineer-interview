@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>文件上传漏洞应该如何分析？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Network Security</a><i>∕</i><span>Q20</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q20</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">3</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q19.html">← Q19</a><a href="Q21.html">Q21 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORK SECURITY · 20 / 100</div>
+    <h1 class="qtitle">文件上传漏洞应该如何分析？</h1>
+    <p>← <span class="srcref">Q19</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q21</span> →</p>
+<h1 id="q20">Q20 · 文件上传漏洞应该如何分析？</h1>
+<blockquote>
+<p><strong>定位</strong>：本文件完整保留 PDF 对本题的题解结构，并在“扩展解析”部分加入更详细的工程化分析。新增内容用于学习与面试准备，不代表任何公司的内部题库。</p>
+</blockquote>
+<h2 id="_1">题目信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>难度</td>
+<td>3/5</td>
+</tr>
+<tr>
+<td>适用岗位</td>
+<td>AppSec / 渗透 / 安全研发</td>
+</tr>
+<tr>
+<td>Framework / 对标</td>
+<td>File Handling</td>
+</tr>
+<tr>
+<td>PDF 页码</td>
+<td>第 26 页</td>
+</tr>
+<tr>
+<td>所属章节</td>
+<td>第 2 章 · Web 安全核心漏洞</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官为什么问这题</h2>
+<p>考察候选人能否用“Source -&gt; Propagation -&gt; Parser/Sink -&gt; Impact”解释漏洞根因，并给出可验证的修复。</p>
+<p>通常不仅是在确认“是否知道名词”，还在观察以下能力：</p>
+<ul>
+<li>不可信数据从哪里进入？</li>
+<li>最终进入什么解析/执行上下文？</li>
+<li>数据与代码/结构是否真正分离？</li>
+<li>根治控制与纵深防御分别是什么？</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p><strong>一句话结论：</strong> 安全上传不是一个 if，而是一条不可信文件生命周期。</p>
+<p>展开时优先抓住以下三点：</p>
+<ol>
+<li>把上传看成 upload -&gt; validate -&gt; store -&gt; process -&gt; serve -&gt; execute 的完整生命周期。</li>
+<li>检查内容、MIME、扩展名、文件名、路径、权限、解析器和归档解压。</li>
+<li>最安全设计通常是非执行存储、随机重命名、独立域名/对象存储和内容处理隔离。</li>
+</ol>
+<h2 id="2-3">2-3 分钟标准回答</h2>
+<p>首先，把上传看成 upload -&gt; validate -&gt; store -&gt; process -&gt; serve -&gt; execute 的完整生命周期。
+其次，检查内容、MIME、扩展名、文件名、路径、权限、解析器和归档解压。
+只检查扩展名无法覆盖 polyglot、解析器差异和后续处理风险。图片转码、Office/PDF 解析、压缩包解压都可能引入新的攻击面。
+应把上传对象视为不可信数据，在隔离区完成扫描/转码，再进入可被用户访问的存储；服务时设置正确 Content-Type 与 Content-Disposition。
+最后要把回答落到工程闭环：说明根因控制是什么、还能有哪些纵深防御，以及如何通过日志、测试或安全回归证明控制真正生效。</p>
+<hr />
+<h2 id="pdf">PDF 基线内容</h2>
+<blockquote>
+<p>以下部分对应成品 PDF 的本题内容，保持其术语、组织方式与观点。</p>
+</blockquote>
+<h3 id="01">01 · 考点拆解</h3>
+<ul>
+<li>把上传看成 upload -&gt; validate -&gt; store -&gt; process -&gt; serve -&gt; execute 的完整生命周期。</li>
+<li>检查内容、MIME、扩展名、文件名、路径、权限、解析器和归档解压。</li>
+<li>最安全设计通常是非执行存储、随机重命名、独立域名/对象存储和内容处理隔离。</li>
+</ul>
+<h3 id="02">02 · 面试答题主线</h3>
+<ol>
+<li>把上传看成 upload -&gt; validate -&gt; store -&gt; process -&gt; serve -&gt; execute 的完整生命周期。</li>
+<li>检查内容、MIME、扩展名、文件名、路径、权限、解析器和归档解压。</li>
+<li>最安全设计通常是非执行存储、随机重命名、独立域名/对象存储和内容处理隔离。</li>
+<li>把答案收束到可验证的工程控制：说明“如何修复/设计”，并补一句“如何通过日志、测试或回归验证控制真的生效”。</li>
+</ol>
+<h3 id="03">03 · 深度解析</h3>
+<p>只检查扩展名无法覆盖 polyglot、解析器差异和后续处理风险。图片转码、Office/PDF 解析、压缩包解压都可能引入新的攻击面。</p>
+<p>应把上传对象视为不可信数据，在隔离区完成扫描/转码，再进入可被用户访问的存储；服务时设置正确 Content-Type 与 Content-Disposition。</p>
+<h3 id="04">04 · 高频追问</h3>
+<ul>
+<li>为什么文件名也可能是安全输入？</li>
+<li>对象存储公开读写权限如何影响上传风险？</li>
+</ul>
+<h3 id="05">05 · 易错点</h3>
+<ul>
+<li>只做前端校验。</li>
+<li>把“上传成功”直接等同于“可公开访问”。</li>
+</ul>
+<h3 id="06">06 · 工程实践</h3>
+<ul>
+<li>设计 quarantine -&gt; scan -&gt; publish 流程。</li>
+<li>对压缩包设置大小、层数、文件数与解压后上限。</li>
+</ul>
+<h3 id="07">07 · 一句话记忆</h3>
+<blockquote>
+<p>安全上传不是一个 if，而是一条不可信文件生命周期。</p>
+</blockquote>
+<hr />
+<h2 id="_3">扩展解析：从“会回答”到“会做工程”</h2>
+<h3 id="1">1. 更深一层的原理</h3>
+<p>上传不是一个校验点，而是 upload -&gt; storage -&gt; processing -&gt; serving 的生命周期。</p>
+<p>安全设计优先隔离存储与执行域、随机命名、内容校验、大小限制、访问授权和解析器隔离。</p>
+<h3 id="2">2. 边界条件与面试高分点</h3>
+<ul>
+<li><strong>先定义边界</strong>：明确主体、资产、数据/状态和信任边界，避免把问题描述成绝对结论。</li>
+<li><strong>区分根治与纵深</strong>：根治方案应消除不安全的数据流、权限或协议状态；WAF、告警、限流等通常属于补充控制。</li>
+<li><strong>考虑失败模式</strong>：不仅说明正常路径，还要考虑配置漂移、解析差异、权限过宽、依赖升级和异常条件。</li>
+<li><strong>给验证方式</strong>：安全设计必须能被单元测试、集成测试、审计日志、检测规则或演练验证。</li>
+</ul>
+<h3 id="3">3. 工程化检查清单</h3>
+<ul>
+<li>[ ] 首选结构化 API、参数化和上下文编码</li>
+<li>[ ] 授权在可信服务端执行</li>
+<li>[ ] 对出站网络、文件、解析器实施最小能力</li>
+<li>[ ] 修复后建立单元/集成/安全回归测试</li>
+<li>[ ] 设计 quarantine -&gt; scan -&gt; publish 流程。</li>
+<li>[ ] 对压缩包设置大小、层数、文件数与解压后上限。</li>
+</ul>
+<h3 id="4">4. 可观测性与证据</h3>
+<p>面试中主动补一句“我会从哪些证据验证”，通常很加分：</p>
+<ul>
+<li>HTTP/反向代理日志</li>
+<li>应用审计日志</li>
+<li>数据库/下游服务异常</li>
+<li>WAF 仅作为辅助信号</li>
+<li>安全测试回归结果</li>
+</ul>
+<h3 id="5">5. 追问怎么接</h3>
+<h4 id="_4">追问：为什么文件名也可能是安全输入？</h4>
+<p><strong>回答要点：</strong> 先解释导致该现象的协议/信任边界，再说明成立所需条件，最后补充防守侧如何通过配置、日志或测试验证。</p>
+<h4 id="_5">追问：对象存储公开读写权限如何影响上传风险？</h4>
+<p><strong>回答要点：</strong> 按“资产/主体 -&gt; 信任边界 -&gt; 控制点 -&gt; 可观测性 -&gt; 回归验证”组织答案；优先给结构化、最小权限和默认拒绝的工程方案。</p>
+<h3 id="6">6. 面试官可能继续升级的场景题</h3>
+<ul>
+<li>如果这个问题发生在核心业务而不是测试环境，你会如何调整风险优先级、证据保全和修复节奏？</li>
+<li>如果已有一层安全产品/框架默认保护，你如何验证它真的覆盖了 File Handling 的边界，而不是只相信配置名称？</li>
+<li>如果修复会影响兼容性或业务性能，你会如何设计灰度、监控和回滚方案？</li>
+</ul>
+<h3 id="7">7. 常见回答层级</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只能给出名词定义</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能解释基本原理</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能说明成立条件、边界和真实影响</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能给出工程修复、检测和验证</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能处理复杂追问、权衡与系统设计</td>
+</tr>
+</tbody>
+</table>
+<!-- BEGIN PROFESSIONAL_V2 -->
+<h2 id="v2">专业深化 v2：面向高级工程师的题解</h2>
+<blockquote>
+<p>这一节是在 PDF 基线与第一轮扩展之上的第二层深化，重点补齐 <strong>机制、边界、工程决策、证据、验证与追问树</strong>。它不是利用手册，而是面向合法授权的安全工程与面试表达。</p>
+</blockquote>
+<h3 id="a">A. 机制模型：先把问题抽象对</h3>
+<ul>
+<li>上传安全必须看完整生命周期：ingest→validate→store→process→serve，而不是只看扩展名。</li>
+<li>风险通常来自内容被错误解析/执行、文件路径与元数据处理、解析器漏洞、访问控制和资源消耗。</li>
+<li>“文件类型”是多信号概念：用户声明 MIME、扩展名、magic/content、实际 parser 可能不一致。</li>
+</ul>
+<h3 id="b">B. 成立条件、边界与典型失效模式</h3>
+<ul>
+<li>图片/文档即使不可执行，也可能触发复杂 parser；压缩包还涉及递归解压和资源膨胀。</li>
+<li>对象存储权限和下载响应头决定文件是否能在可信 origin 上被浏览器解释。</li>
+<li>杀毒/内容扫描是辅助控制，不能证明文件绝对安全。</li>
+</ul>
+<h3 id="c">C. 工程设计：从“修一个点”到“设计控制面”</h3>
+<ul>
+<li>上传先进入 quarantine/non-executable storage，并生成随机对象 ID。</li>
+<li>按业务 allowlist 文件类型、大小、数量与解析流程；必要时重新编码/转码。</li>
+<li>解析服务隔离、最小权限、无多余网络访问，并限制 CPU/memory/time。</li>
+<li>下载通过授权检查，使用独立内容域和安全 Content-Type/Disposition。</li>
+</ul>
+<h3 id="d-detection-evidence">D. Detection &amp; Evidence：如何证明你的判断</h3>
+<ul>
+<li>记录 uploader identity、object ID、hash、declared/detected type、scanner/processor result。</li>
+<li>对象存储 audit 和下载 access log 用于追踪暴露与访问。</li>
+<li>解析器 crash/timeout/资源异常是重要安全信号。</li>
+</ul>
+<p>一个成熟回答要主动区分：<strong>事实（日志/状态）</strong>、<strong>推断（关联分析）</strong>、<strong>假设（尚待验证）</strong>。这能显著降低“看到一个异常就直接下结论”的面试失分。</p>
+<h3 id="e">E. 修复后的验证与回归</h3>
+<ul>
+<li>建立文件 corpus 覆盖扩展名/MIME/content 不一致和损坏文件。</li>
+<li>测试超大文件、压缩深度和解析超时边界。</li>
+<li>验证未授权用户无法通过猜测对象路径直接下载。</li>
+</ul>
+<h3 id="f">F. 面试追问树：把一题答成一棵知识树</h3>
+<ol>
+<li>为什么“改名 + 校验后缀”不是完整方案？</li>
+<li>为什么上传和下载应该使用不同的信任边界？</li>
+<li>重新编码图片能降低哪些风险，不能降低哪些？</li>
+</ol>
+<p>回答这些追问时，建议始终使用：<strong>结论 → 原理 → 条件 → 反例/边界 → 工程控制 → 验证</strong>。如果题目涉及生产环境，再补充可用性、兼容性、灰度和回滚。</p>
+<h3 id="g">G. 这道题在真实工作中的“交付物”</h3>
+<p>安全上传架构与策略：类型/大小、quarantine、扫描/转码、对象权限、下载响应头、审计和资源限额。</p>
+<h3 id="h">H. 一页纸复盘</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>应该能说清楚什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>根因</td>
+<td>不可信文件跨越存储、解析、执行和浏览器边界。</td>
+</tr>
+<tr>
+<td>边界</td>
+<td>类型识别、复杂 parser、对象访问与资源消耗。</td>
+</tr>
+<tr>
+<td>主要控制</td>
+<td>隔离上传 + allowlist + 安全处理 + 授权下载。</td>
+</tr>
+<tr>
+<td>关键证据</td>
+<td>上传/对象/解析/下载全链审计。</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>恶意/损坏/超限 corpus 与访问控制回归。</td>
+</tr>
+</tbody>
+</table>
+<!-- END PROFESSIONAL_V2 -->
+
+<h2 id="_6">复习卡片</h2>
+<ul>
+<li><strong>核心关键词</strong>：File Handling</li>
+<li><strong>一句话</strong>：安全上传不是一个 if，而是一条不可信文件生命周期。</li>
+<li><strong>最容易答错</strong>：只做前端校验。</li>
+<li><strong>工程动作</strong>：设计 quarantine -&gt; scan -&gt; publish 流程。</li>
+<li><strong>答题顺序</strong>：定义 -&gt; 原理 -&gt; 边界 -&gt; 风险 -&gt; 检测 -&gt; 修复 -&gt; 验证。</li>
+</ul>
+<h2 id="_7">关联题</h2>
+<ul>
+<li><span class="srcref">Q19 XXE 是什么？为什么现代环境中出现得比以前少？</span></li>
+<li><span class="srcref">Q18 SSRF 为什么不能只过滤 127.0.0.1？</span></li>
+<li><span class="srcref">Q17 SSRF 的本质是什么？</span></li>
+<li><span class="srcref">Q16 CSRF 的本质是什么？如何修复？</span></li>
+</ul>
+<h2 id="_8">参考标准 / 延伸阅读</h2>
+<ul>
+<li><a href="https://owasp.org/Top10/2025/">OWASP Top 10:2025</a> - 2025 Web 应用风险总览；A01 Broken Access Control，A03 Software Supply Chain Failures，A05 Injection。</li>
+<li><a href="https://owasp.org/www-project-application-security-verification-standard/">OWASP ASVS 5.0.0</a> - 2025-05-30 发布；用于 Web 应用技术安全控制验证与安全开发要求。</li>
+</ul>
+<h2 id="_9">安全边界</h2>
+<blockquote>
+<p>本仓库面向合法授权的面试学习、安全工程、检测与防守。涉及攻击技术时聚焦原理、证据、修复和验证，不提供针对真实目标的利用步骤、隐蔽规避或武器化操作。</p>
+</blockquote>
+<hr />
+<p>← <span class="srcref">Q19</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q21</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

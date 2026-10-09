@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>函数方程中，怎样判断先代 $0$、$1$，还是先交换变量？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q020</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q020</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q019.html">← Q019</a><a href="Q021.html">Q021 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">数学专业</a><a href="#">函数方程、信息提取、策略</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 20 / 100</div>
+    <h1 class="qtitle">函数方程中，怎样判断先代 $0$、$1$，还是先交换变量？</h1>
+    <p><strong>模块：</strong> 代数<br />
+<strong>标签：</strong> 数学专业 · 难度 ★★★★☆ · 函数方程、信息提取、策略</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>函数方程中，怎样判断先代 $0$、$1$，还是先交换变量？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>代特殊值是为了制造信息，不是仪式。</li>
+<li>优先寻找能消元、制造同值、得到$f(0)$或固定点的代入。</li>
+<li>交换变量常用于比较两个等式并消去复杂项。</li>
+</ul>
+<p><strong>展开：</strong> 函数方程的第一步应该由“想得到什么”驱动。若表达式含 $xy$，令一个变量为0可能把两变量耦合解除；若有 $f(x+y)$，令 $y=0$常得到基准关系；若左右不对称但变量角色可交换，写出 $(x,y)$ 与 $(y,x)$ 两式并相减可能直接得到单射或奇偶性。高水平回答会说：特殊代入只是<strong>实验设计</strong>，目标是最大化一次代入带来的约束。</p>
+<h3 id="_4">面试追问</h3>
+<p>如果所有常见特殊值都没有信息，你下一步会做什么？</p>
+<h3 id="_5">常见失分</h3>
+<p>机械依次代0、1、-1；不说明每次代入的目的。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>要求学生在每次代入前先写一句“我希望得到……”，训练有目的探索。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：目标驱动且方法多样；6分：会常见技巧；3分：模板化。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：代数题的“五问”</h3>
+<p>在不等式、方程、多项式和数列问题中，先统一检查：<strong>对象是什么、结构是否齐次/对称、等号或特殊根在哪里、使用的定理条件是否满足、变形是否保留等价性</strong>。竞赛代数最常见的低级失分不是不会定理，而是为了套定理破坏了等号结构或遗漏定义域。</p>
+<p>面试表达时最好同时给出“为什么选这个工具”和“什么信号出现时不用它”。能明确工具的失效边界，比多报几个定理更能体现成熟度。</p>
+<h4 id="_9">技术补充：代值不是仪式，而是实验设计</h4>
+<p>函数方程中令 $0$ 常用于提取常数项/单位元行为，令 $1$ 常用于乘法型结构，交换 $x,y$ 用于对称/反对称消元，令某个表达式为0则常用于制造相同函数值。每一步都应回答“我想让哪个部分消失/重合”。如果代值只是因为套路而没有目标，往往会堆出大量无用等式。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>写出所用定理的全部条件与等号条件。</li>
+<li>给出一种不同风格的替代方法，并比较优劣。</li>
+<li>改变一个条件，使原方法失效，并解释原因。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 定义域/正性是否核对</li>
+<li>[ ] 是否先定位等号、根或不动点</li>
+<li>[ ] 变形是否等价且方向正确</li>
+<li>[ ] 能否解释为什么不用另一个常见工具</li>
+<li>[ ] 能否给出反例说明条件必要</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>定理条件、等号/边界、结构选择和证明链完整；能解释替代方法与失效边界。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>主要数学内容正确，少量条件或方法比较未展开。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>会套公式或给标准解，但结构解释弱、条件意识不足。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>关键公式/方向错误，或存在不可修复的等价变形与定义域问题。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>如果所有常见特殊值都没有信息，你下一步会做什么？</li>
+<li>写出所用定理的全部条件与等号条件。</li>
+<li>给出一种不同风格的替代方法，并比较优劣。</li>
+<li>改变一个条件，使原方法失效，并解释原因。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>把本题整理成一页“定理条件卡”：母式、条件、等号、典型触发信号、一个反例、一个变式。</p>
+<h3 id="v2">专业版 v2：函数方程的代值不是仪式，而是“信息提取实验”</h3>
+<h4 id="1-0">1. 代 $0$ 的目的</h4>
+<p>通常是隔离常数 $f(0)$、消掉乘法项或建立平移关系。例如若出现 $f(x+y)$，令 $y=0$ 常得到 $f(x)$ 与 $f(0)$ 的约束。</p>
+<h4 id="2-1">2. 代 $1$ 的目的</h4>
+<p>当方程包含乘法或幂结构时，$1$ 是乘法单位元，常可得到缩放关系或固定点。</p>
+<h4 id="3_1">3. 交换变量的目的</h4>
+<p>若方程对 $x,y$ 近对称，比较 $P(x,y)$ 与 $P(y,x)$，常能消去复杂项，得到：</p>
+<p>$$
+f(x)-f(y)=\cdots
+$$</p>
+<p>进而证明单射、常值或线性结构。</p>
+<h4 id="4">4. 一个更成熟的策略表</h4>
+<p>先问：“我想得到什么？”</p>
+<ul>
+<li>想找 $f(0)$ → 代 0；</li>
+<li>想产生同一个函数值 → 构造两个输入；</li>
+<li>想证明单射 → 令两个输出相等或比较交换式；</li>
+<li>想证明满射 → 让某个复合表达式覆盖全体实数；</li>
+<li>想获得奇偶性 → 代 $y=-x$ 或比较 $x,-x$。</li>
+</ul>
+<h4 id="5">5. 面试亮点</h4>
+<p>强调每次代值之后要判断“新增了什么独立信息”，避免连续代十几个特殊值却没有形成闭环。</p>
+<h2 id="_15">关联题目</h2>
+<ul>
+<li><span class="srcref">Q021 · 如何教函数方程中的“单射/满射”？</span></li>
+<li><span class="srcref">Q017 · 含参数多项式问题中，怎样选择韦达、判别式还是根的定位？</span></li>
+</ul>
+<h2 id="_16">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Context Compaction 和 Context Reset 有什么区别？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Agent Harness</a><i>∕</i><span>q24</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q24</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q23.html">← q23</a><a href="q25.html">q25 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">03-context-memory</a><a href="#">agent-harness</a><a href="#">interview</a><a href="#">context-engineering</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      AGENT HARNESS · 24 / 101</div>
+    <h1 class="qtitle">Context Compaction 和 Context Reset 有什么区别？</h1>
+    <blockquote>
+<p><strong>一句话结论</strong>：Compaction 保连续性但可能信息损失；Reset 用结构化 handoff 换 clean slate，适合长任务阶段切 换。</p>
+<p><strong>难度</strong>：★★★★☆　<strong>高频</strong>：★★★★★　<strong>岗位</strong>：Agent / Applied AI　<strong>PDF</strong>：第 26 页起</p>
+<p><strong>内容分层</strong>：第 1–13 节以 PDF 原稿为主并做结构化整理；第 14 节是 Repo v1.1 的工程扩展，结合公开一手资料与系统设计方法补强。</p>
+</blockquote>
+<h2 id="1">1. 面试官真正想考什么</h2>
+<p>你是否真正理解 context 是 runtime state 的投影，而不是聊天记录的别名。</p>
+<p><strong>更深一层：</strong> Compaction 保连续性，Reset 换 clean slate；选择依据是 summary fidelity、阶段边界、artifact 完整度与重建成本。</p>
+<h2 id="2-know-why-harness">2. Know-Why：为什么这是 Harness 问题</h2>
+<p>上下文是有限资源。稳定 Harness 会把长期事实、任务状态和临时观察分开，并让每一轮只携带对当前决策最有价值的信息。针对本题，关键不是记住术语，而是识别系统中的“控制点”：Compaction 保连续性但可能信息损失；Reset用结构化 handoff 换 clean slate，适合长任务阶段切换。 这类控制点一旦缺失，模型即使单次推理正确，也可能因为重试、上下文污染、环境状态、权限或错误反馈而在真实任务中失败。</p>
+<h3 id="_1">三条工程不变量</h3>
+<ol>
+<li>Context 是预算，不是仓库；只放当前决策真正需要的信息。</li>
+<li>Memory 不是 task state；任务真相必须放在可持久化、可版本化状态中。</li>
+<li>压缩、检索、缓存都必须处理陈旧与信息损失。</li>
+</ol>
+<p>这些不变量不是“最佳实践口号”，而是用来约束设计空间的。面试时如果方案违反其中一条，应主动解释为什么值得承担风险，以及如何用实验和监控把风险显式化。</p>
+<h2 id="3-know-how">3. Know-How：怎样落到生产系统</h2>
+<ul>
+<li>
+<p>根据任务阶段、summary fidelity、context anxiety 和 artifact 完整度选择。</p>
+</li>
+<li>
+<p>把这一机制做成可配置、可追踪、可评测的 runtime primitive。</p>
+</li>
+</ul>
+<h3 id="artifact">推荐的工程 Artifact</h3>
+<p>对同一长任务比较 full-context、compaction、reset+handoff 三组，测 solve rate、tokens 与 information-loss failures。</p>
+<h3 id="_2">本章参考架构</h3>
+<pre><code class="language-mermaid">flowchart TB
+  Q[Current Decision] --&gt; CB[Context Builder]
+  H[Recent History] --&gt; CB
+  M[Memory Retrieval] --&gt; CB
+  R[RAG / Search] --&gt; CB
+  S[Task State] --&gt; CB
+  T[Tool Docs] --&gt; CB
+  CB --&gt; L[LLM]
+  L --&gt; A[Action]
+</code></pre>
+<blockquote>
+<p>图是本章公共心智模型；回答本题时只展开与题目相关的节点，避免把所有组件一次性画满。</p>
+</blockquote>
+<h2 id="3a-production-deep-dive">3A. Production Deep Dive：把概念变成系统协议</h2>
+<h3 id="3a1">3A.1 核心机制</h3>
+<p>Compaction 保连续性但有信息损失；Reset 清理认知状态但依赖 structured handoff</p>
+<p><strong>Source of Truth：</strong> Task state + handoff artifact。在面试中主动指出这一点很重要，因为 Agent 的自然语言状态只是“认知状态”，真正能决定是否继续、是否重试、是否完成的通常是外部持久状态或环境。</p>
+<h3 id="3a2">3A.2 推荐状态 / 数据模型</h3>
+<pre><code class="language-text">ContextItem { item_id, kind, source, version, token_cost, relevance }
+TaskState { run_id, goal, plan, progress, environment_ref }
+MemoryRecord { memory_id, scope, content_ref, confidence, ttl, provenance }
+RetrievalTrace { query, candidates, selected, scores, timestamp }
+</code></pre>
+<p>这不是要求所有系统都使用同一 schema；重点是把本题涉及的<strong>身份、版本、状态、结果引用和恢复语义</strong>从自然语言中提取出来，变成可验证 contract。</p>
+<h3 id="3a3">3A.3 具体故障场景</h3>
+<blockquote>
+<p><strong>Scenario</strong>：summary 漏掉关键约束，后续 session 做出不可逆错误</p>
+</blockquote>
+<p>排查时不要只看最终回答。建议从 <code>goal/version → model decision → policy → tool/action → environment mutation → persisted state → grader</code> 顺序追踪，确认“模型认为发生了什么”与“环境实际发生了什么”在哪一步分叉。</p>
+<h3 id="3a4">3A.4 可证伪实验</h3>
+<p><strong>Experiment：</strong> 长任务比较 raw history、compaction、reset+h​​andoff。</p>
+<p>一个好的 Harness 改动必须能写成可证伪假设，例如：“如果这个机制解决了目标 failure mode，那么在固定 model/task/env 后，专项指标应改善；如果没有改善，就不应把复杂度长期留在 runtime。”</p>
+<p><strong>Success criterion / SLO：</strong> verified completion / token Pareto 更优。</p>
+<h3 id="3a5-production-checklist">3A.5 Production Checklist</h3>
+<ul>
+<li>[ ] 区分 task state、memory、retrieved context、raw history</li>
+<li>[ ] 每个 context item 有 provenance/version/token cost</li>
+<li>[ ] 写 memory 有 policy，读 memory 有 relevance/TTL</li>
+<li>[ ] compaction/reset 后能验证关键事实未丢失</li>
+<li>[ ] 缓存有 invalidation 与 stale-context 检测</li>
+</ul>
+<h3 id="compaction-reset">Compaction / Reset 的选择矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Compaction</th>
+<th>Reset + Handoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>连续性</td>
+<td>高</td>
+<td>依赖 handoff</td>
+</tr>
+<tr>
+<td>token 控制</td>
+<td>中-高</td>
+<td>高</td>
+</tr>
+<tr>
+<td>隐性偏差清理</td>
+<td>弱</td>
+<td>强</td>
+</tr>
+<tr>
+<td>信息损失风险</td>
+<td>summary loss</td>
+<td>handoff omission</td>
+</tr>
+<tr>
+<td>适用</td>
+<td>中等长任务、强连续对话</td>
+<td>长程工程、阶段边界明显</td>
+</tr>
+</tbody>
+</table>
+<p>生产系统常采用混合策略：session 内 compaction，达到 sprint/phase 边界时生成 structured handoff 后 reset。</p>
+<h2 id="4-failure-modes">4. Failure Modes：低分答案与真实故障</h2>
+<ul>
+<li>
+<p>盲目摘要</p>
+</li>
+<li>
+<p>或每轮都 reset 导致交接开销巨大</p>
+</li>
+</ul>
+<h3 id="_3">生产环境再多想三层</h3>
+<ul>
+<li><strong>Detectability</strong>：这个失败在 trace / state diff / tool result / grader 中留下什么证据？</li>
+<li><strong>Recoverability</strong>：失败后是 retry、replan、compensate、rollback、ask human，还是 terminate？</li>
+<li><strong>Blast Radius</strong>：错误最多影响一次 tool call、一个 run、一个 tenant，还是外部真实世界？</li>
+</ul>
+<h2 id="5-trade-offs">5. Trade-offs：不要只讲“最佳方案”</h2>
+<p>更多上下文提升召回，但降低信噪比并增加成本；更激进压缩降低成本，却可能丢失未来才显重要的细节。</p>
+<p>面试中建议明确给出 baseline，并说明新机制增加了什么复杂度、成本或延迟。只有当它针对一个可观测 failure mode，并带来可测量收益时，才值得进入 Harness。</p>
+<h2 id="6-eval">6. 最小 Eval：怎样证明设计有效</h2>
+<p>一个可复用的最小实验框架：</p>
+<ol>
+<li>固定 task set、model version、environment version。</li>
+<li>只改变本题讨论的一个 Harness 变量。</li>
+<li>每个 task 运行多 trial，记录 outcome + trace。</li>
+<li>按 failure taxonomy 聚类，不只比较平均分。</li>
+<li>同时报告质量、稳定性、延迟、token/cost 和安全指标。</li>
+</ol>
+<h3 id="_4">建议观测指标</h3>
+<ul>
+<li><code>context tokens per successful task</code></li>
+<li><code>retrieval precision/recall proxy</code></li>
+<li><code>stale-context rate</code></li>
+<li><code>compaction loss rate</code></li>
+<li><code>memory retrieval hit rate</code></li>
+</ul>
+<p><strong>本题专项 Eval：</strong> 对同一长任务比较 full-context、compaction、reset+handoff 三组，测 solve rate、tokens 与 information-loss failures。</p>
+<h2 id="7">7. 面试追问</h2>
+<ul>
+<li>
+<p>如果这个机制失败，你会在 Trace 中看到什么证据？</p>
+</li>
+<li>
+<p>如何构造一个最小 Eval 来证明你的设计真的比 baseline 更好？</p>
+</li>
+<li>
+<p>哪些信息应该保留原文引用，哪些可以摘要，哪些必须外置？</p>
+</li>
+</ul>
+<p>建议继续自问：</p>
+<ul>
+<li>这个设计里<strong>谁拥有最终真相</strong>：模型、数据库、环境、grader，还是人工？</li>
+<li>如果请求在任意一步 crash，<strong>恢复点</strong>在哪里？</li>
+<li>如果模型能力提升一代，这个 Harness 机制还需要吗？怎样做 ablation？</li>
+</ul>
+<h2 id="8-90">8. 90 秒回答版本</h2>
+<p>先给结论：Compaction 保连续性但可能信息损失；Reset 用结构化 handoff 换 clean slate，适合长任务阶段切 换。 Compaction 保连续性，Reset 换 clean slate；选择依据是 summary fidelity、阶段边界、artifact 完整度与重建成本。 对同一长任务比较 full-context、compaction、reset+handoff 三组，测 solve rate、tokens 与 information-loss failures。</p>
+<h2 id="9-5">9. 5 分钟深挖版本</h2>
+<p>5 分钟展开时，按 <code>结论 → failure mode → 最小设计 → 数据/状态语义 → trade-off → eval/metrics</code> 六步回答。本题的关键工程焦点是：Compaction 保连续性，Reset 换 clean slate；选择依据是 summary fidelity、阶段边界、artifact 完整度与重建成本。 具体落地时，优先产出：对同一长任务比较 full-context、compaction、reset+handoff 三组，测 solve rate、tokens 与 information-loss failures。</p>
+<h2 id="10-pdf">10. PDF 原稿中的工程证据 / 研究结论</h2>
+<p>Evidence Anthropic 的长上下文实践把 compaction、structured note-taking、multi-agent 作为跨 context window 的主要手段；后续长期 Harness 又进一步使用结构化 handoff。[W4][W6]</p>
+<blockquote>
+<p>本节只整理 PDF 原稿已有证据；下面“扩展阅读”是本仓库新增的外部资料，不与 PDF 原始内容混淆。</p>
+</blockquote>
+<h2 id="11-offer">11. Offer 级回答结构</h2>
+<p>建议用 4 段式回答：①先给结论和适用边界；②解释 failure mode，也就是“为什么需要它”；③给出最小实现和关键数据结构；④主动给出 trade-off + eval 指标。这样能把概念答案升级为工程答案。</p>
+<p>可以进一步升级为 6 段：<code>结论 → Why/Failure → How/Data Model → Recovery/Security → Trade-off → Eval/SLO</code>。</p>
+<h2 id="12-repo">12. 扩展阅读（Repo 增补）</h2>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic - Effective context engineering for AI agents</a></li>
+<li><a href="https://www.anthropic.com/news/contextual-retrieval">Anthropic - Contextual Retrieval</a></li>
+</ul>
+<h2 id="13">13. 关联题</h2>
+<ul>
+<li>本章：<span class="srcref">第三章 Context Engineering 与 Memory</span></li>
+<li><span class="srcref">Q23. 什么是 Context Rot / Context Pollution？</span></li>
+<li><span class="srcref">Q25. Short-term Memory 和 Long-term Memory 应如何设计？</span></li>
+<li><span class="srcref">Q29. 如何让 Agent 跨 Session 工作？</span></li>
+<li><span class="srcref">Q41. 为什么 Long-Running Agent 会随着时间变差？</span></li>
+<li><span class="srcref">Q42. 为什么 progress file 很重要？</span></li>
+</ul>
+<h2 id="14">14. 专业深挖：把“会回答”升级为“会设计”</h2>
+<h3 id="141">14.1 核心判断与边界</h3>
+<p><strong>核心判断：</strong> Compaction 与 Reset 是两种不同的上下文生命周期策略：前者压缩连续性，后者通过 handoff 重建认知状态。</p>
+<p><strong>必须讲清的边界：</strong> Compaction 的风险是摘要损失；Reset 的风险是交接遗漏和重建成本。</p>
+<p>这意味着面试时不能只描述一个 happy path。应先明确 <strong>source of truth、可接受的错误语义、不可违反的不变量、恢复策略</strong>，再谈具体框架。Context 是有限推理预算；事实状态、历史文本、长期记忆和检索证据必须分层。</p>
+<h3 id="142">14.2 设计审查：上线前必须回答的问题</h3>
+<ul>
+<li>[ ] 来源/provenance 是否保留</li>
+<li>[ ] 是否存在 stale/conflict</li>
+<li>[ ] 压缩是否可验证</li>
+<li>[ ] memory scope/TTL 是否明确</li>
+<li>[ ] cache key 是否包含版本/租户</li>
+</ul>
+<p>对于本题，还要额外确认：</p>
+<ol>
+<li><strong>最坏情况下会错成什么样？</strong> 不只问“会不会失败”，而是问错误是否会变成重复副作用、状态漂移、越权、成本爆炸或不可恢复。</li>
+<li><strong>系统如何知道自己错了？</strong> 至少需要一个环境信号、结构化状态、grader 或 trace 证据，而不是模型自我反省。</li>
+<li><strong>失败后下一步是否确定？</strong> retry、repair、reconcile、compensate、rollback、ask-human、terminate 应尽量由错误类型和策略决定。</li>
+<li><strong>模型升级后是否仍需要这层机制？</strong> 若答案无法用 ablation 验证，Harness 很容易累积成永久技术债。</li>
+</ol>
+<h3 id="143">14.3 推荐的实现接口 / 状态语义</h3>
+<pre><code class="language-python">class ContextItem:
+    source: str
+    payload_ref: str
+    relevance: float
+    confidence: float
+    freshness: float
+    pinned: bool
+</code></pre>
+<p>本题最值得落到白板或代码里的 Artifact 是：<strong>定义 StructuredHandoff{goal,done,todo,constraints,artifacts,open_risks}。</strong></p>
+<p>建议所有关键对象都带 <code>run_id / version / timestamp / provenance</code>；涉及副作用时再加入 <code>operation_id / idempotency_key</code>，涉及安全时加入 <code>principal / tenant / policy_version</code>。这样 trace、checkpoint、audit 和 eval 才能关联成同一条因果链。</p>
+<h3 id="144-fault-injection">14.4 Fault Injection：如何主动证明系统能扛住坏情况</h3>
+<p><strong>故障注入场景：</strong> 故意让 summary 丢失一个关键未完成约束，检测后续错误。</p>
+<p>专业的 Harness 测试不应该只做“模型有没有回答对”，而应把故障点插到<strong>状态提交边界、网络边界、权限边界、上下文转换边界</strong>。测试成功的标准不是“不报错”，而是：</p>
+<ul>
+<li>最终状态可解释；</li>
+<li>不产生不可接受的重复副作用；</li>
+<li>trace 能定位失败阶段；</li>
+<li>recovery 不依赖人工猜测；</li>
+<li>若无法自动恢复，系统能安全停在可人工处理的状态。</li>
+</ul>
+<h3 id="145-ablation">14.5 可证伪实验 / Ablation</h3>
+<p><strong>实验：</strong> full-context、compaction、reset+handoff 三组长任务。</p>
+<p>建议用 paired trials：固定 task set、model、environment、seed policy 和 grader，只改变本题对应的 Harness primitive。至少运行足够多 trial 以看到方差，并同时报告均值与分位数/置信区间。若方案只提升平均 solve-rate，却显著恶化尾延迟、成本或高风险错误率，应明确写成 trade-off，而不是宣布“全面提升”。</p>
+<h3 id="146">14.6 指标：至少同时看质量、稳定性和系统代价</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>Why</th>
+<th>建议切片</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>solve_rate</code></td>
+<td>衡量本题设计是否真的改善，而不是只增加 Harness 复杂度</td>
+<td>建议按 task type / risk / model version 分桶</td>
+</tr>
+<tr>
+<td><code>information_loss_rate</code></td>
+<td>衡量本题设计是否真的改善，而不是只增加 Harness 复杂度</td>
+<td>建议按 task type / risk / model version 分桶</td>
+</tr>
+<tr>
+<td><code>tokens_per_success</code></td>
+<td>衡量本题设计是否真的改善，而不是只增加 Harness 复杂度</td>
+<td>建议按 task type / risk / model version 分桶</td>
+</tr>
+</tbody>
+</table>
+<p>除了专项指标，建议保留四个全局指标：<code>verified_success_rate</code>、<code>cost_per_success</code>、<code>p95_end_to_end_latency</code>、<code>human_intervention_rate</code>。安全敏感题再增加 <code>unsafe_action_rate</code> 或 <code>policy_escape_rate</code>。</p>
+<h3 id="147-debugging-playbook">14.7 Debugging Playbook</h3>
+<p>遇到失败时按以下顺序缩小范围：</p>
+<ol>
+<li><strong>重放输入与版本</strong>：确认 model / prompt / tools / harness / environment / grader 是否完全一致；</li>
+<li><strong>定位第一个分叉点</strong>：从 trace 中找出预期轨迹与失败轨迹首次不同的 model decision、tool result 或 state transition；</li>
+<li><strong>区分认知错误与系统错误</strong>：模型“想错了”与工具实际执行失败必须分开；</li>
+<li><strong>检查状态提交窗口</strong>：尤其关注 action 已发生但 result/checkpoint 未持久化的窗口；</li>
+<li><strong>构造最小复现</strong>：删掉无关上下文和工具，把 failure 固化成 regression case；</li>
+<li><strong>做单变量修复</strong>：修改 schema/context/policy/runtime 中最小的一项，再跑原始失败集。</li>
+</ol>
+<h3 id="148-senior-staff">14.8 Senior / Staff 级回答信号</h3>
+<p>高级回答会把 reset 放在 phase boundary，而不是固定 token 阈值机械触发。</p>
+<p>面试官通常会继续追问“为什么不是更简单的方案”。因此答案中应主动给出 <strong>baseline → failure evidence → mechanism → measurable gain → added complexity → rollback/ablation plan</strong>，这比只列组件更能体现 Agent Systems 能力。</p>
+<h3 id="149-repo-pdf">14.9 进一步阅读（Repo 研究层，不等同 PDF 原稿）</h3>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic - Effective context engineering</a></li>
+<li><a href="https://www.anthropic.com/news/contextual-retrieval">Anthropic - Contextual Retrieval</a></li>
+<li><a href="https://openai.github.io/openai-agents-python/sessions/">OpenAI Agents SDK - Sessions</a></li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

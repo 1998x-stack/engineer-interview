@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lending Protocol 的 Health Factor 是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Web3</a><i>∕</i><span>Q46</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q46</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q45.html">← Q45</a><a href="Q47.html">Q47 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">core-30</a><a href="#">defi</a><a href="#">interview</a><a href="#">lending</a><a href="#">web3</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      WEB3 · SOLIDITY · 46 / 101</div>
+    <h1 class="qtitle">Lending Protocol 的 Health Factor 是什么？</h1>
+    <blockquote>
+<p><strong>难度</strong> ★★★ | <strong>高频度</strong> ★★★★★ | <strong>岗位</strong> DeFi/后端 | <strong>Core 30</strong> | <strong>PDF</strong> 第 54 页</p>
+<p>本文件以 PDF 中 Q46 为主干；“GitHub 扩展”部分是在原内容上增加的工程化学习材料。原 PDF：<a href="assets/pdf/Jianzhi_Web3_Offer_100_Interview_Questions_2026.pdf">Jianzhi_Web3_Offer_100_Interview_Questions_2026.pdf</a>.</p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问这题</h2>
+<p>借贷协议风险引擎核心题。</p>
+<h3 id="_1">高分回答的层级</h3>
+<ul>
+<li><strong>L1 - 定义正确</strong>：术语不混淆，先给一到两句话结论。</li>
+<li><strong>L2 - 原理可推导</strong>：能解释为什么，以及底层状态/数据/执行路径。</li>
+<li><strong>L3 - Failure Mode</strong>：主动说明什么时候结论不成立、常见攻击或工程故障。</li>
+<li><strong>L4 - Invariant / Trade-off</strong>：能给出不变量、信任假设或系统设计取舍。</li>
+</ul>
+<h2 id="2-30">2. 30 秒标准回答</h2>
+<blockquote>
+<p>Health Factor 把抵押品按 liquidation threshold 加权后，与总借款价值比较。以 Aave 的概念公式：<code>HF = CollateralValue * WeightedLiquidationThreshold / BorrowValue</code>；HF 低于 1 时仓位进入可清算区域。</p>
+</blockquote>
+<h2 id="3-pdf">3. 原理深挖（PDF 主干）</h2>
+<h3 id="31">3.1 关键推导</h3>
+<p>Health factor 是动态风险指标，会随 oracle price、借贷利息、抵押变化和治理参数变化。不是所有 <code>HF=1.2</code> 都同样安全，高波动/低相关资产需要更大 buffer。</p>
+<h3 id="32">3.2 关键推导</h3>
+<p>工程系统需要监控 position、oracle update 和 liquidation eligibility；前端展示的“安全度”不是静态字段，而是实时派生值。</p>
+<h3 id="33">3.3 公式 / 定量关系</h3>
+<pre><code class="language-text">HF = Σ(collateral_i * price_i * LT_i) / totalBorrowValue
+</code></pre>
+<p>HF 越接近 1，清算风险越高</p>
+<h2 id="4">4. 白板模型</h2>
+<pre><code class="language-mermaid">flowchart LR
+  U[User position] --&gt; A[Accounting]
+  O[Oracle / market] --&gt; A
+  A --&gt; I[Protocol invariant]
+  I --&gt; L[Liquidation / settlement]
+  L --&gt; R[Reserves / solvency]
+</code></pre>
+<p>在面试中不必追求图漂亮；图的作用是让<strong>状态、信任边界、调用方向或资产流</strong>一眼可见。</p>
+<h2 id="5">5. 必须说出的关键点</h2>
+<ul>
+<li>weighted liquidation threshold</li>
+<li>HF &lt; 1 =&gt; liquidation eligibility in Aave model</li>
+<li>dynamic with prices/debt accrual</li>
+<li>risk buffer depends on volatility/correlation</li>
+</ul>
+<h2 id="6-github">6. GitHub 扩展：工程化理解</h2>
+<p>下面内容是在 PDF 主干之上增加的生产/审计视角，用于把“知道概念”升级为“能落地”。</p>
+<ul>
+<li>所有 DeFi 数学先标单位与 decimals，再讨论公式；很多事故来自单位、方向和舍入，而不是高深数学。</li>
+<li>把协议写成 accounting invariants，例如 assets、shares、debt、collateral、fees 的守恒关系。</li>
+<li>把 oracle、liquidity、liquidation 和 MEV 当作同一经济系统的一部分分析。</li>
+<li>极端场景要覆盖低流动性、价格跳跃、拥堵、坏账、token 非标准行为和治理参数变化。</li>
+</ul>
+<h3 id="61">6.1 面试推导顺序</h3>
+<ol>
+<li><strong>先下定义</strong>：用本题 30 秒回答建立边界。</li>
+<li><strong>再给机制</strong>：把对象、输入、状态变化或执行上下文说清楚。</li>
+<li><strong>主动给失败模式</strong>：从本题常见误区反推“哪里会出问题”。</li>
+<li><strong>给 mitigation / 工程做法</strong>：说明如何测试、监控或限制 blast radius。</li>
+<li><strong>用 invariant 收尾</strong>：让面试官看到你能从局部 API 上升到系统正确性。</li>
+</ol>
+<h3 id="62">6.2 验证 / 测试清单</h3>
+<ul>
+<li>[ ] 对公式做 reference model / differential test。</li>
+<li>[ ] 覆盖 decimals、rounding、极端价格和极低流动性。</li>
+<li>[ ] 使用 fork test 模拟真实 token/oracle/pool 行为。</li>
+</ul>
+<!-- PROFESSIONAL_ENRICHMENT_START -->
+<h3 id="63">6.3 前置知识与概念边界</h3>
+<p>这题属于 <strong>DeFi / AMM / Lending</strong>。以下 6.3–6.12 属于 <strong>GitHub 专业深化（通用工程知识与推导）</strong>，并非 PDF 原文；PDF 主干仍以上文第 1–5 节为准。</p>
+<p>在进入细节前，建议先确认下面三个前置层次：</p>
+<ul>
+<li>token accounting 与 decimals</li>
+<li>AMM 定价/套利直觉</li>
+<li>oracle、抵押、清算与风险参数</li>
+</ul>
+<p>本题已有关键点可以进一步拆成：</p>
+<ol>
+<li><strong>weighted liquidation threshold</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+<li><strong>HF &lt; 1 =&gt; liquidation eligibility in Aave model</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+<li><strong>dynamic with prices/debt accrual</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+<li><strong>risk buffer depends on volatility/correlation</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+</ol>
+<blockquote>
+<p><strong>边界原则</strong>：能回答“它是什么”只能达到基础分；高级回答必须继续回答“它不是什么、依赖什么假设、失败时会怎样”。</p>
+</blockquote>
+<h3 id="64">6.4 形式化模型 / 白板推导</h3>
+<p>本题已有公式/关系：<code>HF = Σ(collateral_i * price_i * LT_i) / totalBorrowValue</code>；<code>HF 越接近 1，清算风险越高</code>。不要只背公式，要逐个说明变量的物理/协议含义、单位、取值边界以及公式失效的前提。</p>
+<p>在此基础上，DeFi 题先写资产负债表和不变量：谁的资产进入协议、协议欠谁什么、价格从哪里来、何时允许价值转移。随后再讨论曲线、利率或清算参数，否则公式容易脱离经济语义。</p>
+<p>白板时建议固定使用以下推导顺序：</p>
+<ol>
+<li><strong>对象</strong>：列出参与者、状态、资产或数据结构；</li>
+<li><strong>输入</strong>：哪些交易/消息/价格/签名会驱动状态变化；</li>
+<li><strong>规则</strong>：哪些条件决定有效、排序、授权或价格；</li>
+<li><strong>状态变化</strong>：写出成功路径和失败/回滚路径；</li>
+<li><strong>Invariant</strong>：任何正常或恶意输入下必须保持什么；</li>
+<li><strong>Trust assumption</strong>：哪些条件不是代码能独立保证的。</li>
+</ol>
+<h3 id="65-health-factor">6.5 本题最值得深挖的一层：Health Factor 是风险状态压缩</h3>
+<p>它把多抵押/多债务按 oracle 价格和 liquidation threshold 聚合成风险指标。真正风险仍取决于 oracle、流动性和清算执行能力。</p>
+<p>如果面试官继续追问，不要立刻换新术语。先从上述核心模型推出一个<strong>具体后果</strong>，再给一个<strong>反例或边界条件</strong>，最后说明<strong>生产系统如何验证/缓解</strong>。</p>
+<h3 id="66">6.6 生产工程决策</h3>
+<ul>
+<li>所有价格都写明 source、window、liquidity、staleness、decimal 与 fallback，不允许“price”成为黑盒变量。</li>
+<li>对 shares/assets、collateral/debt、reserve/invariant 使用固定精度并定义舍入方向。</li>
+<li>风险参数要考虑极端市场：流动性枯竭、gas 飙升、oracle 停更、相关性突变、坏账瀑布。</li>
+<li>交易路径必须有 slippage/deadline/minOut 等用户保护，并考虑 MEV 与 sandwich 风险。</li>
+</ul>
+<p>对本题而言，工程答案最好至少包含一个“<strong>正常路径</strong>”和一个“<strong>故障路径</strong>”。前者证明你理解功能，后者证明你理解系统。</p>
+<h3 id="67-threat-model-failure-modes">6.7 Threat Model / Failure Modes</h3>
+<p>把失败模式分成三类会更专业：</p>
+<ul>
+<li><strong>语义错误</strong>：概念或状态模型理解错，导致实现从根上错误；</li>
+<li><strong>对抗性输入</strong>：攻击者利用排序、回调、价格、签名、权限等主动破坏假设；</li>
+<li><strong>系统性故障</strong>：RPC、节点、sequencer、oracle、数据库或管理员路径异常。</li>
+</ul>
+<p>本题重点检查：</p>
+<ul>
+<li>把 HF 当“抵押率百分比”而不写分子分母。</li>
+<li>假设稳定币抵押永远无波动。</li>
+<li>把 flash loan 当漏洞根因而忽略被放大的错误假设</li>
+<li>用瞬时 spot price 作为高价值抵押定价</li>
+<li>舍入/精度偏差在循环中累积为可提取价值</li>
+<li>清算激励不足导致坏账，激励过高又伤害用户</li>
+</ul>
+<blockquote>
+<p>面试时最好把“风险”改写成可验证句式：<strong>在条件 A 下，攻击者/故障 B 可以让状态 C 违反 invariant D，影响资产/可用性 E。</strong></p>
+</blockquote>
+<h3 id="68-unit-fuzz-invariant-integration">6.8 测试策略：Unit → Fuzz → Invariant → Integration</h3>
+<ul>
+<li>[ ] 价格跳变、流动性枯竭、极端 decimals 的 fuzz</li>
+<li>[ ] 资产/份额/债务守恒 invariant</li>
+<li>[ ] 清算边界前后与 oracle stale 场景</li>
+<li>[ ] MEV/顺序敏感模拟和 fork-based integration test</li>
+</ul>
+<p>进一步建议：</p>
+<ul>
+<li><strong>Unit test</strong>：验证局部 API 与边界输入；</li>
+<li><strong>Fuzz test</strong>：搜索你没有手工枚举的输入组合；</li>
+<li><strong>Invariant test</strong>：验证任意调用序列下核心关系仍成立；</li>
+<li><strong>Integration/Fork test</strong>：验证真实 token、oracle、RPC、链状态或跨合约行为；</li>
+<li><strong>Failure injection</strong>：主动让依赖超时、重组、停机、返回异常，验证恢复路径。</li>
+</ul>
+<h3 id="69">6.9 可观测性与线上排障</h3>
+<p>如果这道题变成线上事故，不要只说“看日志”。先定义你要观察的<strong>链上事实、派生状态与外部依赖</strong>。本章常用信号包括：</p>
+<ul>
+<li><code>TVL 与可用流动性</code></li>
+<li><code>health factor / utilization 分布</code></li>
+<li><code>oracle deviation/staleness</code></li>
+<li><code>bad debt / liquidation success rate</code></li>
+</ul>
+<p>排障顺序建议固定为：</p>
+<pre><code class="language-text">用户现象
+  ↓
+确认 chain / tx / block / request identity
+  ↓
+确认 source of truth
+  ↓
+定位状态机停在哪一步
+  ↓
+查看依赖与权限变化
+  ↓
+复现 / simulate / trace
+  ↓
+决定 retry / rollback / pause / compensate
+</code></pre>
+<h3 id="610">6.10 不同岗位如何回答同一道题</h3>
+<ul>
+<li><strong>后端 视角</strong>：强调幂等、reorg、RPC/节点一致性、数据模型、重试与可观测性。</li>
+<li><strong>DeFi 视角</strong>：强调资产守恒、oracle、liquidity、rounding、清算与极端市场。</li>
+<li><strong>高级面试升级</strong>：最后补一句“这个结论依赖哪些假设、线上怎样观测、出现异常如何回滚/降级”，通常能明显区分 Senior 与纯知识型回答。</li>
+</ul>
+<h3 id="611-rubric">6.11 面试官评分 Rubric</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>候选人表现</th>
+<th>典型判断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0 - 术语记忆</strong></td>
+<td>只能给一句定义，追问就断</td>
+<td>不足以独立处理生产问题</td>
+</tr>
+<tr>
+<td><strong>1 - 机制理解</strong></td>
+<td>能解释核心流程和关键对象</td>
+<td>基础工程能力</td>
+</tr>
+<tr>
+<td><strong>2 - 边界意识</strong></td>
+<td>能主动指出前提、反例和 Failure Mode</td>
+<td>中高级候选人信号</td>
+</tr>
+<tr>
+<td><strong>3 - 工程闭环</strong></td>
+<td>能给测试、监控、回滚、兼容性与成本取舍</td>
+<td>Senior 信号</td>
+</tr>
+<tr>
+<td><strong>4 - 系统推导</strong></td>
+<td>能用 invariant / trust model 串起上下游并提出替代设计</td>
+<td>Staff / Protocol 信号</td>
+</tr>
+</tbody>
+</table>
+<h3 id="612">6.12 关联题：把知识连成网络</h3>
+<ul>
+<li><span class="srcref">Q45 Uniswap V3 Tick 与 sqrtPriceX96 是什么？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q47 为什么 DeFi Lending 通常需要 Over-collateralization？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q44 Uniswap V3 Concentrated Liquidity 解决了什么问题？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q48 Liquidation 的经济机制是什么？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q43 什么是 Impermanent Loss？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+</ul>
+<p>不要把 100 题当成 100 个孤立答案。真正的面试常从当前题连续跳到 storage、signature、oracle、reorg、upgrade、MEV 或 system design；建立跨题连接比继续背更多定义更重要。</p>
+<!-- PROFESSIONAL_ENRICHMENT_END -->
+
+<h2 id="7">7. 高频追问与回答方向</h2>
+<h3 id="1ltv-liquidation-threshold">追问 1：LTV 与 liquidation threshold 有何区别？</h3>
+<p><strong>回答方向：</strong> 借款上限 vs 清算触发阈值。</p>
+<p>进一步展开时应回扣：<code>weighted liquidation threshold</code>，并至少补一个边界条件或反例。</p>
+<h3 id="2-hf">追问 2：为什么利息增长也会降低 HF？</h3>
+<p><strong>回答方向：</strong> BorrowValue 上升。</p>
+<p>进一步展开时应回扣：<code>HF &lt; 1 =&gt; liquidation eligibility in Aave model</code>，并至少补一个边界条件或反例。</p>
+<h3 id="3-100-debt">追问 3：清算是否一定 100% debt？</h3>
+<p><strong>回答方向：</strong> 具体 close factor 依协议规则。</p>
+<p>进一步展开时应回扣：<code>dynamic with prices/debt accrual</code>，并至少补一个边界条件或反例。</p>
+<h2 id="8-gotchas">8. 常见错误回答 / Gotchas</h2>
+<ul>
+<li><strong>错误模式：</strong> 把 HF 当“抵押率百分比”而不写分子分母。</li>
+<li><strong>错误模式：</strong> 假设稳定币抵押永远无波动。</li>
+<li><strong>面试修正方式：</strong> 不要只换一个更专业的名词；要明确指出错误假设、给出正确模型，并说明该错误在生产环境可能造成的后果。</li>
+</ul>
+<h2 id="9">9. 记忆锚点</h2>
+<blockquote>
+<p>Health Factor 是“按清算阈值折算后的有效抵押 / 当前债务”。</p>
+</blockquote>
+<h2 id="10">10. 自测题</h2>
+<ol>
+<li>不看本文，用 30 秒重新回答：<strong>Lending Protocol 的 Health Factor 是什么？</strong></li>
+<li>给出一个“定义正确但工程上会失败”的反例。</li>
+<li>给出至少一个可以自动化验证的 invariant / test。</li>
+<li>如果这是线上事故，你最先观察哪 3 个信号或状态？</li>
+<li>如果面试官要求把答案提升到 Staff 级，你会补哪一张状态机/信任边界图？</li>
+</ol>
+<!-- PROFESSIONAL_LAB_START -->
+<h3 id="101">10.1 实战训练：把这题变成可展示的工程证据</h3>
+<p><strong>场景任务</strong>：围绕 <strong>Lending Protocol 的 Health Factor 是什么</strong> 建立一张协议资产负债表，模拟价格跳变、流动性下降或高 gas 情况，说明哪个风险参数先触发、协议如何保持 solvency。</p>
+<p>建议输出物：</p>
+<ol>
+<li>一张状态机 / 资产流 / 调用图；</li>
+<li>一份 10～30 行的最小代码、伪代码或数据结构；</li>
+<li>3 个 happy-path 测试 + 3 个 adversarial/failure-path 测试；</li>
+<li>至少 1 个 invariant；</li>
+<li>一段 2 分钟口述答案，要求不看稿；</li>
+<li>与 <strong>Q45、Q47、Q44</strong> 做一次对比复盘，说明相同底层机制与不同工程边界。</li>
+</ol>
+<h3 id="102">10.2 反向面试：你可以问面试官什么</h3>
+<p>为了判断团队真实工程成熟度，可以围绕本题反问：</p>
+<ul>
+<li>这个系统当前最关键的 invariant / SLO 是什么？</li>
+<li>过去出现过哪类与本题相关的线上事故或审计问题？</li>
+<li>团队如何做 fork/invariant/failure-injection 测试？</li>
+<li>协议升级或依赖变更时，谁负责 compatibility review 和 rollback plan？</li>
+<li>哪些安全/可靠性判断是链上强制，哪些依赖 off-chain service 或人工流程？</li>
+</ul>
+<p>这些问题既能帮助你了解岗位，也能体现你关注<strong>长期正确性和运行质量</strong>，而不只是完成一次编码任务。</p>
+<!-- PROFESSIONAL_LAB_END -->
+
+<h2 id="11">11. 参考资料</h2>
+<h3 id="pdf">PDF 原始引用 / 对应官方资料</h3>
+<ul>
+<li>[R10] <a href="https://aave.com/help/borrowing/liquidations">Aave - Health Factor &amp; Liquidations</a></li>
+</ul>
+<h3 id="github-2026-09">GitHub 扩展阅读（2026-09 核验）</h3>
+<ul>
+<li>[R10] <a href="https://aave.com/help/borrowing/liquidations">Aave - Health Factor &amp; Liquidations</a></li>
+<li>[R9] <a href="https://app.uniswap.org/whitepaper-v3.pdf">Uniswap - Uniswap v3 Core Whitepaper</a></li>
+</ul>
+<blockquote>
+<p>注：协议和文档会更新；面试前应核验目标链、compiler、OpenZeppelin 与协议版本。</p>
+</blockquote>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>你如何训练学生的“几何直觉”？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q040</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q040</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q039.html">← Q039</a><a href="Q041.html">Q041 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">教学方法</a><a href="#">猜想、动态观察、严谨证明</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 40 / 100</div>
+    <h1 class="qtitle">你如何训练学生的“几何直觉”？</h1>
+    <p><strong>模块：</strong> 平面几何<br />
+<strong>标签：</strong> 教学方法 · 难度 ★★★★★ · 猜想、动态观察、严谨证明</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>你如何训练学生的“几何直觉”？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>重点观察你能否解释学习机制，并给出课堂上真正可执行的干预。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>特殊化：等腰、直角、极端位置。</li>
+<li>动态变化中寻找不变量。</li>
+<li>数值/作图只负责猜想，证明负责确认。</li>
+</ul>
+<p><strong>展开：</strong> 几何直觉不是“看一眼就知道”，而是把图形变成实验室。可以让学生拖动点观察哪些角、比值、圆始终不变；把一般三角形特殊化成等腰或直角，寻找更明显的结构；用测量产生“可能共圆/共点”的猜想。关键是明确两阶段：<strong>实验产生猜想，证明承担真值责任</strong>。这样既鼓励探索，也防止依赖图形。</p>
+<h3 id="_4">面试追问</h3>
+<p>如何避免动态几何软件让学生形成“看起来对就是对”的习惯？</p>
+<h3 id="_5">常见失分</h3>
+<p>把直觉神秘化；或完全禁止测量和实验。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>每个实验猜想必须附“可能失败的退化情形”，再进入证明。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：实验、猜想、反例、证明闭环；6分：会用特殊化；3分：只说多画图。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：把“灵感”还原成目标结构</h3>
+<p>几何题应尽量用 <strong>目标 → 中间结构 → 可制造条件 → 辅助构造</strong> 来解释。目标是长度比时，优先寻找相似、正弦定理或圆幂；目标是共点/共线时，考虑 Ceva/Menelaus、根轴或投影结构；大量圆与切线则检查圆幂、根轴、反演等。</p>
+<p>教练面试尤其忌讳把关键步骤说成“显然作一条线”。优秀回答要恢复发现链，并说明为什么该构造减少了自由度或把结论翻译成标准结构。</p>
+<h4 id="_9">技术补充：几何直觉是可训练的预测系统</h4>
+<p>让学生在证明前做三类预测：特殊化（等腰/直角/共线极限）、动态拖动后的稳定关系、数值测量后的共圆/共点猜想。随后强制关闭测量工具完成证明。长期目标是把“看起来像”升级为“我知道该验证哪个可证命题”。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>先口述目标结构，再允许画辅助线。</li>
+<li>尝试给出纯几何与解析/代数方法的比较。</li>
+<li>指出图形退化或点位变化时证明是否仍成立。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 目标已翻译成标准结构</li>
+<li>[ ] 辅助构造有明确目的</li>
+<li>[ ] 角/比/幂关系来源可追踪</li>
+<li>[ ] 退化位置与有向量约定清楚</li>
+<li>[ ] 能比较至少两种表示方法</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>能从目标反推结构；辅助构造有动机；证明严谨；可比较不同表示方法。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>证明正确，但“为什么想到”或退化/方向约定说明不充分。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>能复现标准构造，却较依赖记忆和图形直觉。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>关键共圆/相似/幂关系无依据，或辅助线完全无法解释。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>如何避免动态几何软件让学生形成“看起来对就是对”的习惯？</li>
+<li>先口述目标结构，再允许画辅助线。</li>
+<li>尝试给出纯几何与解析/代数方法的比较。</li>
+<li>指出图形退化或点位变化时证明是否仍成立。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>画一张“发现链”图：目标 → 中间结构 → 需要的角/比/幂 → 构造，并准备第二种方法比较。</p>
+<h3 id="v2">专业版 v2：几何直觉可以被训练为“猜想生成 + 证明验证”</h3>
+<h4 id="1">1. 先允许做实验</h4>
+<p>使用动态几何或手工拖点观察：哪些角似乎相等？哪些点似乎共圆/共线？长度积是否稳定？这些实验用于<strong>生成猜想</strong>，不是作为证明。</p>
+<h4 id="2">2. 四类直觉训练</h4>
+<ul>
+<li><strong>特殊化</strong>：把一般三角形变成等腰、直角、等边，看结构是否暴露；</li>
+<li><strong>极限位置</strong>：让点趋近顶点/无穷远，观察关系；</li>
+<li><strong>对称化</strong>：寻找旋转、反射、位似中心；</li>
+<li><strong>目标逆推</strong>：若要共点，需要哪些比例/幂关系？</li>
+</ul>
+<h4 id="3_1">3. 建立“图形词汇库”</h4>
+<p>学生应对高频结构形成视觉识别：完全四边形、蝴蝶形、两圆相交、切线—弦、垂足圆、角平分线等。</p>
+<h4 id="4">4. 防止直觉变成“看图证明”</h4>
+<p>每次猜想后强制问：这个性质是图形位置偶然造成的吗？如果移动点仍成立吗？最后必须切回严谨证明。</p>
+<h2 id="_15">关联题目</h2>
+<ul>
+<li><span class="srcref">Q026 · 如何教学生判断一道几何题该不该作辅助线？</span></li>
+<li><span class="srcref">Q027 · 怎么系统讲“追角”？</span></li>
+<li><span class="srcref">Q083 · 学生问：“老师，这条辅助线到底怎么想到的？”你怎么回答？</span></li>
+</ul>
+<h2 id="_16">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

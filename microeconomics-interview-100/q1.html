@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Advanced Micro Interview Methods · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Microeconomics</a><i>∕</i><span>q1</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q1</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v"></span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q100.html">← Q100</a><a href="q2.html">q2 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MICROECONOMICS · 101 / 103</div>
+    <h1 class="qtitle">Advanced Micro Interview Methods</h1>
+    <p>这份索引把 100 题背后的研究生级方法压缩成可复用的面试工具。目标不是增加术语，而是帮助你在陌生题里迅速选择正确模型。</p>
+<h2 id="1">1. 四类最优化问题</h2>
+<ol>
+<li><strong>消费者 primal</strong>：maximize utility subject to budget；</li>
+<li><strong>消费者 dual</strong>：minimize expenditure subject to utility；</li>
+<li><strong>企业成本最小化</strong>：minimize input cost subject to output；</li>
+<li><strong>企业利润最大化</strong>：maximize revenue minus cost。</li>
+</ol>
+<p>每次看到题目先问：目标函数是谁的？choice variable 是什么？约束是什么？</p>
+<h2 id="2">2. 五类均衡</h2>
+<ul>
+<li>Walrasian market-clearing；</li>
+<li>Nash / subgame-perfect；</li>
+<li>matching / search；</li>
+<li>rational-expectations / dynamic state equilibrium；</li>
+<li>mechanism / contract 中的 IC-compatible allocation。</li>
+</ul>
+<h2 id="3-comparative-statics">3. Comparative statics</h2>
+<p>用隐函数定理统一理解：若 $F(y,θ)=0$，则局部有 $dy/dθ=-F_θ/F_y$。面试中不必总写完整矩阵，但要能说清参数影响“哪一个边际条件”。</p>
+<h2 id="4-counterfactual-discipline">4. Counterfactual discipline</h2>
+<p>所有政策、并购、侵权、cartel、补贴、税收问题都应问：</p>
+<blockquote>
+<p>actual outcome 应与哪个 <strong>but-for outcome</strong> 比较？</p>
+</blockquote>
+<p>“前后变化”只有在前期真的是合适反事实时才等于因果效应。</p>
+<h2 id="5-identification-before-regression">5. Identification before regression</h2>
+<p>先写 estimand，再判断解释变量为何内生，最后选证据。常见识别困难：simultaneity、selection、omitted variables、reverse causality、measurement error、anticipation。</p>
+<h2 id="6-model-risk">6. Model risk</h2>
+<p>任何漂亮结论都要附带至少一个边界：角点、非凸、容量、动态、异质性、一般均衡、信息不对称、多产品或制度约束。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

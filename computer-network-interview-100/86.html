@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么 epoll ET 几乎总与 nonblocking socket 搭配？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>86</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">86</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="85.html">← 85</a><a href="87.html">87 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">ET</a><a href="#">Nonblocking</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 86 / 100</div>
+    <h1 class="qtitle">为什么 epoll ET 几乎总与 nonblocking socket 搭配？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★★ · <strong>标签</strong>：ET / Nonblocking<br />
+<strong>本章</strong>：<span class="srcref">第九章 Socket、epoll 与 Linux 网络栈</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>ET / Nonblocking</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>ET handler 通常要循环操作直到当前缓冲被读空/写满；若 fd 是阻塞模式，最后一次 read 在已经没有数据时可能把整个 event-loop 卡住。非阻塞使循环能以 EAGAIN 作为“当前已 drain 完”的可靠退出条件。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>这是 correctness 要求，不只是性能优化。</li>
+<li>多线程 event loop 也可能因一个阻塞 fd 占住 worker 导致大面积 tail latency。</li>
+<li>accept 也常循环 accept4 到 EAGAIN，以处理一批新连接。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>高并发网络程序的关键是把“等待就绪”和“真正读写数据”分开，epoll 通知 readiness，而不是替应用完成 read/write。</li>
+<li>ET 模式的正确性依赖 nonblocking + drain-until-EAGAIN；任何阻塞系统调用都可能卡住整个 event loop。</li>
+<li>性能优化必须追踪数据路径：NIC queue → softirq/NAPI → protocol stack → socket queue → userspace。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-et-blocking-drain-event-loop">V2 深入：ET + blocking 最大风险是“为了 drain 而把 event loop 永久卡住”</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>ET handler 通常需要 <code>while (read() &gt; 0) ...</code> 直到 EAGAIN；若 socket blocking，当最后一次 read 没有新数据时就可能睡眠，整个 reactor 被单连接阻塞。</li>
+<li>Nonblocking 让“当前状态已经 drain 完”通过 EAGAIN 明确返回，使线程能回到 epoll_wait 服务其他连接。</li>
+<li>LT 也通常推荐 nonblocking，因为 readiness 与真正 syscall 之间存在 race，多线程/事件变化仍可能让 blocking 调用卡住。</li>
+</ul>
+<h3 id="fionread">为什么 FIONREAD 不能代替循环读</h3>
+<p>读取“当前可用字节数”与实际 read 之间仍有并发/协议变化，且 TLS/stream parser 需要处理 partial data；以 EAGAIN 作为 kernel authoritative boundary 更稳健。</p>
+<h3 id="et-tls">ET + TLS</h3>
+<p><code>SSL_read()</code> 有自己的 record/buffer 状态，可能出现 <code>SSL_ERROR_WANT_READ/WANT_WRITE</code>；TLS library 已经读取到用户态的 decrypted/record data 也可能不再对应新的 kernel EPOLLIN。必须按 TLS state machine 驱动，而不是只把 raw recv loop 套在 SSL 上。</p>
+<h3 id="_5">线上案例推演</h3>
+<p>ET + OpenSSL 服务 CPU 不高但连接偶发卡住，检查是否正确处理 WANT_WRITE/SSL pending data 与 epoll interest；“socket 没新 EPOLLIN”不代表 TLS library 内部没有可读明文。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_6">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“为什么 epoll ET 几乎总与 nonblocking socket 搭配？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 ET、Nonblocking 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>ss -tanp</code>。</li>
+</ol>
+<h2 id="_7">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>ss -tanp</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>strace</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>perf top</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>cat /proc/softirqs</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1lt-nonblocking">追问 1：LT 是否也推荐 nonblocking？</h3>
+<p><strong>参考回答</strong>：是。LT 也通常配 nonblocking，因为 readiness 与实际 syscall 之间存在 race，多线程或状态变化仍可能让 blocking read 卡住。</p>
+<h3 id="2-ioctlfionread-read">追问 2：为什么不能用 ioctl(FIONREAD) 代替循环 read？</h3>
+<p><strong>参考回答</strong>：FIONREAD 只是某一瞬间可用字节的观测，查询和 read 之间会变化，也不能替代 partial parser/TLS 状态；循环 read 到 EAGAIN 是更可靠的完成条件。</p>
+<h3 id="3et-ssl_read">追问 3：ET 下如何处理 SSL_read？</h3>
+<p><strong>参考回答</strong>：TLS library 有内部 record/buffer 状态；应循环 <code>SSL_read</code> 并正确处理 WANT_READ/WANT_WRITE/<code>SSL_pending</code>，不能只根据 raw EPOLLIN 一次读完就结束。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 认为 ET+blocking 只是“慢一点”。</li>
+<li>❌ 忘记 accept fd 自身也应设 nonblocking。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>故意用 ET+blocking server，在 handler 循环 read，复现卡死；切到 O_NONBLOCK 后观察 EAGAIN。</p>
+<h3 id="_8">实验验收标准</h3>
+<p>能看到 readiness、EAGAIN、socket queue、softirq/CPU 等至少一层系统证据。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://man7.org/linux/man-pages/man7/socket.7.html">Linux man-pages - socket(7)</a></li>
+<li><a href="https://man7.org/linux/man-pages/man7/epoll.7.html">Linux man-pages - epoll(7)</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_10">关联题目</h2>
+<ul>
+<li><span class="srcref">082. Blocking Socket 与 Non-blocking Socket 的核心区别是什么？</span></li>
+<li><span class="srcref">085. epoll LT 与 ET 有什么区别？ET 为什么要求“读到 EAGAIN”？</span></li>
+<li><span class="srcref">088. send() 返回成功，是否意味着对端已经收到或处理？</span></li>
+</ul>
+<h2 id="_11">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：ET handler 通常要循环操作直到当前缓冲被读空/写满；若 fd 是阻塞模式，最后一次 read 在已经没有数据时可能把整个 event-loop 卡住。非阻塞使循环能以 EAGAIN 作为“当前已 drain 完”的可靠退出条件。</li>
+<li><strong>必须会解释</strong>：ET / Nonblocking。</li>
+<li><strong>必须避免</strong>：认为 ET+blocking 只是“慢一点”。</li>
+<li><strong>必须会验证</strong>：故意用 ET+blocking server，在 handler 循环 read，复现卡死；切到 O_NONBLOCK 后观察 EAGAIN。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

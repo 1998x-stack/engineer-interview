@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DNS Cache Poisoning 是什么？DNSSEC、DoH/DoT 分别保护什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>59</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">59</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="58.html">← 58</a><a href="60.html">60 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">DNS Security</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 79 / 100</div>
+    <h1 class="qtitle">DNS Cache Poisoning 是什么？DNSSEC、DoH/DoT 分别保护什么？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★☆ · <strong>标签</strong>：DNS Security<br />
+<strong>本章</strong>：<span class="srcref">第六章 DNS、全局调度与 CDN</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>DNS Security</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>缓存投毒试图把伪造 DNS 数据写入 Resolver，使域名解析到攻击者地址。DNSSEC 通过签名链验证 DNS 数据来源与完整性；DoH/DoT 主要加密客户端到 Resolver 的传输，防止链路窃听/篡改，但本身不证明上游 DNS 数据真实。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>随机 transaction ID 与源端口提升伪造响应难度。</li>
+<li>DNSSEC 依赖 DS/DNSKEY/RRSIG 建立从根开始的信任链。</li>
+<li>DoH 可能把 DNS 观察点集中到少数提供商，需要单独评估隐私模型。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>DNS 是分布式缓存系统：任何“为什么不立即生效”的答案都要把 TTL、递归 Resolver 和权威服务器分层。</li>
+<li>客户端看到的 DNS 路径经常是“应用 → stub resolver → recursive resolver”，不是客户端逐级直接问 Root/TLD。</li>
+<li>CDN 加速由调度、连接复用、边缘缓存、回源链路、压缩和协议栈共同决定，不能只看 cache hit ratio。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-dnssec-dohdot">V2 深入：DNSSEC 与 DoH/DoT 的安全目标完全不同</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>Cache poisoning 试图让 resolver 接受伪造 DNS data；transaction ID/source-port entropy 等提高伪造难度，DNSSEC 则提供可验证的签名链。</li>
+<li>DNSSEC 保护 data origin authentication 与 integrity（以及 authenticated denial），<strong>不加密 query</strong>。</li>
+<li>DoH/DoT 加密 Client↔Resolver transport，防本地链路旁观/篡改，但如果 resolver 本身恶意，它仍知道并能控制自己返回什么（除非 Client同时 DNSSEC validate）。</li>
+</ul>
+<h3 id="amplification">Amplification</h3>
+<p>DNS UDP 可被源地址 spoof 利用：攻击者发送小 query、伪造 victim IP，使大量 resolver/authority 把更大 response 发给 victim。BCP 包括 source address validation、限制开放递归、response rate limiting 等。</p>
+<h3 id="_5">安全边界</h3>
+<p>DoH 还改变企业可观测/策略路径，可能绕过本地 DNS control；安全讨论要区分 confidentiality、integrity、resolver trust、endpoint policy。</p>
+<h3 id="_6">线上案例推演</h3>
+<p>公司网络 DoH 开启后传统 DNS firewall 失去可见性，不代表 DNSSEC 失效；这是“加密到外部 resolver”改变控制点，应在 endpoint/browser/resolver policy 层治理。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_7">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“DNS Cache Poisoning 是什么？DNSSEC、DoH/DoT 分别保护什么？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 DNS Security 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>dig</code>。</li>
+</ol>
+<h2 id="_8">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>dig</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>dig +trace</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>resolvectl statistics</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>curl -w</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1doh-resolver">追问 1：DoH 是否能防恶意 Resolver？</h3>
+<p><strong>参考回答</strong>：DNSSEC验证 DNS数据的真实性/完整性，不加密查询内容；DoH/DoT保护客户端到 Resolver的传输通道，但不自动证明 Resolver本身可信。DNS amplification利用 UDP源地址伪造和“大响应/小请求”放大 DDoS。</p>
+<h3 id="2dnssec">追问 2：DNSSEC 能隐藏用户查询内容吗？</h3>
+<p><strong>参考回答</strong>：DNSSEC验证 DNS数据的真实性/完整性，不加密查询内容；DoH/DoT保护客户端到 Resolver的传输通道，但不自动证明 Resolver本身可信。DNS amplification利用 UDP源地址伪造和“大响应/小请求”放大 DDoS。 SSE是基于HTTP的单向文本事件流，天然适合服务端推送和自动重连；WebSocket提供双向消息通道，L7代理必须显式支持升级/隧道。HTTP/2/3 streaming是传输能力，SSE是其上具体事件格式与语义。</p>
+<h3 id="3-dns-amplification-attack">追问 3：什么是 DNS amplification attack？</h3>
+<p><strong>参考回答</strong>：DNSSEC验证 DNS数据的真实性/完整性，不加密查询内容；DoH/DoT保护客户端到 Resolver的传输通道，但不自动证明 Resolver本身可信。DNS amplification利用 UDP源地址伪造和“大响应/小请求”放大 DDoS。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 把 DoH 当作 DNSSEC 的替代。</li>
+<li>❌ 认为 HTTPS 页面就不需要可信 DNS。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>用 <code>dig +dnssec</code> 查看带 RRSIG 的记录；比较普通 DNS 与 DoH 的抓包可见性。</p>
+<h3 id="_9">实验验收标准</h3>
+<p>能观察 resolver/cache/authoritative 的不同角色，验证 TTL 或 DNS 响应链路。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc1034.html">RFC 1034 - Domain Names: Concepts and Facilities</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc1035.html">RFC 1035 - Domain Names: Implementation and Specification</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_11">关联题目</h2>
+<ul>
+<li><span class="srcref">053. 输入域名后，DNS 完整解析链路是什么？</span></li>
+<li><span class="srcref">055. 为什么“DNS 使用 UDP”是错误或不完整答案？</span></li>
+<li><span class="srcref">057. DNS TTL 与 Negative Caching 是什么？</span></li>
+</ul>
+<h2 id="_12">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：缓存投毒试图把伪造 DNS 数据写入 Resolver，使域名解析到攻击者地址。DNSSEC 通过签名链验证 DNS 数据来源与完整性；DoH/DoT 主要加密客户端到 Resolver 的传输，防止链路窃听/篡改，但本身不证明上游 DNS 数据真实。</li>
+<li><strong>必须会解释</strong>：DNS Security。</li>
+<li><strong>必须避免</strong>：把 DoH 当作 DNSSEC 的替代。</li>
+<li><strong>必须会验证</strong>：用 <code>dig +dnssec</code> 查看带 RRSIG 的记录；比较普通 DNS 与 DoH 的抓包可见性。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

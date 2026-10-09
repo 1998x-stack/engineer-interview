@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>请讲一个“看起来应该解析几何，但纯几何更漂亮”的例子，并比较方法。 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q038</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q038</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q037.html">← Q037</a><a href="Q039.html">Q039 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">开放数学</a><a href="#">多解比较、审美与教学</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 38 / 100</div>
+    <h1 class="qtitle">请讲一个“看起来应该解析几何，但纯几何更漂亮”的例子，并比较方法。</h1>
+    <p><strong>模块：</strong> 平面几何<br />
+<strong>标签：</strong> 开放数学 · 难度 ★★★★☆ · 多解比较、审美与教学</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>请讲一个“看起来应该解析几何，但纯几何更漂亮”的例子，并比较方法。</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>用于考察岗位所需的核心能力与可解释思维。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>选题要能真实体现两种方法的差异。</li>
+<li>比较不是看篇幅，而看哪种方法揭示不变量/结构。</li>
+<li>说明不同学生阶段可能选择不同主解。</li>
+</ul>
+<p><strong>展开：</strong> 例如某些“动点在圆上、证明某角恒定”的题，坐标法可以通过参数化计算消掉变量，但纯几何若能发现固定弧或旋转，就能直接解释“为什么恒定”。面试回答要把“漂亮”具体化：纯几何可能让不变量可见、推广自然；坐标法则可能更稳、更易机械验证。教学上可以先用解析法保证可达性，再用纯几何做结构提升，或反过来视班级基础而定。</p>
+<h3 id="_4">面试追问</h3>
+<p>什么时候你会故意选择不那么漂亮但更稳的解析解给学生？</p>
+<h3 id="_5">常见失分</h3>
+<p>只用“短”“高级”评价解法；不给具体比较维度。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>建立多解比较表：可发现性、计算量、推广性、先修门槛、课堂可讲性。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：具体例子+多维比较；6分：能谈两法优缺点；3分：主观审美。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：把“灵感”还原成目标结构</h3>
+<p>几何题应尽量用 <strong>目标 → 中间结构 → 可制造条件 → 辅助构造</strong> 来解释。目标是长度比时，优先寻找相似、正弦定理或圆幂；目标是共点/共线时，考虑 Ceva/Menelaus、根轴或投影结构；大量圆与切线则检查圆幂、根轴、反演等。</p>
+<p>教练面试尤其忌讳把关键步骤说成“显然作一条线”。优秀回答要恢复发现链，并说明为什么该构造减少了自由度或把结论翻译成标准结构。</p>
+<h4 id="_9">技术补充：方法比较要比较“信息透明度”</h4>
+<p>同一题用坐标、复数、向量或纯几何时，可比较：变量数量、核心等式长度、是否解释了为何结论成立、能否推广、学生先修成本。所谓“更漂亮”不只是步骤少，而是关键结构在证明中更可见。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>先口述目标结构，再允许画辅助线。</li>
+<li>尝试给出纯几何与解析/代数方法的比较。</li>
+<li>指出图形退化或点位变化时证明是否仍成立。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 目标已翻译成标准结构</li>
+<li>[ ] 辅助构造有明确目的</li>
+<li>[ ] 角/比/幂关系来源可追踪</li>
+<li>[ ] 退化位置与有向量约定清楚</li>
+<li>[ ] 能比较至少两种表示方法</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>能从目标反推结构；辅助构造有动机；证明严谨；可比较不同表示方法。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>证明正确，但“为什么想到”或退化/方向约定说明不充分。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>能复现标准构造，却较依赖记忆和图形直觉。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>关键共圆/相似/幂关系无依据，或辅助线完全无法解释。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>什么时候你会故意选择不那么漂亮但更稳的解析解给学生？</li>
+<li>先口述目标结构，再允许画辅助线。</li>
+<li>尝试给出纯几何与解析/代数方法的比较。</li>
+<li>指出图形退化或点位变化时证明是否仍成立。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>画一张“发现链”图：目标 → 中间结构 → 需要的角/比/幂 → 构造，并准备第二种方法比较。</p>
+<h3 id="v2">专业版 v2：方法比较要回答“哪个表示保留了问题的核心不变量”</h3>
+<p>可选一个典型场景：三角形中多个垂足、圆与共点结构。解析几何当然能设坐标求交点，但纯几何可能通过“两个直角 ⇒ 共圆”“根轴 ⇒ 共点”几步完成。</p>
+<h4 id="_15">比较维度</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>纯几何</th>
+<th>解析几何</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>参数数量</td>
+<td>常较少</td>
+<td>取决于坐标选择</td>
+</tr>
+<tr>
+<td>结构可见性</td>
+<td>高，能看到共圆/相似</td>
+<td>容易被方程掩盖</td>
+</tr>
+<tr>
+<td>可机械化</td>
+<td>低一些</td>
+<td>高</td>
+</tr>
+<tr>
+<td>证明可推广性</td>
+<td>常较强</td>
+<td>有时局限于算式</td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>依赖图感</td>
+<td>依赖计算</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_16">面试时不要贬低解析法</h4>
+<p>专业回答不是“纯几何更高级”，而是说明：如果解析法在两三行内完成，它可能是更好的面试解；若坐标引入大量参数而纯几何只需识别一个圆，则纯几何更能揭示本质。</p>
+<h4 id="_17">教学应用</h4>
+<p>让学生同题双解，然后写 100 字比较：哪个关键结构在另一种表示中被隐藏？这比单纯收集第二解更有价值。</p>
+<h2 id="_18">关联题目</h2>
+<ul>
+<li><span class="srcref">Q033 · 哪些几何题适合坐标法？</span></li>
+<li><span class="srcref">Q034 · 哪些几何题适合复数法？</span></li>
+<li><span class="srcref">Q075 · 一道题有初等解法和高等解法，课堂怎么选？</span></li>
+</ul>
+<h2 id="_19">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTTP 与 HTTPS 的区别是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Network Security</a><i>∕</i><span>Q08</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q08</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">2</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q07.html">← Q07</a><a href="Q09.html">Q09 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORK SECURITY · 8 / 100</div>
+    <h1 class="qtitle">HTTP 与 HTTPS 的区别是什么？</h1>
+    <p>← <span class="srcref">Q07</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q09</span> →</p>
+<h1 id="q08-http-https">Q08 · HTTP 与 HTTPS 的区别是什么？</h1>
+<blockquote>
+<p><strong>定位</strong>：本文件完整保留 PDF 对本题的题解结构，并在“扩展解析”部分加入更详细的工程化分析。新增内容用于学习与面试准备，不代表任何公司的内部题库。</p>
+</blockquote>
+<h2 id="_1">题目信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>难度</td>
+<td>2/5</td>
+</tr>
+<tr>
+<td>适用岗位</td>
+<td>全岗位</td>
+</tr>
+<tr>
+<td>Framework / 对标</td>
+<td>TLS</td>
+</tr>
+<tr>
+<td>PDF 页码</td>
+<td>第 13 页</td>
+</tr>
+<tr>
+<td>所属章节</td>
+<td>第 1 章 · 计算机网络与协议安全</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官为什么问这题</h2>
+<p>判断候选人是否真正理解协议状态机、网络分层和组件可见性，而不是只会背端口号或工具参数。</p>
+<p>通常不仅是在确认“是否知道名词”，还在观察以下能力：</p>
+<ul>
+<li>数据从哪里来、经过哪一层？</li>
+<li>哪一方维护状态？</li>
+<li>安全控制能看到哪些字段或语义？</li>
+<li>加密、代理或协议转换后可见性发生了什么变化？</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p><strong>一句话结论：</strong> HTTPS 保护“传输中的数据”，不是替业务逻辑兜底。</p>
+<p>展开时优先抓住以下三点：</p>
+<ol>
+<li>HTTPS 是 HTTP over TLS。</li>
+<li>TLS 主要提供机密性、完整性、服务端身份认证，可选客户端认证。</li>
+<li>HTTPS 不解决 SQLi、XSS、越权和业务逻辑漏洞。</li>
+</ol>
+<h2 id="2-3">2-3 分钟标准回答</h2>
+<p>首先，HTTPS 是 HTTP over TLS。
+其次，TLS 主要提供机密性、完整性、服务端身份认证，可选客户端认证。
+面试中要主动区分“传输安全”和“应用安全”。TLS 可以防止链路上的被动窃听和很多篡改，但如果服务器本身存在越权，TLS 只会把错误响应安全地交付给攻击者。
+还要理解 TLS termination：CDN/WAF/LB 可能在某一跳终止 TLS，内部是否再次加密取决于架构。
+最后要把回答落到工程闭环：说明根因控制是什么、还能有哪些纵深防御，以及如何通过日志、测试或安全回归证明控制真正生效。</p>
+<hr />
+<h2 id="pdf">PDF 基线内容</h2>
+<blockquote>
+<p>以下部分对应成品 PDF 的本题内容，保持其术语、组织方式与观点。</p>
+</blockquote>
+<h3 id="01">01 · 考点拆解</h3>
+<ul>
+<li>HTTPS 是 HTTP over TLS。</li>
+<li>TLS 主要提供机密性、完整性、服务端身份认证，可选客户端认证。</li>
+<li>HTTPS 不解决 SQLi、XSS、越权和业务逻辑漏洞。</li>
+</ul>
+<h3 id="02">02 · 面试答题主线</h3>
+<ol>
+<li>HTTPS 是 HTTP over TLS。</li>
+<li>TLS 主要提供机密性、完整性、服务端身份认证，可选客户端认证。</li>
+<li>HTTPS 不解决 SQLi、XSS、越权和业务逻辑漏洞。</li>
+<li>把答案收束到可验证的工程控制：说明“如何修复/设计”，并补一句“如何通过日志、测试或回归验证控制真的生效”。</li>
+</ol>
+<h3 id="03">03 · 深度解析</h3>
+<p>面试中要主动区分“传输安全”和“应用安全”。TLS 可以防止链路上的被动窃听和很多篡改，但如果服务器本身存在越权，TLS 只会把错误响应安全地交付给攻击者。</p>
+<p>还要理解 TLS termination：CDN/WAF/LB 可能在某一跳终止 TLS，内部是否再次加密取决于架构。</p>
+<h3 id="04">04 · 高频追问</h3>
+<ul>
+<li>TLS termination 放在哪里最合理？</li>
+<li>HTTPS 为什么不能防止服务端数据库泄露？</li>
+</ul>
+<h3 id="05">05 · 易错点</h3>
+<ul>
+<li>回答“HTTPS 更安全”但说不出安全属性。</li>
+<li>把证书当作加密算法。</li>
+</ul>
+<h3 id="06">06 · 工程实践</h3>
+<ul>
+<li>查看浏览器证书链与 negotiated cipher。</li>
+<li>画出外部 TLS 和内部 mTLS 的不同部署方式。</li>
+</ul>
+<h3 id="07">07 · 一句话记忆</h3>
+<blockquote>
+<p>HTTPS 保护“传输中的数据”，不是替业务逻辑兜底。</p>
+</blockquote>
+<hr />
+<h2 id="_3">扩展解析：从“会回答”到“会做工程”</h2>
+<h3 id="1">1. 更深一层的原理</h3>
+<p>HTTPS 的目标是保护 HTTP 在传输过程中的机密性、完整性和服务器身份验证，不等于业务逻辑安全。</p>
+<p>必须区分“链路可信”和“端点可信”：如果端点或应用本身被攻破，TLS 无法修复应用漏洞。</p>
+<h3 id="2">2. 边界条件与面试高分点</h3>
+<ul>
+<li><strong>先定义边界</strong>：明确主体、资产、数据/状态和信任边界，避免把问题描述成绝对结论。</li>
+<li><strong>区分根治与纵深</strong>：根治方案应消除不安全的数据流、权限或协议状态；WAF、告警、限流等通常属于补充控制。</li>
+<li><strong>考虑失败模式</strong>：不仅说明正常路径，还要考虑配置漂移、解析差异、权限过宽、依赖升级和异常条件。</li>
+<li><strong>给验证方式</strong>：安全设计必须能被单元测试、集成测试、审计日志、检测规则或演练验证。</li>
+</ul>
+<h3 id="3">3. 工程化检查清单</h3>
+<ul>
+<li>[ ] 优先用标准协议实现与成熟库</li>
+<li>[ ] 减少不必要协议转换和解析差异</li>
+<li>[ ] 为关键边界建立超时、限流、容量与异常处理</li>
+<li>[ ] 把网络控制与应用身份/授权结合，而不是单靠 IP</li>
+<li>[ ] 查看浏览器证书链与 negotiated cipher。</li>
+<li>[ ] 画出外部 TLS 和内部 mTLS 的不同部署方式。</li>
+</ul>
+<h3 id="4">4. 可观测性与证据</h3>
+<p>面试中主动补一句“我会从哪些证据验证”，通常很加分：</p>
+<ul>
+<li>抓包/Flow 数据</li>
+<li>DNS/代理/负载均衡日志</li>
+<li>TLS 终止点信息</li>
+<li>服务端连接与错误指标</li>
+</ul>
+<h3 id="5">5. 追问怎么接</h3>
+<h4 id="tls-termination">追问：TLS termination 放在哪里最合理？</h4>
+<p><strong>回答要点：</strong> 先给一句话结论，再用本题的核心原理解释边界条件；最后补充检测/修复/验证三个工程点。</p>
+<h4 id="https">追问：HTTPS 为什么不能防止服务端数据库泄露？</h4>
+<p><strong>回答要点：</strong> 先解释导致该现象的协议/信任边界，再说明成立所需条件，最后补充防守侧如何通过配置、日志或测试验证。</p>
+<h3 id="6">6. 面试官可能继续升级的场景题</h3>
+<ul>
+<li>如果这个问题发生在核心业务而不是测试环境，你会如何调整风险优先级、证据保全和修复节奏？</li>
+<li>如果已有一层安全产品/框架默认保护，你如何验证它真的覆盖了 TLS 的边界，而不是只相信配置名称？</li>
+<li>如果修复会影响兼容性或业务性能，你会如何设计灰度、监控和回滚方案？</li>
+</ul>
+<h3 id="7">7. 常见回答层级</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只能给出名词定义</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能解释基本原理</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能说明成立条件、边界和真实影响</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能给出工程修复、检测和验证</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能处理复杂追问、权衡与系统设计</td>
+</tr>
+</tbody>
+</table>
+<!-- BEGIN PROFESSIONAL_V2 -->
+<h2 id="v2">专业深化 v2：面向高级工程师的题解</h2>
+<blockquote>
+<p>这一节是在 PDF 基线与第一轮扩展之上的第二层深化，重点补齐 <strong>机制、边界、工程决策、证据、验证与追问树</strong>。它不是利用手册，而是面向合法授权的安全工程与面试表达。</p>
+</blockquote>
+<h3 id="a">A. 机制模型：先把问题抽象对</h3>
+<ul>
+<li>HTTPS 是 HTTP 语义运行在 TLS 保护通道上；核心增加机密性、完整性和服务器身份认证。</li>
+<li>TLS 保护的是传输中的数据，不替应用做授权、输入验证或业务逻辑。</li>
+<li>正确理解 HTTPS 要区分“链路被加密”和“对端是谁、是否有权做某件事”。</li>
+</ul>
+<h3 id="b">B. 成立条件、边界与典型失效模式</h3>
+<ul>
+<li>HTTPS 无法阻止恶意/被攻陷服务器读取明文业务数据。</li>
+<li>TLS termination 之后如果还有内部明文链路，保护边界应按实际架构评估。</li>
+<li>证书有效只证明特定身份绑定关系，不代表站点内容/业务一定安全。</li>
+</ul>
+<h3 id="c">C. 工程设计：从“修一个点”到“设计控制面”</h3>
+<ul>
+<li>默认 HTTPS，安全 TLS 配置和证书自动化生命周期。</li>
+<li>内部服务按风险采用 TLS/mTLS 或受控网络，避免默认信任“内网”。</li>
+<li>敏感 Cookie 设置 Secure/HttpOnly/SameSite 等合适属性。</li>
+<li>应用层继续执行认证、授权、输出编码和数据最小化。</li>
+</ul>
+<h3 id="d-detection-evidence">D. Detection &amp; Evidence：如何证明你的判断</h3>
+<ul>
+<li>TLS version/cipher/certificate/handshake errors。</li>
+<li>HTTP redirect/HSTS 与 mixed content 状态。</li>
+<li>edge 到 origin 的 TLS 状态及证书监控。</li>
+</ul>
+<p>一个成熟回答要主动区分：<strong>事实（日志/状态）</strong>、<strong>推断（关联分析）</strong>、<strong>假设（尚待验证）</strong>。这能显著降低“看到一个异常就直接下结论”的面试失分。</p>
+<h3 id="e">E. 修复后的验证与回归</h3>
+<ul>
+<li>外部扫描验证协议版本、证书链和主机名。</li>
+<li>检查所有入口、备用域名、API、静态资源是否统一 HTTPS。</li>
+<li>验证 TLS termination 后的内部链路和日志是否暴露敏感数据。</li>
+</ul>
+<h3 id="f">F. 面试追问树：把一题答成一棵知识树</h3>
+<ol>
+<li>HTTPS 为什么不能解决 SQL 注入？</li>
+<li>HSTS 解决什么问题，它不解决什么？</li>
+<li>证书有效但 DNS 被错误配置时，信任链如何理解？</li>
+</ol>
+<p>回答这些追问时，建议始终使用：<strong>结论 → 原理 → 条件 → 反例/边界 → 工程控制 → 验证</strong>。如果题目涉及生产环境，再补充可用性、兼容性、灰度和回滚。</p>
+<h3 id="g">G. 这道题在真实工作中的“交付物”</h3>
+<p>TLS/HTTPS posture 清单：域名、证书、终止点、内部链路、HSTS、Cookie、监控与轮换。</p>
+<h3 id="h">H. 一页纸复盘</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>应该能说清楚什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>根因</td>
+<td>TLS 为 HTTP 提供传输机密性、完整性与身份认证。</td>
+</tr>
+<tr>
+<td>边界</td>
+<td>不提供业务授权，也不保护被攻陷的端点。</td>
+</tr>
+<tr>
+<td>主要控制</td>
+<td>安全 TLS + 证书生命周期 + 应用层安全。</td>
+</tr>
+<tr>
+<td>关键证据</td>
+<td>握手/证书/redirect/HSTS/edge-origin。</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>全入口 TLS 配置与内部链路检查。</td>
+</tr>
+</tbody>
+</table>
+<!-- END PROFESSIONAL_V2 -->
+
+<h2 id="_4">复习卡片</h2>
+<ul>
+<li><strong>核心关键词</strong>：TLS</li>
+<li><strong>一句话</strong>：HTTPS 保护“传输中的数据”，不是替业务逻辑兜底。</li>
+<li><strong>最容易答错</strong>：回答“HTTPS 更安全”但说不出安全属性。</li>
+<li><strong>工程动作</strong>：查看浏览器证书链与 negotiated cipher。</li>
+<li><strong>答题顺序</strong>：定义 -&gt; 原理 -&gt; 边界 -&gt; 风险 -&gt; 检测 -&gt; 修复 -&gt; 验证。</li>
+</ul>
+<h2 id="_5">关联题</h2>
+<ul>
+<li><span class="srcref">Q07 从输入 https://example.com 到页面出现，中间发生了什么？</span></li>
+<li><span class="srcref">Q09 CDN、反向代理、Load Balancer、WAF 分别解决什么问题？</span></li>
+<li><span class="srcref">Q24 Request Smuggling / HTTP Desync 的本质是什么？</span></li>
+<li><span class="srcref">Q06 HTTP/1.1、HTTP/2、HTTP/3 的主要区别，以及安全影响是什么？</span></li>
+</ul>
+<h2 id="_6">参考标准 / 延伸阅读</h2>
+<ul>
+<li>参见仓库 <span class="srcref">官方标准与参考资料</span>。</li>
+</ul>
+<h2 id="_7">安全边界</h2>
+<blockquote>
+<p>本仓库面向合法授权的面试学习、安全工程、检测与防守。涉及攻击技术时聚焦原理、证据、修复和验证，不提供针对真实目标的利用步骤、隐蔽规避或武器化操作。</p>
+</blockquote>
+<hr />
+<p>← <span class="srcref">Q07</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q09</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

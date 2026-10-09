@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hash Collision、负载因子与复杂度退化 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Data Structures</a><i>∕</i><span>Q022</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q022</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">M</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q021.html">← Q021</a><a href="Q023.html">Q023 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      DATA STRUCTURES · 24 / 103</div>
+    <h1 class="qtitle">Hash Collision、负载因子与复杂度退化</h1>
+    <blockquote>
+<p><strong>难度：</strong> M<br />
+<strong>核心：</strong> HashMap / 理论<br />
+<strong>章节：</strong> HashMap / HashSet<br />
+<strong>内容边界：</strong> “原稿”部分来自仓库内 PDF 对应题目；“深化解析”是在原稿基础上的扩展讲解，不新增未经来源支持的公司题库归属。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>解释哈希冲突的来源、常见处理策略、负载因子如何影响性能，以及为什么 HashMap 的 O(1) 通常只是平 均/期望复杂度。</p>
+<h3 id="_1">仓库深化：手推示例</h3>
+<blockquote>
+<p>假设容量为 8，而一批 key 的 hash 都落到 bucket 3；若采用链地址法，该桶长度增长会让查找从平均 O(1) 向 O(n) 退化，扩容与高质量 hash 的意义由此可见。</p>
+</blockquote>
+<p>手推时不要只算最终输出，建议同步写出核心结构在每一步的状态变化，这比“看懂答案”更接近真实面试。</p>
+<h2 id="2">2. 面试开始先澄清</h2>
+<ul>
+<li>
+<p>输入规模与合法性：是否允许空输入、重复值、负数，是否保证答案存在？</p>
+</li>
+<li>
+<p>是否允许修改输入？输出是否要求稳定顺序或去重？</p>
+</li>
+<li>
+<p>复杂度目标：题目是否明确要求 O(n)、O(log n) 或 O(1) 额外空间？</p>
+</li>
+</ul>
+<h2 id="3">3. 基线方案与瓶颈</h2>
+<p>若把每个键都放进一个线性列表，则查询 O(n)，完全失去哈希价值。</p>
+<h3 id="_2">解法演进对比</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>思路</th>
+<th>代价 / 价值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline</td>
+<td>若把每个键都放进一个线性列表，则查询 O(n)，完全失去哈希价值。</td>
+<td>先保证正确，暴露真正瓶颈</td>
+</tr>
+<tr>
+<td>面试目标</td>
+<td>围绕 <code>HashMap / 理论</code> 维护最小必要状态</td>
+<td>平均 O(1)，极端/攻击性输入可能 O(n)；具体取决于实现是否树化、随机化 hash 等。</td>
+</tr>
+</tbody>
+</table>
+<p>这张表的重点不是“最优解一定唯一”，而是能够解释<strong>为什么新结构减少了哪一类重复工作</strong>。</p>
+<h3 id="_3">深化解析：先定位重复工作</h3>
+<p>本题所在章节的核心原则是 <strong>用空间换查询时间</strong>。明确平均 O(1) 与最坏 O(n) 的区别，说明 key 设计、冲突、负载因子以及是否需要保存下标/频次/最后位置。</p>
+<p>面试中不要直接报最优结构。先说明基线方案具体重复做了什么，再指出目标结构如何把这部分重复工作缓存、单调淘汰、分层搜索或局部化维护。这样能证明你是在从约束推导算法，而不是背模板。</p>
+<h2 id="4">4. 关键洞察：为什么这个数据结构合适</h2>
+<p>Separate chaining 在每个 bucket 保存链/树；open addressing 通过探测序列寻找空位。负载因子 α=n/m 越高，冲突和探测长度通常越大，因此需要扩容。</p>
+<h3 id="_4">结构选择检查表</h3>
+<ul>
+<li><strong>我们反复查询/维护的信息是什么？</strong> 把它写成一句话。</li>
+<li><strong>这个信息是否具有有序性、单调性、前缀性、局部性或等价关系？</strong> 这些性质通常直接决定数据结构。</li>
+<li><strong>是否需要在线更新？</strong> 静态问题和动态问题往往需要不同结构。</li>
+<li><strong>输出规模是否本身构成复杂度下界？</strong> 返回所有答案时尤其重要。</li>
+<li><strong>是否能说明替代结构为什么更差？</strong> 面试官常通过这一问验证理解深度。</li>
+</ul>
+<h2 id="5">5. 不变量与正确性证明</h2>
+<blockquote>
+<p><strong>原稿不变量：</strong> 良好 hash 与合理 α 使键近似均匀落桶，期望桶长度维持常数；若大量 key 落到同桶， 则查询退化。</p>
+</blockquote>
+<h3 id="_5">正确性证明框架</h3>
+<ol>
+<li><strong>初始化：</strong> 证明算法开始时不变量成立。</li>
+<li><strong>保持：</strong> 假设处理当前元素/节点前不变量成立，说明一次更新后仍成立。</li>
+<li><strong>终止：</strong> 结合循环或递归终止条件，说明得到的状态恰好对应题目要求。</li>
+<li><strong>无遗漏/无重复：</strong> 如果题目要求枚举答案，额外说明为何每个合法答案都会被访问，且不会被重复输出。</li>
+</ol>
+<p>这是面试中比“跑几个样例看起来对”更强的论证方式。</p>
+<h2 id="6-python">6. 参考实现（Python）</h2>
+<pre><code class="language-python">def bucket_index(key, capacity):
+    # 概念示意：真实实现还会处理哈希扰动、容量策略等
+    return hash(key) % capacity
+</code></pre>
+<h3 id="code-review">Code Review 视角</h3>
+<ul>
+<li>变量名应直接体现状态含义，不要让 <code>i/j/tmp</code> 承担过多语义。</li>
+<li>修改共享结构前，先确认是否会丢失后续仍需访问的信息。</li>
+<li>对 Hash/Heap/Queue/Tree 等结构，明确其中保存的是<strong>值、下标、节点还是聚合状态</strong>。</li>
+<li>让实现与上面的不变量一一对应；如果代码中存在无法解释的特殊分支，通常意味着状态定义还不够干净。</li>
+<li>Python 内置操作也有复杂度：例如 list 头部删除是 O(n)，<code>heapq</code> pop/push 是 O(log n)，dict/set 操作是平均 O(1)。</li>
+</ul>
+<h2 id="7">7. 复杂度</h2>
+<p>平均 O(1)，极端/攻击性输入可能 O(n)；具体取决于实现是否树化、随机化 hash 等。</p>
+<h3 id="_6">复杂度审查</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>需要回答的问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>时间</td>
+<td>是最坏、平均还是摊销？隐藏参数是 n、k、V/E、L 还是窗口 W？</td>
+</tr>
+<tr>
+<td>空间</td>
+<td>统计的是额外空间还是包含输出？递归栈算不算？</td>
+</tr>
+<tr>
+<td>预处理</td>
+<td>排序、建索引、建 Trie/Heap 的成本是否被漏算？</td>
+</tr>
+<tr>
+<td>输出下界</td>
+<td>若答案本身有 m 项，是否至少需要 O(m)？</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>
+<p>把“无冲突”当成 HashMap 的前提</p>
+</li>
+<li>
+<p>不区分 hash 相同与取模后 bucket 相同</p>
+</li>
+<li>
+<p>忽略 resize 的摊销分析</p>
+</li>
+</ul>
+<h3 id="_7">额外边界测试</h3>
+<ul>
+<li>最小合法输入与空输入（若题目允许）</li>
+<li>重复值/重复状态是否改变算法不变量</li>
+</ul>
+<p>建议面试现场至少手推一个“最小输入”、一个“最容易破坏不变量的输入”和一个“规模极端输入”。</p>
+<h2 id="9">9. 面试官追问与答题方向</h2>
+<ul>
+<li>Separate chaining 与 linear probing 的 cache locality 谁更好？</li>
+<li><strong>答题方向：</strong> 先把新增约束写成需要维护的新不变量，再判断原结构能否继续满足；若不能，明确需要替换或组合的结构。</li>
+<li>删除在 open addressing 中为何需要 tombstone？</li>
+<li><strong>答题方向：</strong> 删除通常破坏单调或索引状态；明确是否支持任意删除，必要时使用 lazy deletion、反向索引或平衡结构。</li>
+<li>Java HashMap 树化思想解决了什么最坏情况？</li>
+<li><strong>答题方向：</strong> 先把新增约束写成需要维护的新不变量，再判断原结构能否继续满足；若不能，明确需要替换或组合的结构。</li>
+</ul>
+<h3 id="follow-up">Follow-up 的统一处理方法</h3>
+<p>不要把追问当成新题。先问：<strong>原方案依赖的哪个前提被改变了？</strong> 然后只替换受到影响的那一层结构。例如从离线变在线，通常保留问题定义而替换状态维护方式；从单机变分布式，则新增分片、一致性和容错约束。</p>
+<h2 id="10-60">10. 60 秒口述模板</h2>
+<p>我会先给出一个可工作的基线方案：若把每个键都放进一个线性列表，则查询 O(n)，完全失去哈希价值。 真正的瓶颈在 重复工作，因此优化的核心是：Separate chaining 在每个 bucket 保存链/树；open addressing 通过探测序列寻找空 位。负载因子 α=n/m 越高，冲突和探测长度通常越大，因此需要扩容。 正确性依赖的不变量是：良好 hash 与合理 α 使 键近似均匀落桶，期望桶长度维持常数；若大量 key 落到同桶，则查询退化。 最终复杂度为：平均 O(1)，极端/攻击性 输入可能 O(n)；具体取决于实现是否树化、随机化 hash 等。</p>
+<h2 id="11">11. 自测清单</h2>
+<ul>
+<li>[ ] 不看代码，能在 60 秒内讲清“基线 → 瓶颈 → 关键结构”。</li>
+<li>[ ] 能写出核心不变量，并解释一次状态更新为什么不破坏它。</li>
+<li>[ ] 能独立手写参考实现，不依赖 IDE 自动补全。</li>
+<li>[ ] 能给出时间/空间复杂度，并注明平均、摊销或最坏情形。</li>
+<li>[ ] 能覆盖至少 3 个边界条件。</li>
+<li>[ ] 能回答至少 2 个 follow-up，并说明为什么需要/不需要替换数据结构。</li>
+</ul>
+<h2 id="12">12. 专业深化：约束驱动的完整面试推导</h2>
+<blockquote>
+<p>本节属于 <strong>GitHub 仓库深化内容</strong>：在源 PDF 的题意、洞察、不变量与代码之上补充更严格的算法论证、替代方案、测试与工程边界；不新增未经来源支持的公司题库归属。</p>
+</blockquote>
+<h3 id="121-pattern">12.1 先从约束识别 Pattern，而不是从题名背模板</h3>
+<p>本题的目标结构是 <strong>哈希表原理</strong>。出现以下信号时，应主动联想到这一类结构：</p>
+<ul>
+<li>需要反复判断“某个值/状态是否见过”</li>
+<li>暴力方案的瓶颈是在线性容器中重复查找</li>
+<li>输出或状态需要按 key 聚合</li>
+</ul>
+<p>把题目抽象成一句“数据结构需求”会更有效：</p>
+<blockquote>
+<p>把需要被快速回答的查询显式编码成 key；value 只保存后续真正需要的信息（下标、频次、节点引用或聚合值）。</p>
+<p><strong>本题特别说明：</strong> 这是概念题，不要只回答“链表法和开放寻址”。高质量回答应把 Birthday/Collision 必然性、load factor、cache locality、deletion semantics 与 adversarial hashing 串起来。</p>
+</blockquote>
+<h3 id="122">12.2 状态最小化：到底必须记住什么</h3>
+<p>源书稿给出的核心不变量是：</p>
+<blockquote>
+<p>良好的 hash + 受控 load factor 让每个 bucket 的期望元素数保持常数，从而获得期望 O(1)。</p>
+</blockquote>
+<p>进一步拆成三个层次：</p>
+<ol>
+<li><strong>输入事实</strong>：当前扫描到的元素、节点、边或操作，哪些信息一旦过去就不会再改变？</li>
+<li><strong>未来充分统计量</strong>：未来决策真正需要历史中的哪些摘要？只保存这些，而不是保存“所有历史以防万一”。</li>
+<li><strong>答案状态</strong>：区分“用于继续计算的状态”和“已经闭合的最终候选”。Tree DP、Heap、窗口和复合结构题尤其容易把两者混在一起。</li>
+</ol>
+<p>面试时可以直接用下面这句话验证自己的状态设计：</p>
+<blockquote>
+<p><strong>如果我删除当前结构中的某一类信息，未来是否存在一个合法输入让我无法正确决定？如果不存在，它就不应该被保存。</strong></p>
+</blockquote>
+<h3 id="123-trade-off">12.3 解法谱系与 Trade-off</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">#</th>
+<th>方案</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>Separate Chaining</td>
+<td>基线/对照</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>Open Addressing</td>
+<td>可选方案</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>Robin Hood / Cuckoo 等方案体现 probe-length 与 worst-case trade-off</td>
+<td>面试主解</td>
+</tr>
+</tbody>
+</table>
+<p>选择主解时至少回答三个问题：</p>
+<ul>
+<li>它具体消除了基线中的哪一类重复工作？</li>
+<li>它依赖哪些输入性质（有序、非负、单调、树结构、固定窗口等）？</li>
+<li>如果这些性质被 follow-up 改掉，哪一层会首先失效？</li>
+</ul>
+<h3 id="124">12.4 针对本题的正确性证明</h3>
+<ul>
+<li><strong>核心不变量：</strong> 良好的 hash + 受控 load factor 让每个 bucket 的期望元素数保持常数，从而获得期望 O(1)。</li>
+<li><strong>初始化：</strong> 初始状态满足该不变量。</li>
+<li><strong>保持：</strong> 每次更新只修改与当前输入直接相关的局部状态，同时修复所有辅助索引，因此更新后不变量仍成立。</li>
+<li><strong>终止：</strong> 当所有输入/操作处理完成时，不变量直接蕴含题目要求的输出条件。</li>
+</ul>
+<blockquote>
+<p><strong>面试表达建议：</strong> 不要说“代码跑样例是对的”。先说状态语义，再说一次更新为什么保持语义，最后说明终止时为何覆盖所有合法答案。</p>
+</blockquote>
+<h3 id="125-big-o">12.5 复杂度：除了 Big-O 还要说明参数和模型</h3>
+<p>源书稿结论：<strong>平均查找/插入/删除 O(1)，极端碰撞最坏 O(n)；若 bucket 树化可改善最坏界。</strong></p>
+<p>进一步需要注意：</p>
+<ul>
+<li>区分“额外空间”与输出空间；若返回 m 个结果，O(m) 输出本身就是不可避免的下界。</li>
+</ul>
+<p>专业回答建议写成：</p>
+<pre><code class="language-text">n = 主输入规模
+k / L / V / E / W = 题目中真正影响结构规模的辅助参数
+Time = ...（说明 worst / average / amortized）
+Aux Space = ...（不含/包含输出，明确递归栈）
+Preprocess = ...（若存在排序、压缩、建索引）
+</code></pre>
+<h3 id="126-dry-run">12.6 Dry Run：必须跟踪“状态”，不是只写答案</h3>
+<p>建议在白板手推时至少画下面这张表；列名已经按本题 Pattern 定制：</p>
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>当前输入</th>
+<th>关键状态 before</th>
+<th>更新动作</th>
+<th>关键状态 after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+</tr>
+</tbody>
+</table>
+<p>每一行都要能够回答：<strong>为什么这个状态可以被加入、删除、移动或结算？</strong> 如果答不出来，通常说明不变量还没有真正建立。</p>
+<h3 id="127-ac">12.7 代码审查：从 AC 代码提升到面试级实现</h3>
+<ul>
+<li>说明 dict/set 的 O(1) 是平均复杂度，不是严格最坏界</li>
+<li>若 key 很大，讨论 key 构造与 hash 成本；复杂度不能只写元素个数 n</li>
+<li>如果需要稳定顺序，不要误以为 HashMap 天然提供题目要求的排序语义</li>
+</ul>
+<p>此外，对本题代码建议做四次快速 review：</p>
+<ol>
+<li><strong>State review</strong>：每个变量能否用一句不变量解释？</li>
+<li><strong>Boundary review</strong>：所有 <code>+1/-1</code>、开闭区间、空结构分支是否统一？</li>
+<li><strong>Mutation review</strong>：修改容器/指针后，另一个索引或引用是否需要同步更新？</li>
+<li><strong>Complexity review</strong>：有没有隐藏的切片、排序、线性删除、重复 DFS 让宣称复杂度失真？</li>
+</ol>
+<h3 id="128">12.8 对抗性测试矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>测试维度</th>
+<th>本题应覆盖的情况</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>最小/空边界</td>
+<td>重复 key / 重复值</td>
+<td>验证不变量与边界处理，不只验证最终值</td>
+</tr>
+<tr>
+<td>重复/相等状态</td>
+<td>大量冲突或极端 hash 分布的理论退化</td>
+<td>验证不变量与边界处理，不只验证最终值</td>
+</tr>
+<tr>
+<td>结构极端</td>
+<td>空集合、单元素与不存在答案</td>
+<td>验证不变量与边界处理，不只验证最终值</td>
+</tr>
+<tr>
+<td>约束破坏/反例</td>
+<td>不要把“没有冲突”当作哈希表前提。</td>
+<td>验证不变量与边界处理，不只验证最终值</td>
+</tr>
+</tbody>
+</table>
+<p>源书稿中的高频失分点也应逐个转成单元测试：</p>
+<ul>
+<li><strong>反例化：</strong> 不要把“没有冲突”当作哈希表前提。</li>
+<li><strong>反例化：</strong> hash code 相同后仍必须比较 key equality。</li>
+<li><strong>反例化：</strong> 负载因子越低通常越快，但占内存越多。</li>
+</ul>
+<h3 id="129-follow-up">12.9 Follow-up 深挖：不是换题，而是定位“哪个前提变了”</h3>
+<h4 id="1291-robin-hood-hashing">12.9.1 什么是 Robin Hood hashing？</h4>
+<ul>
+<li><strong>核心思想：</strong> 比较 probe distance，让“离理想位置更远”的新元素抢占更近元素的位置，以压低 probe length 方差。</li>
+<li><strong>Trade-off：</strong> 查找尾延迟通常改善，但插入/删除与实现复杂度提高。</li>
+</ul>
+<h4 id="1292-tombstone">12.9.2 为什么开放寻址删除需要 tombstone？</h4>
+<ul>
+<li><strong>原因：</strong> 开放寻址的查找依赖连续 probe chain；若删除直接变成 empty，查找会错误地提前停止。</li>
+<li><strong>做法：</strong> tombstone 表示“此位置当前无值，但 probe chain 仍可能继续”；过多 tombstone 会降低性能，需要 rehash/cleanup。</li>
+</ul>
+<h4 id="1293-hash-flooding">12.9.3 如何防御恶意构造的 hash flooding？</h4>
+<ul>
+<li><strong>变化的前提：</strong> 这个追问改变了 <code>哈希表原理</code> 方案依赖的某个约束；先指出哪个不变量失效，再决定是否替换数据结构。</li>
+<li><strong>推荐方向：</strong> 保留原问题中仍成立的部分，只新增满足新约束的最小状态；最后重新分析时间、空间和边界。</li>
+</ul>
+<h3 id="1210-pattern">12.10 Pattern 迁移：什么时候应该想到它</h3>
+<p><strong>识别信号：</strong></p>
+<ul>
+<li>需要反复判断“某个值/状态是否见过”</li>
+<li>暴力方案的瓶颈是在线性容器中重复查找</li>
+<li>输出或状态需要按 key 聚合</li>
+</ul>
+<p><strong>迁移方法：</strong></p>
+<ul>
+<li>先保留本题的不变量形式，再替换数据载体。例如数组窗口换成字符流，核心仍是“进入/离开时可增量更新的统计”。</li>
+<li>如果从静态变动态，问“原预处理为什么失效”，再引入可更新结构；不要直接跳到更复杂数据结构。</li>
+<li>如果从单答案变所有答案，先把输出规模写进复杂度，再讨论去重、predecessor 或路径恢复。</li>
+<li>如果从算法题变系统级 follow-up，明确算法层与工程层边界：算法不变量仍要成立，工程层再叠加并发、分片、缓存与容错。</li>
+</ul>
+<h3 id="1211">12.11 面试官视角：这题真正区分候选人的地方</h3>
+<table>
+<thead>
+<tr>
+<th>能力层级</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>只会做</td>
+<td>能写出代码，但无法解释为什么该结构成立</td>
+</tr>
+<tr>
+<td>合格</td>
+<td>能从 baseline 推出 <code>哈希表原理</code>，复杂度与边界基本正确</td>
+</tr>
+<tr>
+<td>较强</td>
+<td>能写出不变量/证明，并比较至少一种替代方案</td>
+</tr>
+<tr>
+<td>很强</td>
+<td>follow-up 改约束后，能明确指出<strong>失效的前提</strong>并局部替换结构，而不是重新猜算法</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ac">建议复盘时把目标定为最后两档，而不是“AC 即完成”。</h2>
+<p><strong>源书稿：</strong> <a href="assets/pdf/数据结构面试100题_专业版.pdf"><code>assets/pdf/数据结构面试100题_专业版.pdf</code></a><br />
+<strong>章节索引：</strong> <span class="srcref"><code>HashMap / HashSet</code></span></p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

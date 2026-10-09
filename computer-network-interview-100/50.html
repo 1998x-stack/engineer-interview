@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QUIC Connection Migration 为什么适合移动网络？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>50</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">50</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="49.html">← 49</a><a href="51.html">51 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">Connection ID</a><a href="#">Path Validation</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 25 / 100</div>
+    <h1 class="qtitle">QUIC Connection Migration 为什么适合移动网络？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★☆ · <strong>标签</strong>：Connection ID / Path Validation<br />
+<strong>本章</strong>：<span class="srcref">第五章 UDP、QUIC 与 HTTP/3 传输基础</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>Connection ID / Path Validation</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>TCP 连接强依赖 IP/Port 四元组，手机从 Wi-Fi 切到 5G 时源地址变化常导致连接失效。QUIC 用 Connection ID 把逻辑连接与单一路径解耦，并通过 PATH_CHALLENGE/PATH_RESPONSE 等机制验证新路径，从而支持 NAT rebinding 与网络切换。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>迁移不意味着无条件信任任意新源地址，需要 path validation 防止放大攻击。</li>
+<li>拥塞控制状态在新路径上的继承需要谨慎，因为新路径容量可能不同。</li>
+<li>服务器也可主动发行多个 Connection ID 以降低可关联性。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>UDP 只提供数据报承载；可靠性、流控、拥塞控制、连接迁移等能力是 QUIC 自己实现的。</li>
+<li>HTTP/3 的关键收益不是“UDP 比 TCP 快”，而是 QUIC streams 避免 TCP 单字节流的跨流 HOL。</li>
+<li>QUIC 的用户态部署使协议迭代更快，但仍必须遵守互联网拥塞控制与安全约束。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-connection-id">V2 深入：Connection ID 把“连接身份”从固定四元组中解耦出来</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>TCP connection 通常与源/目的 IP/port 强绑定；Wi-Fi→5G 导致 local address 变化时，原四元组无法继续代表同一 TCP flow。</li>
+<li>QUIC 使用 Connection ID 识别逻辑连接，并通过 PATH_CHALLENGE/PATH_RESPONSE 等 path validation 验证新地址可达，支持 NAT rebinding 和主动 migration。</li>
+<li>Connection migration 不等于 multipath：标准迁移通常是把活动路径切到新 path；MPTCP/MPQUIC 类方案才强调多 path 同时使用。</li>
+</ul>
+<h3 id="_5">安全与负载均衡</h3>
+<p>若攻击者仅伪造新源地址，path validation 防止服务器立即把大量数据发往 victim，降低 amplification/connection hijack 风险。Load balancer 则可能需要从 CID 中编码/查找 backend routing 信息，否则四元组变化后 packet 可能被 hash 到错误 server。</p>
+<h3 id="_6">隐私边界</h3>
+<p>长期使用固定 CID 会成为跨网络追踪信号，所以 QUIC 支持发放/轮换多个 Connection ID；面试回答可指出 migration、routing 与 privacy 三者存在 trade-off。</p>
+<h3 id="_7">线上案例推演</h3>
+<p>移动 App 从 Wi-Fi 切 5G 后 TCP WebSocket 重连，而 QUIC session 能继续时，用户感知收益来自避免完整连接/认证重建；若 LB 不理解 CID，迁移反而可能导致 packet 落到无状态 backend。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_8">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“QUIC Connection Migration 为什么适合移动网络？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 Connection ID、Path Validation 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>tcpdump -nn udp</code>。</li>
+</ol>
+<h2 id="_9">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>tcpdump -nn udp</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>curl --http3</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>qlog / QUIC trace</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>Wireshark QUIC</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1tcp-mptcp-quic-migration">追问 1：TCP MPTCP 与 QUIC migration 有何区别？</h3>
+<p><strong>参考回答</strong>：MPTCP 允许一个逻辑 TCP connection 同时使用多个 subflow/path；QUIC 标准 migration 主要强调四元组变化后把同一 connection 延续/切换到新 path，概念不同。</p>
+<h3 id="2quic">追问 2：QUIC 如何防止迁移被攻击者劫持？</h3>
+<p><strong>参考回答</strong>：新 path 需要 PATH_CHALLENGE/PATH_RESPONSE 等验证，避免仅凭伪造源地址就把连接迁走或向 victim 放大流量；Connection ID 也不应被当作单独认证凭据。</p>
+<h3 id="3">追问 3：连接迁移对负载均衡有什么挑战？</h3>
+<p><strong>参考回答</strong>：传统五元组 hash 可能把迁移后的 packet 分到另一个 backend；LB 需要理解/路由 QUIC Connection ID 或保持共享状态，否则新节点没有原连接状态。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 认为 Connection ID 是固定明文用户 ID。</li>
+<li>❌ 认为路径切换后拥塞窗口一定原样继承。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>在支持 QUIC 的测试程序中切换本机网络接口，观察连接是否保持及路径验证事件。</p>
+<h3 id="_10">实验验收标准</h3>
+<p>能证明 QUIC/UDP 的数据报与 stream 行为，并区分协议自身能力与 UDP 基础能力。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_11">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9000.html">RFC 9000 - QUIC: A UDP-Based Multiplexed and Secure Transport</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9002.html">RFC 9002 - QUIC Loss Detection and Congestion Control</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_12">关联题目</h2>
+<ul>
+<li><span class="srcref">048. QUIC 为什么建立在 UDP 上，而不是直接改 TCP？</span></li>
+<li><span class="srcref">051. QUIC 为什么能减少首次/恢复连接延迟？0-RTT 的收益与风险是什么？</span></li>
+<li><span class="srcref">091. 浏览器输入 https://www.example.com 到页面显示，完整发生了什么？</span></li>
+</ul>
+<h2 id="_13">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：TCP 连接强依赖 IP/Port 四元组，手机从 Wi-Fi 切到 5G 时源地址变化常导致连接失效。QUIC 用 Connection ID 把逻辑连接与单一路径解耦，并通过 PATH_CHALLENGE/PATH_RESPONSE 等机制验证新路径，从而支持 NAT rebinding 与网络切换。</li>
+<li><strong>必须会解释</strong>：Connection ID / Path Validation。</li>
+<li><strong>必须避免</strong>：认为 Connection ID 是固定明文用户 ID。</li>
+<li><strong>必须会验证</strong>：在支持 QUIC 的测试程序中切换本机网络接口，观察连接是否保持及路径验证事件。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

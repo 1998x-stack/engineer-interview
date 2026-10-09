@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>一个应用层消息从 send() 到网卡发送经历了什么封装？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>2</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">2</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">基础</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="1.html">← 1</a><a href="3.html">3 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">封装</a><a href="#">内核网络栈</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 29 / 100</div>
+    <h1 class="qtitle">一个应用层消息从 send() 到网卡发送经历了什么封装？</h1>
+    <blockquote>
+<p><strong>定位</strong>：基础 · <strong>面试频率</strong>：★★★★☆ · <strong>标签</strong>：封装 / 内核网络栈<br />
+<strong>本章</strong>：<span class="srcref">第一章 网络分层、链路与二层基础</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>封装 / 内核网络栈</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>应用写入 socket 后，内核把字节交给 TCP/UDP，加入传输层头；再经过 IP 路由与分片/PMTU 决策，加入 IP 头；链路层解析下一跳并构造帧，最后由 NIC 通过 DMA/队列发送。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>TCP 是字节流：一次 send() 不等于一个 TCP Segment；分段由 MSS、拥塞窗口、TSO 等共同影响。</li>
+<li>IP 层选择出口设备和下一跳；同网段发目标主机，跨网段通常发默认网关。</li>
+<li>链路层目的 MAC 是“当前下一跳”的 MAC，而不是最终服务器 MAC。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>始终区分“最终目的”与“当前下一跳”：IP 负责跨网络寻址，二层地址负责当前链路交付。</li>
+<li>回答时要把数据单位说清楚：Application Data → Segment/Datagram → IP Packet → Frame。</li>
+<li>遇到“为什么”题，不只背协议名称，要解释分层如何降低耦合、让每一层独立演进。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-send-nic">V2 深入：<code>send()</code> 到 NIC 之间真正发生了什么</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li><code>send()</code> 的成功语义通常只是<strong>内核接受了多少用户数据</strong>，不是“已上网线”，更不是“对端应用已收到”。</li>
+<li>TCP 是字节流：应用写入的数据先进入 socket send buffer，TCP 根据 MSS、拥塞窗口、接收窗口、pacing、TSO/GSO 等条件决定何时怎样分段。</li>
+<li>发送路径同时受协议状态和设备队列影响：用户态、socket buffer、qdisc、驱动 ring、NIC/DMA 都可能成为排队点。</li>
+</ul>
+<h3 id="linux">Linux 发送路径拆解</h3>
+<p>可以把路径记成：<code>copy_from_user/zero-copy → socket send buffer → TCP segmentation/拥塞控制 → IP route → qdisc → driver TX ring → DMA → NIC</code>。启用 TSO/GSO 后，内核可能保留较大的“逻辑 skb”，把最终分段交给更靠近网卡的位置完成，因此在不同抓包点看到的 packet size 不一定一致。</p>
+<p>TCP 的发送还受 <code>cwnd</code>、<code>rwnd</code>、Nagle、pacing、retransmission queue 等共同约束。应用即使连续 <code>write()</code> 很多数据，也可能因为 peer zero-window、拥塞窗口太小或 qdisc backlog 而暂时无法真正出接口。</p>
+<h3 id="_5">工程边界与观测误区</h3>
+<ul>
+<li>本机 <code>tcpdump</code> 看到超 MTU 的大 segment，不一定是线上真的发出了 jumbo packet，可能只是抓包点位于 GSO/TSO 分段之前。</li>
+<li><code>send()</code> 短写是合法行为；nonblocking socket 还可能返回 <code>EAGAIN</code>，应用必须维护未发送偏移量。</li>
+<li>路由器每一跳会重新构造对应链路层帧，但 IP payload/目的地址通常保持端到端语义（NAT/隧道等除外）。</li>
+</ul>
+<h3 id="_6">线上案例推演</h3>
+<p>若应用 QPS 正常但发送延迟飙升，先看 socket send queue、TCP retrans、cwnd/RTT、qdisc drops 和 NIC TX statistics。若 <code>ss -tin</code> 显示 send-q 持续增长而应用 CPU 很低，问题可能在网络/对端消费/拥塞，而不是业务计算。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_7">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“一个应用层消息从 send() 到网卡发送经历了什么封装？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 封装、内核网络栈 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>tcpdump -e -nn</code>。</li>
+</ol>
+<h2 id="_8">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>tcpdump -e -nn</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>ip neigh</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>ip link</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>ip addr</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1-send">追问 1：为什么 send() 成功不等于网卡已经发出？</h3>
+<p><strong>参考回答</strong>：<code>send()</code> 成功只表示本机内核接受了相应字节，数据之后还要经过 socket send buffer、TCP/IP、qdisc、driver/NIC；可能尚未真正出接口，更不代表对端已收到。</p>
+<h3 id="2tsogso">追问 2：TSO/GSO 会怎样影响抓包看到的包大小？</h3>
+<p><strong>参考回答</strong>：TSO/GSO 允许内核在较高层保留大 skb，再由更靠近网卡的位置分段，所以本机某些抓包点会看到大于 MTU 的逻辑 TCP segment；线上的 Ethernet frame 仍受实际 MTU/设备 offload 约束。</p>
+<h3 id="3">追问 3：路由器转发时是否重新构造二层帧？</h3>
+<p><strong>参考回答</strong>：路由器收到帧后去掉入接口二层头，完成 L3 查表/TTL 等处理，再为出接口与下一跳构造新的二层帧；因此 MAC 地址逐跳变化。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 把用户态 send() 与物理发送混为一谈。</li>
+<li>❌ 认为应用每次 write 的边界会完整保留到 TCP 对端。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>Linux 上用 <code>strace -e sendto,write</code> 与 <code>tcpdump -i any</code> 对照，观察系统调用次数与实际 TCP Segment 数量不一致。</p>
+<h3 id="_9">实验验收标准</h3>
+<p>能在抓包或邻居/链路表中验证当前一跳的二层信息，并把它与最终 IP 目的地址区分开。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">权威资料 / 延伸阅读</h2>
+<ul>
+<li>本题以 PDF 原始题解与同章权威协议索引为主；详见 <span class="srcref"><code>references/README.md</code></span>。</li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_11">关联题目</h2>
+<ul>
+<li><span class="srcref">001. OSI 七层与 TCP/IP 模型如何对应？工程上为什么更常用 TCP/IP？</span></li>
+<li><span class="srcref">003. Hub、Switch、Router 的本质区别是什么？</span></li>
+</ul>
+<h2 id="_12">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：应用写入 socket 后，内核把字节交给 TCP/UDP，加入传输层头；再经过 IP 路由与分片/PMTU 决策，加入 IP 头；链路层解析下一跳并构造帧，最后由 NIC 通过 DMA/队列发送。</li>
+<li><strong>必须会解释</strong>：封装 / 内核网络栈。</li>
+<li><strong>必须避免</strong>：把用户态 send() 与物理发送混为一谈。</li>
+<li><strong>必须会验证</strong>：Linux 上用 <code>strace -e sendto,write</code> 与 <code>tcpdump -i any</code> 对照，观察系统调用次数与实际 TCP Segment 数量不一致。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

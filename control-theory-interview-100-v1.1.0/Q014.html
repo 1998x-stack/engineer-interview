@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么 settling time 常近似为 4/(zeta wn)？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Control Theory</a><i>∕</i><span>Q014</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q014</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">基础</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q013.html">← Q013</a><a href="Q015.html">Q015 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">time-domain</a><a href="#">second-order</a><a href="#">steady-state</a><a href="#">poles</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      CONTROL · 14 / 100</div>
+    <h1 class="qtitle">为什么 settling time 常近似为 4/(zeta wn)？</h1>
+    <blockquote>
+<p><strong>难度</strong>：基础 · <strong>高频度</strong>：★★★★★ · <strong>PDF 页码</strong>：13 · <strong>章节</strong>：时域响应与二阶系统</p>
+<p>导航：<span class="srcref">← Q013</span> · <span class="srcref">题库总索引</span> · <span class="srcref">Q015 →</span></p>
+</blockquote>
+<h2 id="_1">面试官为什么问这题</h2>
+<p>这道题属于 <strong>时域响应与二阶系统</strong> 的核心知识链。面试官通常不只检查定义，而是通过连续追问观察你是否能把<strong>数学结构、物理直觉、工程约束和验证方法</strong>连接起来。建议先用 30 秒给结论，再根据追问展开公式与边界条件。</p>
+<hr />
+<h2 id="pdf">PDF 原始内容（完整保留）</h2>
+<blockquote>
+<p>本节逐项保留 PDF 中该题的结构化内容；后面的“仓库增强”属于扩展讲解。</p>
+</blockquote>
+<h3 id="_2">标准回答</h3>
+<p>欠阻尼二阶响应的振荡包络按 exp(-zeta wn t) 衰减。若使用 2% settling band，令指数包络降到 0.02，可得 t=-ln(0.02)/(zeta wn)，数值约为 3.9/(zeta wn)，工程上写成 4/(zeta wn)。这说明 settling time 本质上由闭环极点实部决定。</p>
+<h3 id="_3">公式与推导</h3>
+<p>$$
+e^{-\zeta\omega_n t_s}=0.02
+\Rightarrow
+ t_s=\frac{-\ln 0.02}{\zeta\omega_n}\approx\frac{3.9}{\zeta\omega_n}.
+$$</p>
+<h3 id="_4">工程直觉</h3>
+<p>极点实部越负，状态能量衰减越快。4/(zeta wn) 不是神秘经验式，而是指数衰减到 2% 的直接结果。</p>
+<h3 id="gotcha">常见误区 / Gotcha</h3>
+<p>不同 settling band 会改变系数。5% 常得到约 3/(zeta wn)。不要在面试中把“4”当成基本常数。</p>
+<h3 id="_5">高频追问</h3>
+<ul>
+<li>5% settling time 是多少？</li>
+<li>高阶系统如何定义 dominant poles？</li>
+<li>为什么 zeta 很小时公式仍可能低估振铃影响？</li>
+</ul>
+<h3 id="30">30 秒口述版</h3>
+<blockquote>
+<p>2% settling time 的 4/(zeta wn) 来自指数包络降到 0.02；真正关键量是极点实部 -zeta wn，而不是死记数字 4。</p>
+</blockquote>
+<hr />
+<h2 id="_6">仓库增强：深度展开</h2>
+<p>时域指标与极点几何位置是同一件事的两种表达。面试中不要把 $t_r$、$t_s$、$M_p$ 当成孤立公式：应能从极点实部解释衰减速度、从虚部解释振荡频率、从阻尼比解释超调。</p>
+<p>工程上还要区分“模型的自然响应”和“闭环设定点响应”。高阶系统可以二阶近似，但前提是非主导模态足够快、系数没有把它们显著激励，并且零点/延迟没有破坏这个近似。</p>
+<h3 id="_7">针对本题的进一步理解</h3>
+<p>settling time 的近似来自指数包络，因此真正决定它的是主导极点实部。对重复极点、非正规矩阵或强零点影响系统，需要更谨慎。</p>
+<p>从面试表达角度，建议把本题组织成四层：</p>
+<ol>
+<li><strong>定义层</strong>：先说明对象、变量和适用条件；</li>
+<li><strong>数学层</strong>：给最小但足够的关键公式，并解释每一项；</li>
+<li><strong>物理层</strong>：把公式映射成能量、时间尺度、频率或信息流；</li>
+<li><strong>工程层</strong>：主动说明噪声、延迟、饱和、模型误差或采样等边界。</li>
+</ol>
+<h3 id="_8">工程场景</h3>
+<p>以伺服电机位置阶跃为例，主导复极点决定超调与 settling time；减速器弹性若形成额外慢模态，则二阶近似会失效。</p>
+<p>将这个场景与当前问题连接时，重点不是套算法名称，而是问：<strong>这个概念会改变哪个闭环信号路径、哪个动态时间尺度、哪个约束余量？</strong> 这能把抽象理论转成可验证的设计判断。</p>
+<h2 id="v2">专家版扩展 v2</h2>
+<blockquote>
+<p><strong>内容边界</strong>：本节是仓库第二版扩展，基于经典控制理论与工程实践补充；它不改写上面的 PDF 原始内容。若扩展结论需要额外假设，会在正文中显式说明。</p>
+</blockquote>
+<h3 id="1">1. 核心边界：时域动态与近似</h3>
+<p>所有经典二阶公式都带有模型前提。面试中应主动判断高阶极点、零点和延迟是否足够远，避免把近似公式当普适定律。</p>
+<p><strong>针对 Q014 的专家补充：</strong> 2% settling-time 近似本质是解 e^{-ζω_n t}=0.02；5% 标准对应约 3/(ζω_n)。高阶系统若存在相近实部的多个模态或显著 residue，单个主导二阶包络会失效。</p>
+<h3 id="2">2. 推导路线与适用条件</h3>
+<ol>
+<li>把传递函数化为标准一阶/二阶或主导模态形式。</li>
+<li>从极点实部与虚部得到衰减包络和振荡频率。</li>
+<li>再由阶跃解析式/终值定理推导指标，并检查零点、高阶模态、delay 是否破坏近似。</li>
+</ol>
+<p>在白板面试中，建议把“公式”与“成立条件”写在同一块区域。例如写出一个二阶近似或稳定性结论后，紧跟一句：<strong>假设高阶模态足够远、没有显著 RHP 零点/纯延迟、执行器未饱和</strong>。这能明显区分“会背公式”和“会使用模型”。</p>
+<h3 id="3">3. 一个可计算的小例子</h3>
+<p>取 $\zeta=0.6,\;\omega_n=5\,\mathrm{rad/s}$。估算 $t_s(2\%)\approx4/(\zeta\omega_n)=1.33\,s$，再算 $\omega_d=4\,rad/s$ 与 $t_p=\pi/\omega_d\approx0.785\,s$。然后加入一个 $s=-3$ 的零点，观察标准二阶公式为什么开始偏离。</p>
+<p>这个例子的目的不是训练固定数字，而是练习从 <strong>模型 → 指标 → 非理想因素 → 结论变化</strong> 的完整链路。建议在 Python/MATLAB 中把关键参数做 sweep，而不是只跑一个点。</p>
+<h3 id="4">4. 工程验证矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>验证层</th>
+<th>建议实验</th>
+<th>想证明什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Analytic</td>
+<td>公式与 pole 计算</td>
+<td>建立基准</td>
+</tr>
+<tr>
+<td>High-order</td>
+<td>加入额外 pole/zero</td>
+<td>检查二阶近似</td>
+</tr>
+<tr>
+<td>Experiment</td>
+<td>阶跃拟合/残差</td>
+<td>验证参数可辨识性</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5">5. 高频追问详答</h3>
+<h4 id="1-5-settling-time">1. 5% settling time 是多少？</h4>
+<p>用包络 exp(-ζωn t)=0.05，得到 ts≈-ln(0.05)/(ζωn)≈3/(ζωn)。2% 标准对应约 4/(ζωn)。</p>
+<h4 id="2-dominant-poles">2. 高阶系统如何定义 dominant poles？</h4>
+<p>通常选实部最靠近虚轴且 residue 足够大的模态作为 dominant poles，并要求其余模态衰减明显更快。单纯用“慢 5 倍/10 倍”只是经验，还要检查零点和各模态对目标 I/O 的参与度。</p>
+<h4 id="3-zeta">3. 为什么 zeta 很小时公式仍可能低估振铃影响？</h4>
+<p>虽然 2% 包络公式数学上仍给出时间尺度，但 ζ 很小时振荡周期多、峰值序列密集，实际进入误差带可能对采样、噪声和高阶模态非常敏感。工程上应直接检查峰值序列和能量衰减。</p>
+<h3 id="6">6. 反例与失效条件</h3>
+<ul>
+<li><strong>模型层失效</strong>：如果出现未建模柔性模态、显著时延、RHP 零点、强耦合或工作点迁移，原题中的低阶/线性结论可能只在局部成立。</li>
+<li><strong>实现层失效</strong>：sampling、quantization、filter、scheduler、actuator saturation/rate limit 会改变实际闭环，不应被当作“软件细节”。</li>
+<li><strong>评价层失效</strong>：只看一个 step response 或单一 PM/GM 容易漏掉噪声、控制努力、内部状态和 worst-case parameter spread。</li>
+<li><strong>验证原则</strong>：每个重要结论至少对应一个可证伪预测；例如“若根因是 delay margin 不足，则降低 crossover 或减少 latency 后振荡应系统性减弱”。</li>
+</ul>
+<h3 id="7">7. 面试回答的三档深度</h3>
+<p><strong>30 秒：</strong> 先复述上面的“30 秒口述版”，只讲定义、关键公式和一个 trade-off。</p>
+<p><strong>2 分钟：</strong> 增加推导路线中的 2–3 步，并主动说明一个适用条件/反例；这是大多数技术面最合适的深度。</p>
+<p><strong>5 分钟以上：</strong> 画框图或 pole/Bode/state diagram，把工程验证矩阵讲出来；如果面试官继续追问，再进入数值例子、robustness 或 implementation details。</p>
+<h3 id="8">8. 自测题</h3>
+<ol>
+<li>不看笔记，用 60 秒回答：<strong>为什么 settling time 常近似为 4/(zeta wn)？</strong></li>
+<li>把答案中的一个理想假设替换成非理想条件（delay / saturation / noise / model uncertainty / sampling），结论如何变化？</li>
+<li>给出一个你会记录的日志/频域/状态变量，用于验证答案不是纸面推导。</li>
+</ol>
+<hr />
+<h2 id="checklist">白板推导 Checklist</h2>
+<ul>
+<li>[ ] 写标准一阶/二阶模型</li>
+<li>[ ] 把指标映射到极点位置</li>
+<li>[ ] 说明公式成立条件</li>
+<li>[ ] 说明高阶/零点/延迟何时让近似失效</li>
+</ul>
+<p>如果公式较长，面试时不必把每一步代数全部写完；但必须说明<strong>从什么方程出发、用了什么假设、最终结论依赖什么条件</strong>。</p>
+<h2 id="_9">追问展开与答题提示</h2>
+<h3 id="1-5-settling-time_1">1. 5% settling time 是多少？</h3>
+<p><strong>答题提示：</strong> 先给严格定义或关键公式，再补物理直觉和一个工程边界；若问题涉及参数选择，主动说明 trade-off 与验证方法。</p>
+<h3 id="2-dominant-poles_1">2. 高阶系统如何定义 dominant poles？</h3>
+<p><strong>答题提示：</strong> 先给严格定义或关键公式，再补物理直觉和一个工程边界；若问题涉及参数选择，主动说明 trade-off 与验证方法。</p>
+<h3 id="3-zeta_1">3. 为什么 zeta 很小时公式仍可能低估振铃影响？</h3>
+<p><strong>答题提示：</strong> 先给严格定义或关键公式，再补物理直觉和一个工程边界；若问题涉及参数选择，主动说明 trade-off 与验证方法。</p>
+<h2 id="_10">实验 / 仿真建议</h2>
+<ul>
+<li>先建立一个<strong>最小可复现实验</strong>，只保留与本题相关的动态；</li>
+<li>同时画时域与频域结果，不要只看单一阶跃曲线；</li>
+<li>对关键参数做至少一个数量级内的 sweep，观察结论是否稳健；</li>
+<li>主动加入一种非理想因素（noise / delay / saturation / model error / sampling），验证理论边界；</li>
+<li>将结论写成“可证伪预测”，例如：如果根因是 phase margin 不足，那么降低 crossover 后振荡应按可预期方式减弱。</li>
+</ul>
+<p>仓库中的 <a href="../../examples/python/"><code>examples/python</code></a> 提供按章节组织的最小实验脚本，可作为本题的起点。</p>
+<h2 id="_11">面试评分点</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>及格</td>
+<td>能给出正确定义和核心结论</td>
+</tr>
+<tr>
+<td>良好</td>
+<td>能写关键公式并解释物理意义</td>
+</tr>
+<tr>
+<td>优秀</td>
+<td>能指出公式适用条件、工程 trade-off 和常见失败模式</td>
+</tr>
+<tr>
+<td>资深</td>
+<td>能把问题放回完整闭环架构，并提出可验证的设计/调试方法</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_12">相关题目</h2>
+<ul>
+<li><span class="srcref">Q013. 二阶系统超调量如何从阻尼比得到？</span></li>
+<li><span class="srcref">Q015. Rise time、peak time、settling time、overshoot 各自反映什么？</span></li>
+<li><span class="srcref">Q011. 一阶系统的时间常数到底表示什么？</span></li>
+<li><span class="srcref">Q012. 标准二阶系统中的自然频率和阻尼比分别控制什么？</span></li>
+<li><span class="srcref">Q016. 什么是系统型别？它为什么决定标准输入的稳态误差？</span></li>
+</ul>
+<h2 id="_13">参考资料</h2>
+<ul>
+<li><a href="https://ocw.mit.edu/courses/16-06-principles-of-automatic-control-fall-2012/pages/lecture-notes/">MIT 16.06 Principles of Automatic Control</a> — 经典反馈、时域/频域、Routh、根轨迹、Nyquist、补偿与数字控制。</li>
+<li><a href="https://ctms.engin.umich.edu/">University of Michigan CTMS</a> — PID、根轨迹、频域、状态空间、数字控制与工程对象案例。</li>
+</ul>
+<blockquote>
+<p>参考资料用于扩展与核验；本题“PDF 原始内容”以仓库随附 PDF 为准。公开资料不会被用来悄悄改写 PDF 原文。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

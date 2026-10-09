@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XSS 的本质与三种主要类型是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Network Security</a><i>∕</i><span>Q14</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q14</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">2</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q13.html">← Q13</a><a href="Q15.html">Q15 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORK SECURITY · 14 / 100</div>
+    <h1 class="qtitle">XSS 的本质与三种主要类型是什么？</h1>
+    <p>← <span class="srcref">Q13</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q15</span> →</p>
+<h1 id="q14-xss">Q14 · XSS 的本质与三种主要类型是什么？</h1>
+<blockquote>
+<p><strong>定位</strong>：本文件完整保留 PDF 对本题的题解结构，并在“扩展解析”部分加入更详细的工程化分析。新增内容用于学习与面试准备，不代表任何公司的内部题库。</p>
+</blockquote>
+<h2 id="_1">题目信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>难度</td>
+<td>2/5</td>
+</tr>
+<tr>
+<td>适用岗位</td>
+<td>渗透 / AppSec / 前端安全</td>
+</tr>
+<tr>
+<td>Framework / 对标</td>
+<td>OWASP Injection / Browser Security</td>
+</tr>
+<tr>
+<td>PDF 页码</td>
+<td>第 20 页</td>
+</tr>
+<tr>
+<td>所属章节</td>
+<td>第 2 章 · Web 安全核心漏洞</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官为什么问这题</h2>
+<p>考察候选人能否用“Source -&gt; Propagation -&gt; Parser/Sink -&gt; Impact”解释漏洞根因，并给出可验证的修复。</p>
+<p>通常不仅是在确认“是否知道名词”，还在观察以下能力：</p>
+<ul>
+<li>不可信数据从哪里进入？</li>
+<li>最终进入什么解析/执行上下文？</li>
+<li>数据与代码/结构是否真正分离？</li>
+<li>根治控制与纵深防御分别是什么？</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p><strong>一句话结论：</strong> XSS = 不可信数据进入浏览器执行上下文；防护必须匹配具体上下文。</p>
+<p>展开时优先抓住以下三点：</p>
+<ol>
+<li>Stored、Reflected、DOM XSS。</li>
+<li>本质是“不可信数据进入浏览器可执行上下文”。</li>
+<li>防护核心是上下文相关输出编码与安全 DOM API。</li>
+</ol>
+<h2 id="2-3">2-3 分钟标准回答</h2>
+<p>首先，Stored、Reflected、DOM XSS。
+其次，本质是“不可信数据进入浏览器可执行上下文”。
+HTML 文本、属性、URL、JavaScript 字符串是不同上下文，不能用一种 escape 函数通吃。现代框架默认模板转义能降低风险，但 dangerouslySetInnerHTML、v-html、innerHTML 等 escape hatch 仍需严格控制。
+HttpOnly 降低 cookie 被脚本直接读取的风险，但不能消除 XSS 对用户操作、页面内容和请求能力的影响。
+最后要把回答落到工程闭环：说明根因控制是什么、还能有哪些纵深防御，以及如何通过日志、测试或安全回归证明控制真正生效。</p>
+<hr />
+<h2 id="pdf">PDF 基线内容</h2>
+<blockquote>
+<p>以下部分对应成品 PDF 的本题内容，保持其术语、组织方式与观点。</p>
+</blockquote>
+<h3 id="01">01 · 考点拆解</h3>
+<ul>
+<li>Stored、Reflected、DOM XSS。</li>
+<li>本质是“不可信数据进入浏览器可执行上下文”。</li>
+<li>防护核心是上下文相关输出编码与安全 DOM API。</li>
+</ul>
+<h3 id="02">02 · 面试答题主线</h3>
+<ol>
+<li>Stored、Reflected、DOM XSS。</li>
+<li>本质是“不可信数据进入浏览器可执行上下文”。</li>
+<li>防护核心是上下文相关输出编码与安全 DOM API。</li>
+<li>把答案收束到可验证的工程控制：说明“如何修复/设计”，并补一句“如何通过日志、测试或回归验证控制真的生效”。</li>
+</ol>
+<h3 id="03">03 · 深度解析</h3>
+<p>HTML 文本、属性、URL、JavaScript 字符串是不同上下文，不能用一种 escape 函数通吃。现代框架默认模板转义能降低风险，但 dangerouslySetInnerHTML、v-html、innerHTML 等 escape hatch 仍需严格控制。</p>
+<p>HttpOnly 降低 cookie 被脚本直接读取的风险，但不能消除 XSS 对用户操作、页面内容和请求能力的影响。</p>
+<h3 id="04">04 · 高频追问</h3>
+<ul>
+<li>Stored 与 DOM XSS 的检测证据有什么不同？</li>
+<li>为什么仅过滤 script 标签不够？</li>
+</ul>
+<h3 id="05">05 · 易错点</h3>
+<ul>
+<li>只会过滤 <script>。</li>
+<li>认为 HttpOnly 能“修复 XSS”。</li>
+</ul>
+<h3 id="06">06 · 工程实践</h3>
+<ul>
+<li>建立 source-to-sink 清单：location/hash/postMessage/API -&gt; innerHTML/eval 等。</li>
+<li>为模板与前端代码开启框架安全规则和 CSP 报告。</li>
+</ul>
+<h3 id="07">07 · 一句话记忆</h3>
+<blockquote>
+<p>XSS = 不可信数据进入浏览器执行上下文；防护必须匹配具体上下文。</p>
+</blockquote>
+<hr />
+<h2 id="_3">扩展解析：从“会回答”到“会做工程”</h2>
+<h3 id="1">1. 更深一层的原理</h3>
+<p>XSS 是浏览器执行上下文问题，不同 HTML/attribute/URL/JS context 需要不同编码策略。</p>
+<p>框架自动转义能降低风险，但危险 DOM API、显式绕过和富文本场景仍需专门设计。</p>
+<h3 id="2">2. 边界条件与面试高分点</h3>
+<ul>
+<li><strong>先定义边界</strong>：明确主体、资产、数据/状态和信任边界，避免把问题描述成绝对结论。</li>
+<li><strong>区分根治与纵深</strong>：根治方案应消除不安全的数据流、权限或协议状态；WAF、告警、限流等通常属于补充控制。</li>
+<li><strong>考虑失败模式</strong>：不仅说明正常路径，还要考虑配置漂移、解析差异、权限过宽、依赖升级和异常条件。</li>
+<li><strong>给验证方式</strong>：安全设计必须能被单元测试、集成测试、审计日志、检测规则或演练验证。</li>
+</ul>
+<h3 id="3">3. 工程化检查清单</h3>
+<ul>
+<li>[ ] 首选结构化 API、参数化和上下文编码</li>
+<li>[ ] 授权在可信服务端执行</li>
+<li>[ ] 对出站网络、文件、解析器实施最小能力</li>
+<li>[ ] 修复后建立单元/集成/安全回归测试</li>
+<li>[ ] 建立 source-to-sink 清单：location/hash/postMessage/API -&gt; innerHTML/eval 等。</li>
+<li>[ ] 为模板与前端代码开启框架安全规则和 CSP 报告。</li>
+</ul>
+<h3 id="4">4. 可观测性与证据</h3>
+<p>面试中主动补一句“我会从哪些证据验证”，通常很加分：</p>
+<ul>
+<li>HTTP/反向代理日志</li>
+<li>应用审计日志</li>
+<li>数据库/下游服务异常</li>
+<li>WAF 仅作为辅助信号</li>
+<li>安全测试回归结果</li>
+</ul>
+<h3 id="5">5. 追问怎么接</h3>
+<h4 id="stored-dom-xss">追问：Stored 与 DOM XSS 的检测证据有什么不同？</h4>
+<p><strong>回答要点：</strong> 先给一句话结论，再用本题的核心原理解释边界条件；最后补充检测/修复/验证三个工程点。</p>
+<h4 id="script">追问：为什么仅过滤 script 标签不够？</h4>
+<p><strong>回答要点：</strong> 先解释导致该现象的协议/信任边界，再说明成立所需条件，最后补充防守侧如何通过配置、日志或测试验证。</p>
+<h3 id="6">6. 面试官可能继续升级的场景题</h3>
+<ul>
+<li>如果这个问题发生在核心业务而不是测试环境，你会如何调整风险优先级、证据保全和修复节奏？</li>
+<li>如果已有一层安全产品/框架默认保护，你如何验证它真的覆盖了 OWASP Injection / Browser Security 的边界，而不是只相信配置名称？</li>
+<li>如果修复会影响兼容性或业务性能，你会如何设计灰度、监控和回滚方案？</li>
+</ul>
+<h3 id="7">7. 常见回答层级</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只能给出名词定义</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能解释基本原理</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能说明成立条件、边界和真实影响</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能给出工程修复、检测和验证</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能处理复杂追问、权衡与系统设计</td>
+</tr>
+</tbody>
+</table>
+<!-- BEGIN PROFESSIONAL_V2 -->
+<h2 id="v2">专业深化 v2：面向高级工程师的题解</h2>
+<blockquote>
+<p>这一节是在 PDF 基线与第一轮扩展之上的第二层深化，重点补齐 <strong>机制、边界、工程决策、证据、验证与追问树</strong>。它不是利用手册，而是面向合法授权的安全工程与面试表达。</p>
+</blockquote>
+<h3 id="a">A. 机制模型：先把问题抽象对</h3>
+<ul>
+<li>XSS 的统一模型是“不可信数据进入浏览器可执行上下文”，Stored/Reflected/DOM 只是数据来源和执行路径不同。</li>
+<li>浏览器解析存在多种上下文：HTML text、attribute、URL、JavaScript、CSS；编码必须与 context 匹配。</li>
+<li>DOM XSS 更强调客户端 Source→DOM transformation→dangerous sink，服务端响应可能本身完全正常。</li>
+</ul>
+<h3 id="b">B. 成立条件、边界与典型失效模式</h3>
+<ul>
+<li>“过滤 script 标签”无法覆盖事件属性、URL、DOM API 等多种执行上下文。</li>
+<li>框架默认 escaping 有边界：raw HTML、dangerouslySetInnerHTML、模板绕过、第三方组件会重新打开风险。</li>
+<li>HttpOnly 只能降低部分 Cookie 被 JS 读取的后果，并不消除 XSS 对页面行为的控制。</li>
+</ul>
+<h3 id="c">C. 工程设计：从“修一个点”到“设计控制面”</h3>
+<ul>
+<li>模板默认 auto-escape，禁止散落 raw HTML。</li>
+<li>需要富文本时采用成熟 sanitizer 并定义允许的标签/属性/URL scheme。</li>
+<li>客户端避免 innerHTML/eval 类危险 sink，优先 textContent/安全 DOM API。</li>
+<li>CSP/Trusted Types 等作为纵深降低单点失效后的可利用面。</li>
+</ul>
+<h3 id="d-detection-evidence">D. Detection &amp; Evidence：如何证明你的判断</h3>
+<ul>
+<li>响应与 DOM 快照区分服务端反射与客户端拼接。</li>
+<li>CSP violation report、前端异常与浏览器安全日志可提供辅助证据。</li>
+<li>代码审计定位 template raw output 和 DOM sinks。</li>
+</ul>
+<p>一个成熟回答要主动区分：<strong>事实（日志/状态）</strong>、<strong>推断（关联分析）</strong>、<strong>假设（尚待验证）</strong>。这能显著降低“看到一个异常就直接下结论”的面试失分。</p>
+<h3 id="e">E. 修复后的验证与回归</h3>
+<ul>
+<li>按具体上下文做编码测试，不用一个 payload 代表所有场景。</li>
+<li>对富文本 sanitizer 的允许列表和 URL 处理做 regression corpus。</li>
+<li>验证 CSP 违规报告与 Trusted Types 策略在关键页面生效。</li>
+</ul>
+<h3 id="f">F. 面试追问树：把一题答成一棵知识树</h3>
+<ol>
+<li>为什么 HTML escaping 不能直接用于 JavaScript context？</li>
+<li>Stored XSS 与 DOM XSS 可以同时存在吗？</li>
+<li>React/Vue 等框架为什么仍可能出现 XSS？</li>
+</ol>
+<p>回答这些追问时，建议始终使用：<strong>结论 → 原理 → 条件 → 反例/边界 → 工程控制 → 验证</strong>。如果题目涉及生产环境，再补充可用性、兼容性、灰度和回滚。</p>
+<h3 id="g">G. 这道题在真实工作中的“交付物”</h3>
+<p>XSS context matrix：Source、render context、编码/消毒策略、dangerous sinks、CSP/Trusted Types 和测试用例。</p>
+<h3 id="h">H. 一页纸复盘</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>应该能说清楚什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>根因</td>
+<td>不可信数据被浏览器解析为可执行内容。</td>
+</tr>
+<tr>
+<td>边界</td>
+<td>上下文、框架逃逸口和 DOM sink 决定风险。</td>
+</tr>
+<tr>
+<td>主要控制</td>
+<td>上下文编码/安全 DOM + sanitizer + CSP 纵深。</td>
+</tr>
+<tr>
+<td>关键证据</td>
+<td>response/DOM/code/CSP reports。</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>按 context 的 regression corpus。</td>
+</tr>
+</tbody>
+</table>
+<!-- END PROFESSIONAL_V2 -->
+
+<h2 id="_4">复习卡片</h2>
+<ul>
+<li><strong>核心关键词</strong>：OWASP Injection / Browser Security</li>
+<li><strong>一句话</strong>：XSS = 不可信数据进入浏览器执行上下文；防护必须匹配具体上下文。</li>
+<li><strong>最容易答错</strong>：只会过滤 <script>。</li>
+<li><strong>工程动作</strong>：建立 source-to-sink 清单：location/hash/postMessage/API -&gt; innerHTML/eval 等。</li>
+<li><strong>答题顺序</strong>：定义 -&gt; 原理 -&gt; 边界 -&gt; 风险 -&gt; 检测 -&gt; 修复 -&gt; 验证。</li>
+</ul>
+<h2 id="_5">关联题</h2>
+<ul>
+<li><span class="srcref">Q15 CSP 能不能彻底解决 XSS？</span></li>
+<li><span class="srcref">Q13 使用 Prepared Statement 后是否绝对没有 SQL 注入？</span></li>
+<li><span class="srcref">Q12 SQL 注入的本质是什么？</span></li>
+<li><span class="srcref">Q16 CSRF 的本质是什么？如何修复？</span></li>
+</ul>
+<h2 id="_6">参考标准 / 延伸阅读</h2>
+<ul>
+<li><a href="https://owasp.org/Top10/2025/">OWASP Top 10:2025</a> - 2025 Web 应用风险总览；A01 Broken Access Control，A03 Software Supply Chain Failures，A05 Injection。</li>
+<li><a href="https://owasp.org/www-project-application-security-verification-standard/">OWASP ASVS 5.0.0</a> - 2025-05-30 发布；用于 Web 应用技术安全控制验证与安全开发要求。</li>
+</ul>
+<h2 id="_7">安全边界</h2>
+<blockquote>
+<p>本仓库面向合法授权的面试学习、安全工程、检测与防守。涉及攻击技术时聚焦原理、证据、修复和验证，不提供针对真实目标的利用步骤、隐蔽规避或武器化操作。</p>
+</blockquote>
+<hr />
+<p>← <span class="srcref">Q13</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q15</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

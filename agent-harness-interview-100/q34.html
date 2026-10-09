@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manager-as-Tool 和 Handoff 有什么区别？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Agent Harness</a><i>∕</i><span>q34</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">q34</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★☆☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="q33.html">← q33</a><a href="q35.html">q35 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">04-planning-orchestration</a><a href="#">agent-harness</a><a href="#">interview</a><a href="#">tools</a><a href="#">agents</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      AGENT HARNESS · 34 / 101</div>
+    <h1 class="qtitle">Manager-as-Tool 和 Handoff 有什么区别？</h1>
+    <blockquote>
+<p><strong>一句话结论</strong>：Manager-as-Tool 保持主 Agent 控制；Handoff 转移当前控制权，适用场景和上下文策略不同。</p>
+<p><strong>难度</strong>：★★★☆☆　<strong>高频</strong>：★★★★☆　<strong>岗位</strong>：Agent / Harness　<strong>PDF</strong>：第 35 页起</p>
+<p><strong>内容分层</strong>：第 1–13 节以 PDF 原稿为主并做结构化整理；第 14 节是 Repo v1.1 的工程扩展，结合公开一手资料与系统设计方法补强。</p>
+</blockquote>
+<h2 id="1">1. 面试官真正想考什么</h2>
+<p>你是否能控制 orchestration complexity，并用任务结构而不是流行概念决定架构。</p>
+<p><strong>更深一层：</strong> Manager-as-Tool 保留中心控制，Handoff 转移控制权；选择取决于责任归属、上下文所有权和恢复语义。</p>
+<h2 id="2-know-why-harness">2. Know-Why：为什么这是 Harness 问题</h2>
+<p>编排的价值来自任务分解与并行，而不是 Agent 数量本身。任何增加的 Agent 都必须证明它抵消了协调和 token成本。针对本题，关键不是记住术语，而是识别系统中的“控制点”：Manager-as-Tool 保持主 Agent 控制；Handoff转移当前控制权，适用场景和上下文策略不同。 这类控制点一旦缺失，模型即使单次推理正确，也可能因为重试、上下文污染、环境状态、权限或错误反馈而在真实任务中失败。</p>
+<h3 id="_1">三条工程不变量</h3>
+<ol>
+<li>先有单 Agent baseline，再证明复杂编排的增益。</li>
+<li>并行只对独立或弱耦合子任务有收益。</li>
+<li>handoff 必须传结构化事实，而不是只传自然语言印象。</li>
+</ol>
+<p>这些不变量不是“最佳实践口号”，而是用来约束设计空间的。面试时如果方案违反其中一条，应主动解释为什么值得承担风险，以及如何用实验和监控把风险显式化。</p>
+<h2 id="3-know-how">3. Know-How：怎样落到生产系统</h2>
+<ul>
+<li>
+<p>根据 final-answer ownership、guardrail ownership、specialist autonomy 选择。</p>
+</li>
+<li>
+<p>把这一机制做成可配置、可追踪、可评测的 runtime primitive。</p>
+</li>
+</ul>
+<h3 id="artifact">推荐的工程 Artifact</h3>
+<p>建议给出 single-agent baseline 与 orchestration 方案的对照实验表，明确 fan-out、handoff 和 aggregation。</p>
+<h3 id="_2">本章参考架构</h3>
+<pre><code class="language-mermaid">flowchart TB
+  G[Goal] --&gt; O[Orchestrator]
+  O --&gt; W1[Worker A]
+  O --&gt; W2[Worker B]
+  O --&gt; W3[Worker C]
+  W1 --&gt; A[Artifact/Evidence Store]
+  W2 --&gt; A
+  W3 --&gt; A
+  A --&gt; E[Evaluator / Synthesizer]
+  E --&gt; O
+</code></pre>
+<blockquote>
+<p>图是本章公共心智模型；回答本题时只展开与题目相关的节点，避免把所有组件一次性画满。</p>
+</blockquote>
+<h2 id="3a-production-deep-dive">3A. Production Deep Dive：把概念变成系统协议</h2>
+<h3 id="3a1">3A.1 核心机制</h3>
+<p>Manager-as-Tool 保留主控上下文；Handoff 转移控制权，适合独立 ownership</p>
+<p><strong>Source of Truth：</strong> Handoff contract。在面试中主动指出这一点很重要，因为 Agent 的自然语言状态只是“认知状态”，真正能决定是否继续、是否重试、是否完成的通常是外部持久状态或环境。</p>
+<h3 id="3a2">3A.2 推荐状态 / 数据模型</h3>
+<pre><code class="language-text">TaskNode { task_id, parent_id, objective, dependencies, status, budget }
+WorkerRun { worker_id, task_id, context_ref, result_ref, cost }
+Handoff { from_agent, to_agent, contract, state_ref, acceptance }
+Dependency { upstream, downstream, type, version }
+</code></pre>
+<p>这不是要求所有系统都使用同一 schema；重点是把本题涉及的<strong>身份、版本、状态、结果引用和恢复语义</strong>从自然语言中提取出来，变成可验证 contract。</p>
+<h3 id="3a3">3A.3 具体故障场景</h3>
+<blockquote>
+<p><strong>Scenario</strong>：handoff 时遗漏用户约束，专门 Agent 做出错误副作用</p>
+</blockquote>
+<p>排查时不要只看最终回答。建议从 <code>goal/version → model decision → policy → tool/action → environment mutation → persisted state → grader</code> 顺序追踪，确认“模型认为发生了什么”与“环境实际发生了什么”在哪一步分叉。</p>
+<h3 id="3a4">3A.4 可证伪实验</h3>
+<p><strong>Experiment：</strong> 对 handoff state 做 required-field validation。</p>
+<p>一个好的 Harness 改动必须能写成可证伪假设，例如：“如果这个机制解决了目标 failure mode，那么在固定 model/task/env 后，专项指标应改善；如果没有改善，就不应把复杂度长期留在 runtime。”</p>
+<p><strong>Success criterion / SLO：</strong> handoff defect rate 降低。</p>
+<h3 id="3a5-production-checklist">3A.5 Production Checklist</h3>
+<ul>
+<li>[ ] 先证明任务可分解再 fan-out</li>
+<li>[ ] 依赖与共享写入必须显式建模</li>
+<li>[ ] handoff 有 contract 与 acceptance</li>
+<li>[ ] 全局 budget/并发限制能覆盖子 Agent</li>
+<li>[ ] 聚合阶段能追踪每个结论的 provenance</li>
+</ul>
+<h2 id="4-failure-modes">4. Failure Modes：低分答案与真实故障</h2>
+<ul>
+<li>把 handoff 当普通函数调用，不处理历史和权限</li>
+</ul>
+<h3 id="_3">生产环境再多想三层</h3>
+<ul>
+<li><strong>Detectability</strong>：这个失败在 trace / state diff / tool result / grader 中留下什么证据？</li>
+<li><strong>Recoverability</strong>：失败后是 retry、replan、compensate、rollback、ask human，还是 terminate？</li>
+<li><strong>Blast Radius</strong>：错误最多影响一次 tool call、一个 run、一个 tenant，还是外部真实世界？</li>
+</ul>
+<h2 id="5-trade-offs">5. Trade-offs：不要只讲“最佳方案”</h2>
+<p>并行和专门化可以提升 breadth，但会增加 token、协调、冲突和 handoff 损耗。</p>
+<p>面试中建议明确给出 baseline，并说明新机制增加了什么复杂度、成本或延迟。只有当它针对一个可观测 failure mode，并带来可测量收益时，才值得进入 Harness。</p>
+<h2 id="6-eval">6. 最小 Eval：怎样证明设计有效</h2>
+<p>一个可复用的最小实验框架：</p>
+<ol>
+<li>固定 task set、model version、environment version。</li>
+<li>只改变本题讨论的一个 Harness 变量。</li>
+<li>每个 task 运行多 trial，记录 outcome + trace。</li>
+<li>按 failure taxonomy 聚类，不只比较平均分。</li>
+<li>同时报告质量、稳定性、延迟、token/cost 和安全指标。</li>
+</ol>
+<h3 id="_4">建议观测指标</h3>
+<ul>
+<li><code>solve-rate uplift vs single-agent</code></li>
+<li><code>fan-out depth/width</code></li>
+<li><code>duplicate-work rate</code></li>
+<li><code>handoff loss rate</code></li>
+<li><code>cost per successful task</code></li>
+</ul>
+<p><strong>本题专项 Eval：</strong> 建议给出 single-agent baseline 与 orchestration 方案的对照实验表，明确 fan-out、handoff 和 aggregation。</p>
+<h2 id="7">7. 面试追问</h2>
+<ul>
+<li>
+<p>如果这个机制失败，你会在 Trace 中看到什么证据？</p>
+</li>
+<li>
+<p>如何构造一个最小 Eval 来证明你的设计真的比 baseline 更好？</p>
+</li>
+<li>
+<p>如果要求成本下降 40%，你会优先移除或简化哪一层？</p>
+</li>
+</ul>
+<p>建议继续自问：</p>
+<ul>
+<li>这个设计里<strong>谁拥有最终真相</strong>：模型、数据库、环境、grader，还是人工？</li>
+<li>如果请求在任意一步 crash，<strong>恢复点</strong>在哪里？</li>
+<li>如果模型能力提升一代，这个 Harness 机制还需要吗？怎样做 ablation？</li>
+</ul>
+<h2 id="8-90">8. 90 秒回答版本</h2>
+<p>先给结论：Manager-as-Tool 保持主 Agent 控制；Handoff 转移当前控制权，适用场景和上下文策略不同。 Manager-as-Tool 保留中心控制，Handoff 转移控制权；选择取决于责任归属、上下文所有权和恢复语义。 建议给出 single-agent baseline 与 orchestration 方案的对照实验表，明确 fan-out、handoff 和 aggregation。</p>
+<h2 id="9-5">9. 5 分钟深挖版本</h2>
+<p>5 分钟展开时，按 <code>结论 → failure mode → 最小设计 → 数据/状态语义 → trade-off → eval/metrics</code> 六步回答。本题的关键工程焦点是：Manager-as-Tool 保留中心控制，Handoff 转移控制权；选择取决于责任归属、上下文所有权和恢复语义。 具体落地时，优先产出：建议给出 single-agent baseline 与 orchestration 方案的对照实验表，明确 fan-out、handoff 和 aggregation。</p>
+<h2 id="10-pdf">10. PDF 原稿中的工程证据 / 研究结论</h2>
+<p><em>PDF 原稿未单列此节。</em></p>
+<blockquote>
+<p>本节只整理 PDF 原稿已有证据；下面“扩展阅读”是本仓库新增的外部资料，不与 PDF 原始内容混淆。</p>
+</blockquote>
+<h2 id="11-offer">11. Offer 级回答结构</h2>
+<p>建议用 4 段式回答：①先给结论和适用边界；②解释 failure mode，也就是“为什么需要它”；③给出最小实现和关键数据结构；④主动给出 trade-off + eval 指标。这样能把概念答案升级为工程答案。</p>
+<p>可以进一步升级为 6 段：<code>结论 → Why/Failure → How/Data Model → Recovery/Security → Trade-off → Eval/SLO</code>。</p>
+<h2 id="12-repo">12. 扩展阅读（Repo 增补）</h2>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic - Building effective agents</a></li>
+<li><a href="https://www.anthropic.com/engineering/multi-agent-research-system">Anthropic - Multi-agent research system</a></li>
+<li><a href="https://openai.github.io/openai-agents-python/multi_agent/">OpenAI Agents SDK - orchestration</a></li>
+</ul>
+<h2 id="13">13. 关联题</h2>
+<ul>
+<li>本章：<span class="srcref">第四章 Planning / Orchestration / Multi-Agent</span></li>
+<li><span class="srcref">Q33. 什么是 Orchestrator-Worker Pattern？</span></li>
+<li><span class="srcref">Q35. Agent 并行化最大的问题是什么？</span></li>
+</ul>
+<h2 id="14">14. 专业深挖：把“会回答”升级为“会设计”</h2>
+<h3 id="141">14.1 核心判断与边界</h3>
+<p><strong>核心判断：</strong> Manager-as-Tool 保持主控权；Handoff 转移 active agent 和上下文责任，两者是不同 ownership 模型。</p>
+<p><strong>必须讲清的边界：</strong> 关键问题是“谁拥有最终回答/对话/guardrail/状态”。</p>
+<p>这意味着面试时不能只描述一个 happy path。应先明确 <strong>source of truth、可接受的错误语义、不可违反的不变量、恢复策略</strong>，再谈具体框架。增加 Agent 数量只有在分解、隔离或并行收益超过协调成本时才有意义。</p>
+<h3 id="142">14.2 设计审查：上线前必须回答的问题</h3>
+<ul>
+<li>[ ] 子任务是否真正独立</li>
+<li>[ ] ownership 是否清晰</li>
+<li>[ ] 共享状态一致性</li>
+<li>[ ] fan-out 是否有全局预算</li>
+<li>[ ] aggregation 是否可验证</li>
+</ul>
+<p>对于本题，还要额外确认：</p>
+<ol>
+<li><strong>最坏情况下会错成什么样？</strong> 不只问“会不会失败”，而是问错误是否会变成重复副作用、状态漂移、越权、成本爆炸或不可恢复。</li>
+<li><strong>系统如何知道自己错了？</strong> 至少需要一个环境信号、结构化状态、grader 或 trace 证据，而不是模型自我反省。</li>
+<li><strong>失败后下一步是否确定？</strong> retry、repair、reconcile、compensate、rollback、ask-human、terminate 应尽量由错误类型和策略决定。</li>
+<li><strong>模型升级后是否仍需要这层机制？</strong> 若答案无法用 ablation 验证，Harness 很容易累积成永久技术债。</li>
+</ol>
+<h3 id="143">14.3 推荐的实现接口 / 状态语义</h3>
+<pre><code class="language-python">class TaskNode:
+    task_id: str
+    parent_id: str | None
+    dependencies: list[str]
+    budget: dict
+    status: str
+    artifact_ref: str | None
+</code></pre>
+<p>本题最值得落到白板或代码里的 Artifact 是：<strong>定义 Ownership/Context/Return-path 对比表。</strong></p>
+<p>建议所有关键对象都带 <code>run_id / version / timestamp / provenance</code>；涉及副作用时再加入 <code>operation_id / idempotency_key</code>，涉及安全时加入 <code>principal / tenant / policy_version</code>。这样 trace、checkpoint、audit 和 eval 才能关联成同一条因果链。</p>
+<h3 id="144-fault-injection">14.4 Fault Injection：如何主动证明系统能扛住坏情况</h3>
+<p><strong>故障注入场景：</strong> handoff 后 specialist 缺少必要历史或越过原 manager policy。</p>
+<p>专业的 Harness 测试不应该只做“模型有没有回答对”，而应把故障点插到<strong>状态提交边界、网络边界、权限边界、上下文转换边界</strong>。测试成功的标准不是“不报错”，而是：</p>
+<ul>
+<li>最终状态可解释；</li>
+<li>不产生不可接受的重复副作用；</li>
+<li>trace 能定位失败阶段；</li>
+<li>recovery 不依赖人工猜测；</li>
+<li>若无法自动恢复，系统能安全停在可人工处理的状态。</li>
+</ul>
+<h3 id="145-ablation">14.5 可证伪实验 / Ablation</h3>
+<p><strong>实验：</strong> 同一客服场景比较 manager tool 与 handoff。</p>
+<p>建议用 paired trials：固定 task set、model、environment、seed policy 和 grader，只改变本题对应的 Harness primitive。至少运行足够多 trial 以看到方差，并同时报告均值与分位数/置信区间。若方案只提升平均 solve-rate，却显著恶化尾延迟、成本或高风险错误率，应明确写成 trade-off，而不是宣布“全面提升”。</p>
+<h3 id="146">14.6 指标：至少同时看质量、稳定性和系统代价</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>Why</th>
+<th>建议切片</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>handoff_accuracy</code></td>
+<td>衡量本题设计是否真的改善，而不是只增加 Harness 复杂度</td>
+<td>建议按 task type / risk / model version 分桶</td>
+</tr>
+<tr>
+<td><code>context_loss</code></td>
+<td>衡量本题设计是否真的改善，而不是只增加 Harness 复杂度</td>
+<td>建议按 task type / risk / model version 分桶</td>
+</tr>
+<tr>
+<td><code>policy_consistency</code></td>
+<td>衡量本题设计是否真的改善，而不是只增加 Harness 复杂度</td>
+<td>建议按 task type / risk / model version 分桶</td>
+</tr>
+</tbody>
+</table>
+<p>除了专项指标，建议保留四个全局指标：<code>verified_success_rate</code>、<code>cost_per_success</code>、<code>p95_end_to_end_latency</code>、<code>human_intervention_rate</code>。安全敏感题再增加 <code>unsafe_action_rate</code> 或 <code>policy_escape_rate</code>。</p>
+<h3 id="147-debugging-playbook">14.7 Debugging Playbook</h3>
+<p>遇到失败时按以下顺序缩小范围：</p>
+<ol>
+<li><strong>重放输入与版本</strong>：确认 model / prompt / tools / harness / environment / grader 是否完全一致；</li>
+<li><strong>定位第一个分叉点</strong>：从 trace 中找出预期轨迹与失败轨迹首次不同的 model decision、tool result 或 state transition；</li>
+<li><strong>区分认知错误与系统错误</strong>：模型“想错了”与工具实际执行失败必须分开；</li>
+<li><strong>检查状态提交窗口</strong>：尤其关注 action 已发生但 result/checkpoint 未持久化的窗口；</li>
+<li><strong>构造最小复现</strong>：删掉无关上下文和工具，把 failure 固化成 regression case；</li>
+<li><strong>做单变量修复</strong>：修改 schema/context/policy/runtime 中最小的一项，再跑原始失败集。</li>
+</ol>
+<h3 id="148-senior-staff">14.8 Senior / Staff 级回答信号</h3>
+<p>高级回答会讨论 handoff input filtering、authorization at transfer boundary。</p>
+<p>面试官通常会继续追问“为什么不是更简单的方案”。因此答案中应主动给出 <strong>baseline → failure evidence → mechanism → measurable gain → added complexity → rollback/ablation plan</strong>，这比只列组件更能体现 Agent Systems 能力。</p>
+<h3 id="149-repo-pdf">14.9 进一步阅读（Repo 研究层，不等同 PDF 原稿）</h3>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic - Building effective agents</a></li>
+<li><a href="https://www.anthropic.com/engineering/multi-agent-research-system">Anthropic - Multi-agent research system</a></li>
+<li><a href="https://openai.github.io/openai-agents-python/multi_agent/">OpenAI Agents SDK - Agent orchestration</a></li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

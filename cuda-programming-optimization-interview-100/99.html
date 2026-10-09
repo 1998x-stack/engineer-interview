@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CUDA Tile C++ / Tile Programming 为什么值得关注？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">CUDA / GPU</a><i>∕</i><span>99</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">99</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">中高</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="98.html">← 98</a><a href="100.html">100 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">CUDA 13.3 / Tile</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      CUDA · GPU · 99 / 101</div>
+    <h1 class="qtitle">CUDA Tile C++ / Tile Programming 为什么值得关注？</h1>
+    <blockquote>
+<p><strong>一句话核心</strong>：CUDA Tile C++ 将编程中心从 thread-centric 提升到 tile-centric，让编译器/runtime 承担更多 thread mapping 与专用硬件调度。</p>
+<p><strong>章节</strong>：第 10 章 · Hopper、Blackwell 与 CUDA 13.x<br />
+<strong>难度</strong>：★★★ · <strong>频率</strong>：中高 · <strong>标签</strong>：CUDA 13.3 / Tile</p>
+</blockquote>
+<h2 id="pdf">PDF 基线题解</h2>
+<h2 id="_1">考察意图</h2>
+<p>考察 2026 年的新编程模型趋势。</p>
+<h2 id="_2">思路拆解</h2>
+<p>CUDA 13.3 首次正式引入 CUDA Tile C++ API，把“tile”而非 thread 作为主要程序抽象之一，旨在更自然表达
+tensor/tile 计算，并让编译器/IR 吸收更多底层线程与 Tensor Core 细节。</p>
+<h2 id="_3">标准回答</h2>
+<ul>
+<li>CUDA 13.3 中 Tile C++ 使用 <code>cuda_tile.h</code>、<code>cuda::tiles</code>，需要 C++20，启用 <code>--enable-tile</code>。</li>
+<li><code>__tile_global__</code> 表示 tile kernel；Tile IR 将 GPU 建模为 tile-based processor，而 PTX 传统上以 SIMT 为中心。</li>
+<li>目标之一是 performance portability：让硬件 Tensor Core/线程映射演进时，程序不必手工追所有低层细节。</li>
+<li>SIMT 与 Tile 可共存；高级岗位应比较 CUDA Tile、Triton、CuTe/CUTLASS 的抽象边界。</li>
+</ul>
+<h2 id="gotchas">Gotchas：常见失分点</h2>
+<ul>
+<li>把 CUDA Tile 当成“CUDA thread block 的新名字”。</li>
+</ul>
+<h2 id="_4">面试官可能继续追问</h2>
+<ul>
+<li>Tile IR 与 PTX 有何根本抽象差别？</li>
+<li>什么时候仍需要 SIMT/inline PTX？</li>
+</ul>
+<hr />
+<h2 id="_5">深入分析</h2>
+<p>CUDA Tile C++ 将编程中心从 thread-centric 提升到 tile-centric，让编译器/runtime 承担更多 thread mapping 与专用硬件调度。它与 Triton/CuTe 的比较是很好的高级面试延伸。</p>
+<h3 id="hopperblackwell">深入理解：Hopper/Blackwell 的本质是“更强的数据移动与协作原语”</h3>
+<p>现代架构题不要只背新名词。应把每个能力放进数据流：</p>
+<pre><code class="language-text">HBM --TMA--&gt; Shared/DSM --(copy/MMA path)--&gt; Register or TMEM --&gt; Tensor Core
+          ↑ cluster scope / async barriers / producer-consumer pipeline ↑
+</code></pre>
+<p>TMA 是数据移动引擎；DSM 是 cluster 级共享地址空间能力；TMEM 是 Blackwell 的 tensor-oriented memory locale。三者角色完全不同。</p>
+<h3 id="_6">性能因果链</h3>
+<pre><code class="language-text">题目现象 / 代码模式
+        ↓
+定位真实硬件行为
+        ↓
+识别主要资源或依赖
+        ↓
+提出一个可证伪优化假设
+        ↓
+修改实现
+        ↓
+Profiler 指标 + Kernel Time 验证
+</code></pre>
+<p>对于本题，建议至少观察：generated kernel performance、Tensor Core utilization、compile/JIT cost、portability across targets。</p>
+<h3 id="_7">架构视角</h3>
+<p>Hopper/Blackwell 特性需要匹配 compute capability、Toolkit、driver 与编译目标；优化必须明确目标架构。</p>
+<h2 id="30-2">面试回答：30 秒 / 2 分钟 / 深挖</h2>
+<h3 id="30">30 秒</h3>
+<p>CUDA Tile C++ 将编程中心从 thread-centric 提升到 tile-centric，让编译器/runtime 承担更多 thread mapping 与专用硬件调度。</p>
+<h3 id="2">2 分钟</h3>
+<ol>
+<li><strong>先给定义或结论</strong>：直接回答“是什么/为什么”。</li>
+<li><strong>给硬件因果</strong>：把 thread/warp、memory transaction、resource 或 pipeline 对应到硬件行为。</li>
+<li><strong>给 trade-off</strong>：说明优化会消耗什么资源，避免绝对化结论。</li>
+<li><strong>给验证方法</strong>：指出需要用 benchmark/Nsight 的哪些证据确认。</li>
+</ol>
+<h3 id="_8">深挖时必须能回答</h3>
+<ul>
+<li>这个结论在哪些条件下会失效？</li>
+<li>如果换 problem shape / datatype / block size，瓶颈会怎样迁移？</li>
+<li>如果从 Ampere 换到 Hopper/Blackwell，哪些稳定原理不变，哪些实现细节需要重做？</li>
+<li>你会用什么 profiler 指标证明自己的判断？</li>
+</ul>
+<h2 id="_9">实战验证建议</h2>
+<p>建议为本题建立一个最小可复现实验（microbenchmark）：</p>
+<ol>
+<li>写一个<strong>正确但未优化</strong>的 baseline。</li>
+<li>只改变一个变量（访问模式、tile、block size、register budget、pipeline stage 等）。</li>
+<li>使用 CUDA Event 做设备侧计时，至少 warm-up 后重复多次。</li>
+<li>使用 Nsight Compute/Systems 收集与本题直接相关的指标：generated kernel performance、Tensor Core utilization、compile/JIT cost、portability across targets。</li>
+<li>把结果写成“假设 → 指标变化 → 时间变化 → 结论”，而不是只保存最终最快参数。</li>
+</ol>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 - 只背术语</td>
+<td>能说出名词，但不能解释硬件原因或适用条件。</td>
+</tr>
+<tr>
+<td>1 - 合格</td>
+<td>定义准确，能给出核心因果关系。</td>
+</tr>
+<tr>
+<td>2 - 良好</td>
+<td>能讨论 trade-off、边界条件，并写出/读懂关键代码。</td>
+</tr>
+<tr>
+<td>3 - 高分</td>
+<td>能把问题映射到 profiler 指标，并说明不同架构/shape 下的策略变化。</td>
+</tr>
+<tr>
+<td>4 - 专家</td>
+<td>能提出可复现实验、量化模型或替代实现，并解释为什么它在目标 GPU 上更优。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">自测题</h2>
+<ol>
+<li>不看答案，用 <strong>30 秒</strong>讲清本题。</li>
+<li>画出本题涉及的数据流或线程/warp/SM 关系。</li>
+<li>写一个最小反例，证明“常见口号”并非无条件成立。</li>
+<li>给出一个 Nsight Compute 指标组合，能支持或推翻你的性能判断。</li>
+<li>说明如果目标从 A100/H100 迁移到 B100/B200，你首先重新验证什么。</li>
+</ol>
+<!-- PROFESSIONAL-V2 -->
+<h2 id="v2">专业增强版 V2：机制、量化与验证</h2>
+<blockquote>
+<p>本节是在 PDF 基线题解之上的<strong>仓库扩展</strong>。目标是把“能背答案”升级为“能解释硬件因果、能量化、能用 profiler 证伪”。</p>
+</blockquote>
+<h3 id="1">1. 硬件机制与核心心智模型</h3>
+<p>CUDA Tile C++ 把编程抽象从“手工映射每个 thread/lane”提升到“描述 tile 操作与数据流”，由编译器/runtime 负责更多底层映射。它适合表达矩阵/块级算法，并有潜力缩小性能可移植性与低级手写复杂度之间的鸿沟。</p>
+<h3 id="2_1">2. 定量推导 / 性能模型</h3>
+<p>抽象收益不是直接公式化的 FLOPs，而是把搜索空间从手工 thread mapping 转向 tile/layout/pipeline 级优化；最终仍受相同 Roofline、资源和数据移动下界约束。</p>
+<p>面试时不要只报公式。至少说明：公式里的变量对应什么硬件资源、哪些是假设、实际值应该如何由 profiler 或 microbenchmark 得到。</p>
+<h3 id="3">3. 代码 / 白板核心片段</h3>
+<pre><code class="language-cpp">// 概念：tile load -&gt; tile math -&gt; tile store
+// 具体 CUDA Tile C++ API 以 CUDA 13.3 官方文档为准。
+</code></pre>
+<p>白板代码优先保证：<strong>边界正确、同步范围正确、地址模式可解释</strong>。如果为了展示优化而省略边界处理，要主动说明省略条件。</p>
+<h3 id="4-nsight">4. Nsight 证据链：怎样证明你的判断</h3>
+<ul>
+<li><code>Generated kernel performance vs CUDA C++ baseline</code></li>
+<li><code>Compiler-selected resource usage</code></li>
+<li><code>Tile operation lowering / SASS</code></li>
+</ul>
+<p>推荐把分析写成四列：</p>
+<table>
+<thead>
+<tr>
+<th>假设</th>
+<th>预期指标变化</th>
+<th>实测指标变化</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当前瓶颈是本题讨论的问题</td>
+<td>指标应出现可预测变化</td>
+<td>benchmark 后填写</td>
+<td>接受 / 推翻假设</td>
+</tr>
+<tr>
+<td>优化应减少对应硬件成本</td>
+<td>时间与因果指标同向改善</td>
+<td>benchmark 后填写</td>
+<td>是否保留优化</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5">5. 架构迁移视角</h3>
+<p>CUDA 13.3 官方‘What’s New’明确加入 CUDA Tile C++，并支持 NVCC/NVRTC；这是快速演进接口，repo 应链接版本化文档并避免抄写易过期 API。</p>
+<p>这里要区分两类知识：</p>
+<ul>
+<li><strong>稳定原理</strong>：warp 粒度、数据复用、依赖、Roofline、资源平衡等；</li>
+<li><strong>架构实现</strong>：具体指令、cache/SM 资源、TMA/TMEM/cluster/TCGen05 等。</li>
+</ul>
+<p>面试中如果不确定某代 GPU 的精确容量或吞吐，不要猜数字；说明“会查目标 compute capability / tuning guide 并重新 profile”比报错数字更专业。</p>
+<h3 id="6">6. 可复现实验（建议真的做）</h3>
+<p>选 matrix transpose/elementwise tile 算法，用传统 CUDA C++ 与 Tile C++（工具链支持时）实现并比较生成代码、可读性与性能。</p>
+<p>实验至少记录：GPU 型号、compute capability、CUDA/driver、编译参数、输入 shape/dtype、warm-up、迭代次数、median/p95、correctness tolerance，以及关键 Nsight 指标。</p>
+<h3 id="7">7. 深挖追问树</h3>
+<ol>
+<li>Tile programming 与 Triton/CuTe DSL 的相似与差异？</li>
+<li>编译器自动映射是否意味着不需要 profiler？</li>
+<li>哪些 irregular workload 不适合 tile abstraction？</li>
+</ol>
+<h3 id="8">8. 高分回答检查清单</h3>
+<ul>
+<li>[ ] 先用一句话给出正确结论，而不是先铺背景。</li>
+<li>[ ] 能画出本题涉及的 warp / memory / pipeline 数据流。</li>
+<li>[ ] 能给至少一个公式、数量级或资源约束。</li>
+<li>[ ] 能指出一个“看似优化、实际可能变慢”的反例。</li>
+<li>[ ] 能说出用哪些 Nsight 证据验证。</li>
+<li>[ ] 能区分稳定原理与 Ampere/Hopper/Blackwell 的架构细节。</li>
+<li>[ ] 工程场景下会先与 CUDA Library / CUB / cuBLAS / CUTLASS 等成熟基线比较（适用时）。</li>
+</ul>
+<h2 id="_11">参考资料</h2>
+<ul>
+<li><strong>R16</strong> <a href="https://docs.nvidia.com/cuda/cuda-tile-cpp-api-reference/general_principles.html">CUDA Tile C++ API Reference 13.3 - General Principles</a></li>
+<li><strong>R17</strong> <a href="https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/tile-compilation-in-cuda.html">NVIDIA NVCC 13.3 - Tile Compilation in CUDA</a></li>
+<li><strong>R18</strong> <a href="https://docs.nvidia.com/cuda/tile-ir/13.3/sections/introduction.html">NVIDIA Tile IR 13.3 - Introduction</a></li>
+</ul>
+<blockquote>
+<p><strong>内容来源说明</strong>：<code>PDF 基线题解</code> 部分来自仓库所附 PDF；“深入分析 / 实战验证 / Rubric”等为仓库扩展内容，用于将题目从记忆型问答升级为性能工程型学习材料。</p>
+</blockquote>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

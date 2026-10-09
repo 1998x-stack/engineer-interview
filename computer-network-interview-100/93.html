@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>服务延迟升高但 CPU、QPS 都没变化，你优先怀疑什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>93</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">93</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">工程</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="92.html">← 92</a><a href="94.html">94 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">Tail Latency</a><a href="#">Queueing</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 93 / 100</div>
+    <h1 class="qtitle">服务延迟升高但 CPU、QPS 都没变化，你优先怀疑什么？</h1>
+    <blockquote>
+<p><strong>定位</strong>：工程 · <strong>面试频率</strong>：★★★★★ · <strong>标签</strong>：Tail Latency / Queueing<br />
+<strong>本章</strong>：<span class="srcref">第十章 综合故障定位与系统设计</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>Tail Latency / Queueing</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>应考虑 CPU 之外的等待：网络 RTT/packet loss/retransmission、DNS、连接池耗尽、锁/线程池、磁盘/DB、GC、跨 AZ 路由、NIC/softirq、下游 timeout、队列排队等。系统性能问题通常是“等待在哪里”，而非只看计算量。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>丢包很少也可能显著放大 p99，因为重传至少增加一个 RTT 或 RTO。</li>
+<li>连接池耗尽会让请求在应用入口排队，CPU 反而可能下降。</li>
+<li>路由变化可能让 RTT 突然增加但应用指标看起来正常。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>故障定位先做 latency/error decomposition，再从应用层向下验证，禁止“先猜网卡/先调 sysctl”。</li>
+<li>单一指标几乎从不够：连接状态、重传、RTT、队列、softirq、应用 trace 与两端抓包应形成证据链。</li>
+<li>系统设计题先做资源模型（FD、内存、PPS、带宽、端口、TLS、重连风暴），然后才讨论 epoll/线程模型。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-cpuqps-latency">V2 深入：CPU/QPS 不变而 latency 上升，优先想“等待时间”而不是“计算量”</h2>
+<h3 id="_4">第一性原理</h3>
+<p>Latency 可以花在 network RTT/loss/retrans、queue、lock、connection pool、DNS、downstream、storage IO 上，这些都会让 wall-clock 变长而 CPU 不一定升高。Little's Law 还能导致同 QPS 下 concurrent in-flight 增加。</p>
+<h3 id="_5">网络假设</h3>
+<p>RTT 上升、packet loss 触发 RTO、PMTU black hole、route change、NAT/conntrack pressure、receiver zero-window 都可能表现为等待。<code>ss -tin</code> 的 rtt/retrans/cwnd/send-q 与 trace timing 能帮助区分。</p>
+<h3 id="_6">应用等待假设</h3>
+<p>DB connection pool 等待、thread semaphore、RPC upstream timeout、GC pause、DNS resolver 卡顿也会让 CPU 空闲但请求排队。必须有 queue time/trace span，而不是只看 host CPU。</p>
+<h3 id="_7">线上案例推演</h3>
+<p>QPS 1000 始终不变，平均 service CPU 30%，p99 从 100ms 到 5s，同时 active request 数暴涨：这是典型等待/queue 膨胀信号，下一步应找哪个 span time 增加。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_8">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“服务延迟升高但 CPU、QPS 都没变化，你优先怀疑什么？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 Tail Latency、Queueing 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>curl -w</code>。</li>
+</ol>
+<h2 id="_9">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>curl -w</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>ss -s</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>mtr</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>tcpdump -w out.pcap</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1-littles-law">追问 1：如何用 Little’s Law 理解队列堆积？</h3>
+<p><strong>参考回答</strong>：TTL/Hop Limit 属于 IP 层防环机制，耗尽时通常由路由器丢包并回 ICMP Time Exceeded，而不是生成 TCP RST；RST是 TCP 端点的连接语义。 p99上升而p50稳定通常说明只影响尾部请求的排队、GC、重试、冷缓存、跨区或少量坏路径。Little's Law可用 L=λW 理解在到达率不变时等待时间上升如何对应系统中在途/排队数量增长。CDN miss storm会同时推高回源QPS、TTFB和源站队列。</p>
+<h3 id="2-retrans-counter">追问 2：怎样从 retrans counter 判断网络丢包？</h3>
+<p><strong>参考回答</strong>：epoll把interest set保存在内核，不需要每轮重新提交全部fd；ET强调边沿变化，必须drain到EAGAIN。EPOLLONESHOT常用于多线程下保证一个fd一次只被一个worker处理。poll在fd数量不大时足够简单可靠，kqueue与epoll都属于事件通知接口但具体语义不同。</p>
+<h3 id="3-az-tail-latency">追问 3：跨 AZ 流量为什么会引入 tail latency？</h3>
+<p><strong>参考回答</strong>：p99上升而p50稳定通常说明只影响尾部请求的排队、GC、重试、冷缓存、跨区或少量坏路径。Little's Law可用 L=λW 理解在到达率不变时等待时间上升如何对应系统中在途/排队数量增长。CDN miss storm会同时推高回源QPS、TTFB和源站队列。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ CPU 不高就排除服务器问题。</li>
+<li>❌ 看到 RTT 高就直接归因公网。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>对比事故前后 <code>ss -s</code> retrans、TCP RTT、连接池等待、线程池 queue、DB latency 与路由路径。</p>
+<h3 id="_10">实验验收标准</h3>
+<p>能给出“现象 → 假设 → 指标/抓包 → 排除/确认 → 根因”的完整闭环。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_11">权威资料 / 延伸阅读</h2>
+<ul>
+<li>本题以 PDF 原始题解与同章权威协议索引为主；详见 <span class="srcref"><code>references/README.md</code></span>。</li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_12">关联题目</h2>
+<ul>
+<li><span class="srcref">092. 用户说“网站突然很慢”，你如何系统化拆解而不是猜？</span></li>
+<li><span class="srcref">097. 网络服务 CPU 很高但业务线程不忙，可能是什么？</span></li>
+<li><span class="srcref">100. 给你一份 tcpdump/Wireshark 抓包，如何系统判断 TCP 问题？</span></li>
+</ul>
+<h2 id="_13">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：应考虑 CPU 之外的等待：网络 RTT/packet loss/retransmission、DNS、连接池耗尽、锁/线程池、磁盘/DB、GC、跨 AZ 路由、NIC/softirq、下游 timeout、队列排队等。系统性能问题通常是“等待在哪里”，而非只看计算量。</li>
+<li><strong>必须会解释</strong>：Tail Latency / Queueing。</li>
+<li><strong>必须避免</strong>：CPU 不高就排除服务器问题。</li>
+<li><strong>必须会验证</strong>：对比事故前后 <code>ss -s</code> retrans、TCP RTT、连接池等待、线程池 queue、DB latency 与路由路径。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

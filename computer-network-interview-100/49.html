@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTTP/2 已有多路复用，为什么 HTTP/3 仍需要 QUIC？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>49</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">49</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="48.html">← 48</a><a href="50.html">50 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">HTTP/2</a><a href="#">HTTP/3</a><a href="#">HOL</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 24 / 100</div>
+    <h1 class="qtitle">HTTP/2 已有多路复用，为什么 HTTP/3 仍需要 QUIC？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★★ · <strong>标签</strong>：HTTP/2 / HTTP/3 / HOL<br />
+<strong>本章</strong>：<span class="srcref">第五章 UDP、QUIC 与 HTTP/3 传输基础</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>HTTP/2 / HTTP/3 / HOL</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>HTTP/2 在应用层把请求分成独立 stream，但所有 frame 最终仍进入一个有序 TCP 字节流。底层 TCP 某个 Segment 丢失会阻塞后续字节交付，所有 HTTP/2 stream 都可能受影响。QUIC 在传输层提供独立 stream，某流丢包通常不阻塞其他流。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>HTTP/2 解决的是 HTTP/1.x 的许多应用层队头阻塞，但没有消除 TCP transport HOL。</li>
+<li>QUIC 的 packet number 与 stream offset 分离，使不同 stream 可独立重组。</li>
+<li>HTTP/3 还引入 QPACK 适应乱序、多流传输。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>HTTP/2 已解决 HTTP 层“一个请求必须等前一个响应”的很多限制，但多个 stream 仍共享同一条 TCP 有序字节流；底层一个缺失字节会让后续字节暂时无法交付到 HTTP/2 层。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>UDP 只提供数据报承载；可靠性、流控、拥塞控制、连接迁移等能力是 QUIC 自己实现的。</li>
+<li>HTTP/3 的关键收益不是“UDP 比 TCP 快”，而是 QUIC streams 避免 TCP 单字节流的跨流 HOL。</li>
+<li>QUIC 的用户态部署使协议迭代更快，但仍必须遵守互联网拥塞控制与安全约束。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-http2-tcp-byte-streamhttp3-transport-stream">V2 深入：HTTP/2 的多路复用止于 TCP byte stream，HTTP/3 把独立性下沉到 transport stream</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>HTTP/2 的 stream 是 HTTP framing 层概念，但所有 frame 最终按一个 TCP ordered byte stream 交付。</li>
+<li>TCP sequence gap 出现时，后续已到达字节也不能越过缺口交给 HTTP/2 parser，因此无关 stream 会一起等待。</li>
+<li>QUIC 为每个 stream 维护独立 offset/reassembly，某 stream 丢 packet 后，其他 stream 的完整数据仍可交付。</li>
+</ul>
+<h3 id="hol">仍然存在的 HOL</h3>
+<p>HTTP/3 不会消除所有“等待”：同一个 QUIC stream 内仍需有序；QPACK dynamic table 可能产生 header dependency；一个 UDP datagram 若同时承载多个 stream frame 丢失，这些 frame 都需恢复。它解决的是 TCP 单一字节序列造成的<strong>跨流 transport HOL</strong>。</p>
+<h3 id="congestion-control">Congestion Control 仍共享</h3>
+<p>同一 QUIC connection 的多个 stream 通常共享 path 与 congestion controller，所以 congestion event 会影响整体发送速率；“不跨流 HOL”不等于每个 stream 拥有独立带宽。</p>
+<h3 id="_5">线上案例推演</h3>
+<p>在 2% loss + 高 RTT 环境并发下载多个资源，HTTP/2 某 TCP loss 可能让所有 stream 的应用交付暂停；HTTP/3 通常能让未受影响 stream 继续推进，差异更容易反映在 tail latency 而非无损局域网峰值。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_6">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“HTTP/2 已有多路复用，为什么 HTTP/3 仍需要 QUIC？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 HTTP/2、HTTP/3、HOL 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>tcpdump -nn udp</code>。</li>
+</ol>
+<h2 id="_7">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>tcpdump -nn udp</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>curl --http3</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>qlog / QUIC trace</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>Wireshark QUIC</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1-quic-crypto-stream">追问 1：为什么 QUIC 自身的 crypto stream 仍需要有序？</h3>
+<p><strong>参考回答</strong>：QUIC 的 crypto data 有自己的有序 offset/状态依赖；消除的是 TCP 单字节流对所有 HTTP stream 的跨流阻塞，不是让每一种控制数据都无序。</p>
+<h3 id="2http3-hol">追问 2：HTTP/3 是否完全没有任何 HOL？</h3>
+<p><strong>参考回答</strong>：不是。单个 QUIC stream 内仍要按 stream offset 有序交付，QPACK dynamic dependency 也可能阻塞；只是一个 stream 的 loss 不再天然阻塞所有其他 stream。</p>
+<h3 id="3-quic-connection">追问 3：一条 QUIC connection 里拥塞控制是否仍共享？</h3>
+<p><strong>参考回答</strong>：通常共享。多个 stream 共用同一 connection/path 的 congestion controller，所以网络拥塞会影响整体发送速率；独立的是 stream reassembly/flow-control 状态，不是每流独占网络容量。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 简单说“HTTP/2 没有多路复用”。</li>
+<li>❌ 说 HTTP/3 可以让一个物理包里的所有内容独立丢失恢复。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>在高 RTT+丢包模拟环境对比 HTTP/2 与 HTTP/3 多资源并行请求的 tail latency。</p>
+<h3 id="_8">实验验收标准</h3>
+<p>能证明 QUIC/UDP 的数据报与 stream 行为，并区分协议自身能力与 UDP 基础能力。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9000.html">RFC 9000 - QUIC: A UDP-Based Multiplexed and Secure Transport</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9002.html">RFC 9002 - QUIC Loss Detection and Congestion Control</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_10">关联题目</h2>
+<ul>
+<li><span class="srcref">048. QUIC 为什么建立在 UDP 上，而不是直接改 TCP？</span></li>
+<li><span class="srcref">069. HTTP/1.1 与 HTTP/2 的核心差异是什么？</span></li>
+<li><span class="srcref">070. HTTP/2 为什么仍存在 Head-of-Line Blocking？</span></li>
+</ul>
+<h2 id="_11">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：HTTP/2 在应用层把请求分成独立 stream，但所有 frame 最终仍进入一个有序 TCP 字节流。底层 TCP 某个 Segment 丢失会阻塞后续字节交付，所有 HTTP/2 stream 都可能受影响。QUIC 在传输层提供独立 stream，某流丢包通常不阻塞其他流。</li>
+<li><strong>必须会解释</strong>：HTTP/2 / HTTP/3 / HOL。</li>
+<li><strong>必须避免</strong>：简单说“HTTP/2 没有多路复用”。</li>
+<li><strong>必须会验证</strong>：在高 RTT+丢包模拟环境对比 HTTP/2 与 HTTP/3 多资源并行请求的 tail latency。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>为什么二层需要 VLAN？VLAN 与广播域是什么关系？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>10</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">10</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★☆☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="9.html">← 9</a><a href="11.html">11 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">VLAN</a><a href="#">二层隔离</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 37 / 100</div>
+    <h1 class="qtitle">为什么二层需要 VLAN？VLAN 与广播域是什么关系？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★☆☆ · <strong>标签</strong>：VLAN / 二层隔离<br />
+<strong>本章</strong>：<span class="srcref">第一章 网络分层、链路与二层基础</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>VLAN / 二层隔离</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>VLAN 在同一物理交换网络上划分逻辑二层广播域。不同 VLAN 的广播默认不会互通，跨 VLAN 通信需要三层路由。它解决广播范围、故障隔离、租户/安全分区和网络组织问题。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>802.1Q 通过 VLAN Tag 标识帧所属 VLAN。</li>
+<li>Access Port 通常承载单一 VLAN，Trunk Port 可承载多个 VLAN。</li>
+<li>VLAN 是二层隔离机制，不等价于完整安全边界；ACL、路由、防火墙仍然重要。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>始终区分“最终目的”与“当前下一跳”：IP 负责跨网络寻址，二层地址负责当前链路交付。</li>
+<li>回答时要把数据单位说清楚：Application Data → Segment/Datagram → IP Packet → Frame。</li>
+<li>遇到“为什么”题，不只背协议名称，要解释分层如何降低耦合、让每一层独立演进。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-vlan">V2 深入：VLAN 的核心是把一个物理二层基础设施切成多个逻辑广播域</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>VLAN 给 Ethernet frame 增加逻辑二层分区，使同一交换基础设施中的不同 VLAN 彼此不直接共享广播域。</li>
+<li>不同 VLAN 之间若要通信，需要经过 L3 routing（SVI/router-on-a-stick 等），因此 ARP broadcast 默认不会跨 VLAN。</li>
+<li>VLAN 解决的是二层隔离与扩展，不是加密；同 VLAN/不同 VLAN 都仍需考虑 ACL、身份和上层安全。</li>
+</ul>
+<h3 id="8021q">802.1Q 与端口模型</h3>
+<p>Access port 通常把未标记流量归入一个 VLAN；Trunk port 可以携带多个带 802.1Q tag 的 VLAN。Native VLAN/untagged 行为若两端配置不一致，可能产生 VLAN hopping、流量串域或难以排查的单向通信问题。</p>
+<p>STP 仍在每个逻辑二层拓扑里解决环路，而 VLAN 数量过大也会带来 MAC table、broadcast/ARP、STP 控制面的扩展问题。</p>
+<h3 id="vlan-vxlan">VLAN 与 VXLAN</h3>
+<p>VLAN ID 只有 12 bit，规模与跨三层扩展能力有限；VXLAN 使用 VNI 在 IP underlay 上构建大规模 L2/L3 overlay，常结合 EVPN 控制平面。两者都是逻辑分段，但技术层次和规模目标不同。</p>
+<h3 id="_5">线上案例推演</h3>
+<p>“同交换机两台机器互相不通”时先确认它们是否真的属于同 VLAN、PVID/tag 配置是否一致、是否有 port isolation；若不同 VLAN，则应检查默认网关/SVI/ACL，而不是期待 ARP 跨 VLAN 生效。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_6">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“为什么二层需要 VLAN？VLAN 与广播域是什么关系？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 VLAN、二层隔离 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>tcpdump -e -nn</code>。</li>
+</ol>
+<h2 id="_7">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>tcpdump -e -nn</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>ip neigh</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>ip link</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>ip addr</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1-vlan-arp">追问 1：同一交换机上不同 VLAN 为什么不能直接 ARP？</h3>
+<p><strong>参考回答</strong>：ARP只解析同一二层广播域中的下一跳 IPv4→MAC。跨网段访问时通常 ARP 默认网关；Gratuitous ARP 可用于地址声明/冲突检测/漂移，ARP Spoofing 则利用邻居缓存缺乏强认证进行欺骗。 VLAN把一个物理交换网络切成独立二层广播域；跨 VLAN 通信需要三层转发。Native VLAN/Trunk 配置不一致会带来流量串入、VLAN hopping 等风险。</p>
+<h3 id="2native-vlan">追问 2：Native VLAN 有什么风险？</h3>
+<p><strong>参考回答</strong>：VLAN把一个物理交换网络切成独立二层广播域；跨 VLAN 通信需要三层转发。Native VLAN/Trunk 配置不一致会带来流量串入、VLAN hopping 等风险。</p>
+<h3 id="3vxlan-vlan">追问 3：VXLAN 与 VLAN 的关系是什么？</h3>
+<p><strong>参考回答</strong>：VLAN把一个物理交换网络切成独立二层广播域；跨 VLAN 通信需要三层转发。Native VLAN/Trunk 配置不一致会带来流量串入、VLAN hopping 等风险。 VXLAN把二层网络封装到三层 UDP 网络上，用 VNI 扩展逻辑隔离规模，常用于数据中心跨三层承载虚拟二层网络；它不是简单“更大的 VLAN ID”。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 认为 VLAN 能替代防火墙。</li>
+<li>❌ 把 VLAN ID 当作跨互联网可路由的全局标识。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>在 Linux network namespace + bridge 环境创建两个 VLAN，验证同 VLAN 可二层互通、跨 VLAN 需路由。</p>
+<h3 id="_8">实验验收标准</h3>
+<p>能在抓包或邻居/链路表中验证当前一跳的二层信息，并把它与最终 IP 目的地址区分开。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">权威资料 / 延伸阅读</h2>
+<ul>
+<li>本题以 PDF 原始题解与同章权威协议索引为主；详见 <span class="srcref"><code>references/README.md</code></span>。</li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_10">关联题目</h2>
+<ul>
+<li><span class="srcref">009. traceroute 为什么能看到中间路由器？</span></li>
+<li><span class="srcref">011. NAT 到底做了什么？SNAT、DNAT、PAT 有什么区别？</span></li>
+</ul>
+<h2 id="_11">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：VLAN 在同一物理交换网络上划分逻辑二层广播域。不同 VLAN 的广播默认不会互通，跨 VLAN 通信需要三层路由。它解决广播范围、故障隔离、租户/安全分区和网络组织问题。</li>
+<li><strong>必须会解释</strong>：VLAN / 二层隔离。</li>
+<li><strong>必须避免</strong>：认为 VLAN 能替代防火墙。</li>
+<li><strong>必须会验证</strong>：在 Linux network namespace + bridge 环境创建两个 VLAN，验证同 VLAN 可二层互通、跨 VLAN 需路由。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>怎样系统选择模数？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q044</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q044</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q043.html">← Q043</a><a href="Q045.html">Q045 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">数学专业</a><a href="#">模数设计、剩余类、策略</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 44 / 100</div>
+    <h1 class="qtitle">怎样系统选择模数？</h1>
+    <p><strong>模块：</strong> 数论<br />
+<strong>标签：</strong> 数学专业 · 难度 ★★★★☆ · 模数设计、剩余类、策略</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>怎样系统选择模数？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>根据幂次选择能产生稀疏剩余的模数。</li>
+<li>让某些系数或项消失。</li>
+<li>结合目标素因子或表达式周期。</li>
+</ul>
+<p><strong>展开：</strong> 选择模数可以从三类目标出发：<strong>压缩取值</strong>，如平方看模4/8、立方看适当模数；<strong>消项</strong>，选择整除某些系数的模数；<strong>匹配素因子</strong>，若题目关注某个$p$的整除，就直接模$p$或$p^k$。一个好模数让“允许的剩余集合很小”，从而形成矛盾。面试中应反对无目的地从2试到20。</p>
+<h3 id="_4">面试追问</h3>
+<p>请举一个“模素数不够，必须模$p^2$或更高幂”才看见矛盾的类型。</p>
+<h3 id="_5">常见失分</h3>
+<p>把模数选择当经验表；不说明为什么有效。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>建立“表达式→候选模数→剩余集合大小”的表，让学生比较信息增益。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：有设计原则和高阶模意识；6分：会常用模；3分：试错型。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：局部信息与下降结构</h3>
+<p>数论面试题通常在考三件事：能否从整除关系提取 <strong>局部信息（同余/估值）</strong>，能否利用 <strong>结构性分解（gcd、因式分解、韦达）</strong>，以及能否通过 <strong>极小反例/无限下降</strong> 把存在性问题转成矛盾。</p>
+<p>任何引用 LTE、Bézout、欧几里得算法、Legendre 等工具时，都应主动说清条件。数论证明对“条件遗漏”非常敏感，面试官常用追问专门检查这一点。</p>
+<h4 id="_9">技术补充：选择模数要针对表达式的周期</h4>
+<p>平方问题常看 mod 4/8/奇素数的二次剩余；十进制数位看 mod 9/11；指数 $a^n$ 看乘法阶和周期；分母或整除条件可选择相关素因子。一个好模数应让“可能值集合明显变小”，而不是只是计算方便。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>明确模数/素数/正整数等条件为何必要。</li>
+<li>尝试用估值、gcd或下降给出第二视角。</li>
+<li>构造一个删除关键条件后的反例。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 变量整数/正整数条件明确</li>
+<li>[ ] 模数或素数选择有理由</li>
+<li>[ ] 定理条件逐项核验</li>
+<li>[ ] 构造的新解仍在可行域</li>
+<li>[ ] 整除与估值结论没有跳步</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>局部信息选择有理由；定理条件逐项核验；整除/估值/下降链完整并能给反例。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>结论和主证明正确，但条件、最小性或可行性验证略简。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>知道相关定理但易机械套用，无法解释模数/素数选择。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>忽略整数性、正性或定理前提，导致证明实质失效。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>请举一个“模素数不够，必须模$p^2$或更高幂”才看见矛盾的类型。</li>
+<li>明确模数/素数/正整数等条件为何必要。</li>
+<li>尝试用估值、gcd或下降给出第二视角。</li>
+<li>构造一个删除关键条件后的反例。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>写一份“条件核对证明”：每次使用同余/估值/下降前单独列出前提，并构造删除条件后的反例。</p>
+<h3 id="v2">专业版 v2：模数选择应由表达式的周期与禁止模式决定</h3>
+<h4 id="1">1. 看幂结构</h4>
+<p>平方问题优先检查模 4、8、3、5；立方问题可看模 7、9 等，因为幂的剩余类会显著收缩。</p>
+<h4 id="2">2. 看系数/常数</h4>
+<p>若方程出现 $10^n$、末位、数字和，模 2、5、9、11 等自然；若出现某个素数 $p$ 的整除性，则直接模 $p$ 或 $p^k$。</p>
+<h4 id="3_1">3. 看因式分解后的因子</h4>
+<p>若 $(x-y)(x+y)$ 被某数整除，模 2 或相关素数可帮助确定两个因子的奇偶与 gcd。</p>
+<h4 id="4">4. “最小有效模数”原则</h4>
+<p>模数越大不一定越强。优先找能产生最少剩余类、同时计算成本低的模数。面试时可以说：我会先尝试能与表达式自然共振的模数，而不是从 2 到 20 枚举。</p>
+<h4 id="5">5. 失败后的切换</h4>
+<p>若多个自然模数都不给矛盾，说明问题可能不是“局部不可解”，应转向估值、因式分解、无限下降或大小估计。</p>
+<h2 id="_15">关联题目</h2>
+<ul>
+<li><span class="srcref">Q041 · 为什么同余是初等数论最基本的语言之一？</span></li>
+<li><span class="srcref">Q043 · 为什么平方数模4只能是0或1？你会怎么给初学者讲？</span></li>
+<li><span class="srcref">Q055 · 数论题试了十几个模数都没进展，下一步做什么？</span></li>
+</ul>
+<h2 id="_16">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

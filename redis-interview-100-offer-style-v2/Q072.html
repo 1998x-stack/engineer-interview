@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pub/Sub 和 Stream 最大区别是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Redis</a><i>∕</i><span>Q072</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q072</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">基础必会</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q071.html">← Q071</a><a href="Q073.html">Q073 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">redis</a><a href="#">interview</a><a href="#">chapter-08</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      REDIS · OFFER · 72 / 101</div>
+    <h1 class="qtitle">Pub/Sub 和 Stream 最大区别是什么？</h1>
+    <blockquote>
+<p><strong>难度：</strong> 基础必会<br />
+<strong>所属章节：</strong> 08 · Pub/Sub、Streams 与消息处理<br />
+<strong>PDF 对应页：</strong> 83<br />
+<strong>目标：</strong> 先在 60 秒内给结论，再用机制、边界和生产验证把答案展开。</p>
+</blockquote>
+<h2 id="1-3060">1. 30–60 秒面试标准回答</h2>
+<p>Pub/Sub 是 fire-and-forget 在线广播；Streams 是可持久 append-only log，支持历史、Consumer Group、PEL、 ACK、claim/replay。选择的核心问题是消费者离线时消息是否仍要存在和恢复。</p>
+<h2 id="2-pdf">2. PDF 原理拆解</h2>
+<p>同一 Stream 上不同 groups 有独立消费状态； 同一 group 内消息通常分摊给消费者。 Streams 更可靠，但也不能简单等价 Kafka 或 exactly-once。</p>
+<h2 id="3-pdf">3. PDF 高频追问与答题抓手</h2>
+<ul>
+<li>
+<p>追问 1 这个方案提供的是原子性、隔离性、至少一次，还是强一致？不要混淆哪些概念？</p>
+</li>
+<li>
+<p>追问 2 如果客户端在关键步骤之间崩溃，应如何恢复或补偿？</p>
+</li>
+</ul>
+<p>答题抓手：记住三个关键词：history + PEL + ACK。</p>
+<h2 id="4-pdf-gotchas">4. PDF 易错点 / Gotchas</h2>
+<p>不要只说“Stream 更可靠”而不讲 PEL/ACK；不要说 Stream 自动 exactly-once。</p>
+<h2 id="5-pdf">5. PDF 工程落地</h2>
+<p>记住三个关键词：history + PEL + ACK。</p>
+<blockquote>
+<p><strong>PDF 一句话拿分：</strong> Pub/Sub 是 fire-and-forget 在线广播；Streams 是可持久 append-only log，支持历史、Consumer Group、 PEL、ACK、claim/replay。<br />
+<strong>GitHub 增强版一句话：</strong> Streams 的历史、ID、consumer group、PEL 与 ACK 让它能承担可靠消费；Pub/Sub 则追求低开销实时广播。</p>
+</blockquote>
+<h2 id="6">6. 深度扩展：从“会答”到“能设计”</h2>
+<p>Streams 的历史、ID、consumer group、PEL 与 ACK 让它能承担可靠消费；Pub/Sub 则追求低开销实时广播。两者不应仅用吞吐高低比较。</p>
+<h3 id="61">6.1 成本 / 复杂度模型</h3>
+<p>消息成本由消息大小、consumer 数、pending/retention 和重试率共同决定。</p>
+<h3 id="62">6.2 生产判断框架</h3>
+<ul>
+<li>消息投递语义与业务效果语义要分开。</li>
+<li>监控 lag、PEL、delivery count、毒消息与 retention。</li>
+</ul>
+<h3 id="63">6.3 面试时应主动补出的边界</h3>
+<ul>
+<li>先说明当前结论成立的前提：数据规模、读写比、是否 Cluster、是否允许数据丢失/陈旧。</li>
+<li>如果涉及集合或批处理，必须说明 Big Key、单次返回体积和核心执行路径阻塞风险。</li>
+<li>如果涉及 HA/一致性，必须明确网络分区、进程崩溃和 failover 后的行为，而不是只描述正常路径。</li>
+<li>如果涉及性能，优先给出可观测指标和验证实验，不用“Redis 很快”替代测量。</li>
+</ul>
+<h3 id="64">6.4 可观测与验证指标</h3>
+<ul>
+<li><code>stream lag</code></li>
+<li><code>PEL size / idle / delivery count</code></li>
+<li><code>consumer throughput / retry rate</code></li>
+<li><code>stream length / retention bytes</code></li>
+</ul>
+<h3 id="65">6.5 故障注入 / 实验设计</h3>
+<p>杀掉正在处理 pending 的 consumer，再启动新 consumer，验证 XAUTOCLAIM/XNACK、重复投递和幂等。</p>
+<h3 id="66">6.6 面试白板图</h3>
+<pre><code class="language-mermaid">flowchart LR
+  P[Producer] --&gt; S[Stream]
+  S --&gt; G[Consumer Group]
+  G --&gt; C1[Consumer A]
+  G --&gt; C2[Consumer B]
+  C1 &amp; C2 --&gt; PEL[PEL]
+  PEL --&gt;|XACK| DONE[Done]
+  PEL --&gt;|XAUTOCLAIM/XNACK| RETRY[Reassign]
+</code></pre>
+<h2 id="7">7. 进一步追问树</h2>
+<ul>
+<li>消费者重复处理时如何保证业务幂等？</li>
+<li>如何监控 backlog、PEL 和毒消息？</li>
+</ul>
+<h2 id="9">9. 版本与实现注意</h2>
+<p>本题以 Redis Open Source 8.10.1（2026-08）为版本基线；经典语义与版本相关实现应分开表述。</p>
+<blockquote>
+<p>内部编码、命令集合和新能力会随版本变化。面试中建议先给经典语义，再说明当前版本增量。</p>
+</blockquote>
+<h2 id="10-100">10. 100 分回答评分尺</h2>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>能力表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>60 分</td>
+<td>能给出定义和主结论，但没有失效边界。</td>
+</tr>
+<tr>
+<td>80 分</td>
+<td>能解释关键机制、复杂度，并回答至少两层追问。</td>
+</tr>
+<tr>
+<td>90 分</td>
+<td>能画出数据流/状态机，说明故障竞态和监控指标。</td>
+</tr>
+<tr>
+<td>100 分</td>
+<td>能从 SLO、容量、成本与版本约束重新推导方案，并指出什么时候不该使用该方案。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11">11. 关联题目</h2>
+<ul>
+<li><span class="srcref">Q071 · Redis Pub/Sub 的特点是什么？</span></li>
+<li><span class="srcref">Q073 · Redis Stream 的 ID 是什么？</span></li>
+<li><span class="srcref">Q077 · Redis Streams 能保证 exactly-once 吗？</span></li>
+</ul>
+<h2 id="12">12. 官方参考</h2>
+<ul>
+<li><a href="https://redis.io/docs/latest/develop/pubsub/">Pubsub</a></li>
+<li><a href="https://redis.io/docs/latest/develop/data-types/streams/">Streams</a></li>
+</ul>
+<h2 id="13-v2">13. 专业深挖补充（v2）</h2>
+<blockquote>
+<p><strong>来源说明：</strong> 第 1–5 节保留 PDF 母版主线；本节是 GitHub 增强内容，结合 Redis 官方文档、当前版本实现语义与生产工程实践扩展。</p>
+</blockquote>
+<h3 id="131">13.1 核心机制再推导</h3>
+<p>Streams 与 Pub/Sub 的根本差异是是否维护有 ID 的持久条目和消费状态。Streams 可以 range/replay、consumer group、PEL、ACK；代价是需要 retention 和 pending 管理。</p>
+<p>不要停留在“记住结论”。面试时建议把本题改写成一条因果链：</p>
+<pre><code class="language-text">业务目标 / SLO
+  ↓
+Redis 提供的原语或内部机制
+  ↓
+复杂度、内存、网络与一致性成本
+  ↓
+故障/扩容时的边界
+  ↓
+可观测指标与验证实验
+</code></pre>
+<h3 id="132">13.2 复杂度、容量与性能模型</h3>
+<p>消息系统同时量化生产速率、消费速率、lag、pending、retention、重复率和恢复时间。</p>
+<p>计算复杂度只说明算法增长趋势，生产还必须补充四个量：</p>
+<ol>
+<li><strong>N 到底是什么</strong>：key 数、member 数、字段数、请求数还是字节数；</li>
+<li><strong>一次返回多少字节</strong>：很多“查找 O(1)”最终被大 reply 的网络/序列化成本主导；</li>
+<li><strong>最坏 key/slot/shard 多大</strong>：平均值无法解释热点和尾延迟；</li>
+<li><strong>背景任务是否叠加</strong>：fork、rewrite、expire、eviction、reshard 都可能与前台 workload 竞争资源。</li>
+</ol>
+<h3 id="133">13.3 生产案例推演</h3>
+<p>实时 UI 通知用 Pub/Sub；异步工作流需要失败恢复用 Streams；有时两者可并存：Stream 做事实日志，Pub/Sub 做低延迟提醒。</p>
+<p>面试中不要只说“可以这样做”，还应给出验收口径：</p>
+<ul>
+<li>功能正确：正常路径和重试路径结果一致；</li>
+<li>性能正确：用真实 value/member 分布测 p50/p99/p999；</li>
+<li>故障正确：节点重启、超时、网络分区或消费者崩溃后状态可解释；</li>
+<li>运维正确：有容量阈值、报警、回滚和恢复演练。</li>
+</ul>
+<h3 id="134">13.4 失败模式 / 什么时候不该这么做</h3>
+<p>“Stream 更强所以一切都用 Stream”也不专业；持久状态会带来内存和运维成本。</p>
+<p>进一步判断时，可以问自己：</p>
+<ul>
+<li>这个方案是不是把问题从 Redis 转移到了客户端，却没有减少总体复杂度？</li>
+<li>如果 key、QPS、成员数扩大 10～100 倍，是否出现不可分割的单点成本？</li>
+<li>如果 primary 在最坏时刻故障，已经返回给用户的结果是否仍然成立？</li>
+<li>如果 Redis 整层不可用，业务是 fail-open、fail-closed 还是降级到其他数据源？</li>
+</ul>
+<h3 id="135">13.5 源码阅读路线</h3>
+<p>建议从 <strong>命令语义 → 数据结构 → 生命周期/故障路径</strong> 三层阅读，而不是从 <code>server.c</code> 顺序翻完整仓库。</p>
+<ul>
+<li>推荐入口：Pub/Sub + <code>src/t_stream.c</code></li>
+<li>第一步：在该 Redis 版本的 command table 中定位命令 handler；</li>
+<li>第二步：跟到对象编码/数据结构操作，记录关键 Big-O 和可能的全量遍历；</li>
+<li>第三步：继续追踪 replication、AOF/RDB、lazyfree、Cluster 等副作用；</li>
+<li>第四步：对照官方命令页的 <code>time complexity</code>、版本变更与 ACL category。</li>
+</ul>
+<blockquote>
+<p>源码路径属于阅读导航，不是稳定 API；升级 Redis 后应以目标 tag/commit 为准。</p>
+</blockquote>
+<h3 id="136">13.6 高频追问：标准应答</h3>
+<p><strong>追问 A：消费者崩溃后如何保证任务不会静默丢失？</strong><br />
+同一 Stream 上不同 groups 有独立消费状态；同一 group 内消息通常分摊给消费者。Streams 更可靠，但也不能简单等价 Kafka 或 exactly-once。 可靠消费还必须配幂等 event_id 和 pending/lag 监控。</p>
+<p><strong>追问 B：什么时候应该换 Kafka/专用 MQ？</strong><br />
+当 retention、跨团队事件总线、TB/PB 历史、分区扩展和大规模 replay 成为核心需求时，应优先选择以持久日志为中心的系统。</p>
+<h3 id="137">13.7 面试官继续深挖时的回答结构</h3>
+<p>可以按下面顺序组织 2～5 分钟回答：</p>
+<ol>
+<li><strong>定义</strong>：一句话说明它解决什么问题；</li>
+<li><strong>机制</strong>：画出数据流/状态机，说明 Redis 内部怎样实现；</li>
+<li><strong>复杂度</strong>：给 Big-O，同时指出 N 与 byte size；</li>
+<li><strong>边界</strong>：Big Key、Hot Key、Cluster、复制、故障时会怎样；</li>
+<li><strong>方案</strong>：为什么选它，而不是最相近的替代方案；</li>
+<li><strong>验证</strong>：给出线上指标、命令或故障注入；</li>
+<li><strong>版本</strong>：若是 Redis 8.x 新能力，明确最低版本和回滚兼容。</li>
+</ol>
+<h3 id="138">13.8 本题复习检查表</h3>
+<ul>
+<li>[ ] 我能在 30 秒内说出结论，不堆命令名。</li>
+<li>[ ] 我能解释至少一个内部数据结构/状态机。</li>
+<li>[ ] 我能说出 Big-O，并解释规模变量是什么。</li>
+<li>[ ] 我能指出至少两个会失效的边界条件。</li>
+<li>[ ] 我能给出一个真实生产案例或故障时序。</li>
+<li>[ ] 我能给出 3 个以上可观测指标/验证手段。</li>
+<li>[ ] 我能说明 Redis Cluster / replication 对本题是否有额外约束。</li>
+<li>[ ] 我知道目标版本的官方文档入口：<a href="https://redis.io/docs/latest/develop/data-types/streams/">https://redis.io/docs/latest/develop/data-types/streams/</a>。</li>
+</ul>
+<hr />
+<p>← <span class="srcref">Q071 Redis Pub/Sub 的特点是什么？</span> | <span class="srcref">章节索引</span> | <span class="srcref">Q073 Redis Stream 的 ID 是什么？</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

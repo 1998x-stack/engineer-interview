@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>view 与 pure 有什么区别？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Web3</a><i>∕</i><span>Q22</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q22</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q21.html">← Q21</a><a href="Q23.html">Q23 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">interview</a><a href="#">solidity</a><a href="#">web3</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      WEB3 · SOLIDITY · 22 / 101</div>
+    <h1 class="qtitle">view 与 pure 有什么区别？</h1>
+    <blockquote>
+<p><strong>难度</strong> ★ | <strong>高频度</strong> ★★★★☆ | <strong>岗位</strong> Solidity | <strong>PDF</strong> 第 28 页</p>
+<p>本文件以 PDF 中 Q22 为主干；“GitHub 扩展”部分是在原内容上增加的工程化学习材料。原 PDF：<a href="assets/pdf/Jianzhi_Web3_Offer_100_Interview_Questions_2026.pdf">Jianzhi_Web3_Offer_100_Interview_Questions_2026.pdf</a>.</p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问这题</h2>
+<p>考察状态读取、编译器约束和 RPC <code>eth_call</code> 的区别。</p>
+<h3 id="_1">高分回答的层级</h3>
+<ul>
+<li><strong>L1 - 定义正确</strong>：术语不混淆，先给一到两句话结论。</li>
+<li><strong>L2 - 原理可推导</strong>：能解释为什么，以及底层状态/数据/执行路径。</li>
+<li><strong>L3 - Failure Mode</strong>：主动说明什么时候结论不成立、常见攻击或工程故障。</li>
+<li><strong>L4 - Invariant / Trade-off</strong>：能给出不变量、信任假设或系统设计取舍。</li>
+</ul>
+<h2 id="2-30">2. 30 秒标准回答</h2>
+<blockquote>
+<p><code>view</code> 承诺不修改链上状态，但可以读取；<code>pure</code> 既不修改也不读取合约状态。它们是函数语义约束，不代表“如果在链上 transaction 中调用就不消耗执行资源”。</p>
+</blockquote>
+<h2 id="3-pdf">3. 原理深挖（PDF 主干）</h2>
+<h3 id="31">3.1 关键推导</h3>
+<p>前端通过 <code>eth_call</code> 执行 view/pure 时，由 RPC 节点本地模拟，不会把交易写入链，所以用户不支付链上手续费。但如果另一个合约在 transaction 内调用 view function，EVM 仍需执行其 opcodes 并消耗本笔交易的 gas。</p>
+<h3 id="32">3.2 关键推导</h3>
+<p><code>view</code> 对 external call 还可能通过 STATICCALL 施加只读限制，目标如果尝试修改状态会失败。</p>
+<h2 id="4">4. 白板模型</h2>
+<pre><code class="language-mermaid">flowchart LR
+  SRC[Solidity source] --&gt; COMP[Compiler]
+  COMP --&gt; ABI[ABI]
+  COMP --&gt; BC[Bytecode]
+  ABI --&gt; CALL[Calldata / returndata]
+  BC --&gt; EVM[EVM execution]
+</code></pre>
+<p>在面试中不必追求图漂亮；图的作用是让<strong>状态、信任边界、调用方向或资产流</strong>一眼可见。</p>
+<h2 id="5">5. 必须说出的关键点</h2>
+<ul>
+<li>view can read state</li>
+<li>pure no state read/write</li>
+<li>eth_call no onchain fee != zero computation</li>
+<li>STATICCALL enforces no state writes</li>
+</ul>
+<h2 id="6-github">6. GitHub 扩展：工程化理解</h2>
+<p>下面内容是在 PDF 主干之上增加的生产/审计视角，用于把“知道概念”升级为“能落地”。</p>
+<ul>
+<li>先讲 Solidity 语言语义，再落到 ABI/EVM；面试官通常希望看到你知道“编译器帮你做了什么”。</li>
+<li>每个优化都要给安全边界：是否改变可读性、外部行为、overflow 语义、token compatibility。</li>
+<li>生产合约回答要带版本意识：compiler、OpenZeppelin major version、optimizer/via-IR 都可能影响行为与布局。</li>
+<li>测试策略至少覆盖 unit、fuzz、invariant 和 fork integration。</li>
+</ul>
+<h3 id="61">6.1 面试推导顺序</h3>
+<ol>
+<li><strong>先下定义</strong>：用本题 30 秒回答建立边界。</li>
+<li><strong>再给机制</strong>：把对象、输入、状态变化或执行上下文说清楚。</li>
+<li><strong>主动给失败模式</strong>：从本题常见误区反推“哪里会出问题”。</li>
+<li><strong>给 mitigation / 工程做法</strong>：说明如何测试、监控或限制 blast radius。</li>
+<li><strong>用 invariant 收尾</strong>：让面试官看到你能从局部 API 上升到系统正确性。</li>
+</ol>
+<h3 id="62">6.2 验证 / 测试清单</h3>
+<ul>
+<li>[ ] 写 unit test 覆盖边界输入与访问控制。</li>
+<li>[ ] 使用 fuzz 验证输入空间；对 stateful 合约补 invariant test。</li>
+<li>[ ] 若涉及升级，加入 storage-layout diff 与 initializer 测试。</li>
+</ul>
+<!-- PROFESSIONAL_ENRICHMENT_START -->
+<h3 id="63">6.3 前置知识与概念边界</h3>
+<p>这题属于 <strong>Solidity / 合约工程</strong>。以下 6.3–6.12 属于 <strong>GitHub 专业深化（通用工程知识与推导）</strong>，并非 PDF 原文；PDF 主干仍以上文第 1–5 节为准。</p>
+<p>在进入细节前，建议先确认下面三个前置层次：</p>
+<ul>
+<li>Solidity data location 与 ABI</li>
+<li>ERC 标准及 token 行为差异</li>
+<li>compiler checks、revert 与 event</li>
+</ul>
+<p>本题已有关键点可以进一步拆成：</p>
+<ol>
+<li><strong>view can read state</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+<li><strong>pure no state read/write</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+<li><strong>eth_call no onchain fee != zero computation</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+<li><strong>STATICCALL enforces no state writes</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+</ol>
+<blockquote>
+<p><strong>边界原则</strong>：能回答“它是什么”只能达到基础分；高级回答必须继续回答“它不是什么、依赖什么假设、失败时会怎样”。</p>
+</blockquote>
+<h3 id="64">6.4 形式化模型 / 白板推导</h3>
+<p>回答 Solidity 题时把“语言表面规则”下沉到 EVM：参数最终如何编码、状态变量落在哪个 slot、external call 产生什么 call frame、失败时哪些状态会回滚。这样才能解释 gas 与安全后果。</p>
+<p>白板时建议固定使用以下推导顺序：</p>
+<ol>
+<li><strong>对象</strong>：列出参与者、状态、资产或数据结构；</li>
+<li><strong>输入</strong>：哪些交易/消息/价格/签名会驱动状态变化；</li>
+<li><strong>规则</strong>：哪些条件决定有效、排序、授权或价格；</li>
+<li><strong>状态变化</strong>：写出成功路径和失败/回滚路径；</li>
+<li><strong>Invariant</strong>：任何正常或恶意输入下必须保持什么；</li>
+<li><strong>Trust assumption</strong>：哪些条件不是代码能独立保证的。</li>
+</ol>
+<h3 id="65-viewpure">6.5 本题最值得深挖的一层：view/pure 与“免费”无关</h3>
+<p>它们是编译器语义约束；作为 transaction 内部调用仍消耗 gas。用户通过 <code>eth_call</code> 本地模拟时才无需链上付费。</p>
+<p>如果面试官继续追问，不要立刻换新术语。先从上述核心模型推出一个<strong>具体后果</strong>，再给一个<strong>反例或边界条件</strong>，最后说明<strong>生产系统如何验证/缓解</strong>。</p>
+<h3 id="66">6.6 生产工程决策</h3>
+<ul>
+<li>API 设计先定义权限、失败语义和事件，再写函数体；外部接口是协议的一部分。</li>
+<li>优化前做 profiling，优先减少状态写入、重复 SLOAD、无意义拷贝和外部调用。</li>
+<li>兼容 ERC20/721/1155 时要考虑非标准返回值、callback/hook、fee-on-transfer 等现实行为。</li>
+<li>生产合约必须有 compiler/version pin、static analysis、fuzz/invariant tests 与部署脚本审计。</li>
+</ul>
+<p>对本题而言，工程答案最好至少包含一个“<strong>正常路径</strong>”和一个“<strong>故障路径</strong>”。前者证明你理解功能，后者证明你理解系统。</p>
+<h3 id="67-threat-model-failure-modes">6.7 Threat Model / Failure Modes</h3>
+<p>把失败模式分成三类会更专业：</p>
+<ul>
+<li><strong>语义错误</strong>：概念或状态模型理解错，导致实现从根上错误；</li>
+<li><strong>对抗性输入</strong>：攻击者利用排序、回调、价格、签名、权限等主动破坏假设；</li>
+<li><strong>系统性故障</strong>：RPC、节点、sequencer、oracle、数据库或管理员路径异常。</li>
+</ul>
+<p>本题重点检查：</p>
+<ul>
+<li>说“view 不花 gas”而不区分 RPC 与链上调用。</li>
+<li>把 pure 当“数学上无副作用”的完整保证，忽略 assembly/外部环境约束。</li>
+<li>把 visibility 当隐私机制</li>
+<li>只按 happy path 处理 token transfer/approve</li>
+<li>unchecked 或 assembly 缺少数学边界证明</li>
+<li>event 与 storage 的职责混用导致链上状态不可验证</li>
+</ul>
+<blockquote>
+<p>面试时最好把“风险”改写成可验证句式：<strong>在条件 A 下，攻击者/故障 B 可以让状态 C 违反 invariant D，影响资产/可用性 E。</strong></p>
+</blockquote>
+<h3 id="68-unit-fuzz-invariant-integration">6.8 测试策略：Unit → Fuzz → Invariant → Integration</h3>
+<ul>
+<li>[ ] 边界值：0、1、max、空数组、重复调用</li>
+<li>[ ] fuzz ABI 输入与权限边界</li>
+<li>[ ] event 与 state transition 一致性断言</li>
+<li>[ ] gas regression + stateful invariant testing</li>
+</ul>
+<p>进一步建议：</p>
+<ul>
+<li><strong>Unit test</strong>：验证局部 API 与边界输入；</li>
+<li><strong>Fuzz test</strong>：搜索你没有手工枚举的输入组合；</li>
+<li><strong>Invariant test</strong>：验证任意调用序列下核心关系仍成立；</li>
+<li><strong>Integration/Fork test</strong>：验证真实 token、oracle、RPC、链状态或跨合约行为；</li>
+<li><strong>Failure injection</strong>：主动让依赖超时、重组、停机、返回异常，验证恢复路径。</li>
+</ul>
+<h3 id="69">6.9 可观测性与线上排障</h3>
+<p>如果这道题变成线上事故，不要只说“看日志”。先定义你要观察的<strong>链上事实、派生状态与外部依赖</strong>。本章常用信号包括：</p>
+<ul>
+<li><code>custom error/revert selector</code></li>
+<li><code>关键 event 与状态对账</code></li>
+<li><code>gas per action</code></li>
+<li><code>异常 allowance/transfer failure 比例</code></li>
+</ul>
+<p>排障顺序建议固定为：</p>
+<pre><code class="language-text">用户现象
+  ↓
+确认 chain / tx / block / request identity
+  ↓
+确认 source of truth
+  ↓
+定位状态机停在哪一步
+  ↓
+查看依赖与权限变化
+  ↓
+复现 / simulate / trace
+  ↓
+决定 retry / rollback / pause / compensate
+</code></pre>
+<h3 id="610">6.10 不同岗位如何回答同一道题</h3>
+<ul>
+<li><strong>Solidity 视角</strong>：强调 EVM 语义、storage/call context、gas、安全测试与部署约束。</li>
+<li><strong>高级面试升级</strong>：最后补一句“这个结论依赖哪些假设、线上怎样观测、出现异常如何回滚/降级”，通常能明显区分 Senior 与纯知识型回答。</li>
+</ul>
+<h3 id="611-rubric">6.11 面试官评分 Rubric</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>候选人表现</th>
+<th>典型判断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0 - 术语记忆</strong></td>
+<td>只能给一句定义，追问就断</td>
+<td>不足以独立处理生产问题</td>
+</tr>
+<tr>
+<td><strong>1 - 机制理解</strong></td>
+<td>能解释核心流程和关键对象</td>
+<td>基础工程能力</td>
+</tr>
+<tr>
+<td><strong>2 - 边界意识</strong></td>
+<td>能主动指出前提、反例和 Failure Mode</td>
+<td>中高级候选人信号</td>
+</tr>
+<tr>
+<td><strong>3 - 工程闭环</strong></td>
+<td>能给测试、监控、回滚、兼容性与成本取舍</td>
+<td>Senior 信号</td>
+</tr>
+<tr>
+<td><strong>4 - 系统推导</strong></td>
+<td>能用 invariant / trust model 串起上下游并提出替代设计</td>
+<td>Staff / Protocol 信号</td>
+</tr>
+</tbody>
+</table>
+<h3 id="612">6.12 关联题：把知识连成网络</h3>
+<ul>
+<li><span class="srcref">Q21 public / external / internal / private 有什么区别？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q23 receive() 与 fallback() 有什么区别？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q24 Solidity 0.8 之后为什么还会使用 unchecked？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q25 immutable 与 constant 有什么区别？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q26 Event 为什么通常比 storage 便宜？什么时候不能用 Event 替代 Storage？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+</ul>
+<p>不要把 100 题当成 100 个孤立答案。真正的面试常从当前题连续跳到 storage、signature、oracle、reorg、upgrade、MEV 或 system design；建立跨题连接比继续背更多定义更重要。</p>
+<!-- PROFESSIONAL_ENRICHMENT_END -->
+
+<h2 id="7">7. 高频追问与回答方向</h2>
+<h3 id="1blocktimestamp-pure">追问 1：<code>block.timestamp</code> 在 pure 里能用吗？</h3>
+<p><strong>回答方向：</strong> 属于环境状态读取，不是 pure。</p>
+<p>进一步展开时应回扣：<code>view can read state</code>，并至少补一个边界条件或反例。</p>
+<h3 id="2view-emit-event">追问 2：view 函数里 emit event 可以吗？</h3>
+<p><strong>回答方向：</strong> event 是状态外可观察副作用，编译器不允许。</p>
+<p>进一步展开时应回扣：<code>pure no state read/write</code>，并至少补一个边界条件或反例。</p>
+<h3 id="3-view-rpc">追问 3：为什么复杂 view 也可能 RPC 超时？</h3>
+<p><strong>回答方向：</strong> 节点仍实际执行计算。</p>
+<p>进一步展开时应回扣：<code>eth_call no onchain fee != zero computation</code>，并至少补一个边界条件或反例。</p>
+<h2 id="8-gotchas">8. 常见错误回答 / Gotchas</h2>
+<ul>
+<li><strong>错误模式：</strong> 说“view 不花 gas”而不区分 RPC 与链上调用。</li>
+<li><strong>错误模式：</strong> 把 pure 当“数学上无副作用”的完整保证，忽略 assembly/外部环境约束。</li>
+<li><strong>面试修正方式：</strong> 不要只换一个更专业的名词；要明确指出错误假设、给出正确模型，并说明该错误在生产环境可能造成的后果。</li>
+</ul>
+<h2 id="9">9. 记忆锚点</h2>
+<blockquote>
+<p>view/pure 是代码语义；“免费”只是 eth_call 的业务支付方式。</p>
+</blockquote>
+<h2 id="10">10. 自测题</h2>
+<ol>
+<li>不看本文，用 30 秒重新回答：<strong>view 与 pure 有什么区别？</strong></li>
+<li>给出一个“定义正确但工程上会失败”的反例。</li>
+<li>给出至少一个可以自动化验证的 invariant / test。</li>
+<li>如果这是线上事故，你最先观察哪 3 个信号或状态？</li>
+<li>如果面试官要求把答案提升到 Staff 级，你会补哪一张状态机/信任边界图？</li>
+</ol>
+<!-- PROFESSIONAL_LAB_START -->
+<h3 id="101">10.1 实战训练：把这题变成可展示的工程证据</h3>
+<p><strong>场景任务</strong>：把 <strong>view 与 pure 有什么区别</strong> 落成一段最小 Solidity 示例：先写最直观版本，再写生产版本，并用测试证明两者在功能、安全或 gas 上的差异。</p>
+<p>建议输出物：</p>
+<ol>
+<li>一张状态机 / 资产流 / 调用图；</li>
+<li>一份 10～30 行的最小代码、伪代码或数据结构；</li>
+<li>3 个 happy-path 测试 + 3 个 adversarial/failure-path 测试；</li>
+<li>至少 1 个 invariant；</li>
+<li>一段 2 分钟口述答案，要求不看稿；</li>
+<li>与 <strong>Q21、Q23、Q24</strong> 做一次对比复盘，说明相同底层机制与不同工程边界。</li>
+</ol>
+<h3 id="102">10.2 反向面试：你可以问面试官什么</h3>
+<p>为了判断团队真实工程成熟度，可以围绕本题反问：</p>
+<ul>
+<li>这个系统当前最关键的 invariant / SLO 是什么？</li>
+<li>过去出现过哪类与本题相关的线上事故或审计问题？</li>
+<li>团队如何做 fork/invariant/failure-injection 测试？</li>
+<li>协议升级或依赖变更时，谁负责 compatibility review 和 rollback plan？</li>
+<li>哪些安全/可靠性判断是链上强制，哪些依赖 off-chain service 或人工流程？</li>
+</ul>
+<p>这些问题既能帮助你了解岗位，也能体现你关注<strong>长期正确性和运行质量</strong>，而不只是完成一次编码任务。</p>
+<!-- PROFESSIONAL_LAB_END -->
+
+<h2 id="11">11. 参考资料</h2>
+<h3 id="pdf">PDF 原始引用 / 对应官方资料</h3>
+<ul>
+<li>本题在 PDF 中未单独列出外部引用；其内容来自书内主干整理。</li>
+</ul>
+<h3 id="github-2026-09">GitHub 扩展阅读（2026-09 核验）</h3>
+<ul>
+<li>[R5] <a href="https://docs.soliditylang.org/en/latest/security-considerations.html">Solidity Documentation - Security Considerations</a></li>
+<li>[R16] <a href="https://docs.soliditylang.org/en/latest/abi-spec.html">Solidity Documentation - Contract ABI Specification</a></li>
+<li>[R22] <a href="https://docs.openzeppelin.com/contracts/5.x/">OpenZeppelin Contracts - Contracts 5.x</a></li>
+</ul>
+<blockquote>
+<p>注：协议和文档会更新；面试前应核验目标链、compiler、OpenZeppelin 与协议版本。</p>
+</blockquote>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

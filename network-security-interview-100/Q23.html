@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>什么是反序列化漏洞？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Network Security</a><i>∕</i><span>Q23</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q23</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">4</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q22.html">← Q22</a><a href="Q24.html">Q24 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORK SECURITY · 23 / 100</div>
+    <h1 class="qtitle">什么是反序列化漏洞？</h1>
+    <p>← <span class="srcref">Q22</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q24</span> →</p>
+<h1 id="q23">Q23 · 什么是反序列化漏洞？</h1>
+<blockquote>
+<p><strong>定位</strong>：本文件完整保留 PDF 对本题的题解结构，并在“扩展解析”部分加入更详细的工程化分析。新增内容用于学习与面试准备，不代表任何公司的内部题库。</p>
+</blockquote>
+<h2 id="_1">题目信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>难度</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>适用岗位</td>
+<td>AppSec / Java安全 / 安全研发</td>
+</tr>
+<tr>
+<td>Framework / 对标</td>
+<td>Serialization Security</td>
+</tr>
+<tr>
+<td>PDF 页码</td>
+<td>第 30 页</td>
+</tr>
+<tr>
+<td>所属章节</td>
+<td>第 3 章 · 高级 Web、API 与身份安全</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">面试官为什么问这题</h2>
+<p>判断候选人是否从“漏洞点”升级到浏览器安全模型、对象级授权、会话与联合身份的系统视角。</p>
+<p>通常不仅是在确认“是否知道名词”，还在观察以下能力：</p>
+<ul>
+<li>谁是主体？访问哪个对象/能力？</li>
+<li>认证完成后授权在哪里执行？</li>
+<li>Token/Cookie 的生命周期和绑定关系是什么？</li>
+<li>浏览器、Gateway 与后端分别承担什么安全责任？</li>
+</ul>
+<h2 id="30">30 秒回答</h2>
+<p><strong>一句话结论：</strong> 反序列化风险来自“让不可信数据决定要创建什么对象、触发什么行为”。</p>
+<p>展开时优先抓住以下三点：</p>
+<ol>
+<li>危险来自不可信对象数据 + 自动对象构造 + 可触发副作用。</li>
+<li>不仅 Java，任何允许对象图恢复/类型信息驱动构造的机制都要谨慎。</li>
+<li>优先使用简单数据格式、严格 schema、类型 allowlist 和签名/完整性保护。</li>
+</ol>
+<h2 id="2-3">2-3 分钟标准回答</h2>
+<p>首先，危险来自不可信对象数据 + 自动对象构造 + 可触发副作用。
+其次，不仅 Java，任何允许对象图恢复/类型信息驱动构造的机制都要谨慎。
+序列化方便把复杂对象跨进程/存储恢复，但一旦类型、属性或对象图由不可信输入控制，框架可能调用构造器、魔术方法、反射或回调。
+高分回答要从“对象模型能力”解释，而不是只背某条 gadget chain；补丁和依赖升级之外，还要减少可反序列化类型范围。
+最后要把回答落到工程闭环：说明根因控制是什么、还能有哪些纵深防御，以及如何通过日志、测试或安全回归证明控制真正生效。</p>
+<hr />
+<h2 id="pdf">PDF 基线内容</h2>
+<blockquote>
+<p>以下部分对应成品 PDF 的本题内容，保持其术语、组织方式与观点。</p>
+</blockquote>
+<h3 id="01">01 · 考点拆解</h3>
+<ul>
+<li>危险来自不可信对象数据 + 自动对象构造 + 可触发副作用。</li>
+<li>不仅 Java，任何允许对象图恢复/类型信息驱动构造的机制都要谨慎。</li>
+<li>优先使用简单数据格式、严格 schema、类型 allowlist 和签名/完整性保护。</li>
+</ul>
+<h3 id="02">02 · 面试答题主线</h3>
+<ol>
+<li>危险来自不可信对象数据 + 自动对象构造 + 可触发副作用。</li>
+<li>不仅 Java，任何允许对象图恢复/类型信息驱动构造的机制都要谨慎。</li>
+<li>优先使用简单数据格式、严格 schema、类型 allowlist 和签名/完整性保护。</li>
+<li>把答案收束到可验证的工程控制：说明“如何修复/设计”，并补一句“如何通过日志、测试或回归验证控制真的生效”。</li>
+</ol>
+<h3 id="03">03 · 深度解析</h3>
+<p>序列化方便把复杂对象跨进程/存储恢复，但一旦类型、属性或对象图由不可信输入控制，框架可能调用构造器、魔术方法、反射或回调。</p>
+<p>高分回答要从“对象模型能力”解释，而不是只背某条 gadget chain；补丁和依赖升级之外，还要减少可反序列化类型范围。</p>
+<h3 id="04">04 · 高频追问</h3>
+<ul>
+<li>JSON 会不会有反序列化问题？</li>
+<li>为什么依赖库会影响可利用性？</li>
+</ul>
+<h3 id="05">05 · 易错点</h3>
+<ul>
+<li>把“deserialize”函数本身等同于 RCE。</li>
+<li>只会背某个库版本。</li>
+</ul>
+<h3 id="06">06 · 工程实践</h3>
+<ul>
+<li>列出系统中所有对象反序列化入口。</li>
+<li>用 schema-based DTO 代替通用对象恢复。</li>
+</ul>
+<h3 id="07">07 · 一句话记忆</h3>
+<blockquote>
+<p>反序列化风险来自“让不可信数据决定要创建什么对象、触发什么行为”。</p>
+</blockquote>
+<hr />
+<h2 id="_3">扩展解析：从“会回答”到“会做工程”</h2>
+<h3 id="1">1. 更深一层的原理</h3>
+<p>反序列化风险来自“不可信对象图 + 恢复过程中的副作用”，不能只看一个 API 名称。</p>
+<p>优先使用简单数据格式和严格 schema；必要时限制类型集合、依赖和对象生命周期。</p>
+<h3 id="2">2. 边界条件与面试高分点</h3>
+<ul>
+<li><strong>先定义边界</strong>：明确主体、资产、数据/状态和信任边界，避免把问题描述成绝对结论。</li>
+<li><strong>区分根治与纵深</strong>：根治方案应消除不安全的数据流、权限或协议状态；WAF、告警、限流等通常属于补充控制。</li>
+<li><strong>考虑失败模式</strong>：不仅说明正常路径，还要考虑配置漂移、解析差异、权限过宽、依赖升级和异常条件。</li>
+<li><strong>给验证方式</strong>：安全设计必须能被单元测试、集成测试、审计日志、检测规则或演练验证。</li>
+</ul>
+<h3 id="3">3. 工程化检查清单</h3>
+<ul>
+<li>[ ] 认证与授权明确分离</li>
+<li>[ ] 对象级授权靠后端业务上下文完成</li>
+<li>[ ] Token 最小权限、短生命周期、严格受众/签发方校验</li>
+<li>[ ] 浏览器策略作为边界的一部分但不替代服务端控制</li>
+<li>[ ] 列出系统中所有对象反序列化入口。</li>
+<li>[ ] 用 schema-based DTO 代替通用对象恢复。</li>
+</ul>
+<h3 id="4">4. 可观测性与证据</h3>
+<p>面试中主动补一句“我会从哪些证据验证”，通常很加分：</p>
+<ul>
+<li>IdP/认证日志</li>
+<li>API Gateway/应用访问日志</li>
+<li>对象级授权拒绝事件</li>
+<li>Session/Token 生命周期事件</li>
+</ul>
+<h3 id="5">5. 追问怎么接</h3>
+<h4 id="json">追问：JSON 会不会有反序列化问题？</h4>
+<p><strong>回答要点：</strong> 先给结论“取决于边界条件”，再列出哪些条件下成立、哪些情况下失效，以及应如何验证而不是绝对化回答。</p>
+<h4 id="_4">追问：为什么依赖库会影响可利用性？</h4>
+<p><strong>回答要点：</strong> 先解释导致该现象的协议/信任边界，再说明成立所需条件，最后补充防守侧如何通过配置、日志或测试验证。</p>
+<h3 id="6">6. 面试官可能继续升级的场景题</h3>
+<ul>
+<li>如果这个问题发生在核心业务而不是测试环境，你会如何调整风险优先级、证据保全和修复节奏？</li>
+<li>如果已有一层安全产品/框架默认保护，你如何验证它真的覆盖了 Serialization Security 的边界，而不是只相信配置名称？</li>
+<li>如果修复会影响兼容性或业务性能，你会如何设计灰度、监控和回滚方案？</li>
+</ul>
+<h3 id="7">7. 常见回答层级</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只能给出名词定义</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能解释基本原理</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能说明成立条件、边界和真实影响</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能给出工程修复、检测和验证</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能处理复杂追问、权衡与系统设计</td>
+</tr>
+</tbody>
+</table>
+<!-- BEGIN PROFESSIONAL_V2 -->
+<h2 id="v2">专业深化 v2：面向高级工程师的题解</h2>
+<blockquote>
+<p>这一节是在 PDF 基线与第一轮扩展之上的第二层深化，重点补齐 <strong>机制、边界、工程决策、证据、验证与追问树</strong>。它不是利用手册，而是面向合法授权的安全工程与面试表达。</p>
+</blockquote>
+<h3 id="a">A. 机制模型：先把问题抽象对</h3>
+<ul>
+<li>反序列化风险不是“格式危险”，而是不可信数据驱动对象构造，并触发具有副作用的类型/钩子。</li>
+<li>危险程度由 serializer 能力、可达 classpath/类型集合、自动回调和运行权限共同决定。</li>
+<li>简单数据 schema 与对象图恢复是两种完全不同的信任模型。</li>
+</ul>
+<h3 id="b">B. 成立条件、边界与典型失效模式</h3>
+<ul>
+<li>签名可以验证来源/完整性，但如果可信来源本身能被滥用或签名密钥泄露，仍需最小类型集合。</li>
+<li>“最新版库”不代表所有 gadget/类型副作用都消失。</li>
+<li>反序列化入口可能来自 HTTP、缓存、消息队列、Session、RPC 等内部路径。</li>
+</ul>
+<h3 id="c">C. 工程设计：从“修一个点”到“设计控制面”</h3>
+<ul>
+<li>外部边界优先 JSON/Protobuf 等显式 schema 数据，不恢复任意对象。</li>
+<li>必须使用对象序列化时限制允许类型并关闭危险多态/自动类型功能。</li>
+<li>最小化 classpath 与运行权限，隔离高风险解析。</li>
+<li>对序列化格式、版本和生产者建立清晰信任关系。</li>
+</ul>
+<h3 id="d-detection-evidence">D. Detection &amp; Evidence：如何证明你的判断</h3>
+<ul>
+<li>代码审计定位 deserialize/readObject/object mapper polymorphism 等入口。</li>
+<li>应用日志记录格式、producer、schema/version 与解析失败。</li>
+<li>EDR/process/file/network side effect 用于事件调查。</li>
+</ul>
+<p>一个成熟回答要主动区分：<strong>事实（日志/状态）</strong>、<strong>推断（关联分析）</strong>、<strong>假设（尚待验证）</strong>。这能显著降低“看到一个异常就直接下结论”的面试失分。</p>
+<h3 id="e">E. 修复后的验证与回归</h3>
+<ul>
+<li>使用不在 allowlist 的类型确认拒绝。</li>
+<li>升级依赖后重新运行反序列化安全测试。</li>
+<li>检查内部消息通道是否错误假定“内网消息都可信”。</li>
+</ul>
+<h3 id="f">F. 面试追问树：把一题答成一棵知识树</h3>
+<ol>
+<li>为什么“数据签名”不等于“反序列化安全”？</li>
+<li>JSON 也可能有反序列化风险吗？</li>
+<li>为什么 classpath 越复杂，风险面往往越大？</li>
+</ol>
+<p>回答这些追问时，建议始终使用：<strong>结论 → 原理 → 条件 → 反例/边界 → 工程控制 → 验证</strong>。如果题目涉及生产环境，再补充可用性、兼容性、灰度和回滚。</p>
+<h3 id="g">G. 这道题在真实工作中的“交付物”</h3>
+<p>序列化信任矩阵：格式、生产者、schema、允许类型、版本、解析隔离与 regression tests。</p>
+<h3 id="h">H. 一页纸复盘</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>应该能说清楚什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>根因</td>
+<td>不可信数据驱动对象构造与副作用。</td>
+</tr>
+<tr>
+<td>边界</td>
+<td>类型集合、回调、classpath、生产者信任。</td>
+</tr>
+<tr>
+<td>主要控制</td>
+<td>简单 schema + 类型 allowlist + 最小能力。</td>
+</tr>
+<tr>
+<td>关键证据</td>
+<td>deserialize entry + producer/schema + runtime side effects。</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>非允许类型与依赖升级回归。</td>
+</tr>
+</tbody>
+</table>
+<!-- END PROFESSIONAL_V2 -->
+
+<h2 id="_5">复习卡片</h2>
+<ul>
+<li><strong>核心关键词</strong>：Serialization Security</li>
+<li><strong>一句话</strong>：反序列化风险来自“让不可信数据决定要创建什么对象、触发什么行为”。</li>
+<li><strong>最容易答错</strong>：把“deserialize”函数本身等同于 RCE。</li>
+<li><strong>工程动作</strong>：列出系统中所有对象反序列化入口。</li>
+<li><strong>答题顺序</strong>：定义 -&gt; 原理 -&gt; 边界 -&gt; 风险 -&gt; 检测 -&gt; 修复 -&gt; 验证。</li>
+</ul>
+<h2 id="_6">关联题</h2>
+<ul>
+<li><span class="srcref">Q22 OS Command Injection 的本质是什么？</span></li>
+<li><span class="srcref">Q24 Request Smuggling / HTTP Desync 的本质是什么？</span></li>
+<li><span class="srcref">Q21 Path Traversal 与 File Inclusion 有什么区别？</span></li>
+<li><span class="srcref">Q25 什么是 IDOR / BOLA？为什么它如此常见？</span></li>
+</ul>
+<h2 id="_7">参考标准 / 延伸阅读</h2>
+<ul>
+<li><a href="https://owasp.org/Top10/2025/">OWASP Top 10:2025</a> - 2025 Web 应用风险总览；A01 Broken Access Control，A03 Software Supply Chain Failures，A05 Injection。</li>
+<li><a href="https://owasp.org/www-project-application-security-verification-standard/">OWASP ASVS 5.0.0</a> - 2025-05-30 发布；用于 Web 应用技术安全控制验证与安全开发要求。</li>
+</ul>
+<h2 id="_8">安全边界</h2>
+<blockquote>
+<p>本仓库面向合法授权的面试学习、安全工程、检测与防守。涉及攻击技术时聚焦原理、证据、修复和验证，不提供针对真实目标的利用步骤、隐蔽规避或武器化操作。</p>
+</blockquote>
+<hr />
+<p>← <span class="srcref">Q22</span> | <span class="srcref">章节首页</span> | <span class="srcref">Q24</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

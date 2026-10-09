@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Item Pipeline 为什么不能和 Spider 混在一起？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Crawler &amp; Anti-Crawler</a><i>∕</i><span>Q026</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q026</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★☆☆☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q025.html">← Q025</a><a href="Q027.html">Q027 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      CRAWLER · 26 / 100</div>
+    <h1 class="qtitle">Item Pipeline 为什么不能和 Spider 混在一起？</h1>
+    <blockquote>
+<p><strong>难度：</strong> ★★☆☆☆<br />
+<strong>章节：</strong> 第三章  Scrapy、异步与并发<br />
+<strong>定位：</strong> 面试回答 + 原理理解 + 生产工程。</p>
+</blockquote>
+<h2 id="_1">考察点</h2>
+<ul>
+<li>职责分离</li>
+<li>数据验证与存储</li>
+<li>可测试性</li>
+</ul>
+<h2 id="60-90">60-90 秒推荐回答</h2>
+<p>Spider 负责发现 URL、发请求、解析页面并产生结构化 Item；Pipeline 负责 normalize、validate、dedup、enrich 和 store。</p>
+<p>这样 Spider 可以只关心网页语义，存储从 MySQL 切到 Kafka/Parquet 时无需重写抓取逻辑。</p>
+<h2 id="_2">原理深挖</h2>
+<p>数据 schema 演进也更容易：Pipeline 可以按版本统一补字段、转换单位和记录 validation failure。</p>
+<h3 id="github">GitHub 增强版：进一步理解</h3>
+<ol>
+<li>Scrapy 的优势来自事件驱动 I/O 与组件解耦，不是“线程更多”。对 CPU 密集解析、模型推理、OCR 等任务，应从 Reactor/Event Loop 中剥离。</li>
+<li>把 Scheduler 看作单机 URL Frontier，把 Downloader Middleware 看作 HTTP 横切面，把 Item Pipeline 看作数据工程边界；职责清晰后才容易扩展到分布式。</li>
+<li>吞吐调优必须同时看并发、远端延迟、下载槽位、连接复用、解析 CPU、输出背压，单独把 CONCURRENT_REQUESTS 调大经常只会把瓶颈转移。</li>
+<li>Pipeline 适合 schema validation、normalization、dedup、enrichment、persistence；避免让 Spider 直接耦合数据库。</li>
+</ol>
+<h2 id="_3">高级面试扩展</h2>
+<h3 id="1">1. 核心边界</h3>
+<p>Scrapy/异步题的核心不是背类名，而是理解 <strong>事件循环不能被阻塞</strong>、Scheduler/Downloader/Pipeline 的职责边界，以及并发、吞吐、远端压力三者不是同一个指标。</p>
+<p>针对 <strong>Item Pipeline 为什么不能和 Spider 混在一起？</strong>，面试时建议先明确讨论边界：职责分离、数据验证与存储、可测试性。如果不先定义这些边界，后面的“最佳实践”很容易变成只对某个库、某个站点或某个规模成立的经验。</p>
+<h3 id="2">2. 机制链路</h3>
+<p><code>Spider → Engine → Scheduler → Downloader → Response → Spider → Item Pipeline</code>，其中网络等待由事件驱动复用；CPU 密集、阻塞数据库调用必须从 reactor/event-loop 热路径移出。</p>
+<h3 id="3">3. 本题进一步深挖</h3>
+<ol>
+<li>Pipeline 是结构化 item 的校验、清洗、去重、富化和持久化边界。异步 sink 应有批量、限流、重试和幂等语义，否则数据库慢会反向拖垮抓取。</li>
+</ol>
+<h3 id="4-trade-off">4. Trade-off 矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>决策维度</th>
+<th>收益</th>
+<th>代价 / 风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>并发 vs 远端压力</td>
+<td>提高 in-flight 提升吞吐</td>
+<td>必须有 per-host budget/AutoThrottle</td>
+</tr>
+<tr>
+<td>单进程简单 vs 隔离</td>
+<td>事件循环高效</td>
+<td>CPU/阻塞任务需线程/进程/外部 worker</td>
+</tr>
+<tr>
+<td>内存队列 vs 持久化</td>
+<td>快</td>
+<td>重启恢复和大 frontier 需要持久化</td>
+</tr>
+</tbody>
+</table>
+<p>面试中不要只说“方案 A 更好”。更专业的表达是：<strong>在什么约束下 A 优于 B；规模、延迟、准确性或合规约束变化后，决策是否需要反转。</strong></p>
+<h3 id="5-fmea">5. 典型失败模式（FMEA）</h3>
+<table>
+<thead>
+<tr>
+<th>Failure Mode</th>
+<th>常见原因</th>
+<th>检测 / 缓解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Event-loop Block</td>
+<td>callback 做 CPU/同步 I/O</td>
+<td>profiling event-loop lag，移出热路径</td>
+</tr>
+<tr>
+<td>队列失衡</td>
+<td>下载快、Pipeline 慢</td>
+<td>queue lag + backpressure</td>
+</tr>
+<tr>
+<td>重启丢状态</td>
+<td>Scheduler/Item 未 checkpoint</td>
+<td>持久化 frontier + 幂等 sink</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6">6. 如何验证方案</h3>
+<p>用可控延迟/错误率的 mock server 做并发压测，记录 event-loop lag、in-flight、per-host QPS、queue lag、CPU 与 item latency。</p>
+<p>建议至少覆盖三类验证：</p>
+<ul>
+<li><strong>Correctness</strong>：协议/算法/业务语义是否正确；</li>
+<li><strong>Resilience</strong>：超时、重试、进程崩溃、依赖变慢时是否可恢复；</li>
+<li><strong>Scale</strong>：数据量或并发扩大 10 倍时，状态、内存、网络和远端预算哪个先成为瓶颈。</li>
+</ul>
+<h3 id="7">7. 高级候选人的回答结构</h3>
+<ol>
+<li><strong>先给定义/结论</strong>：20 秒内回答题面，不绕圈。</li>
+<li><strong>讲机制</strong>：用状态机、数据流或关键公式解释为什么。</li>
+<li><strong>讲 Trade-off</strong>：至少指出一个“收益 ↔ 代价”。</li>
+<li><strong>落到生产</strong>：给出一个指标、一个失败模式、一个验证方式。</li>
+<li><strong>主动给边界</strong>：说明什么规模/场景下需要换方案。</li>
+</ol>
+<h3 id="8">8. 实战演练</h3>
+<blockquote>
+<p>构造一个 downloader 很快但 parser/sink 很慢的压测，观察 event-loop lag 与 queue lag，并给出 backpressure 和任务拆分方案。</p>
+</blockquote>
+<p>完成后尝试用 <strong>3 分钟口述 + 1 张架构/状态图 + 3 个指标</strong> 复盘。如果只能写代码却说不清约束、失败模式和验证方法，通常还没有达到高级面试要求。</p>
+<h2 id="_4">工程化落地</h2>
+<h3 id="review-checklist">设计 / Review Checklist</h3>
+<ul>
+<li>[ ] I/O 与 CPU 工作负载分离</li>
+<li>[ ] 中间件职责单一且可测试</li>
+<li>[ ] Scheduler/dupefilter 可恢复</li>
+<li>[ ] 并发调整必须观察远端与下游</li>
+</ul>
+<h3 id="_5">建议监控的指标</h3>
+<ul>
+<li><code>in-flight requests</code></li>
+<li><code>download slot latency</code></li>
+<li><code>reactor lag</code></li>
+<li><code>parse CPU</code></li>
+<li><code>item pipeline latency</code></li>
+</ul>
+<h2 id="gotchas">常见误区与 Gotchas</h2>
+<ul>
+<li>在 Spider callback 里直接写数据库。</li>
+</ul>
+<p>补充检查：</p>
+<ul>
+<li>不要把单机可运行等同于生产可扩展。</li>
+<li>不要只描述“怎么做”，还要说明 <strong>为什么、代价、失败时如何观测</strong>。</li>
+<li>涉及站点侧风控/挑战时，本仓库以防守与合规设计为边界，不提供规避访问控制或验证码的操作步骤。</li>
+</ul>
+<h2 id="_6">面试追问拆解</h2>
+<h3 id="1pipeline">追问 1：Pipeline 中如何实现异步写入？</h3>
+<p><strong>参考回答：</strong> 异步写入可批量积累 item 后交给异步数据库客户端/线程池，并给 pipeline 自己设置并发和队列上限；不能无限 fire-and-forget，否则 sink 变慢会吃光内存。</p>
+<p><strong>面试展开：</strong> 说明关键假设 → 给机制/数据结构或状态机 → 指出一个 trade-off → 补一个生产指标或失败模式。</p>
+<h3 id="2item-url">追问 2：Item 去重应该按 URL 还是业务主键？</h3>
+<p><strong>参考回答：</strong> Item 去重优先按业务主键，因为同一实体可能来自多个 URL；URL 去重属于抓取层。若业务主键不可得，可先用 source+canonical_url 作为弱主键并保留后续 entity resolution。</p>
+<p><strong>面试展开：</strong> 说明关键假设 → 给机制/数据结构或状态机 → 指出一个 trade-off → 补一个生产指标或失败模式。</p>
+<h2 id="_7">面试官评分参考</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础</td>
+<td>能准确回答题面，不混淆核心术语。</td>
+</tr>
+<tr>
+<td>中级</td>
+<td>能解释机制、边界与至少一个工程权衡，并能关联 职责分离。</td>
+</tr>
+<tr>
+<td>高级</td>
+<td>能给出生产化设计、指标/失败模式/容量意识，并说明方案在不同规模或约束下为何变化。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_8">一句话记忆</h2>
+<blockquote>
+<p>发现与解析属于采集逻辑，规范化与落库属于数据处理逻辑。</p>
+</blockquote>
+<h2 id="_9">延伸阅读</h2>
+<ul>
+<li><a href="https://docs.scrapy.org/en/latest/topics/architecture.html">Scrapy 2.18 - Architecture</a></li>
+<li><a href="https://docs.scrapy.org/en/latest/topics/downloader-middleware.html">Scrapy - Downloader Middleware</a></li>
+<li><a href="https://docs.scrapy.org/en/latest/topics/autothrottle.html">Scrapy - AutoThrottle</a></li>
+</ul>
+<hr />
+<blockquote>
+<p>来源说明：本页“推荐回答 / 深度解析 / 易错点 / 原始追问 / 一句话记忆”来自项目 PDF 内容基线；其余“工程化增强”是仓库版扩展。</p>
+</blockquote>
+<p>← <span class="srcref">Q025 Downloader Middleware 和 Spider Middleware 有什么区别？</span> | <span class="srcref">Q027 Scrapy 如何控制并发？</span> →</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

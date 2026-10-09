@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>怎么系统讲“追角”？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q027</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q027</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★☆☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q026.html">← Q026</a><a href="Q028.html">Q028 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">数学+教学</a><a href="#">角关系、共圆、相似</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 27 / 100</div>
+    <h1 class="qtitle">怎么系统讲“追角”？</h1>
+    <p><strong>模块：</strong> 平面几何<br />
+<strong>标签：</strong> 数学+教学 · 难度 ★★★☆☆ · 角关系、共圆、相似</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>怎么系统讲“追角”？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>追角不是把所有角都算出来，而是追目标角。</li>
+<li>优先识别同弧角、外角、平行角和相似链。</li>
+<li>形成“角相等→共圆/相似→新关系”的闭环。</li>
+</ul>
+<p><strong>展开：</strong> 追角的教学目标应从“角度计算”升级为“用角关系创建结构”。例如发现 $\angle ABC=\angle ADC$ 后，不必继续算角，而应立即识别四点共圆；一旦共圆，又能产生新的等角与圆幂关系。高水平几何常是这种结构反复自增殖。因此板书最好用颜色或编号标出“关键角对”，而非把每个小角都写数值。</p>
+<h3 id="_4">面试追问</h3>
+<p>什么时候追角会进入死胡同？怎样判断该换方法？</p>
+<h3 id="_5">常见失分</h3>
+<p>把追角等同计算角度；不标有向角导致跨180度问题。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>训练“每得到一次角相等必须回答：它能触发什么结构？”</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：能讲闭环和目标；6分：会常见追角；3分：只会机械角度计算。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：把“灵感”还原成目标结构</h3>
+<p>几何题应尽量用 <strong>目标 → 中间结构 → 可制造条件 → 辅助构造</strong> 来解释。目标是长度比时，优先寻找相似、正弦定理或圆幂；目标是共点/共线时，考虑 Ceva/Menelaus、根轴或投影结构；大量圆与切线则检查圆幂、根轴、反演等。</p>
+<p>教练面试尤其忌讳把关键步骤说成“显然作一条线”。优秀回答要恢复发现链，并说明为什么该构造减少了自由度或把结论翻译成标准结构。</p>
+<h4 id="_9">技术补充：追角要形成闭环</h4>
+<p>追角不是把所有角标满，而是寻找一个能触发结构的等角：等角 → 共圆，相似 → 比例，圆周角 → 新等角。建议用有向角（mod $180^\circ$）统一处理共线和圆内外位置，减少分类讨论；但初学阶段先把普通角与图形位置讲清，再引入有向角。</p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_10">压力训练任务</h3>
+<ol>
+<li>先口述目标结构，再允许画辅助线。</li>
+<li>尝试给出纯几何与解析/代数方法的比较。</li>
+<li>指出图形退化或点位变化时证明是否仍成立。</li>
+</ol>
+<h3 id="_11">自检清单</h3>
+<ul>
+<li>[ ] 目标已翻译成标准结构</li>
+<li>[ ] 辅助构造有明确目的</li>
+<li>[ ] 角/比/幂关系来源可追踪</li>
+<li>[ ] 退化位置与有向量约定清楚</li>
+<li>[ ] 能比较至少两种表示方法</li>
+</ul>
+<h3 id="_12">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>能从目标反推结构；辅助构造有动机；证明严谨；可比较不同表示方法。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>证明正确，但“为什么想到”或退化/方向约定说明不充分。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>能复现标准构造，却较依赖记忆和图形直觉。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>关键共圆/相似/幂关系无依据，或辅助线完全无法解释。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">二次追问库</h3>
+<ul>
+<li>什么时候追角会进入死胡同？怎样判断该换方法？</li>
+<li>先口述目标结构，再允许画辅助线。</li>
+<li>尝试给出纯几何与解析/代数方法的比较。</li>
+<li>指出图形退化或点位变化时证明是否仍成立。</li>
+</ul>
+<h3 id="_14">建议产出物</h3>
+<p>画一张“发现链”图：目标 → 中间结构 → 需要的角/比/幂 → 构造，并准备第二种方法比较。</p>
+<h3 id="v2">专业版 v2：追角不是计算角度，而是建立“角关系网络”</h3>
+<h4 id="1">1. 三种核心来源</h4>
+<ul>
+<li>平行线：对应角/内错角；</li>
+<li>共圆：同弧所对角相等、对角互补；</li>
+<li>等腰/相似：把长度关系转成角关系。</li>
+</ul>
+<h4 id="2">2. 有向角能显著简化高阶几何</h4>
+<p>在模 $180^\circ$ 的有向角框架下，许多“点在线段内部还是延长线上”的分类讨论可以统一。例如四点共圆可写为</p>
+<p>$$
+\angle ABC\equiv \angle ADC\pmod{180^\circ}.
+$$</p>
+<h4 id="3_1">3. 教学中要阻止“盲追”</h4>
+<p>学生常把图中所有角都标出来，信息越来越多却没有目标。应先明确希望得到哪个角相等，再从目标角向后追。</p>
+<h4 id="4">4. 一条高效策略</h4>
+<p>若目标角涉及两条陌生线，分别寻找它们与“熟悉基准线”（边、直径、切线、平行线）的关系；很多复杂角等式会变成两个小等式之和。</p>
+<h2 id="_15">关联题目</h2>
+<ul>
+<li><span class="srcref">Q028 · 判断四点共圆有哪些互相联系的判据？</span></li>
+<li><span class="srcref">Q031 · 什么时候用 Menelaus，什么时候用 Ceva？</span></li>
+<li><span class="srcref">Q032 · 你如何让学生理解正弦 Ceva，而不是背公式？</span></li>
+</ul>
+<h2 id="_16">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

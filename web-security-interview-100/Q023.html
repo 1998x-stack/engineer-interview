@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>密码为什么不能直接 SHA-256 后保存？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Web Security</a><i>∕</i><span>Q023</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q023</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">基础-中级</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q022.html">← Q022</a><a href="Q024.html">Q024 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">password-hashing</a><a href="#">argon2id</a><a href="#">salt</a><a href="#">kdf</a><a href="#">离线破解</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      WEB SECURITY · APP · 25 / 103</div>
+    <h1 class="qtitle">密码为什么不能直接 SHA-256 后保存？</h1>
+    <blockquote>
+<p><strong>母版一句话结论（PDF）</strong><br />
+通用哈希函数追求高速，而密码存储需要提高离线猜测成本，应使用Argon2id/bcrypt/scrypt/PBKDF2 等专用 KDF，并为每个密码使用独立 salt。</p>
+<p>来源：<a href="docs/pdf/web-security-interview-100-2026.pdf">PDF 第 52 页</a>。本页的“PDF 母版题解”来自原手册；“GitHub 增强版”是在用户要求下新增的工程化扩展与 2026 公开标准校准。</p>
+</blockquote>
+<h2 id="_1">元信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>章节</td>
+<td>认证、Session、JWT 与 OAuth</td>
+</tr>
+<tr>
+<td>难度</td>
+<td>基础-中级</td>
+</tr>
+<tr>
+<td>高频度</td>
+<td>★★★★★</td>
+</tr>
+<tr>
+<td>能力层级</td>
+<td>原理 + 工程</td>
+</tr>
+<tr>
+<td>核心概念</td>
+<td><code>Password Hashing</code>, <code>Argon2id</code>, <code>Salt</code>, <code>KDF</code>, <code>离线破解</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="pdf">PDF 母版题解</h2>
+<h3 id="1">1. 面试官在考什么</h3>
+<p>不是只考定义。 这道题通常同时观察你是否能：①识别安全边界；②解释根因；③知道常见错误做法为什么失效；④给出可落地、可验证的工程控制。</p>
+<h3 id="2">2. 原理与机制</h3>
+<p>通用哈希函数追求高速，而密码存储需要提高离线猜测成本，应使用 Argon2id/bcrypt/scrypt/PBKDF2 等专用KDF，并为每个密码使用独立 salt。离线密码破解的成本取决于每次猜测的计算/内存成本。SHA-256 适合高速哈希而不是抗密码猜测；专用 KDF 通过可调成本与 salt 把大规模并行猜测变昂贵。认证问题要沿完整生命周期分析：credential enrollment → login → session/token issuance → refresh/rotation→ step-up → logout/revocation → recovery。单独讨论“登录接口”通常是不完整的。</p>
+<p><strong>抽象模型 Identity security = credential + session/token lifecycle + recovery + step-up + revocation.</strong></p>
+<h3 id="3">3. 工程防御与设计原则</h3>
+<ul>
+<li>
+<p>使用成熟身份协议与库</p>
+</li>
+<li>
+<p>短生命周期凭据、轮换、撤销和重认证</p>
+</li>
+<li>
+<p>保护恢复链路与高风险操作</p>
+</li>
+<li>
+<p>记录异常认证事件但不记录秘密</p>
+</li>
+<li>
+<p>把控制写成可测试安全不变量，并为失败路径、边界条件和回归场景补充自动化测试。</p>
+</li>
+</ul>
+<h3 id="4-gotchas">4. 常见错误答案 / Gotchas</h3>
+<ul>
+<li>
+<p>误区：只讨论 token 格式，不讨论生命周期</p>
+</li>
+<li>
+<p>误区：把“已登录”当成“当前操作者可信”</p>
+</li>
+<li>
+<p>误区：忽略恢复、撤销、轮换和异常登录</p>
+</li>
+</ul>
+<h3 id="5">5. 面试追问</h3>
+<ul>
+<li>
+<p>token 被盗后如何缩小影响？</p>
+</li>
+<li>
+<p>权限改变后旧 token/session 如何处理？</p>
+</li>
+<li>
+<p>高风险操作如何做 step-up？</p>
+</li>
+</ul>
+<h3 id="6">6. 一分钟回答模板</h3>
+<p>先给结论：通用哈希函数追求高速，而密码存储需要提高离线猜测成本，应使用 Argon2id/bcrypt/scrypt/PBKDF2等专用 KDF，并为每个密码使用独立 salt。 然后我会从安全边界解释机制：离线密码破解的成本取决于每次猜测的计算/内存成本。SHA-256 适合高速哈希而不是抗密码猜测；专用 KDF 通过可调成本与 salt 把大规模并行猜测变昂贵。 工程上不会只做单点补丁，而会落实为服务端/平台层控制、最小权限、异常路径和回归测试；最后再说明这个机制不能解决什么，以及如何通过日志、测试或代码审计验证控制确实生效。</p>
+<h3 id="7">7. 复习检查</h3>
+<ul>
+<li>
+<p>□ 我能否用自己的话解释“根因”而不是背定义？</p>
+</li>
+<li>
+<p>□ 我能否给出至少一个错误防御，并解释为什么错误？</p>
+</li>
+<li>
+<p>□ 我能否把修复方案转成可验证的测试或代码审计检查点？</p>
+</li>
+</ul>
+<hr />
+<h2 id="github">GitHub 增强版：深度展开</h2>
+<p>普通 SHA-256 的设计目标是高速、通用哈希，恰好不适合密码存储；密码哈希需要故意昂贵的计算/内存成本来提高离线猜测代价。</p>
+<p>每个密码应使用独立随机 salt，防止预计算和彩虹表复用。现代系统通常优先选择经过审查的密码哈希/KDF，并根据硬件能力配置成本。</p>
+<p>可选 pepper 属于额外秘密，应与数据库分离并有密钥生命周期；它不能替代正确 KDF 和 salt。</p>
+<h3 id="security-invariants">安全不变量（Security Invariants）</h3>
+<ul>
+<li><strong>密码存储必须抗离线猜测，而不仅是“不可逆”。</strong></li>
+<li><strong>盐必须唯一随机；算法/成本参数必须可演进。</strong></li>
+</ul>
+<h3 id="_2">代码审计 / 设计评审 / 测试视角</h3>
+<ul>
+<li>查找自写 <code>sha256(password)</code>、静态 salt、全局固定 salt。</li>
+<li>确认成本参数可配置并有升级策略（登录时 rehash）。</li>
+<li>检查密码重置、迁移、备份中是否出现明文或可逆加密。</li>
+</ul>
+<h3 id="_3">安全设计示例（防御性）</h3>
+<pre><code class="language-text">password -&gt; approved password KDF + unique salt -&gt; stored verifier
+on login: verify -&gt; if parameters obsolete -&gt; rehash with newer policy
+</code></pre>
+<h3 id="gotchas">新增 Gotchas</h3>
+<ul>
+<li>多次 SHA-256 等同专业 KDF。</li>
+<li>把 salt 当秘密。</li>
+</ul>
+<h3 id="_4">新增高阶追问</h3>
+<ul>
+<li>如何平滑升级旧 bcrypt/低成本哈希？</li>
+<li>pepper 丢失或泄露时如何处理？</li>
+</ul>
+<h2 id="v2-appsec">专业增强版 V2：从面试答案到 AppSec 工程</h2>
+<blockquote>
+<p>本节是在 PDF 母版和前述 GitHub 增强版基础上的第二轮扩展。重点不再是“记住漏洞名”，而是训练 <strong>Threat Modeling → Secure Design → Code Review → Verification → Operations</strong> 的完整闭环。</p>
+</blockquote>
+<h3 id="81">8.1 威胁建模：先定义资产、主体与边界</h3>
+<p>本题应放在 <strong>身份凭据、会话令牌、授权委托与敏感操作再认证的生命周期</strong> 中理解。与本题直接相关的核心资产包括：<strong>密码、会话标识、访问令牌、刷新令牌、授权码、MFA 状态</strong>。</p>
+<p>推荐用下面的最小威胁模型回答：</p>
+<pre><code class="language-text">Untrusted / Lower-trust Actor
+        │
+        │ input / identity / state transition
+        ▼
+Trust Boundary / Parser / Policy / Capability
+        │
+        │ security decision
+        ▼
+Protected Asset / Sensitive Action / Privileged Capability
+</code></pre>
+<p>典型失败模式是：<strong>把“令牌存在”误当成“令牌当前仍可信”，忽略签发、绑定、过期、撤销与重放</strong>。因此真正需要保护的不是某个字符串或某个 UI 控件，而是“跨边界之后系统仍然满足哪些安全属性”。</p>
+<h3 id="82">8.2 关键安全不变量：把最佳实践变成可测试规则</h3>
+<ul>
+<li><strong>Invariant 1</strong>：密码存储必须抗离线猜测，而不仅是“不可逆”。</li>
+<li><strong>Invariant 2</strong>：盐必须唯一随机；算法/成本参数必须可演进。</li>
+</ul>
+<p>高级面试回答要进一步说明：<strong>安全不变量应在最靠近关键资源/危险能力的位置再次成立</strong>。网关、WAF、前端或 SDK 可以提供前置保护，但不能成为唯一的最终安全边界。</p>
+<h3 id="83-failure-chain">8.3 失败链（Failure Chain）分析</h3>
+<pre><code class="language-text">入口数据/身份/状态
+    ↓
+规范化、解析或对象绑定
+    ↓
+安全检查缺失 / 检查位置错误 / 检查与执行语义不一致
+    ↓
+敏感资源、解释器、内部能力或业务状态被访问
+    ↓
+机密性 / 完整性 / 可用性 / 租户隔离 / 业务不变量受损
+</code></pre>
+<p>分析时建议逐项回答：</p>
+<ol>
+<li><strong>Source 是什么</strong>：HTTP 参数、Cookie、Header、JWT claim、数据库旧值、消息、第三方 API，还是管理员配置？</li>
+<li><strong>中间发生了什么 Transform</strong>：decode、normalize、deserialize、ORM binding、proxy rewrite、cache keying、模板渲染？</li>
+<li><strong>谁做安全决策</strong>：浏览器、CDN、WAF、网关、Controller、Service、Policy Engine、数据库？</li>
+<li><strong>真正的 Sink/Asset 在哪</strong>：数据对象、系统能力、内部网络、文件系统、敏感业务动作还是跨租户资源？</li>
+<li><strong>Decision 与 Execution 是否使用相同语义</strong>：这是很多高阶漏洞的共同根因。</li>
+</ol>
+<h3 id="84">8.4 代码审计：从关键词搜索升级为数据流与控制流审计</h3>
+<p>与本题相关的重点概念：<code>password-hashing</code>、<code>argon2id</code>、<code>salt</code>、<code>kdf</code>、<code>离线破解</code>。审计时不要只搜漏洞名称，而应建立下列视图：</p>
+<pre><code class="language-text">Entry Point
+  ├─ Authentication Context
+  ├─ Authorization / Validation
+  ├─ Normalization / Parsing
+  ├─ Business State
+  └─ Sensitive Sink / Capability
+</code></pre>
+<p>建议审计步骤：</p>
+<ul>
+<li><strong>先找入口与调用图</strong>：HTTP handler、GraphQL resolver、WebSocket message handler、后台任务、Webhook、CLI/管理接口。</li>
+<li><strong>再找安全上下文的来源</strong>：当前用户、tenant、role、scopes、session、trusted proxy、配置环境。</li>
+<li><strong>检查控制是否集中且一致</strong>：是否存在“某些路由有 middleware、另一些内部入口没有”的分叉。</li>
+<li><strong>检查 TOCTOU/异步边界</strong>：安全检查与真正执行之间是否跨事务、队列或服务。</li>
+<li><strong>检查失败路径</strong>：超时、依赖不可用、解析失败、空值、部分成功时是否 fail secure。</li>
+</ul>
+<h3 id="85">8.5 架构设计：控制应该放在哪里</h3>
+<p>本章推荐的总体设计原则是：<strong>认证、会话、授权委托分层；短期令牌、长期凭据和高风险操作使用不同保护强度</strong>。</p>
+<p>可以把控制拆成四层：</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>目标</th>
+<th>本题评审重点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Edge / Browser</td>
+<td>降低明显恶意或错误流量</td>
+<td>不能把它当最终授权/业务安全边界</td>
+</tr>
+<tr>
+<td>Application / Policy</td>
+<td>建立可信身份与策略决策</td>
+<td>决策输入必须来自可信上下文</td>
+</tr>
+<tr>
+<td>Domain / Data</td>
+<td>强制业务与资源不变量</td>
+<td>最靠近资产处再次校验</td>
+</tr>
+<tr>
+<td>Runtime / Operations</td>
+<td>限制缺陷影响并提供证据</td>
+<td>最小权限、隔离、日志、告警、回滚</td>
+</tr>
+</tbody>
+</table>
+<h3 id="86">8.6 安全验证矩阵：如何证明“真的修好了”</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">#</th>
+<th>验证动作</th>
+<th>期望证据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>覆盖登录前后会话状态转换与旧令牌失效</td>
+<td>形成可重复、可审计的证据</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>验证过期、撤销、重放、登出、密码修改后的令牌行为</td>
+<td>形成可重复、可审计的证据</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>OAuth 流程校验 issuer/audience/state/PKCE/redirect URI 等安全不变量</td>
+<td>形成可重复、可审计的证据</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>敏感操作验证 step-up/reauthentication 与审计事件</td>
+<td>形成可重复、可审计的证据</td>
+</tr>
+</tbody>
+</table>
+<p>进一步建议把验证拆成四个层次：</p>
+<ul>
+<li><strong>Unit</strong>：证明单个 policy/validator/serializer 在边界输入下行为正确。</li>
+<li><strong>Integration</strong>：证明框架、代理、数据库、浏览器等真实组合仍保持同一安全语义。</li>
+<li><strong>Negative Regression</strong>：为曾经的失败条件建立永久回归测试。</li>
+<li><strong>Runtime Evidence</strong>：日志、指标和告警能看到拒绝、异常、策略漂移与重复攻击趋势。</li>
+</ul>
+<h3 id="87">8.7 专业补充：容易被忽略的工程细节</h3>
+<ul>
+<li>密码存储的目标是提高离线猜测成本，而不是仅保证单向性。</li>
+<li>算法、成本参数、salt、pepper、迁移策略和凭据泄露响应都属于完整设计。</li>
+</ul>
+<h3 id="88-seniorstaff">8.8 设计权衡：Senior/Staff 面试应该说什么</h3>
+<p>安全性、用户体验、跨设备登录和会话连续性之间存在直接张力，应由风险分级决定。</p>
+<p>成熟回答应避免“安全永远越严格越好”的绝对化表述，而要讨论：</p>
+<ul>
+<li>控制的<strong>安全收益</strong>；</li>
+<li>对兼容性、性能、开发效率和运维复杂度的影响；</li>
+<li>是否存在更容易证明正确的设计；</li>
+<li>控制失败时是否有第二道边界；</li>
+<li>是否能通过平台能力把正确做法变成默认路径。</li>
+</ul>
+<h3 id="89">8.9 防御性案例推演</h3>
+<p>假设一个生产系统已经部署了针对本题的修复，不应只问“正常请求是否成功”。评审应同时构造：</p>
+<pre><code class="language-text">正常主体 + 正常资源/状态     → 允许
+正常主体 + 非本人资源/非法状态 → 拒绝
+异常/缺失安全上下文           → 拒绝或进入安全降级
+依赖超时/解析失败              → 不得 fail-open
+并发/重试/重复消息             → 不得破坏业务不变量
+旧客户端/旧 API 版本           → 不得绕过新控制
+</code></pre>
+<p>这套推演能把“漏洞修复”升级为“系统安全属性验证”。</p>
+<h3 id="810">8.10 面试回答分层</h3>
+<p><strong>30 秒版</strong>：给出根因 + 一条最重要安全不变量。</p>
+<p><strong>2 分钟版</strong>：补充信任边界、错误防御、正确控制层级和一个验证方法。</p>
+<p><strong>5 分钟高级版</strong>：再加入架构权衡、异常路径、回归证据、可观测性和与相邻漏洞的边界。</p>
+<p>面试官真正区分候选人的地方，通常不是能否说出漏洞定义，而是能否回答：</p>
+<blockquote>
+<p><strong>“你如何证明这个系统在真实架构、异常状态和未来代码变更下仍然保持安全？”</strong></p>
+</blockquote>
+<h2 id="_5">标准映射</h2>
+<ul>
+<li><code>A04:2025 Cryptographic Failures</code></li>
+<li><code>A07:2025 Authentication Failures</code></li>
+<li><code>API2:2023 Broken Authentication</code></li>
+</ul>
+<h2 id="pdf_1">PDF 引用体系 / 延伸阅读</h2>
+<ul>
+<li>[S1] <a href="https://owasp.org/Top10/2025/">OWASP Top 10:2025</a></li>
+<li>[S4] <a href="https://cheatsheetseries.owasp.org/">OWASP Cheat Sheet Series</a></li>
+<li>[S6] <a href="https://www.rfc-editor.org/info/rfc9700/">RFC 9700 - Best Current Practice for OAuth 2.0 Security</a></li>
+<li>[S7] <a href="https://owasp.org/www-project-application-security-verification-standard/">OWASP ASVS 5.0.0</a></li>
+</ul>
+<blockquote>
+<p>说明：OWASP Top 10 是风险意识清单，不是完整测试标准；实际工程验收建议同时使用 ASVS 与 WSTG。</p>
+</blockquote>
+<h2 id="_6">关联题目</h2>
+<ul>
+<li><span class="srcref">Q022 Session Fixation 和 Session Hijacking 有什么区别？</span></li>
+<li><span class="srcref">Q024 为什么登录接口不能只靠账户锁定抵抗爆破？</span></li>
+<li><span class="srcref">Q021 为什么登录成功后要 rotate Session ID？</span></li>
+<li><span class="srcref">Q025 JWT 最大的安全误区是什么？</span></li>
+<li><span class="srcref">Q026 JWT 放 localStorage 还是 HttpOnly Cookie？</span></li>
+</ul>
+<h2 id="_7">面试自测</h2>
+<ul>
+<li>[ ] 我能在 30 秒内给出一句话结论。</li>
+<li>[ ] 我能解释“根因”与“表象”的区别。</li>
+<li>[ ] 我能说出至少两个错误防御以及为什么无效。</li>
+<li>[ ] 我能给出一条可测试的安全不变量。</li>
+<li>[ ] 我能从代码审计或架构评审角度指出验证位置。</li>
+<li>[ ] 我能说明该机制的边界：它解决什么、不能解决什么。</li>
+</ul>
+<hr />
+<p><strong>安全边界</strong>：本仓库用于合法、授权的安全学习、面试与防御性工程实践；不包含针对真实目标的破坏性操作步骤。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

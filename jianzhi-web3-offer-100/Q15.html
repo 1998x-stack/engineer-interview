@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ABI Function Selector 和 calldata 如何编码？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Web3</a><i>∕</i><span>Q15</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q15</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">★★</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★☆</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q14.html">← Q14</a><a href="Q16.html">Q16 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">abi</a><a href="#">ethereum</a><a href="#">evm-call</a><a href="#">interview</a><a href="#">web3</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      WEB3 · SOLIDITY · 15 / 101</div>
+    <h1 class="qtitle">ABI Function Selector 和 calldata 如何编码？</h1>
+    <blockquote>
+<p><strong>难度</strong> ★★ | <strong>高频度</strong> ★★★★☆ | <strong>岗位</strong> Solidity/后端/安全 | <strong>PDF</strong> 第 20 页</p>
+<p>本文件以 PDF 中 Q15 为主干；“GitHub 扩展”部分是在原内容上增加的工程化学习材料。原 PDF：<a href="assets/pdf/Jianzhi_Web3_Offer_100_Interview_Questions_2026.pdf">Jianzhi_Web3_Offer_100_Interview_Questions_2026.pdf</a>.</p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问这题</h2>
+<p>检查你能否从函数签名追到原始 calldata。</p>
+<h3 id="_1">高分回答的层级</h3>
+<ul>
+<li><strong>L1 - 定义正确</strong>：术语不混淆，先给一到两句话结论。</li>
+<li><strong>L2 - 原理可推导</strong>：能解释为什么，以及底层状态/数据/执行路径。</li>
+<li><strong>L3 - Failure Mode</strong>：主动说明什么时候结论不成立、常见攻击或工程故障。</li>
+<li><strong>L4 - Invariant / Trade-off</strong>：能给出不变量、信任假设或系统设计取舍。</li>
+</ul>
+<h2 id="2-30">2. 30 秒标准回答</h2>
+<blockquote>
+<p>外部函数调用的前 4 bytes 通常是 <code>keccak256("name(type1,type2,...)")</code> 的前 4 bytes，后面按 ABI 规则编码参数。动态类型的 head 区存 offset，tail 区存实际长度与数据。</p>
+</blockquote>
+<h2 id="3-pdf">3. 原理深挖（PDF 主干）</h2>
+<h3 id="31">3.1 关键推导</h3>
+<p>例如 <code>transfer(address,uint256)</code> 的 selector 固定为 4 bytes。因为 selector 只有 32 bit，理论上存在碰撞，所以 proxy / dispatcher 设计需要考虑 selector clash。</p>
+<h3 id="32">3.2 关键推导</h3>
+<p>理解 ABI 能让你排查低级 call、decode revert data、构建 multicall、分析 calldata gas 和安全工具输出。</p>
+<h3 id="33">3.3 公式 / 定量关系</h3>
+<pre><code class="language-text">selector = first4(keccak256(&quot;f(type1,type2,...)&quot;))
+</code></pre>
+<p>仅函数名不够，参数类型是签名的一部分</p>
+<h2 id="4">4. 白板模型</h2>
+<pre><code class="language-mermaid">flowchart LR
+  TX[Transaction] --&gt; CD[Calldata]
+  CD --&gt; EVM[EVM call frame]
+  EVM --&gt; ST[Stack]
+  EVM --&gt; M[Memory]
+  EVM --&gt; SS[Storage / TStorage]
+  EVM --&gt; L[Logs + returndata]
+</code></pre>
+<p>在面试中不必追求图漂亮；图的作用是让<strong>状态、信任边界、调用方向或资产流</strong>一眼可见。</p>
+<h2 id="5">5. 必须说出的关键点</h2>
+<ul>
+<li>canonical type names 参与签名</li>
+<li>selector 只有 4 bytes</li>
+<li>static values inline, dynamic values use offset</li>
+<li>returndata / revert data 也遵循 ABI 约定</li>
+</ul>
+<h2 id="6-github">6. GitHub 扩展：工程化理解</h2>
+<p>下面内容是在 PDF 主干之上增加的生产/审计视角，用于把“知道概念”升级为“能落地”。</p>
+<ul>
+<li>沿着 <code>transaction -&gt; calldata -&gt; call frame -&gt; opcode -&gt; storage/log -&gt; receipt</code> 推导，尽量能落到字节级。</li>
+<li>明确执行上下文：<code>msg.sender</code>、<code>msg.value</code>、<code>address(this)</code>、storage owner、delegatecall context。</li>
+<li>对 gas 问题先区分执行成本、持久状态成本和 calldata/data-availability 成本。</li>
+<li>调试时优先使用 trace、raw calldata、storage slot 与 revert data，而不是只看 Solidity 源码表象。</li>
+</ul>
+<h3 id="61">6.1 面试推导顺序</h3>
+<ol>
+<li><strong>先下定义</strong>：用本题 30 秒回答建立边界。</li>
+<li><strong>再给机制</strong>：把对象、输入、状态变化或执行上下文说清楚。</li>
+<li><strong>主动给失败模式</strong>：从本题常见误区反推“哪里会出问题”。</li>
+<li><strong>给 mitigation / 工程做法</strong>：说明如何测试、监控或限制 blast radius。</li>
+<li><strong>用 invariant 收尾</strong>：让面试官看到你能从局部 API 上升到系统正确性。</li>
+</ol>
+<h3 id="62">6.2 验证 / 测试清单</h3>
+<ul>
+<li>[ ] 用 Foundry/Hardhat 构造最小合约并检查 trace。</li>
+<li>[ ] 对关键 calldata/storage slot 做原始字节级验证。</li>
+<li>[ ] 比较成功、revert、out-of-gas 三种路径的状态与 receipt。</li>
+</ul>
+<!-- PROFESSIONAL_ENRICHMENT_START -->
+<h3 id="63">6.3 前置知识与概念边界</h3>
+<p>这题属于 <strong>Ethereum / EVM</strong>。以下 6.3–6.12 属于 <strong>GitHub 专业深化（通用工程知识与推导）</strong>，并非 PDF 原文；PDF 主干仍以上文第 1–5 节为准。</p>
+<p>在进入细节前，建议先确认下面三个前置层次：</p>
+<ul>
+<li>EVM call frame、stack/memory/storage</li>
+<li>ABI 编码与 calldata</li>
+<li>transaction、gas、receipt 与 state root</li>
+</ul>
+<p>本题已有关键点可以进一步拆成：</p>
+<ol>
+<li><strong>canonical type names 参与签名</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+<li><strong>selector 只有 4 bytes</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+<li><strong>static values inline, dynamic values use offset</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+<li><strong>returndata / revert data 也遵循 ABI 约定</strong>：面试中需要把它从关键词展开成“定义 → 机制 → 边界 → 工程后果”，不能只念术语。</li>
+</ol>
+<blockquote>
+<p><strong>边界原则</strong>：能回答“它是什么”只能达到基础分；高级回答必须继续回答“它不是什么、依赖什么假设、失败时会怎样”。</p>
+</blockquote>
+<h3 id="64">6.4 形式化模型 / 白板推导</h3>
+<p>本题已有公式/关系：<code>selector = first4(keccak256("f(type1,type2,...)"))</code>；<code>仅函数名不够，参数类型是签名的一部分</code>。不要只背公式，要逐个说明变量的物理/协议含义、单位、取值边界以及公式失效的前提。</p>
+<p>在此基础上，把 EVM 看成带 gas 预算的确定性状态机：每个 opcode 同时更新机器状态（pc/stack/memory）和可能的世界状态；外部调用会创建新的 call frame，而 <code>DELEGATECALL</code> 等指令改变代码与存储上下文的组合方式。</p>
+<p>白板时建议固定使用以下推导顺序：</p>
+<ol>
+<li><strong>对象</strong>：列出参与者、状态、资产或数据结构；</li>
+<li><strong>输入</strong>：哪些交易/消息/价格/签名会驱动状态变化；</li>
+<li><strong>规则</strong>：哪些条件决定有效、排序、授权或价格；</li>
+<li><strong>状态变化</strong>：写出成功路径和失败/回滚路径；</li>
+<li><strong>Invariant</strong>：任何正常或恶意输入下必须保持什么；</li>
+<li><strong>Trust assumption</strong>：哪些条件不是代码能独立保证的。</li>
+</ol>
+<h3 id="65-abi">6.5 本题最值得深挖的一层：ABI 解析要以字节布局说话</h3>
+<p>高级回答应能解释 4-byte selector、32-byte word、head/tail dynamic encoding，以及 revert/custom error 同样走 ABI 编码。</p>
+<p>如果面试官继续追问，不要立刻换新术语。先从上述核心模型推出一个<strong>具体后果</strong>，再给一个<strong>反例或边界条件</strong>，最后说明<strong>生产系统如何验证/缓解</strong>。</p>
+<h3 id="66">6.6 生产工程决策</h3>
+<ul>
+<li>定位问题时先区分 transaction-level state、call-frame-local state 与 persistent storage，不要把 memory/storage 生命周期混淆。</li>
+<li>分析 gas 时先看 storage write、cold/warm access、external call、memory expansion，再看微小 opcode 优化。</li>
+<li>涉及 proxy/CREATE2/raw storage 时必须画 storage layout 或 address derivation，避免仅凭 Solidity 表面语义推断。</li>
+<li>对 ABI/calldata 问题使用真实编码向量做测试，尤其是 dynamic type、selector、fallback 与 custom error。</li>
+</ul>
+<p>对本题而言，工程答案最好至少包含一个“<strong>正常路径</strong>”和一个“<strong>故障路径</strong>”。前者证明你理解功能，后者证明你理解系统。</p>
+<h3 id="67-threat-model-failure-modes">6.7 Threat Model / Failure Modes</h3>
+<p>把失败模式分成三类会更专业：</p>
+<ul>
+<li><strong>语义错误</strong>：概念或状态模型理解错，导致实现从根上错误；</li>
+<li><strong>对抗性输入</strong>：攻击者利用排序、回调、价格、签名、权限等主动破坏假设；</li>
+<li><strong>系统性故障</strong>：RPC、节点、sequencer、oracle、数据库或管理员路径异常。</li>
+</ul>
+<p>本题重点检查：</p>
+<ul>
+<li>把 selector 当成完整 hash，忽略 4-byte 碰撞。</li>
+<li>在签名字符串里错误加入参数名或空格。</li>
+<li>storage context 理解错误导致 proxy/DELEGATECALL 漏洞</li>
+<li>错误假设 EOA/contract 可通过 code.length 永久区分</li>
+<li>gas 估算只看均值，忽略 worst-case 与状态冷热差异</li>
+<li>ABI 编码歧义或 selector/call data 解析错误</li>
+</ul>
+<blockquote>
+<p>面试时最好把“风险”改写成可验证句式：<strong>在条件 A 下，攻击者/故障 B 可以让状态 C 违反 invariant D，影响资产/可用性 E。</strong></p>
+</blockquote>
+<h3 id="68-unit-fuzz-invariant-integration">6.8 测试策略：Unit → Fuzz → Invariant → Integration</h3>
+<ul>
+<li>[ ] Foundry/Hardhat 单元测试覆盖 call/revert/return data</li>
+<li>[ ] storage slot 断言与 upgrade layout diff</li>
+<li>[ ] gas snapshot 只作为回归信号，不作为安全证明</li>
+<li>[ ] fork test 验证真实主网依赖与边界条件</li>
+</ul>
+<p>进一步建议：</p>
+<ul>
+<li><strong>Unit test</strong>：验证局部 API 与边界输入；</li>
+<li><strong>Fuzz test</strong>：搜索你没有手工枚举的输入组合；</li>
+<li><strong>Invariant test</strong>：验证任意调用序列下核心关系仍成立；</li>
+<li><strong>Integration/Fork test</strong>：验证真实 token、oracle、RPC、链状态或跨合约行为；</li>
+<li><strong>Failure injection</strong>：主动让依赖超时、重组、停机、返回异常，验证恢复路径。</li>
+</ul>
+<h3 id="69">6.9 可观测性与线上排障</h3>
+<p>如果这道题变成线上事故，不要只说“看日志”。先定义你要观察的<strong>链上事实、派生状态与外部依赖</strong>。本章常用信号包括：</p>
+<ul>
+<li><code>gas used / revert selector 分布</code></li>
+<li><code>trace 中外部调用深度</code></li>
+<li><code>storage slot 变化</code></li>
+<li><code>nonce / fee / inclusion latency</code></li>
+</ul>
+<p>排障顺序建议固定为：</p>
+<pre><code class="language-text">用户现象
+  ↓
+确认 chain / tx / block / request identity
+  ↓
+确认 source of truth
+  ↓
+定位状态机停在哪一步
+  ↓
+查看依赖与权限变化
+  ↓
+复现 / simulate / trace
+  ↓
+决定 retry / rollback / pause / compensate
+</code></pre>
+<h3 id="610">6.10 不同岗位如何回答同一道题</h3>
+<ul>
+<li><strong>安全 视角</strong>：把攻击者能力、资产、不变量、可利用前提和 mitigation 说完整；不要止于 API 定义。</li>
+<li><strong>后端 视角</strong>：强调幂等、reorg、RPC/节点一致性、数据模型、重试与可观测性。</li>
+<li><strong>Solidity 视角</strong>：强调 EVM 语义、storage/call context、gas、安全测试与部署约束。</li>
+<li><strong>高级面试升级</strong>：最后补一句“这个结论依赖哪些假设、线上怎样观测、出现异常如何回滚/降级”，通常能明显区分 Senior 与纯知识型回答。</li>
+</ul>
+<h3 id="611-rubric">6.11 面试官评分 Rubric</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>候选人表现</th>
+<th>典型判断</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0 - 术语记忆</strong></td>
+<td>只能给一句定义，追问就断</td>
+<td>不足以独立处理生产问题</td>
+</tr>
+<tr>
+<td><strong>1 - 机制理解</strong></td>
+<td>能解释核心流程和关键对象</td>
+<td>基础工程能力</td>
+</tr>
+<tr>
+<td><strong>2 - 边界意识</strong></td>
+<td>能主动指出前提、反例和 Failure Mode</td>
+<td>中高级候选人信号</td>
+</tr>
+<tr>
+<td><strong>3 - 工程闭环</strong></td>
+<td>能给测试、监控、回滚、兼容性与成本取舍</td>
+<td>Senior 信号</td>
+</tr>
+<tr>
+<td><strong>4 - 系统推导</strong></td>
+<td>能用 invariant / trust model 串起上下游并提出替代设计</td>
+<td>Staff / Protocol 信号</td>
+</tr>
+</tbody>
+</table>
+<h3 id="612">6.12 关联题：把知识连成网络</h3>
+<ul>
+<li><span class="srcref">Q14 CALL 与 DELEGATECALL 有什么区别？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q13 Solidity 的 storage、memory、calldata 有什么区别？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q16 Mapping 在 EVM Storage 中如何定位？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q17 CREATE 与 CREATE2 有什么区别？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+<li><span class="srcref">Q12 Stack / Memory / Storage / Transient Storage 有什么区别？</span>：建议用“相同底层机制 / 不同应用边界”方式对比复习。</li>
+</ul>
+<p>不要把 100 题当成 100 个孤立答案。真正的面试常从当前题连续跳到 storage、signature、oracle、reorg、upgrade、MEV 或 system design；建立跨题连接比继续背更多定义更重要。</p>
+<!-- PROFESSIONAL_ENRICHMENT_END -->
+
+<h2 id="7">7. 高频追问与回答方向</h2>
+<h3 id="1-uint-canonicalize-uint256">追问 1：为什么 <code>uint</code> 在签名里 canonicalize 为 <code>uint256</code>？</h3>
+<p><strong>回答方向：</strong> 回答时回到本题的核心定义，并补充一个 failure mode 与工程边界。</p>
+<p>进一步展开时应回扣：<code>canonical type names 参与签名</code>，并至少补一个边界条件或反例。</p>
+<h3 id="2custom-error-selector">追问 2：custom error selector 怎么算？</h3>
+<p><strong>回答方向：</strong> 与函数 selector 类似。</p>
+<p>进一步展开时应回扣：<code>selector 只有 4 bytes</code>，并至少补一个边界条件或反例。</p>
+<h3 id="3abiencode-abiencodepacked">追问 3：abi.encode 与 abi.encodePacked 有何差异？</h3>
+<p><strong>回答方向：</strong> 回答时回到本题的核心定义，并补充一个 failure mode 与工程边界。</p>
+<p>进一步展开时应回扣：<code>static values inline, dynamic values use offset</code>，并至少补一个边界条件或反例。</p>
+<h2 id="8-gotchas">8. 常见错误回答 / Gotchas</h2>
+<ul>
+<li><strong>错误模式：</strong> 把 selector 当成完整 hash，忽略 4-byte 碰撞。</li>
+<li><strong>错误模式：</strong> 在签名字符串里错误加入参数名或空格。</li>
+<li><strong>面试修正方式：</strong> 不要只换一个更专业的名词；要明确指出错误假设、给出正确模型，并说明该错误在生产环境可能造成的后果。</li>
+</ul>
+<h2 id="9">9. 记忆锚点</h2>
+<blockquote>
+<p>ABI 是“链上二进制协议”；selector 决定调用哪个入口，后续 bytes 决定参数。</p>
+</blockquote>
+<h2 id="10">10. 自测题</h2>
+<ol>
+<li>不看本文，用 30 秒重新回答：<strong>ABI Function Selector 和 calldata 如何编码？</strong></li>
+<li>给出一个“定义正确但工程上会失败”的反例。</li>
+<li>给出至少一个可以自动化验证的 invariant / test。</li>
+<li>如果这是线上事故，你最先观察哪 3 个信号或状态？</li>
+<li>如果面试官要求把答案提升到 Staff 级，你会补哪一张状态机/信任边界图？</li>
+</ol>
+<!-- PROFESSIONAL_LAB_START -->
+<h3 id="101">10.1 实战训练：把这题变成可展示的工程证据</h3>
+<p><strong>场景任务</strong>：给定一个包含多层 external call 的交易，围绕 <strong>ABI Function Selector 和 calldata 如何编码</strong> 画出 call frame、storage context、calldata/return data 和 gas 消耗边界；然后说明如何用 trace 证明你的判断。</p>
+<p>建议输出物：</p>
+<ol>
+<li>一张状态机 / 资产流 / 调用图；</li>
+<li>一份 10～30 行的最小代码、伪代码或数据结构；</li>
+<li>3 个 happy-path 测试 + 3 个 adversarial/failure-path 测试；</li>
+<li>至少 1 个 invariant；</li>
+<li>一段 2 分钟口述答案，要求不看稿；</li>
+<li>与 <strong>Q14、Q13、Q16</strong> 做一次对比复盘，说明相同底层机制与不同工程边界。</li>
+</ol>
+<h3 id="102">10.2 反向面试：你可以问面试官什么</h3>
+<p>为了判断团队真实工程成熟度，可以围绕本题反问：</p>
+<ul>
+<li>这个系统当前最关键的 invariant / SLO 是什么？</li>
+<li>过去出现过哪类与本题相关的线上事故或审计问题？</li>
+<li>团队如何做 fork/invariant/failure-injection 测试？</li>
+<li>协议升级或依赖变更时，谁负责 compatibility review 和 rollback plan？</li>
+<li>哪些安全/可靠性判断是链上强制，哪些依赖 off-chain service 或人工流程？</li>
+</ul>
+<p>这些问题既能帮助你了解岗位，也能体现你关注<strong>长期正确性和运行质量</strong>，而不只是完成一次编码任务。</p>
+<!-- PROFESSIONAL_LAB_END -->
+
+<h2 id="11">11. 参考资料</h2>
+<h3 id="pdf">PDF 原始引用 / 对应官方资料</h3>
+<ul>
+<li>本题在 PDF 中未单独列出外部引用；其内容来自书内主干整理。</li>
+</ul>
+<h3 id="github-2026-09">GitHub 扩展阅读（2026-09 核验）</h3>
+<ul>
+<li>[R1] <a href="https://ethereum.org/developers/docs/evm/">Ethereum.org - Ethereum Virtual Machine (EVM)</a></li>
+<li>[R15] <a href="https://eips.ethereum.org/EIPS/eip-1559">Ethereum Improvement Proposals - EIP-1559: Fee market change</a></li>
+<li>[R16] <a href="https://docs.soliditylang.org/en/latest/abi-spec.html">Solidity Documentation - Contract ABI Specification</a></li>
+<li>[R4] <a href="https://eips.ethereum.org/EIPS/eip-1153">Ethereum Improvement Proposals - EIP-1153: Transient storage opcodes</a></li>
+</ul>
+<blockquote>
+<p>注：协议和文档会更新；面试前应核验目标链、compiler、OpenZeppelin 与协议版本。</p>
+</blockquote>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

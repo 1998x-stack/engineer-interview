@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>两部收费制为什么可能优于单一价格？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Microeconomics</a><i>∕</i><span>Q037</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q037</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">4</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q036.html">← Q036</a><a href="Q038.html">Q038 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">monopoly</a><a href="#">pricing</a><a href="#">market-power</a><a href="#">two-part-tariff</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MICROECONOMICS · 37 / 103</div>
+    <h1 class="qtitle">两部收费制为什么可能优于单一价格？</h1>
+    <blockquote>
+<p><strong>模块</strong>：垄断与定价<br />
+<strong>难度</strong>：★★★★<br />
+<strong>来源标注</strong>：经典高仿真面试题<br />
+<strong>核心 20</strong>：否</p>
+</blockquote>
+<h2 id="1">1. 面试官为什么问这题</h2>
+<p>这道题不是只检查定义，而是检查你能否沿着 <strong>需求 → MR → MC → 数量 → 价格 → markup → welfare</strong> 的路径，把一个口头问题转化为可验证的微观经济模型。两部收费把参与决策和使用决策分离。单一同质消费者时 p≈MC、T≈CS 很漂亮；异质消费者时固定费受边际消费者 participation constraint 约束，最优 p 往往高于 MC。</p>
+<p><strong>前置知识</strong>：需求弹性; MR=MC; 成本曲线。</p>
+<h2 id="2-30">2. 30 秒回答</h2>
+<blockquote>
+<p>企业可把使用价格设得接近 MC 以减少数量扭曲，再用固定费提取消费者剩余；对同质消费者尤其有效。</p>
+</blockquote>
+<p>一个好的 30 秒版本应包含三件事：<strong>先给结论、再给机制、最后加条件/边界</strong>。不要在开头堆背景知识。</p>
+<h2 id="3-3">3. 3 分钟标准展开</h2>
+<ol>
+<li>总支付=T+pQ。</li>
+<li>若 p=MC，使用量达到效率水平。</li>
+<li>T 最高可接近该消费者在 p=MC 下的消费者剩余。</li>
+<li>异质消费者时固定费会造成参与约束，可能需要菜单或更高使用价。</li>
+</ol>
+<h3 id="_1">更专业的组织方式</h3>
+<ol>
+<li><strong>定义对象与选择变量</strong>：先说清楚谁在选择什么，哪些变量是外生条件，哪些是均衡结果。</li>
+<li><strong>写出最小模型</strong>：只保留解释本题所需的方程/约束，避免过度建模。</li>
+<li><strong>做边际或均衡推理</strong>：说明为什么最优条件、best response 或市场清算条件给出该结论。</li>
+<li><strong>给 comparative statics</strong>：改变题目中的关键参数，预测价格、数量、福利或策略如何变。</li>
+<li><strong>说出边界</strong>：指出一个会使结论失效或需要修改的假设。</li>
+</ol>
+<h2 id="4">4. 白板公式与推导路线</h2>
+<p><strong>PDF 核心公式：</strong></p>
+<pre><code class="language-text">T≤CS(p); p≈MC
+</code></pre>
+<p>白板上建议按以下顺序写：</p>
+<ul>
+<li><strong>Step A｜原始条件</strong>：写目标函数/供需/预算/收益/信息结构中最关键的一条。</li>
+<li><strong>Step B｜最优或均衡条件</strong>：使用 FOC、市场清算、best response、IC/IR 或反事实定义。</li>
+<li><strong>Step C｜方向判断</strong>：只对题目真正改变的参数做 comparative statics。</li>
+<li><strong>Step D｜解释符号</strong>：把数学结果翻译回经济机制，而不是让公式停在白板上。</li>
+</ul>
+<blockquote>
+<p>面试提示：如果完整推导超过 90 秒，先说结论和关键等式，再询问面试官是否希望继续展开代数。</p>
+</blockquote>
+<h2 id="5">5. 模型假设与边界</h2>
+<ul>
+<li><strong>Ceteris paribus</strong>：必须明确哪些条件被固定，否则“相关性”容易被误称为因果机制。</li>
+<li><strong>内点与边界</strong>：一阶条件通常只描述内点；角点、容量、离散选择或不可逆约束可能使等式失效。</li>
+<li><strong>时间尺度</strong>：短期与长期的可调整变量不同，弹性、成本和进入退出都会改变。</li>
+<li><strong>市场/信息结构</strong>：price-taking、market power、可观察性、承诺与时序改变时，结论往往需要重做。</li>
+</ul>
+<p><strong>本题特别要记住：</strong> 两部收费把参与决策和使用决策分离。单一同质消费者时 p≈MC、T≈CS 很漂亮；异质消费者时固定费受边际消费者 participation constraint 约束，最优 p 往往高于 MC。</p>
+<h2 id="6">6. 数据与识别视角</h2>
+<p>定价题应把需求弹性、边际成本、参与约束和套利条件分开；观察价格差异本身并不能自动证明价格歧视。</p>
+<p>如果这是经济咨询/研究岗位，建议主动补一句：<strong>“我会先明确需要识别的结构参数或反事实，再决定需要什么数据，而不是先跑回归再解释。”</strong></p>
+<p>可采用的最小证据清单：</p>
+<ul>
+<li>outcome：本题关心的价格、数量、利润、福利或策略结果；</li>
+<li>shifter：理论上只移动某一侧/某一约束的外生变化；</li>
+<li>benchmark：没有政策/行为时的可比组、历史期或结构模型预测；</li>
+<li>robustness：替代定义、替代样本、共同趋势/成本冲击、安慰剂检验等。</li>
+</ul>
+<h2 id="7">7. 面试官连续追问</h2>
+<ol>
+<li><strong>健身房会员费+次卡怎么分析？</strong><br />
+<strong>答题锚点</strong>：总支付=T+pQ。<br />
+<strong>升级要求</strong>：把这一追问重新写回 <code>T≤CS(p); p≈MC</code> 所代表的最优/均衡条件，并明确哪些假设需要变化。</li>
+<li><strong>异质消费者为什么不能提尽所有剩余？</strong><br />
+<strong>答题锚点</strong>：若 p=MC，使用量达到效率水平。<br />
+<strong>升级要求</strong>：把这一追问重新写回 <code>T≤CS(p); p≈MC</code> 所代表的最优/均衡条件，并明确哪些假设需要变化。</li>
+<li><strong>两部收费和二级价格歧视关系？</strong><br />
+<strong>答题锚点</strong>：T 最高可接近该消费者在 p=MC 下的消费者剩余。<br />
+<strong>升级要求</strong>：把这一追问重新写回 <code>T≤CS(p); p≈MC</code> 所代表的最优/均衡条件，并明确哪些假设需要变化。</li>
+</ol>
+<h2 id="8">8. 高频错误与修正</h2>
+<ul>
+<li><strong>认为 p 必须等于0。</strong><br />
+<strong>修正方向</strong>：总支付=T+pQ。<br />
+  再说明错误具体破坏了定义、最优条件、比较静态还是反事实中的哪一步。</li>
+<li><strong>忽略参与约束。</strong><br />
+<strong>修正方向</strong>：若 p=MC，使用量达到效率水平。<br />
+  再说明错误具体破坏了定义、最优条件、比较静态还是反事实中的哪一步。</li>
+<li><strong>不考虑异质性。</strong><br />
+<strong>修正方向</strong>：T 最高可接近该消费者在 p=MC 下的消费者剩余。<br />
+  再说明错误具体破坏了定义、最优条件、比较静态还是反事实中的哪一步。</li>
+</ul>
+<h3 id="_2">一个额外的高级错误</h3>
+<ul>
+<li><strong>把模型结论当作事实结论。</strong> 正确表达应是：“在 X、Y、Z 假设下模型预测 A；现实判断还需验证这些假设和反事实。”</li>
+</ul>
+<h2 id="9">9. 迁移题</h2>
+<blockquote>
+<p><strong>设计主题公园门票+项目收费的定价权衡。</strong></p>
+</blockquote>
+<h3 id="_3">作答框架</h3>
+<ol>
+<li>用 1 句话定义决策者/市场和核心 outcome；</li>
+<li>写最小方程或因果图景；</li>
+<li>给至少两个竞争性机制；</li>
+<li>指出一项能区分机制的数据或外生变化；</li>
+<li>给条件化结论，而不是强行给唯一答案。</li>
+</ol>
+<p><strong>本题参考方向</strong>：先把 30 秒答案中的机制迁移到新场景，再检查本题特别强调的边界：两部收费把参与决策和使用决策分离。单一同质消费者时 p≈MC、T≈CS 很漂亮；异质消费者时固定费受边际消费者 participation constraint 约束，最优 p 往往高于 MC。 最后用本章的数据原则检验替代解释：定价题应把需求弹性、边际成本、参与约束和套利条件分开；观察价格差异本身并不能自动证明价格歧视。</p>
+<h2 id="10-rubric0-4">10. 评分 Rubric（0-4）</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">分数</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td>无法识别核心概念，或结论与模型方向相反</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td>能说出术语，但没有机制、公式或假设</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>主线基本正确，能给一个公式/图，但追问后容易失去结构</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>能完成模型 → 推导 → 比较静态，并主动说明一个边界条件</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>能处理共同冲击/信息变化，构造反事实，并说明如何用数据区分替代解释</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11">11. 自测</h2>
+<p>合上答案后，用不超过 3 分钟完成：</p>
+<ul>
+<li>[ ] 30 秒口头答案没有看提示</li>
+<li>[ ] 写出核心公式：<code>T≤CS(p); p≈MC</code></li>
+<li>[ ] 至少回答 2 个追问</li>
+<li>[ ] 迁移题给出可识别的 benchmark / shifter</li>
+<li>[ ] 能说出一个模型失效条件</li>
+</ul>
+<h2 id="12">12. 关联题目</h2>
+<ul>
+<li><span class="srcref">Q036 · 为什么学生票通常比成人票便宜？</span></li>
+<li><span class="srcref">Q038 · 为什么电影院可能高价卖爆米花？</span></li>
+</ul>
+<h2 id="13">13. 来源与延伸阅读</h2>
+<ul>
+<li><a href="https://ocw.mit.edu/courses/14-01-principles-of-microeconomics-fall-2023/">MIT 14.01</a></li>
+<li><a href="https://openstax.org/details/books/principles-economics-3e/">OpenStax</a></li>
+</ul>
+<blockquote>
+<p><strong>来源说明</strong>：该题属于经典理论/高仿真面试题，重点在能力覆盖，不声称来自某一次逐字面试。</p>
+</blockquote>
+<h2 id="14-advanced-deep-dive">14. Advanced Deep Dive｜研究生级深化</h2>
+<h3 id="141">14.1 这道题在微观理论中的位置</h3>
+<p>垄断定价的统一起点是 $max_q P(q)q-C(q)$ 或 $max_p (p-c)D(p)$。一阶条件把需求弹性、markup、成本和曲率连接起来；多产品或价格歧视时需显式写所有权、套利约束与 IC 条件。</p>
+<p><strong>本题的额外关键点：</strong> 两部收费制把“边际使用价”和“固定进入费”分离：理想同质消费者下可令使用价接近 MC，再用固定费提取消费者剩余；异质消费者下固定费受最弱参与者约束。</p>
+<h3 id="142">14.2 从公式到经济机制：严格推导路线</h3>
+<p>本题的核心表达是：</p>
+<pre><code class="language-text">T≤CS(p); p≈MC
+</code></pre>
+<p>写 $π(p)=(p-c)D(p)$：FOC 为 $D+(p-c)D'=0$，整理为 Lerner 形式；复杂定价再加入跨产品需求、套利或 IC。</p>
+<p>把它用于本题时，建议按以下顺序推进：</p>
+<ol>
+<li>总支付=T+pQ。</li>
+<li>若 p=MC，使用量达到效率水平。</li>
+<li>T 最高可接近该消费者在 p=MC 下的消费者剩余。</li>
+<li>异质消费者时固定费会造成参与约束，可能需要菜单或更高使用价。</li>
+</ol>
+<p>然后做三个检查：</p>
+<ul>
+<li><strong>符号检查</strong>：结论的正负方向是否与经济直觉一致；</li>
+<li><strong>单位检查</strong>：弹性、margin、价格、数量、效用或概率是否混用了不同量纲；</li>
+<li><strong>边界检查</strong>：角点、容量、非凸性、信息约束、进入退出或长期调整是否会改变一阶条件。</li>
+</ul>
+<h3 id="143">14.3 图形 / 几何 / 状态空间直觉</h3>
+<p>图形至少区分需求 D、MR、MC，并标出竞争产量与垄断产量。两部收费、捆绑、互补品等问题更适合用剩余分解而不只是单一 D-MR 图。</p>
+<p>针对 <strong>Q037</strong>，画图时不要只画最终曲线；至少标出：</p>
+<ol>
+<li><strong>baseline / before</strong>；</li>
+<li><strong>shock / policy / strategic change</strong>；</li>
+<li><strong>new equilibrium / optimum</strong>；</li>
+<li>若是因果或损害题，再画 <strong>but-for</strong>，并明确 actual 与 but-for 的差不是自动因果。</li>
+</ol>
+<blockquote>
+<p>白板原则：图形必须服务于一个命题。每画一条线，都能回答“它由哪个假设决定、移动代表什么、数据里对应什么”。</p>
+</blockquote>
+<h3 id="144-comparative-statics">14.4 可证伪预测与 comparative statics</h3>
+<p>一个专业答案不止给方向，还要给“什么现象会推翻我的解释”。对本题，可以围绕以下层次展开：</p>
+<ul>
+<li><strong>一阶预测</strong>：按照 <code>T≤CS(p); p≈MC</code>，关键参数变化应使最优选择/均衡变量出现可解释方向；</li>
+<li><strong>二阶预测</strong>：响应幅度应随弹性、曲率、margin、网络规模、风险厌恶或信息结构而变化；</li>
+<li><strong>异质性预测</strong>：不同消费者、企业、市场或 type 的响应不必相同；</li>
+<li><strong>反证</strong>：如果数据中的符号、时间顺序或受影响群体完全不符合机制，应降低对该解释的置信度。</li>
+</ul>
+<h3 id="145">14.5 实证识别 / 咨询分析怎么落地</h3>
+<p>经验判断要区分“高价格/高利润”与真正的市场势力；需求估计、边际成本、质量变化和多产品内部化是关键。</p>
+<p>对这道题，推荐先写一个最小 <strong>Evidence Matrix</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>要回答的问题</th>
+<th>典型证据</th>
+<th>主要风险</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>机制</td>
+<td>理论渠道是否存在？</td>
+<td>制度、合同、成本/需求变量</td>
+<td>只讲故事</td>
+</tr>
+<tr>
+<td>方向</td>
+<td>结果方向是否符合模型？</td>
+<td>价格、数量、份额、行为</td>
+<td>共同冲击</td>
+</tr>
+<tr>
+<td>因果</td>
+<td>变化是否由目标因素引起？</td>
+<td>IV、事件、DID、结构模型、自然实验</td>
+<td>内生性/选择</td>
+</tr>
+<tr>
+<td>反事实</td>
+<td>没有该行为会怎样？</td>
+<td>benchmark、控制组、预测模型</td>
+<td>benchmark 不可比</td>
+</tr>
+<tr>
+<td>稳健性</td>
+<td>替代解释能否排除？</td>
+<td>placebo、替代样本/定义、敏感性</td>
+<td>specification search</td>
+</tr>
+</tbody>
+</table>
+<p>对于面试，不需要机械罗列所有方法；选择<strong>最贴近本题识别困难的一种</strong>，并说明 exclusion / parallel trends / functional form 等核心假设。</p>
+<h3 id="146">14.6 高阶追问：把“会答”升级成“会研究”</h3>
+<ul>
+<li><strong>健身房会员费+次卡怎么分析？</strong>：先回到核心条件 <code>T≤CS(p); p≈MC</code>，再判断需要放松哪一个假设；最后给出可观察预测。</li>
+<li><strong>异质消费者为什么不能提尽所有剩余？</strong>：先回到核心条件 <code>T≤CS(p); p≈MC</code>，再判断需要放松哪一个假设；最后给出可观察预测。</li>
+<li><strong>两部收费和二级价格歧视关系？</strong>：先回到核心条件 <code>T≤CS(p); p≈MC</code>，再判断需要放松哪一个假设；最后给出可观察预测。</li>
+</ul>
+<p>再追加两个研究级问题：</p>
+<ul>
+<li><strong>如果把当前静态模型改成动态模型，哪些状态变量需要加入？</strong> 例如库存、学习、进入退出、声誉、网络规模、未来政策或资产价值。</li>
+<li><strong>如果允许异质性，平均效应是否仍有政策意义？</strong> 说明哪些群体/企业可能有不同弹性、成本、约束或信息。</li>
+</ul>
+<h3 id="147">14.7 面试语言升级</h3>
+<p>不要说“垄断就涨价”；说“市场势力使最优 markup 与需求弹性、成本和需求曲率相关，价格变化还取决于反事实”。</p>
+<p>针对本题，一个更专业的收束句可以是：</p>
+<blockquote>
+<p>“我的结论是在明确的行为与市场假设下得到的。下一步我会用 <code>T≤CS(p); p≈MC</code> 对应的可观察预测去区分替代机制，并把最终判断表述为相对于一个可辩护反事实的条件化结论。”</p>
+</blockquote>
+<h3 id="148">14.8 研究级边界：哪些情况下需要换模型？</h3>
+<ul>
+<li>当核心选择是<strong>离散</strong>而非连续时，简单 FOC 可能不够；</li>
+<li>当存在<strong>容量、不可逆投资或动态状态变量</strong>时，静态比较静态可能误导；</li>
+<li>当存在<strong>多产品、多市场或一般均衡反馈</strong>时，局部单市场结论可能不成立；</li>
+<li>当信息结构改变时，需要从完全信息模型切换到 <strong>Bayesian / signaling / screening / contract</strong> 框架；</li>
+<li>当目标是政策或诉讼中的因果结论时，必须单独论证 <strong>identification</strong>，不能用理论模型替代证据。</li>
+</ul>
+<p><strong>对 Q037 最重要的边界提醒：</strong> 两部收费把参与决策和使用决策分离。单一同质消费者时 p≈MC、T≈CS 很漂亮；异质消费者时固定费受边际消费者 participation constraint 约束，最优 p 往往高于 MC。</p>
+<h3 id="149">14.9 延伸阅读路径</h3>
+<ul>
+<li>Tirole, <em>The Theory of Industrial Organization</em> — monopoly and pricing</li>
+<li>Belleflamme &amp; Peitz, <em>Industrial Organization</em> — pricing strategies</li>
+</ul>
+<p>阅读时不要追求“看完”。围绕本题只做三件事：找到正式定义、复现一个关键推导、找一个会让结论变化的假设。</p>
+<h3 id="1410-mastery-gate">14.10 Mastery Gate｜真正掌握的标准</h3>
+<p>你只有在以下任务都能独立完成时，才建议把本题标为“稳定掌握”：</p>
+<ul>
+<li>[ ] 20–30 秒说出核心结论，不依赖术语堆砌；</li>
+<li>[ ] 90 秒内从 <code>T≤CS(p); p≈MC</code> 推到核心机制；</li>
+<li>[ ] 能画一张与本题真正匹配的图或状态结构；</li>
+<li>[ ] 能回答至少 3 个追问，其中一个改变原模型假设；</li>
+<li>[ ] 能提出一个竞争性解释，以及一项区分它的数据；</li>
+<li>[ ] 能说出一个现实中会让标准结论失效的边界条件；</li>
+<li>[ ] 能把同一逻辑迁移到一个陌生行业/政策场景。</li>
+</ul>
+<p><strong>导航：</strong> <span class="srcref">Q036 · 为什么学生票通常比成人票便宜？</span> · <span class="srcref">Q038 · 为什么电影院可能高价卖爆米花？</span></p>
+<hr />
+<p><strong>复习记录</strong>：<code>未开始 / 模糊 / 基本掌握 / 稳定掌握 / 能迁移</code><br />
+<strong>下次复习日期</strong>：<code>YYYY-MM-DD</code></p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

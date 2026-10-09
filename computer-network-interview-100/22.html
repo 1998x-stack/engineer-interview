@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TCP 三次握手完整过程是什么？每一步同步了什么状态？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>22</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">22</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">基础</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="21.html">← 21</a><a href="23.html">23 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">TCP Handshake</a><a href="#">ISN</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 49 / 100</div>
+    <h1 class="qtitle">TCP 三次握手完整过程是什么？每一步同步了什么状态？</h1>
+    <blockquote>
+<p><strong>定位</strong>：基础 · <strong>面试频率</strong>：★★★★★ · <strong>标签</strong>：TCP Handshake / ISN<br />
+<strong>本章</strong>：<span class="srcref">第三章 TCP 连接、状态机与可靠性</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>TCP Handshake / ISN</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>客户端发送 SYN(seq=x)，服务端返回 SYN+ACK(seq=y, ack=x+1)，客户端再 ACK(ack=y+1)。三次握手不仅确认双向路径，也同步双方初始序列号、TCP options，并让两端状态机安全进入 ESTABLISHED。</p>
+</blockquote>
+<h2 id="pdf">核心时序 / 心智模型（PDF 原内容）</h2>
+<pre><code class="language-text">Client                         Server
+  | ---- SYN seq=x -----------&gt; |
+  | &lt;--- SYN,ACK seq=y -------- |
+  | ---- ACK ack=y+1 ---------&gt; |
+  |       ESTABLISHED           |
+</code></pre>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>SYN 本身占用一个序列号，因此 ACK 为 ISN+1。</li>
+<li>SYN 中会协商 MSS、Window Scale、SACK Permitted、Timestamp 等能力。</li>
+<li>服务端收到首个 SYN 后进入 SYN-RECEIVED，客户端发完 SYN 后处于 SYN-SENT。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>握手不是单纯“确认收发能力”，更准确地说是同步双方初始序号并建立两端 TCP 状态。面试官继续追问旧 SYN、SYN+ACK 重传、SYN Cookies 时，只有序号空间/状态机模型才能稳定回答。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>TCP 是有状态的可靠字节流；状态机、序号空间、ACK 语义和定时器是理解所有 TCP 题的共同底座。</li>
+<li>不要把“内核收到”“对端 TCP 确认”“对端应用读到”“业务处理成功”混成一个层次。</li>
+<li>排障时必须把主动关闭方、连接状态、Seq/Ack 时间线和应用生命周期放在一起看。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2">V2 深入：三次握手真正建立的是双方的序号空间、能力与状态</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>Client SYN 声明自己的 ISN 与 TCP options；Server SYN+ACK 同时确认 Client ISN 并声明自己的 ISN；第三次 ACK 证明 Client 已收到 Server 的序号空间。</li>
+<li>SYN 消耗一个 sequence number，因此对 SYN 的累计确认是 <code>ISN+1</code>。</li>
+<li>MSS、Window Scale、SACK Permitted、Timestamp 等 option 只能/主要在 SYN 阶段协商，连接建立后不能随意“重新协商”。</li>
+</ul>
+<h3 id="_5">状态机级细节</h3>
+<p>Client 常经历 <code>CLOSED → SYN-SENT → ESTABLISHED</code>；Server 常经历 <code>LISTEN → SYN-RECEIVED → ESTABLISHED</code>。握手 packet 丢失不会立即失败，而由 retransmission timer 驱动重发。第三个 ACK 可以是纯 ACK，也可以与第一批 application data 同 segment 携带。</p>
+<h3 id="syn">为什么旧 SYN 是问题</h3>
+<p>TCP 连接以四元组与序号空间区分新旧数据。如果网络中延迟的旧 SYN/segment 被误当成新连接的一部分，可能污染新状态。握手的双向确认与 ISN 机制让双方能验证“这次连接”的序号上下文。</p>
+<h3 id="_6">线上案例推演</h3>
+<p>抓包看到 <code>SYN → SYN,ACK → ACK</code> 很快但应用 <code>accept()</code> 很慢，说明协议握手与应用 accept queue 消费是两个阶段；此时应查 accept queue/worker，而不是继续解释三次握手本身。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_7">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“TCP 三次握手完整过程是什么？每一步同步了什么状态？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 TCP Handshake、ISN 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>ss -tanpi</code>。</li>
+</ol>
+<h2 id="_8">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>ss -tanpi</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>tcpdump -nn -S</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>nstat -az</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>Wireshark TCP Stream Graph</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf_1">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1-ack">追问 1：第三次 ACK 丢失会怎样？</h3>
+<p><strong>参考回答</strong>：若最后 ACK 丢失，Server 仍在 SYN-RECEIVED 并可能重传 SYN+ACK；Client 收到后会再次 ACK。若 Client 随后发送带正确 ACK 的 data，Server 也可据此完成握手。</p>
+<h3 id="2syn">追问 2：SYN 与普通数据为什么使用同一序列空间？</h3>
+<p><strong>参考回答</strong>：SYN/FIN 都属于同一 TCP sequence space，使控制事件与数据顺序具有统一的可确认语义；因此 SYN 会消耗一个序号并被 ACK 为 ISN+1。</p>
+<h3 id="3tcp-fast-open">追问 3：TCP Fast Open 改变了什么？</h3>
+<p><strong>参考回答</strong>：TCP Fast Open 在具备有效 cookie 等条件时允许 SYN 携带早期数据，减少部分建连等待；它没有取消 TCP 状态机，还要处理重放、回退和中间盒兼容。</p>
+<h2 id="pdf_2">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 只会背 SYN/SYN-ACK/ACK，不知道 seq/ack。</li>
+<li>❌ 说“三次只是为了确认双方收发能力”，没有状态同步视角。</li>
+</ul>
+<h2 id="pdf_3">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>抓取 <code>curl</code> 的 TCP 建连，逐帧标出 Flags、Seq、Ack、MSS、WS、SACK。</p>
+<h3 id="_9">实验验收标准</h3>
+<p>能从 TCP 状态、Seq/Ack、重传/窗口和应用 close/read/write 行为形成一致时间线。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_10">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9293.html">RFC 9293 - Transmission Control Protocol (TCP)</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_11">关联题目</h2>
+<ul>
+<li><span class="srcref">023. 为什么 TCP 需要三次握手，不能两次？</span></li>
+<li><span class="srcref">024. 第三次握手 ACK 丢失后，客户端立刻带数据发送，服务端能建立连接吗？</span></li>
+<li><span class="srcref">030. SYN Flood 怎么攻击？SYN Cookies 是什么，为什么不是万能方案？</span></li>
+</ul>
+<h2 id="_12">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：客户端发送 SYN(seq=x)，服务端返回 SYN+ACK(seq=y, ack=x+1)，客户端再 ACK(ack=y+1)。三次握手不仅确认双向路径，也同步双方初始序列号、TCP options，并让两端状态机安全进入 ESTABLISHED。</li>
+<li><strong>必须会解释</strong>：TCP Handshake / ISN。</li>
+<li><strong>必须避免</strong>：只会背 SYN/SYN-ACK/ACK，不知道 seq/ack。</li>
+<li><strong>必须会验证</strong>：抓取 <code>curl</code> 的 TCP 建连，逐帧标出 Flags、Seq、Ack、MSS、WS、SACK。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

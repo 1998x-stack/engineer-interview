@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>学生给出漂亮但有漏洞的证明，你怎么处理？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">HS Math Olympiad Coach</a><i>∕</i><span>Q074</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q074</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">难度 ★★★★☆</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q073.html">← Q073</a><a href="Q075.html">Q075 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">教学诊断</a><a href="#">错误反馈、引导、证明修复</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      MATH OLYMPIAD · 74 / 100</div>
+    <h1 class="qtitle">学生给出漂亮但有漏洞的证明，你怎么处理？</h1>
+    <p><strong>模块：</strong> 综合解题与证明<br />
+<strong>标签：</strong> 教学诊断 · 难度 ★★★★☆ · 错误反馈、引导、证明修复</p>
+<h2 id="pdf">PDF 核心内容（完整迁移）</h2>
+<blockquote>
+<p>本节从原 PDF 对应题目逐项迁移；仅做 LaTeX → Markdown 的格式转换。</p>
+</blockquote>
+<h3 id="_1">题目</h3>
+<p>学生给出漂亮但有漏洞的证明，你怎么处理？</p>
+<h3 id="_2">面试官为什么问</h3>
+<p>高频真实教学场景，考察能否针对根因而不是针对表面错误处理。</p>
+<h3 id="_3">高分答题框架</h3>
+<p><strong>先给框架：</strong></p>
+<ul>
+<li>先定位最小漏洞，不立刻重讲整题。</li>
+<li>用反例或追问让学生自己发现。</li>
+<li>修复后要求重新提交完整证明。</li>
+</ul>
+<p><strong>展开：</strong> 最有效的反馈常不是“这一步错了”，而是问一个让漏洞暴露的问题，例如“这里为什么能除以它？如果它等于0呢？”、“你证明的是必要还是充分？” 若学生自己修复，证明规范才真正内化。对于高水平学生，还可以要求做peer review，让他们按照竞赛评分标准批改同伴证明。</p>
+<h3 id="_4">面试追问</h3>
+<p>如果漏洞修不动，但整体idea非常好，你如何评分和反馈？</p>
+<h3 id="_5">常见失分</h3>
+<p>直接给标准答案；只判对错不保留好想法。</p>
+<h3 id="_6">教练视角：如何教</h3>
+<p>采用两层评分：idea分与rigor分，帮助学生知道“突破口好但证明责任未完成”。</p>
+<h3 id="10-rubric">10 分评分 Rubric</h3>
+<p>10分：能保留探索价值又坚持严谨；6分：会引导修改；3分：直接纠错。</p>
+<h2 id="_7">仓库增强：深度解析与训练设计</h2>
+<blockquote>
+<p>本节为仓库版新增编辑内容，用于把 PDF 的一页式面试答案扩展成可训练、可复盘、可用于教研的版本；不声称是 PDF 原文或某校真实泄题。</p>
+</blockquote>
+<h3 id="_8">专业展开：把探索过程变成可审查的研究日志</h3>
+<p>陌生题现场思考时，面试官并不只看是否最终做出，而是在观察每一步是否带来信息增量。可以显式记录：小例子揭示了什么、特殊化排除了什么、逆推要求什么中间命题、失败尝试为什么失败、下一条路线由什么证据触发。</p>
+<p>证明阶段再切换到严格模式：定义清楚、条件核对、每个蕴含可追踪、边界和等号/退化情形不遗漏。<strong>探索可以大胆，证明必须保守。</strong></p>
+<h3 id="3">3 分钟口述组织法</h3>
+<ol>
+<li><strong>20-30 秒给结论。</strong> 不先铺背景，先告诉面试官你的判断或核心数学结构。</li>
+<li><strong>60-90 秒给理由。</strong> 只保留决定性条件、关键 lemma 或诊断证据。</li>
+<li><strong>40-60 秒给应用。</strong> 给一个课堂动作、微型例子或证明检查点。</li>
+<li><strong>20-30 秒主动说边界。</strong> 说明方法什么时候失效、需要什么条件或下一步如何验证。</li>
+</ol>
+<h3 id="_9">压力训练任务</h3>
+<ol>
+<li>记录前三个失败尝试及其信息增量。</li>
+<li>把“显然”替换成可检查的 lemma。</li>
+<li>给出一个边界/退化情形的核对。</li>
+</ol>
+<h3 id="_10">自检清单</h3>
+<ul>
+<li>[ ] 每个探索动作有信息增量</li>
+<li>[ ] 失败路线能说明失败原因</li>
+<li>[ ] 关键 lemma 条件完整</li>
+<li>[ ] 边界/退化情况检查</li>
+<li>[ ] 最终书写与草稿探索分离</li>
+</ul>
+<h3 id="_11">面试官评分拆解</h3>
+<table>
+<thead>
+<tr>
+<th>档位</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9-10</td>
+<td>探索过程持续产生信息；能及时换路；最终证明条件完整、表达可审查。</td>
+</tr>
+<tr>
+<td>7-8</td>
+<td>有有效探索和正确证明，但反思/边界或失败路线分析不足。</td>
+</tr>
+<tr>
+<td>5-6</td>
+<td>最终可能做出，但过程高度随机或证明有可修复跳步。</td>
+</tr>
+<tr>
+<td>0-4</td>
+<td>长时间无信息增量，或把猜想/数值验证当证明。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">二次追问库</h3>
+<ul>
+<li>如果漏洞修不动，但整体idea非常好，你如何评分和反馈？</li>
+<li>记录前三个失败尝试及其信息增量。</li>
+<li>把“显然”替换成可检查的 lemma。</li>
+<li>给出一个边界/退化情形的核对。</li>
+</ul>
+<h3 id="_13">建议产出物</h3>
+<p>保留一份 30 分钟探索日志；最后将草稿重写成不依赖探索顺序的正式证明。</p>
+<h3 id="v2">专业版 v2：处理漏洞应保留学生的“所有权”</h3>
+<h4 id="1">1. 先定位最小漏洞</h4>
+<p>不要从头否定整份证明。指出最早一个无法被验证的蕴含，例如：“这里你从 $x^2=y^2$ 得到 $x=y$，还缺什么条件？”</p>
+<h4 id="2">2. 用追问而不是替代</h4>
+<p>三级提示可以是：</p>
+<ul>
+<li>Level 1：这一行是等价还是单向蕴含？</li>
+<li>Level 2：有没有遗漏符号/边界？</li>
+<li>Level 3：写出反例检验这一步。</li>
+</ul>
+<h4 id="3_1">3. 修复后让学生重写整份证明</h4>
+<p>局部口头修补不够。重新书写能检验漏洞是否真正被纳入逻辑链。</p>
+<h4 id="4">4. 建立漏洞分类库</h4>
+<p>可标注：定义域、除零、必要/充分、点序、整数性、等号、存在性、未经证明的“显然”。长期统计学生最常犯哪类漏洞，再针对性训练。</p>
+<h4 id="_14">面试价值</h4>
+<p>这体现教练不是“判卷器”，而是在训练数学论证能力。</p>
+<h2 id="_15">关联题目</h2>
+<ul>
+<li><span class="srcref">Q073 · 什么叫“证明完整”？</span></li>
+<li><span class="srcref">Q087 · 你怎样讲学生的错题？</span></li>
+</ul>
+<h2 id="_16">复盘记录模板</h2>
+<pre><code class="language-text">第一次回答日期：
+独立回答耗时：
+我漏掉的关键条件：
+我最不确定的一步：
+面试官追问后的修正：
+下一次复习日期：
+</code></pre>
+<hr />
+<p><strong>来源说明：</strong> PDF 核心内容来自仓库内 <a href="assets/pdf/high_school_math_olympiad_coach_interview_100.pdf"><code>assets/pdf/high_school_math_olympiad_coach_interview_100.pdf</code></a> 对应题目；“仓库增强”部分为在不改变原 PDF 框架基础上的扩展编辑。</p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

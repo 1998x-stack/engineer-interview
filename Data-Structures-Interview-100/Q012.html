@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>员工 Shift 时间线：输出每段时间的在岗人员 · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Data Structures</a><i>∕</i><span>Q012</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q012</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">H</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">—</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q011.html">← Q011</a><a href="Q013.html">Q013 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      DATA STRUCTURES · 14 / 103</div>
+    <h1 class="qtitle">员工 Shift 时间线：输出每段时间的在岗人员</h1>
+    <blockquote>
+<p><strong>难度：</strong> H<br />
+<strong>核心：</strong> Sweep Line / 有序集合<br />
+<strong>章节：</strong> 数组、字符串、矩阵与区间<br />
+<strong>内容边界：</strong> “原稿”部分来自仓库内 PDF 对应题目；“深化解析”是在原稿基础上的扩展讲解，不新增未经来源支持的公司题库归属。
+<strong>来源标记：</strong> 公开候选人面经变体：Google L5，2025；候选人自述，非官方题库。</p>
+</blockquote>
+<h2 id="1">1. 题目</h2>
+<p>输入若干 [name,start,end]，输出所有人员集合保持不变的最大时间段，以及该时间段内的在岗人员。</p>
+<h3 id="_1">仓库深化：手推示例</h3>
+<blockquote>
+<p>员工 A 工作 <code>[1,4)</code>，B 工作 <code>[2,5)</code>：输出可表示为 <code>[1,2):{A}</code>、<code>[2,4):{A,B}</code>、<code>[4,5):{B}</code>。端点同刻发生时必须先统一事件语义。</p>
+</blockquote>
+<p>手推时不要只算最终输出，建议同步写出核心结构在每一步的状态变化，这比“看懂答案”更接近真实面试。</p>
+<h2 id="2">2. 面试开始先澄清</h2>
+<ul>
+<li>
+<p>输入规模与合法性：是否允许空输入、重复值、负数，是否保证答案存在？</p>
+</li>
+<li>
+<p>是否允许修改输入？输出是否要求稳定顺序或去重？</p>
+</li>
+<li>
+<p>复杂度目标：题目是否明确要求 O(n)、O(log n) 或 O(1) 额外空间？</p>
+</li>
+</ul>
+<h2 id="3">3. 基线方案与瓶颈</h2>
+<p>把所有时间点切成最小单位并逐点检查不可行；对每个区间分别扫描所有 shift 是 O(n^2)。</p>
+<h3 id="_2">解法演进对比</h3>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>思路</th>
+<th>代价 / 价值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline</td>
+<td>把所有时间点切成最小单位并逐点检查不可行；对每个区间分别扫描所有 shift 是 O(n^2)。</td>
+<td>先保证正确，暴露真正瓶颈</td>
+</tr>
+<tr>
+<td>面试目标</td>
+<td>围绕 <code>Sweep Line / 有序集合</code> 维护最小必要状态</td>
+<td>排序 O(n log n)；若复制每段人员列表，输出成本还需计入总输出规模。</td>
+</tr>
+</tbody>
+</table>
+<p>这张表的重点不是“最优解一定唯一”，而是能够解释<strong>为什么新结构减少了哪一类重复工作</strong>。</p>
+<h3 id="_3">深化解析：先定位重复工作</h3>
+<p>本题所在章节的核心原则是 <strong>连续内存、索引关系与单调性</strong>。优先检查 Hash、双指针、滑动窗口、前缀和、二分、单调结构与 Sweep Line。</p>
+<p>面试中不要直接报最优结构。先说明基线方案具体重复做了什么，再指出目标结构如何把这部分重复工作缓存、单调淘汰、分层搜索或局部化维护。这样能证明你是在从约束推导算法，而不是背模板。</p>
+<h2 id="4">4. 关键洞察：为什么这个数据结构合适</h2>
+<p>把每个 start/end 转成事件，在时间轴上排序并扫描。相同时间的事件必须批量处理：先输出 [prev,t) 使用 旧 active 集合，再统一应用 t 时刻的离开/进入事件。</p>
+<h3 id="_4">结构选择检查表</h3>
+<ul>
+<li><strong>我们反复查询/维护的信息是什么？</strong> 把它写成一句话。</li>
+<li><strong>这个信息是否具有有序性、单调性、前缀性、局部性或等价关系？</strong> 这些性质通常直接决定数据结构。</li>
+<li><strong>是否需要在线更新？</strong> 静态问题和动态问题往往需要不同结构。</li>
+<li><strong>输出规模是否本身构成复杂度下界？</strong> 返回所有答案时尤其重要。</li>
+<li><strong>是否能说明替代结构为什么更差？</strong> 面试官常通过这一问验证理解深度。</li>
+</ul>
+<h2 id="5">5. 不变量与正确性证明</h2>
+<blockquote>
+<p><strong>原稿不变量：</strong> 在任意相邻事件时间之间，没有 shift 状态变化，所以 active 集合保持常量；因此这些 区间正是答案的最细自然分段。</p>
+</blockquote>
+<h3 id="_5">正确性证明框架</h3>
+<ol>
+<li><strong>初始化：</strong> 证明算法开始时不变量成立。</li>
+<li><strong>保持：</strong> 假设处理当前元素/节点前不变量成立，说明一次更新后仍成立。</li>
+<li><strong>终止：</strong> 结合循环或递归终止条件，说明得到的状态恰好对应题目要求。</li>
+<li><strong>无遗漏/无重复：</strong> 如果题目要求枚举答案，额外说明为何每个合法答案都会被访问，且不会被重复输出。</li>
+</ol>
+<p>这是面试中比“跑几个样例看起来对”更强的论证方式。</p>
+<h2 id="6-python">6. 参考实现（Python）</h2>
+<pre><code class="language-python">from collections import defaultdict
+
+def shift_timeline(shifts):
+    events = defaultdict(list)
+    for name, s, e in shifts:
+        events[s].append((1, name))
+        events[e].append((-1, name))
+    active, ans = set(), []
+    prev = None
+    for t in sorted(events):
+        if prev is not None and prev &lt; t and active:
+            ans.append([prev, t, sorted(active)])
+        for typ, name in events[t]:
+            if typ == -1: active.discard(name)
+        for typ, name in events[t]:
+            if typ == 1: active.add(name)
+        prev = t
+    return ans
+</code></pre>
+<h3 id="code-review">Code Review 视角</h3>
+<ul>
+<li>变量名应直接体现状态含义，不要让 <code>i/j/tmp</code> 承担过多语义。</li>
+<li>修改共享结构前，先确认是否会丢失后续仍需访问的信息。</li>
+<li>对 Hash/Heap/Queue/Tree 等结构，明确其中保存的是<strong>值、下标、节点还是聚合状态</strong>。</li>
+<li>让实现与上面的不变量一一对应；如果代码中存在无法解释的特殊分支，通常意味着状态定义还不够干净。</li>
+<li>Python 内置操作也有复杂度：例如 list 头部删除是 O(n)，<code>heapq</code> pop/push 是 O(log n)，dict/set 操作是平均 O(1)。</li>
+</ul>
+<h2 id="7">7. 复杂度</h2>
+<p>排序 O(n log n)；若复制每段人员列表，输出成本还需计入总输出规模。</p>
+<h3 id="_6">复杂度审查</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>需要回答的问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>时间</td>
+<td>是最坏、平均还是摊销？隐藏参数是 n、k、V/E、L 还是窗口 W？</td>
+</tr>
+<tr>
+<td>空间</td>
+<td>统计的是额外空间还是包含输出？递归栈算不算？</td>
+</tr>
+<tr>
+<td>预处理</td>
+<td>排序、建索引、建 Trie/Heap 的成本是否被漏算？</td>
+</tr>
+<tr>
+<td>输出下界</td>
+<td>若答案本身有 m 项，是否至少需要 O(m)？</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8">8. 高频失分点</h2>
+<ul>
+<li>
+<p>相同时间 start/end 的顺序没有定义清楚</p>
+</li>
+<li>
+<p>把区间端点语义混成闭区间导致重复计入</p>
+</li>
+<li>
+<p>忽略输出人员列表本身可能很大</p>
+</li>
+</ul>
+<h3 id="_7">额外边界测试</h3>
+<ul>
+<li>最小合法输入与空输入（若题目允许）</li>
+<li>重复值/重复状态是否改变算法不变量</li>
+<li>端点相等：闭区间/半开区间语义</li>
+<li>完全包含、相邻、完全不相交三类区间关系</li>
+</ul>
+<p>建议面试现场至少手推一个“最小输入”、一个“最容易破坏不变量的输入”和一个“规模极端输入”。</p>
+<h2 id="9">9. 面试官追问与答题方向</h2>
+<ul>
+<li>若需要按员工优先级输出怎么办？</li>
+<li><strong>答题方向：</strong> 先把新增约束写成需要维护的新不变量，再判断原结构能否继续满足；若不能，明确需要替换或组合的结构。</li>
+<li>若输入持续在线到达，如何支持增量查询？</li>
+<li><strong>答题方向：</strong> 把离线全量计算改成增量状态维护；常见工具是 Hash、Heap、双 Heap、Deque 或平衡树。</li>
+<li>如果只要求人数，结构可简化成什么？</li>
+<li><strong>答题方向：</strong> 先把新增约束写成需要维护的新不变量，再判断原结构能否继续满足；若不能，明确需要替换或组合的结构。</li>
+</ul>
+<h3 id="follow-up">Follow-up 的统一处理方法</h3>
+<p>不要把追问当成新题。先问：<strong>原方案依赖的哪个前提被改变了？</strong> 然后只替换受到影响的那一层结构。例如从离线变在线，通常保留问题定义而替换状态维护方式；从单机变分布式，则新增分片、一致性和容错约束。</p>
+<h2 id="10-60">10. 60 秒口述模板</h2>
+<p>我会先给出一个可工作的基线方案：把所有时间点切成最小单位并逐点检查不可行；对每个区间分别扫描所有 shift 是 O(n^2)。 真正的瓶颈在重复工作，因此优化的核心是：把每个 start/end 转成事件，在时间轴上排序并扫描。相同时间 的事件必须批量处理：先输出 [prev,t) 使用旧 active 集合，再统一应用 t 时刻的离开/进入事件。 正确性依赖的不变量 是：在任意相邻事件时间之间，没有 shift 状态变化，所以 active 集合保持常量；因此这些区间正是答案的最细自然分 段。 最终复杂度为：排序 O(n log n)；若复制每段人员列表，输出成本还需计入总输出规模。</p>
+<h2 id="11">11. 自测清单</h2>
+<ul>
+<li>[ ] 不看代码，能在 60 秒内讲清“基线 → 瓶颈 → 关键结构”。</li>
+<li>[ ] 能写出核心不变量，并解释一次状态更新为什么不破坏它。</li>
+<li>[ ] 能独立手写参考实现，不依赖 IDE 自动补全。</li>
+<li>[ ] 能给出时间/空间复杂度，并注明平均、摊销或最坏情形。</li>
+<li>[ ] 能覆盖至少 3 个边界条件。</li>
+<li>[ ] 能回答至少 2 个 follow-up，并说明为什么需要/不需要替换数据结构。</li>
+</ul>
+<h2 id="12">12. 专业深化：约束驱动的完整面试推导</h2>
+<blockquote>
+<p>本节属于 <strong>GitHub 仓库深化内容</strong>：在源 PDF 的题意、洞察、不变量与代码之上补充更严格的算法论证、替代方案、测试与工程边界；不新增未经来源支持的公司题库归属。</p>
+</blockquote>
+<h3 id="121-pattern">12.1 先从约束识别 Pattern，而不是从题名背模板</h3>
+<p>本题的目标结构是 <strong>Sweep Line + 有序集合</strong>。出现以下信号时，应主动联想到这一类结构：</p>
+<ul>
+<li>一个 API 同时要求多种看似冲突的复杂度目标</li>
+<li>单一结构不能同时满足定位、排序、淘汰/随机访问</li>
+<li>题目核心是组合结构与状态一致性</li>
+</ul>
+<p>把题目抽象成一句“数据结构需求”会更有效：</p>
+<blockquote>
+<p>先列每个 API 需要的 primitive operation，再为每个 operation 选择结构；最后写跨结构的一致性 invariant。</p>
+</blockquote>
+<h3 id="122">12.2 状态最小化：到底必须记住什么</h3>
+<p>源书稿给出的核心不变量是：</p>
+<blockquote>
+<p>在处理时间 t 的事件之前，active 精确表示整个 [prev,t) 上在岗的人。</p>
+</blockquote>
+<p>进一步拆成三个层次：</p>
+<ol>
+<li><strong>输入事实</strong>：当前扫描到的元素、节点、边或操作，哪些信息一旦过去就不会再改变？</li>
+<li><strong>未来充分统计量</strong>：未来决策真正需要历史中的哪些摘要？只保存这些，而不是保存“所有历史以防万一”。</li>
+<li><strong>答案状态</strong>：区分“用于继续计算的状态”和“已经闭合的最终候选”。Tree DP、Heap、窗口和复合结构题尤其容易把两者混在一起。</li>
+</ol>
+<p>面试时可以直接用下面这句话验证自己的状态设计：</p>
+<blockquote>
+<p><strong>如果我删除当前结构中的某一类信息，未来是否存在一个合法输入让我无法正确决定？如果不存在，它就不应该被保存。</strong></p>
+</blockquote>
+<h3 id="123-trade-off">12.3 解法谱系与 Trade-off</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">#</th>
+<th>方案</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>对每个小时间段枚举所有员工</td>
+<td>基线/对照</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>端点 Sweep Line + active set</td>
+<td>可选方案</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>若只要人数可维护计数；若要成员需维护集合/持久状态</td>
+<td>面试主解</td>
+</tr>
+</tbody>
+</table>
+<p>选择主解时至少回答三个问题：</p>
+<ul>
+<li>它具体消除了基线中的哪一类重复工作？</li>
+<li>它依赖哪些输入性质（有序、非负、单调、树结构、固定窗口等）？</li>
+<li>如果这些性质被 follow-up 改掉，哪一层会首先失效？</li>
+</ul>
+<h3 id="124">12.4 针对本题的正确性证明</h3>
+<ul>
+<li><strong>跨结构不变量：</strong> 在处理时间 t 的事件之前，active 精确表示整个 [prev,t) 上在岗的人。</li>
+<li><strong>定位正确性：</strong> Hash/索引层必须能唯一定位当前逻辑对象，不能出现同一 key 对应多个活跃节点。</li>
+<li><strong>顺序/桶正确性：</strong> 链表、Heap、频次桶或时间槽只承担自己那一维顺序；每次 API 操作都要同步维护索引层与顺序层。</li>
+<li><strong>原子更新：</strong> 一次逻辑操作结束后，要么对象同时存在于所有应存在的结构中，要么从所有结构中移除；不存在“只更新了一半”的中间持久状态。</li>
+<li><strong>复杂度结论：</strong> 每个 API 只做常数次 Hash 操作与目标结构的 O(1)/O(log n) 原语，因此整体复杂度由这些原语上界给出。</li>
+</ul>
+<blockquote>
+<p><strong>面试表达建议：</strong> 不要说“代码跑样例是对的”。先说状态语义，再说一次更新为什么保持语义，最后说明终止时为何覆盖所有合法答案。</p>
+</blockquote>
+<h3 id="125-big-o">12.5 复杂度：除了 Big-O 还要说明参数和模型</h3>
+<p>源书稿结论：<strong>事件排序 O(n log n)；若每段都排序 active，输出成本还取决于输出总规模。</strong></p>
+<p>进一步需要注意：</p>
+<ul>
+<li>区分“额外空间”与输出空间；若返回 m 个结果，O(m) 输出本身就是不可避免的下界。</li>
+</ul>
+<p>专业回答建议写成：</p>
+<pre><code class="language-text">n = 主输入规模
+k / L / V / E / W = 题目中真正影响结构规模的辅助参数
+Time = ...（说明 worst / average / amortized）
+Aux Space = ...（不含/包含输出，明确递归栈）
+Preprocess = ...（若存在排序、压缩、建索引）
+</code></pre>
+<h3 id="126-dry-run">12.6 Dry Run：必须跟踪“状态”，不是只写答案</h3>
+<p>建议在白板手推时至少画下面这张表；列名已经按本题 Pattern 定制：</p>
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>当前输入</th>
+<th>关键状态 before</th>
+<th>更新动作</th>
+<th>关键状态 after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+</tr>
+<tr>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+<td><code>...</code></td>
+</tr>
+</tbody>
+</table>
+<p>每一行都要能够回答：<strong>为什么这个状态可以被加入、删除、移动或结算？</strong> 如果答不出来，通常说明不变量还没有真正建立。</p>
+<h3 id="127-ac">12.7 代码审查：从 AC 代码提升到面试级实现</h3>
+<ul>
+<li>先设计 Node/Bucket 数据模型再写 API</li>
+<li>任何跨两个容器的修改都要考虑“只更新一边”的一致性 bug</li>
+<li>真实系统要额外讨论并发、容量、持久化、过期与故障恢复，但不要让系统设计淹没算法题</li>
+</ul>
+<p>此外，对本题代码建议做四次快速 review：</p>
+<ol>
+<li><strong>State review</strong>：每个变量能否用一句不变量解释？</li>
+<li><strong>Boundary review</strong>：所有 <code>+1/-1</code>、开闭区间、空结构分支是否统一？</li>
+<li><strong>Mutation review</strong>：修改容器/指针后，另一个索引或引用是否需要同步更新？</li>
+<li><strong>Complexity review</strong>：有没有隐藏的切片、排序、线性删除、重复 DFS 让宣称复杂度失真？</li>
+</ol>
+<h3 id="128">12.8 对抗性测试矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>测试维度</th>
+<th>本题应覆盖的情况</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>最小/空边界</td>
+<td>容量 0/1</td>
+<td>验证不变量与边界处理，不只验证最终值</td>
+</tr>
+<tr>
+<td>重复/相等状态</td>
+<td>更新已存在 key</td>
+<td>验证不变量与边界处理，不只验证最终值</td>
+</tr>
+<tr>
+<td>结构极端</td>
+<td>淘汰/删除恰好发生在头尾或唯一元素</td>
+<td>验证不变量与边界处理，不只验证最终值</td>
+</tr>
+<tr>
+<td>约束破坏/反例</td>
+<td>必须先定义区间是 [start,end) 还是闭区间。</td>
+<td>验证不变量与边界处理，不只验证最终值</td>
+</tr>
+</tbody>
+</table>
+<p>源书稿中的高频失分点也应逐个转成单元测试：</p>
+<ul>
+<li><strong>反例化：</strong> 必须先定义区间是 [start,end) 还是闭区间。</li>
+<li><strong>反例化：</strong> 同一时间的开始与结束事件次序影响边界语义。</li>
+<li><strong>反例化：</strong> 如果同一员工有重叠 shift，set 会丢失“计数”，此时需要 Counter。</li>
+</ul>
+<h3 id="129-follow-up">12.9 Follow-up 深挖：不是换题，而是定位“哪个前提变了”</h3>
+<h4 id="1291">12.9.1 若只求每段在岗人数，如何优化？</h4>
+<ul>
+<li><strong>变化的前提：</strong> 这个追问改变了 <code>Sweep Line + 有序集合</code> 方案依赖的某个约束；先指出哪个不变量失效，再决定是否替换数据结构。</li>
+<li><strong>推荐方向：</strong> 保留原问题中仍成立的部分，只新增满足新约束的最小状态；最后重新分析时间、空间和边界。</li>
+</ul>
+<h4 id="1292">12.9.2 若数据实时到达且按时间排序，能否流式处理？</h4>
+<ul>
+<li><strong>变化的前提：</strong> 输入获得了全局有序性，因此可以用单调指针/二分替代额外索引。</li>
+<li><strong>推荐方向：</strong> 优先尝试双指针或二分；若仍需返回原始下标，排序时要携带 index。</li>
+</ul>
+<h4 id="1293">12.9.3 若要查询任意时刻在岗人员，如何预处理？</h4>
+<ul>
+<li><strong>变化的前提：</strong> 这个追问改变了 <code>Sweep Line + 有序集合</code> 方案依赖的某个约束；先指出哪个不变量失效，再决定是否替换数据结构。</li>
+<li><strong>推荐方向：</strong> 保留原问题中仍成立的部分，只新增满足新约束的最小状态；最后重新分析时间、空间和边界。</li>
+</ul>
+<h3 id="1210-pattern">12.10 Pattern 迁移：什么时候应该想到它</h3>
+<p><strong>识别信号：</strong></p>
+<ul>
+<li>一个 API 同时要求多种看似冲突的复杂度目标</li>
+<li>单一结构不能同时满足定位、排序、淘汰/随机访问</li>
+<li>题目核心是组合结构与状态一致性</li>
+</ul>
+<p><strong>迁移方法：</strong></p>
+<ul>
+<li>先保留本题的不变量形式，再替换数据载体。例如数组窗口换成字符流，核心仍是“进入/离开时可增量更新的统计”。</li>
+<li>如果从静态变动态，问“原预处理为什么失效”，再引入可更新结构；不要直接跳到更复杂数据结构。</li>
+<li>如果从单答案变所有答案，先把输出规模写进复杂度，再讨论去重、predecessor 或路径恢复。</li>
+<li>如果从算法题变系统级 follow-up，明确算法层与工程层边界：算法不变量仍要成立，工程层再叠加并发、分片、缓存与容错。</li>
+</ul>
+<h3 id="1211">12.11 面试官视角：这题真正区分候选人的地方</h3>
+<table>
+<thead>
+<tr>
+<th>能力层级</th>
+<th>典型表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>只会做</td>
+<td>能写出代码，但无法解释为什么该结构成立</td>
+</tr>
+<tr>
+<td>合格</td>
+<td>能从 baseline 推出 <code>Sweep Line + 有序集合</code>，复杂度与边界基本正确</td>
+</tr>
+<tr>
+<td>较强</td>
+<td>能写出不变量/证明，并比较至少一种替代方案</td>
+</tr>
+<tr>
+<td>很强</td>
+<td>follow-up 改约束后，能明确指出<strong>失效的前提</strong>并局部替换结构，而不是重新猜算法</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ac">建议复盘时把目标定为最后两档，而不是“AC 即完成”。</h2>
+<p><strong>源书稿：</strong> <a href="assets/pdf/数据结构面试100题_专业版.pdf"><code>assets/pdf/数据结构面试100题_专业版.pdf</code></a><br />
+<strong>章节索引：</strong> <span class="srcref"><code>数组、字符串、矩阵与区间</code></span></p>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTTP/1.1 与 HTTP/2 的核心差异是什么？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Computer Network</a><i>∕</i><span>69</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">69</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">进阶</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="68.html">← 68</a><a href="70.html">70 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">HTTP/2</a><a href="#">Binary Framing</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      NETWORKING · 9 / 100</div>
+    <h1 class="qtitle">HTTP/1.1 与 HTTP/2 的核心差异是什么？</h1>
+    <blockquote>
+<p><strong>定位</strong>：进阶 · <strong>面试频率</strong>：★★★★★ · <strong>标签</strong>：HTTP/2 / Binary Framing<br />
+<strong>本章</strong>：<span class="srcref">第七章 HTTP/1.1、HTTP/2 与应用层协议</span> · <span class="srcref">返回总目录</span></p>
+</blockquote>
+<h2 id="_1">面试官到底在考什么</h2>
+<p>这道题不只考定义。面试官通常希望确认你能否把 <strong>HTTP/2 / Binary Framing</strong> 放进真实协议栈/系统调用/故障场景中解释，并且在追问发生时仍保持同一个心智模型，而不是切换成互相矛盾的八股结论。</p>
+<h2 id="30-pdf">30 秒标准回答（PDF 原内容）</h2>
+<blockquote>
+<p>HTTP/2 保留 HTTP 方法、状态码和语义，但把传输表示改成二进制 frame，引入 stream、多路复用、HPACK 头压缩和流量控制，从而避免 HTTP/1.1 多连接/队列带来的大量效率问题。</p>
+</blockquote>
+<h2 id="know-how-know-whypdf">深度解析：Know-How + Know-Why（PDF 原内容）</h2>
+<ol>
+<li>一个 HTTP/2 connection 中有多个独立 stream，frame 可交错传输。</li>
+<li>Header block 通过 HPACK 压缩，减少重复 Cookie/User-Agent 等开销。</li>
+<li>HTTP/2 仍通常运行在单个 TCP connection 上，因此保留 transport HOL。</li>
+</ol>
+<h2 id="_2">二次深化：工程上还必须知道什么</h2>
+<p>本题的高级回答应主动说明适用范围和观测边界：协议规范描述的是语义与状态机，真实 Linux/云网络实现还会受到内核版本、offload、中间盒、代理和应用框架的影响。面试中若无法确定实现细节，应明确“规范保证”和“常见实现”分别是什么。</p>
+<h3 id="_3">本章共同的工程视角</h3>
+<ul>
+<li>先区分 HTTP semantics 与具体版本的 message framing；GET/POST、状态码、缓存语义跨 HTTP/1.1/2/3 共享。</li>
+<li>HTTP/2 的多路复用发生在一个 TCP 连接内，因此仍继承 TCP 有序字节流造成的 transport HOL。</li>
+<li>缓存题要同时区分 freshness、validation、storage policy，不要把 no-cache 与 no-store 混淆。</li>
+</ul>
+<!-- V2-ENRICHMENT-START -->
+<h2 id="v2-http2-wire-format-http">V2 深入：HTTP/2 改的是 wire format 和并发模型，不改 HTTP 核心语义</h2>
+<h3 id="_4">第一性原理</h3>
+<ul>
+<li>HTTP/2 使用 binary framing，把一个 connection 划分为多个 stream，并允许 frame interleaving；method/status/cache 等 HTTP 语义仍来自共同 HTTP Semantics。</li>
+<li>HPACK 压缩重复 header fields，显著降低多 request header overhead；stream-level flow control 允许 receiver 对并发 stream/connection 做 backpressure。</li>
+<li>HTTP/2 仍运行在 TCP 上，因此 transport reliability/order 和 congestion control 是 connection-wide TCP 提供的。</li>
+</ul>
+<h3 id="stream-id">Stream ID 与生命周期</h3>
+<p>Client/server 发起 stream 的 ID 规则、HEADERS/DATA/RST_STREAM/GOAWAY 等 frame 构成独立 stream 状态机。高级面试不必背所有 frame bit，但应知道 GOAWAY 用于 graceful shutdown/迁移未处理 stream。</p>
+<h3 id="server-push">Server Push</h3>
+<p>Server Push 规范上存在，但浏览器生态实际大幅减少/禁用，原因包括缓存重复、调度复杂度与收益有限；不能把“HTTP/2 有 Server Push”当今天最重要卖点。</p>
+<h3 id="_5">线上案例推演</h3>
+<p>HTTP/2 上一个 backend connection 承载几百 stream，单 connection reset 会同时影响很多 request；多路复用降低连接成本，也扩大单连接故障 blast radius。</p>
+<!-- V2-ENRICHMENT-END -->
+
+<h2 id="_6">面试现场推荐回答结构</h2>
+<ol>
+<li><strong>先给结论</strong>：用 2-4 句话回答“HTTP/1.1 与 HTTP/2 的核心差异是什么？”，避免一上来陷入历史背景。</li>
+<li><strong>再给机制</strong>：围绕 HTTP/2、Binary Framing 说明关键状态、字段或数据路径。</li>
+<li><strong>补 Why</strong>：解释为什么协议/内核这样设计，以及少一步或改一种设计会出现什么正确性/性能问题。</li>
+<li><strong>落到证据</strong>：至少给出一个可观察信号或实验，例如 <code>curl -v</code>。</li>
+</ol>
+<h2 id="_7">可观测性：如何证明自己的判断</h2>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>工具 / 信号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首选</td>
+<td><code>curl -v</code></td>
+</tr>
+<tr>
+<td>辅助</td>
+<td><code>curl --http2</code></td>
+</tr>
+<tr>
+<td>性能/路径</td>
+<td><code>nghttp</code></td>
+</tr>
+<tr>
+<td>深挖</td>
+<td><code>browser DevTools Network</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键原则</strong>：先用低成本指标定位层次，再用抓包/trace/内核指标证明。不要看到一个 <code>Retransmission</code>、<code>TIME_WAIT</code> 或 <code>5xx</code> 就直接宣布根因。</p>
+<h2 id="pdf">面试官常见追问（PDF 原题 + 回答方向）</h2>
+<h3 id="1http2-server-push">追问 1：HTTP/2 Server Push 为什么实际使用减少？</h3>
+<p><strong>参考回答</strong>：HTTP/2以 stream多路复用，一般客户端发起 stream使用奇数 ID、服务端 push使用偶数 ID。其 flow control是HTTP/2层的逐连接/逐流额度，与底层 TCP rwnd/cwnd 是不同层的约束。Server Push因缓存重复、复杂度和浏览器支持/收益不佳而实际使用下降。</p>
+<h3 id="2stream-id">追问 2：stream ID 奇偶规则是什么？</h3>
+<p><strong>参考回答</strong>：HTTP/2以 stream多路复用，一般客户端发起 stream使用奇数 ID、服务端 push使用偶数 ID。其 flow control是HTTP/2层的逐连接/逐流额度，与底层 TCP rwnd/cwnd 是不同层的约束。Server Push因缓存重复、复杂度和浏览器支持/收益不佳而实际使用下降。</p>
+<h3 id="3http2-flow-control-tcp-flow-control">追问 3：HTTP/2 flow control 与 TCP flow control 是什么关系？</h3>
+<p><strong>参考回答</strong>：HTTP/2以 stream多路复用，一般客户端发起 stream使用奇数 ID、服务端 push使用偶数 ID。其 flow control是HTTP/2层的逐连接/逐流额度，与底层 TCP rwnd/cwnd 是不同层的约束。Server Push因缓存重复、复杂度和浏览器支持/收益不佳而实际使用下降。</p>
+<h2 id="pdf_1">高频易错点（PDF 原内容）</h2>
+<ul>
+<li>❌ 认为 HTTP/2 改变了 GET/POST 语义。</li>
+<li>❌ 说 HTTP/2 完全没有队头阻塞。</li>
+</ul>
+<h2 id="pdf_2">动手验证 / 抓包实验（PDF 原内容）</h2>
+<p>使用 <code>curl --http2 -v</code> 和浏览器 DevTools，观察同一 connection 的多 stream 请求。</p>
+<h3 id="_8">实验验收标准</h3>
+<p>能从 HTTP method/status/header/frame 或 DevTools timing 中找到与题目语义一致的证据。</p>
+<p>建议把实验结果记录成：<strong>命令/抓包过滤器 → 观察到的字段/状态 → 与理论的对应关系 → 仍不能证明的部分</strong>。这比只保存一张截图更接近线上排障习惯。</p>
+<h2 id="rubric">面试评分 Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/5</td>
+<td>只会名词或结论，无法解释字段/状态/时序。</td>
+</tr>
+<tr>
+<td>2/5</td>
+<td>能复述主流程，但遇到异常路径或 Why 追问容易断。</td>
+</tr>
+<tr>
+<td>3/5</td>
+<td>能解释核心机制，并回答至少两个追问。</td>
+</tr>
+<tr>
+<td>4/5</td>
+<td>能说明设计取舍、边界条件，并结合 Linux/抓包证据。</td>
+</tr>
+<tr>
+<td>5/5</td>
+<td>能从业务现象反推协议/内核机制，主动指出不确定性并设计验证实验。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_9">权威资料 / 延伸阅读</h2>
+<ul>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9110.html">RFC 9110 - HTTP Semantics</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9113.html">RFC 9113 - HTTP/2</a></li>
+</ul>
+<blockquote>
+<p>资料使用建议：不要把 RFC 当教科书顺读。先带着本题中的具体问题定位相关章节，再回到抓包或最小实验验证。</p>
+</blockquote>
+<h2 id="_10">关联题目</h2>
+<ul>
+<li><span class="srcref">049. HTTP/2 已有多路复用，为什么 HTTP/3 仍需要 QUIC？</span></li>
+<li><span class="srcref">070. HTTP/2 为什么仍存在 Head-of-Line Blocking？</span></li>
+<li><span class="srcref">073. gRPC 为什么常运行在 HTTP/2 上？</span></li>
+</ul>
+<h2 id="_11">复习卡片</h2>
+<ul>
+<li><strong>一句话</strong>：HTTP/2 保留 HTTP 方法、状态码和语义，但把传输表示改成二进制 frame，引入 stream、多路复用、HPACK 头压缩和流量控制，从而避免 HTTP/1.1 多连接/队列带来的大量效率问题。</li>
+<li><strong>必须会解释</strong>：HTTP/2 / Binary Framing。</li>
+<li><strong>必须避免</strong>：认为 HTTP/2 改变了 GET/POST 语义。</li>
+<li><strong>必须会验证</strong>：使用 <code>curl --http2 -v</code> 和浏览器 DevTools，观察同一 connection 的多 stream 请求。</li>
+</ul>
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

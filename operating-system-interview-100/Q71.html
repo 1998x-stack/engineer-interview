@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Internal 与 External Fragmentation 的区别？ · Engineer Interview 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<script>document.documentElement.className += ' js';</script>
+<script>window.MathJax={tex:{inlineMath:[['$','$']],displayMath:[['$$','$$']]},options:{skipHtmlTags:['script','noscript','style','textarea','code','pre']}};</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head><body>
+<header class="masthead"><div class="container">
+  <a class="brand" href="../index.html"><span class="logo">∫<b>engineer</b>/100</span><span class="meta">—— interview corpus</span></a>
+  <nav><a href="../index.html" class=""><span>Overview</span></a></nav>
+  <span class="count">35 fields · ~3533 questions</span>
+</div></header>
+
+<section class="crumbs" style="margin-top:26px"><div class="container">
+  <a href="../index.html">overview</a><i>∕</i><a href="index.html">Operating System</a><i>∕</i><span>Q71</span>
+</div></section>
+<div class="container"><div class="q-wrap">
+  <aside class="rail-col">
+    <div class="mpanel"><h5>Spec</h5><div class="kv">
+      <div class="row"><span class="k">id</span><span class="v">Q71</span></div>
+      <div class="row"><span class="k">difficulty</span><span class="v">基础</span></div>
+      <div class="row"><span class="k">frequency</span><span class="v">★★★★★</span></div>
+      <div class="row"><span class="k">must-do</span><span class="v">—</span></div>
+    </div>
+    <div class="prevnext"><a href="Q70.html">← Q70</a><a href="Q72.html">Q72 →</a></div></div>
+    <div class="mpanel"><h5>Tags</h5><div class="taglist"><a href="#">fragmentation</a></div></div>
+  </aside>
+  <article class="article">
+    <div class="countlatin" style="font-family:var(--font-mono);font-size:12px;color:var(--signal);letter-spacing:.1em;text-transform:uppercase">
+      OPERATING SYSTEM · 72 / 100</div>
+    <h1 class="qtitle">Internal 与 External Fragmentation 的区别？</h1>
+    <blockquote>
+<p><strong>一句话核心结论</strong>：Internal fragmentation 是已分配块内部的浪费；External fragmentation 是空闲空间被切成不连续小块，导致总量够但难以满足大连续请求。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>高频度</td>
+<td>★★★★★</td>
+</tr>
+<tr>
+<td>难度</td>
+<td>基础</td>
+</tr>
+<tr>
+<td>章节</td>
+<td>内存与虚拟内存</td>
+</tr>
+<tr>
+<td>关键词</td>
+<td><code>fragmentation</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!NOTE]
+本页“核心结论 / 深度解析 / 面试回答模板 / 常见追问 / 易错点”来自原 PDF 的对应题目；“仓库增强”章节为本仓库在不改变原题主线的前提下增加的机制连接、面试评分、实验与工程视角。</p>
+</blockquote>
+<h2 id="1">1. 为什么面试官喜欢问这题</h2>
+<p>这道题不是单独考一个名词，而是在检查候选人是否能把 <strong>fragmentation</strong> 放进完整的操作系统因果链。优秀回答应同时覆盖：概念边界、底层机制、Why、trade-off，以及至少一个 Linux/工程落点。</p>
+<h2 id="2-pdf">2. 核心结论（原 PDF）</h2>
+<p>Internal fragmentation 是已分配块内部的浪费；External fragmentation 是空闲空间被切成不连续小块，导致总量够但难以满足大连续请求。</p>
+<h2 id="3-pdf">3. 深度解析（原 PDF）</h2>
+<p>固定大小 page 消除传统物理分配的 external fragmentation，但 page/allocator size-class 仍可能产生 internal waste。buddy allocator 通过幂次块合并缓解大块物理连续分配问题。</p>
+<h2 id="4">4. 仓库增强：从机制而不是术语理解</h2>
+<ul>
+<li>虚拟内存题应始终沿“地址翻译”和“页面驻留”两条线分开：TLB/page table 负责翻译，page fault/reclaim 负责驻留与权限异常。</li>
+<li>TLB miss、minor fault、major fault 是三个不同层级事件，成本差异可能跨多个数量级。</li>
+<li>内存性能最终与 locality、working set、reclaim、NUMA 和 I/O 相关，不能只看 RSS。</li>
+</ul>
+<h3 id="41">4.1 知识连接图</h3>
+<pre><code class="language-mermaid">flowchart LR
+    N0[&quot;fragmentation&quot;]
+    N1[&quot;机制&quot;]
+    N2[&quot;工程&quot;]
+    N0 --&gt; N1
+    N1 --&gt; N2
+</code></pre>
+<h3 id="42">4.2 面试时应主动说明的边界</h3>
+<ul>
+<li><strong>概念边界</strong>：不要把本题中的核心对象与相邻抽象混为一谈；先明确“谁负责什么”。</li>
+<li><strong>时间边界</strong>：区分创建/注册/触发/完成/回收等阶段，很多 OS 题的坑来自把不同阶段压成一句话。</li>
+<li><strong>性能边界</strong>：区分快路径与慢路径、缓存命中与未命中、用户态与内核态、无竞争与有竞争。</li>
+<li><strong>正确性边界</strong>：说明机制保证了什么、没有保证什么；避免“只要用了 X 就一定线程安全/一定持久/一定异步”之类绝对化表述。</li>
+</ul>
+<h2 id="5-pdf">5. 面试回答模板（原 PDF）</h2>
+<p>用“块内浪费 vs 块间碎片”回答。</p>
+<h3 id="51-30">5.1 30 秒版本</h3>
+<blockquote>
+<p>Internal fragmentation 是已分配块内部的浪费；External fragmentation 是空闲空间被切成不连续小块，导致总量够但难以满足大连续请求。 进一步来说，回答时我会先界定 <code>fragmentation</code> 的职责，再说明它与 <code>相邻机制</code> 的关系，最后补一个性能或 Linux 实现上的 trade-off。</p>
+</blockquote>
+<h3 id="52-2">5.2 2 分钟版本</h3>
+<ol>
+<li><strong>定义/边界</strong>：先给上面的核心结论。</li>
+<li><strong>机制</strong>：用 3-5 个状态变化解释底层发生什么，而不是只列优缺点。</li>
+<li><strong>Why</strong>：说明没有这个机制会出现什么正确性、隔离或性能问题。</li>
+<li><strong>Trade-off</strong>：指出它付出的 CPU、内存、调度、I/O 或工程复杂度成本。</li>
+<li><strong>Linux/工程</strong>：给出一个可观测入口或真实故障场景。</li>
+</ol>
+<h3 id="53-5">5.3 5 分钟深挖方向</h3>
+<p>如果面试官继续追问，可把本题扩展到：</p>
+<ol>
+<li>huge page 会增加哪类碎片风险？</li>
+</ol>
+<h2 id="6-pdf">6. 面试官常见追问（原 PDF）</h2>
+<ol>
+<li>huge page 会增加哪类碎片风险？</li>
+</ol>
+<h2 id="7-gotcha-pdf">7. 易错点 / Gotcha（原 PDF）</h2>
+<blockquote>
+<p>[!WARNING]
+说 paging 完全没有碎片。</p>
+</blockquote>
+<h2 id="8">8. 仓库增强：如何判断自己的回答是否够深</h2>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>面试表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>及格</td>
+<td>能准确给出 <code>Internal 与 External Fragmentation 的区别？</code> 的核心定义，不混淆相邻概念。</td>
+</tr>
+<tr>
+<td>良好</td>
+<td>能解释底层机制与关键状态变化，并指出至少一个为什么需要它。</td>
+</tr>
+<tr>
+<td>优秀</td>
+<td>能讨论正确性/性能 trade-off，并主动回应边界条件与常见误区。</td>
+</tr>
+<tr>
+<td>高阶</td>
+<td>能落到 Linux/工程实现、可观测指标或故障场景，并将问题连接到相邻知识点。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-linux">9. Linux / 工程实践</h2>
+<p><strong>建议实验：观察 fault、映射、reclaim 与 NUMA</strong></p>
+<pre><code class="language-bash">vmstat 1
+pidstat -r -p &lt;PID&gt; 1
+cat /proc/&lt;PID&gt;/smaps_rollup
+numastat -p &lt;PID&gt; 2&gt;/dev/null || true
+</code></pre>
+<p>这些命令不是为了“背工具”，而是训练从 OS 抽象回到可观测证据：看到什么现象、对应哪个内核子系统、下一步如何验证。</p>
+<!-- BEGIN DEEP-DIVE-V2 -->
+
+<h3 id="92">9.2 机制级推演：把每一步说清楚</h3>
+<p>面试中建议先给出这一条<strong>总调用链</strong>：</p>
+<pre><code class="language-text">VA → TLB/page table → fault/reclaim → physical/page cache → observable metrics
+</code></pre>
+<p>再展开本题的具体状态变化：</p>
+<ol>
+<li>固定粒度分配可能给请求多于实际需要形成内部碎片。</li>
+<li>可变连续块释放后散落空洞形成外部碎片。</li>
+<li>paging通过固定frame避免物理外部碎片。</li>
+<li>但最后一页/allocator size class仍可能有内部浪费。</li>
+<li>compaction等机制处理高阶连续页需求。</li>
+</ol>
+<blockquote>
+<p><strong>关键不变量</strong>：“分页完全没有碎片”错误：仍有页内碎片和页表/allocator层内部碎片。</p>
+</blockquote>
+<h3 id="93">9.3 性能模型：不要只说“快/慢”</h3>
+<p>分析时看浪费比例、最大可分配连续块，而非只看free总量。</p>
+<p>建议在回答中至少显式区分下面四类成本：</p>
+<table>
+<thead>
+<tr>
+<th>成本类型</th>
+<th>本题应该追问什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td>是否存在额外指令、扫描、copy、原子重试、内核路径？</td>
+</tr>
+<tr>
+<td>Cache / TLB</td>
+<td>是否破坏局部性、触发 cache-line migration、TLB miss/shootdown？</td>
+</tr>
+<tr>
+<td>调度 / 等待</td>
+<td>是否会 sleep/wakeup、context switch、排队、throttling？</td>
+</tr>
+<tr>
+<td>I/O / 持久化</td>
+<td>是否会触发设备访问、writeback、flush、network round trip？</td>
+</tr>
+</tbody>
+</table>
+<p><strong>面试技巧</strong>：如果不能定量到具体纳秒，也不要编数字。更专业的表达是给出“成本由哪些变量决定”，并说明要通过 benchmark/perf/trace 在目标机器上验证。</p>
+<h3 id="94-linux">9.4 Linux 实现与源码阅读导航</h3>
+<p>不要试图背完整源码。先沿对象关系找到“状态放在哪里、谁改变它”。</p>
+<table>
+<thead>
+<tr>
+<th>对象 / 接口</th>
+<th>阅读重点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>buddy allocator</code></td>
+<td>页级物理内存分配；关注order、合并与高阶连续页碎片。</td>
+</tr>
+<tr>
+<td><code>slab size classes</code></td>
+<td>内核对象缓存；关注size class、per-CPU freelist和内部碎片。</td>
+</tr>
+<tr>
+<td><code>memory compaction</code></td>
+<td>沿调用链确认它保存的状态、引用关系、快/慢路径以及可从用户态观察到的结果。</td>
+</tr>
+</tbody>
+</table>
+<p>源码阅读建议遵循：</p>
+<pre><code class="language-text">用户态 API / syscall
+        ↓
+入口函数与参数校验
+        ↓
+核心内核对象 / 状态机
+        ↓
+等待队列 / 调度 / MM / VFS / block 等相邻子系统
+        ↓
+返回值、错误码与可观测指标
+</code></pre>
+<h3 id="95">9.5 边界条件、反例与“不要这样回答”</h3>
+<ul>
+<li><strong>本题最重要边界</strong>：“分页完全没有碎片”错误：仍有页内碎片和页表/allocator层内部碎片。</li>
+<li>不要把“常见实现”说成“POSIX/硬件永远保证”；架构、文件系统、内核版本和配置都可能改变细节。</li>
+<li>不要把<strong>机制存在</strong>等同于<strong>性能一定更好</strong>。只有 workload、竞争度、数据规模和硬件条件确定后，性能结论才成立。</li>
+<li>不要跳过错误路径：权限失败、资源耗尽、超时、signal、进程退出、设备错误等经常是高级追问来源。</li>
+</ul>
+<h3 id="96">9.6 高级面试追问树</h3>
+<ol>
+<li>如果把第 2 步拿掉，系统会失去什么正确性或性能保证？</li>
+<li>这个机制在“无竞争/命中快路径”和“竞争/缺失慢路径”下分别发生什么？</li>
+<li>如何用 Linux 指标或 tracing 证明瓶颈真的来自本题机制，而不是相邻子系统？</li>
+<li>如果要求你在生产环境验证自己的答案，你会选哪些 <strong>counter / tracepoint / syscall / /proc / cgroup</strong> 证据？为什么？</li>
+<li>如果把环境从单核变成多核、从本地SSD变成网络存储、或从宿主机变成容器，这个结论哪里会变化？</li>
+</ol>
+<h3 id="97">9.7 可复现实验：从“知道”升级到“证据”</h3>
+<pre><code class="language-bash">cat /proc/buddyinfo
+slabtop -o 2&gt;/dev/null | head -20 || true
+</code></pre>
+<p>实验时建议记录：</p>
+<pre><code class="language-text">kernel version / CPU model / memory / filesystem / cgroup limits
+输入规模与并发度
+关键指标 before / during / after
+是否可重复出现
+</code></pre>
+<p>不要只截图一个结果；至少改变一个变量（例如并发度、文件大小、CPU affinity、cache冷热、内存压力）做对照实验。</p>
+<h3 id="98-rubric">9.8 面试评分 Rubric（增强版）</h3>
+<table>
+<thead>
+<tr>
+<th>级别</th>
+<th>对 Q71 的要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 / 基础</td>
+<td>定义准确，不混淆核心概念。</td>
+</tr>
+<tr>
+<td>2 / 机制</td>
+<td>能按上面的状态链解释“底层发生什么”。</td>
+</tr>
+<tr>
+<td>3 / 边界</td>
+<td>能说明不变量、失败路径和至少一个反例。</td>
+</tr>
+<tr>
+<td>4 / 性能</td>
+<td>能把成本拆到 CPU/cache/TLB/调度/I/O 中的相关项。</td>
+</tr>
+<tr>
+<td>5 / 系统</td>
+<td>能落到 Linux 对象、指标、实验，并与相邻题建立因果关系。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="99">9.9 进一步阅读（官方优先）</h3>
+<ul>
+<li><a href="https://docs.kernel.org/mm/">Linux Memory Management docs</a></li>
+<li><a href="https://docs.kernel.org/mm/page_tables.html">Page Tables</a></li>
+</ul>
+<blockquote>
+<p>阅读原则：先看接口/语义文档，再看内核源码；博客适合建立直觉，但不要把博客中的版本特定实现当成规范。</p>
+</blockquote>
+<h3 id="910-90">9.10 90 秒高级回答：把定义、机制、性能和边界连成一段</h3>
+<blockquote>
+<p><strong>可直接口述的参考结构</strong>：</p>
+<p>Internal fragmentation 是已分配块内部的浪费；External fragmentation 是空闲空间被切成不连续小块，导致总量够但难以满足大连续请求。机制上，我会把它拆成：固定粒度分配可能给请求多于实际需要形成内部碎片；可变连续块释放后散落空洞形成外部碎片；paging通过固定frame避免物理外部碎片；但最后一页/allocator size class仍可能有内部浪费；compaction等机制处理高阶连续页需求。性能上，分析时看浪费比例、最大可分配连续块，而非只看free总量。 Linux/工程实现上要关注 <code>buddy allocator / slab size classes / memory compaction</code>。最后我会主动补充边界：“分页完全没有碎片”错误：仍有页内碎片和页表/allocator层内部碎片。 这样回答的重点不是堆术语，而是让面试官看到“语义 → 状态变化 → 成本 → 实现 → 边界”的完整因果链。</p>
+</blockquote>
+<h3 id="911">9.11 如何把这道题做成一个小型系统实验</h3>
+<p>把实验设计成 <strong>hypothesis → variable → observation → falsification</strong> 四步：</p>
+<ol>
+<li><strong>Hypothesis</strong>：先写一句可证伪假设，例如“当某个关键资源/路径进入慢路径时，本题描述的成本会显著上升”。</li>
+<li><strong>Independent variable</strong>：只改变一个变量，例如并发度、工作集大小、CPU affinity、I/O 深度、cache 冷热、cgroup limit。</li>
+<li><strong>Observation</strong>：同时记录业务结果与 OS 证据，至少包含延迟/吞吐中的一个，以及本题对应的 kernel counter/trace。</li>
+<li><strong>Falsification</strong>：如果指标没有按预期变化，不要修改结论去迎合结果；检查是否测错层、是否被缓存/批处理掩盖、是否实际没有进入目标慢路径。</li>
+</ol>
+<p><strong>实验报告最少应包含</strong>：</p>
+<pre><code class="language-text">环境：kernel / CPU / memory / filesystem / container limits
+负载：输入规模 / 并发 / 持续时间
+变量：本轮只改变什么
+结果：throughput / avg / P95 / P99（按适用场景选择）
+OS证据：perf / proc / PSI / iostat / strace / tracepoint 中相关指标
+结论：支持还是推翻原假设
+</code></pre>
+<!-- END DEEP-DIVE-V2 -->
+
+<h2 id="10">10. 关联题目</h2>
+<ul>
+<li><span class="srcref">Q58 Paging 与 Segmentation 有什么区别？</span> - <code>paging/segmentation/fragmentation</code></li>
+<li><span class="srcref">Q70 malloc 是 System Call 吗？底层如何向 OS 要内存？</span> - <code>malloc/brk/mmap/allocator</code></li>
+<li><span class="srcref">Q72 Buddy Allocator 与 Slab/SLUB 分别解决什么？</span> - <code>buddy/slub/kernel-memory</code></li>
+<li><span class="srcref">Q69 mmap 是什么？为什么数据库/存储系统关心它？</span> - <code>mmap/file-backed/page-cache</code></li>
+<li><span class="srcref">Q68 COW 为什么一定通过 Page Fault 驱动？</span> - <code>COW/protection-fault</code></li>
+</ul>
+<h2 id="11">11. 自测清单</h2>
+<p>在不看答案的情况下，确认自己能回答：</p>
+<ul>
+<li>[ ] 我能在 30 秒内给出核心定义，并明确不是什么。</li>
+<li>[ ] 我能画出至少 3 个节点的机制链。</li>
+<li>[ ] 我能解释一个关键 Why 和一个 trade-off。</li>
+<li>[ ] 我能回答上面的 3 个追问，而不是只背主问题。</li>
+<li>[ ] 我能指出至少一个 Linux 观测点、命令或工程场景。</li>
+<li>[ ] 我能说出本题与相邻问题的区别。</li>
+</ul>
+<h2 id="12">12. 参考资料</h2>
+<h3 id="pdf">原 PDF 提供/沿用的官方资料</h3>
+<ul>
+<li><a href="https://docs.kernel.org/mm/page_tables.html">Linux Kernel - Page Tables</a></li>
+</ul>
+<h3 id="_1">仓库增强阅读建议</h3>
+<ul>
+<li>《Operating Systems: Three Easy Pieces》：用“虚拟化、并发、持久化”三条主线建立整体模型。</li>
+<li>Linux man-pages / kernel docs：用于核对接口语义与当前 Linux 实现，不要把博客当最终规范。</li>
+<li>实验时优先记录<strong>可复现输入、内核版本、指标与结果</strong>，避免仅凭一次观察得出通用结论。</li>
+</ul>
+<hr />
+  </article>
+</div></div>
+
+<footer class="footline"><div class="container">
+  <span class="mono">2026 · engineer-interview</span>
+  <div class="r"><a href="https://github.com/1998x-stack/engineer-interview">GitHub</a><span class="mono">design: Engineering Signal</span></div>
+</div></footer>
+<script src="../assets/site.js"></script>
+</body></html>

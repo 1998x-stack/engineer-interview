@@ -1,0 +1,18 @@
+{
+  "book": "剑指 Web3 Offer：100 道真题级面试题 · 2026",
+  "verified_date": "2026-09-02",
+  "source_pdf": {
+    "path": "assets/pdf/Jianzhi_Web3_Offer_100_Interview_Questions_2026.pdf",
+    "sha256": "1d2da2c66fde754ef578e0a3039bffe78269e33b49c25a7dea98f13ab55cc195",
+    "pages": 116
+  },
+  "structured_questions": {
+    "path": "data/questions.json",
+    "sha256": "0d93982b18394beb14a6049ee1b92a84b393dd0bf37da175255e15368d5d95fc",
+    "count": 100
+  },
+  "content_policy": {
+    "pdf_backbone": "Preserved from the book structured source",
+    "github_expansion": "v2 Professional Deep Dive: clearly labeled general engineering analysis, testing, observability, threat-model and interview-training additions"
+  }
+}

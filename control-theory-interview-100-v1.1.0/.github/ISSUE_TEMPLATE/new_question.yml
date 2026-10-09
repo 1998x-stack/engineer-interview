@@ -1,0 +1,16 @@
+name: 扩展建议
+description: 建议新增追问、工程案例或实验
+title: "[Enhancement] "
+labels: [enhancement]
+body:
+  - type: input
+    id: question
+    attributes:
+      label: 关联题号
+      placeholder: Q071
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议内容
+    validations:
+      required: true

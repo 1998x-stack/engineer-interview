@@ -1,0 +1,1202 @@
+[
+  {
+    "id": "Q001",
+    "title": "浏览器访问一个 URL 到拿到 HTML，中间到底发生了什么？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q001-浏览器访问一个-URL-到拿到-HTML，中间到底发生了什么.md",
+    "topics": [
+      "URL 解析与 DNS",
+      "TCP/QUIC、TLS、HTTP",
+      "CDN/WAF/反向代理与应用链路"
+    ]
+  },
+  {
+    "id": "Q002",
+    "title": "GET 和 POST 在爬虫里的核心区别是什么？",
+    "difficulty": "★☆☆☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q002-GET-和-POST-在爬虫里的核心区别是什么.md",
+    "topics": [
+      "HTTP 方法语义",
+      "安全性与幂等性",
+      "自动化访问的副作用边界"
+    ]
+  },
+  {
+    "id": "Q003",
+    "title": "什么是幂等性？为什么爬虫工程必须理解？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q003-什么是幂等性？为什么爬虫工程必须理解.md",
+    "topics": [
+      "幂等操作",
+      "重试语义",
+      "至少一次执行与副作用"
+    ]
+  },
+  {
+    "id": "Q004",
+    "title": "301、302、307、308 有什么区别？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q004-301、302、307、308-有什么区别.md",
+    "topics": [
+      "永久/临时重定向",
+      "方法是否保留",
+      "canonical 与去重"
+    ]
+  },
+  {
+    "id": "Q005",
+    "title": "304 Not Modified 对增量爬虫有什么意义？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q005-304-Not-Modified-对增量爬虫有什么意义.md",
+    "topics": [
+      "ETag / Last-Modified",
+      "条件请求",
+      "增量抓取与带宽优化"
+    ]
+  },
+  {
+    "id": "Q006",
+    "title": "Cookie、Session、Token 三者是什么关系？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q006-Cookie、Session、Token-三者是什么关系.md",
+    "topics": [
+      "客户端状态",
+      "服务端会话",
+      "认证与授权边界"
+    ]
+  },
+  {
+    "id": "Q007",
+    "title": "robots.txt 到底是什么？是不是访问授权文件？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q007-robots.txt-到底是什么？是不是访问授权文件.md",
+    "topics": [
+      "RFC 9309",
+      "爬虫协商",
+      "认证/授权与 robots 的边界"
+    ]
+  },
+  {
+    "id": "Q008",
+    "title": "robots.txt 的 Allow 与 Disallow 冲突怎么办？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q008-robots.txt-的-Allow-与-Disallow-冲突怎么办.md",
+    "topics": [
+      "最长匹配原则",
+      "User-agent group",
+      "parser 一致性"
+    ]
+  },
+  {
+    "id": "Q009",
+    "title": "Sitemap 与 URL Frontier 有什么关系？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q009-Sitemap-与-URL-Frontier-有什么关系.md",
+    "topics": [
+      "URL discovery",
+      "hint 与 truth 的区别",
+      "深层/孤立页面发现"
+    ]
+  },
+  {
+    "id": "Q010",
+    "title": "什么是 polite crawling？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第一章  HTTP、URL、Robots 与缓存",
+    "path": "docs/01-http-url-robots-cache/Q010-什么是-polite-crawling.md",
+    "topics": [
+      "per-host 并发",
+      "自适应限速",
+      "Retry-After / backoff"
+    ]
+  },
+  {
+    "id": "Q011",
+    "title": "XPath 和 CSS Selector 怎么选？",
+    "difficulty": "★☆☆☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q011-XPath-和-CSS-Selector-怎么选.md",
+    "topics": [
+      "选择器表达能力",
+      "可读性",
+      "稳定性"
+    ]
+  },
+  {
+    "id": "Q012",
+    "title": "为什么绝对 XPath 很脆弱？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q012-为什么绝对-XPath-很脆弱.md",
+    "topics": [
+      "DOM 结构漂移",
+      "位置依赖",
+      "语义 selector"
+    ]
+  },
+  {
+    "id": "Q013",
+    "title": "DOM Tree 与原始 HTML 为什么可能不同？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q013-DOM-Tree-与原始-HTML-为什么可能不同.md",
+    "topics": [
+      "HTML 容错解析",
+      "JavaScript 动态修改",
+      "Browser DOM 与 server HTML"
+    ]
+  },
+  {
+    "id": "Q014",
+    "title": "正文抽取为什么比 XPath 难得多？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q014-正文抽取为什么比-XPath-难得多.md",
+    "topics": [
+      "正文/模板分类",
+      "文本密度与链接密度",
+      "通用抽取算法"
+    ]
+  },
+  {
+    "id": "Q015",
+    "title": "页面结构变化后，如何避免大规模产出空数据？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q015-页面结构变化后，如何避免大规模产出空数据.md",
+    "topics": [
+      "Schema validation",
+      "数据漂移报警",
+      "隔离与回滚"
+    ]
+  },
+  {
+    "id": "Q016",
+    "title": "JSON-LD 为什么对 crawler 很重要？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q016-JSON-LD-为什么对-crawler-很重要.md",
+    "topics": [
+      "结构化元数据",
+      "schema.org",
+      "多源融合"
+    ]
+  },
+  {
+    "id": "Q017",
+    "title": "页面有多个价格，到底应该抓哪个？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q017-页面有多个价格，到底应该抓哪个.md",
+    "topics": [
+      "语义建模",
+      "业务 schema",
+      "时间与条件"
+    ]
+  },
+  {
+    "id": "Q018",
+    "title": "如何处理分页？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q018-如何处理分页.md",
+    "topics": [
+      "页码/next/cursor",
+      "停止条件",
+      "循环检测"
+    ]
+  },
+  {
+    "id": "Q019",
+    "title": "无限滚动页面为什么难抓？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q019-无限滚动页面为什么难抓.md",
+    "topics": [
+      "事件驱动加载",
+      "XHR/fetch/cursor",
+      "DOM 与数据源分离"
+    ]
+  },
+  {
+    "id": "Q020",
+    "title": "HTML parser 应该选择严格还是容错？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第二章  HTML、DOM 与数据抽取",
+    "path": "docs/02-html-dom-extraction/Q020-HTML-parser-应该选择严格还是容错.md",
+    "topics": [
+      "互联网 HTML 非规范性",
+      "容错修复",
+      "调试层次"
+    ]
+  },
+  {
+    "id": "Q021",
+    "title": "画出 Scrapy 的架构。",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q021-画出-Scrapy-的架构.md",
+    "topics": [
+      "Engine",
+      "Scheduler",
+      "Downloader / Middleware / Spider / Pipeline"
+    ]
+  },
+  {
+    "id": "Q022",
+    "title": "Scrapy 为什么通常比 requests + ThreadPool 更适合高并发抓取？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q022-Scrapy-为什么通常比-requests-+-ThreadPool-更适合高并发抓取.md",
+    "topics": [
+      "事件驱动 I/O",
+      "等待时间利用",
+      "线程与协程成本"
+    ]
+  },
+  {
+    "id": "Q023",
+    "title": "Reactor / Event Loop 是什么？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q023-Reactor---Event-Loop-是什么.md",
+    "topics": [
+      "非阻塞 I/O",
+      "事件回调",
+      "并发与并行区别"
+    ]
+  },
+  {
+    "id": "Q024",
+    "title": "Scrapy Scheduler 是做什么的？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q024-Scrapy-Scheduler-是做什么的.md",
+    "topics": [
+      "请求排队",
+      "优先级",
+      "去重与持久化"
+    ]
+  },
+  {
+    "id": "Q025",
+    "title": "Downloader Middleware 和 Spider Middleware 有什么区别？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q025-Downloader-Middleware-和-Spider-Middleware-有什么区别.md",
+    "topics": [
+      "HTTP 层 hooks",
+      "Spider 输入输出",
+      "职责边界"
+    ]
+  },
+  {
+    "id": "Q026",
+    "title": "Item Pipeline 为什么不能和 Spider 混在一起？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q026-Item-Pipeline-为什么不能和-Spider-混在一起.md",
+    "topics": [
+      "职责分离",
+      "数据验证与存储",
+      "可测试性"
+    ]
+  },
+  {
+    "id": "Q027",
+    "title": "Scrapy 如何控制并发？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q027-Scrapy-如何控制并发.md",
+    "topics": [
+      "全局并发",
+      "per-domain / per-IP 并发",
+      "download delay"
+    ]
+  },
+  {
+    "id": "Q028",
+    "title": "AutoThrottle 是什么？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q028-AutoThrottle-是什么.md",
+    "topics": [
+      "延迟反馈",
+      "目标并发",
+      "自适应速率控制"
+    ]
+  },
+  {
+    "id": "Q029",
+    "title": "为什么不能在 Scrapy callback 里做长时间 CPU 运算？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q029-为什么不能在-Scrapy-callback-里做长时间-CPU-运算.md",
+    "topics": [
+      "Event loop 阻塞",
+      "I/O 与 CPU 解耦",
+      "工作池"
+    ]
+  },
+  {
+    "id": "Q030",
+    "title": "Scrapy 如何实现 graceful shutdown？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第三章  Scrapy、异步与并发",
+    "path": "docs/03-scrapy-async-concurrency/Q030-Scrapy-如何实现-graceful-shutdown.md",
+    "topics": [
+      "信号处理",
+      "frontier checkpoint",
+      "幂等与恢复"
+    ]
+  },
+  {
+    "id": "Q031",
+    "title": "requests 能拿到 HTML，为什么还是没有数据？",
+    "difficulty": "★☆☆☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q031-requests-能拿到-HTML，为什么还是没有数据.md",
+    "topics": [
+      "CSR/SSR",
+      "JS 动态加载",
+      "初始响应与最终 DOM"
+    ]
+  },
+  {
+    "id": "Q032",
+    "title": "SPA 爬虫应该先分析 DOM 还是 Network？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q032-SPA-爬虫应该先分析-DOM-还是-Network.md",
+    "topics": [
+      "数据源定位",
+      "API/GraphQL",
+      "DOM 是呈现层"
+    ]
+  },
+  {
+    "id": "Q033",
+    "title": "Playwright 的 Browser、Context、Page 分别是什么？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q033-Playwright-的-Browser、Context、Page-分别是什么.md",
+    "topics": [
+      "浏览器进程",
+      "会话隔离",
+      "页面/标签页"
+    ]
+  },
+  {
+    "id": "Q034",
+    "title": "Selenium 和 Playwright 的主要区别？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q034-Selenium-和-Playwright-的主要区别.md",
+    "topics": [
+      "WebDriver/BiDi",
+      "浏览器自动化能力",
+      "工程选型"
+    ]
+  },
+  {
+    "id": "Q035",
+    "title": "为什么 sleep(5) 是浏览器自动化的坏味道？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q035-为什么-sleep-5-是浏览器自动化的坏味道.md",
+    "topics": [
+      "竞态条件",
+      "不必要等待",
+      "条件同步"
+    ]
+  },
+  {
+    "id": "Q036",
+    "title": "什么是 explicit wait？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q036-什么是-explicit-wait.md",
+    "topics": [
+      "条件轮询",
+      "超时",
+      "同步语义"
+    ]
+  },
+  {
+    "id": "Q037",
+    "title": "为什么不建议混用 implicit wait 和 explicit wait？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q037-为什么不建议混用-implicit-wait-和-explicit-wait.md",
+    "topics": [
+      "嵌套超时",
+      "不可预测等待",
+      "调试困难"
+    ]
+  },
+  {
+    "id": "Q038",
+    "title": "什么是 Chrome DevTools Protocol（CDP）？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q038-什么是-Chrome-DevTools-Protocol（CDP）.md",
+    "topics": [
+      "浏览器调试协议",
+      "Network/Runtime/DOM",
+      "低层事件与控制"
+    ]
+  },
+  {
+    "id": "Q039",
+    "title": "Playwright 如何观察 Network Request？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q039-Playwright-如何观察-Network-Request.md",
+    "topics": [
+      "request/response/requestfinished",
+      "network failure 与 HTTP error",
+      "事件关联"
+    ]
+  },
+  {
+    "id": "Q040",
+    "title": "Browser Crawler 最大的性能问题是什么？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第四章  JavaScript、SPA 与浏览器自动化",
+    "path": "docs/04-js-spa-browser-automation/Q040-Browser-Crawler-最大的性能问题是什么.md",
+    "topics": [
+      "进程/渲染成本",
+      "JS 与资源加载",
+      "分层 fast path"
+    ]
+  },
+  {
+    "id": "Q041",
+    "title": "单机爬虫怎么演化成分布式爬虫？",
+    "difficulty": "★★★★☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q041-单机爬虫怎么演化成分布式爬虫.md",
+    "topics": [
+      "状态外置",
+      "URL Frontier",
+      "Fetcher/Parser/Storage 解耦"
+    ]
+  },
+  {
+    "id": "Q042",
+    "title": "分布式 crawler 最难的问题是什么？",
+    "difficulty": "★★★★☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q042-分布式-crawler-最难的问题是什么.md",
+    "topics": [
+      "Frontier",
+      "去重/分片",
+      "故障与礼貌策略"
+    ]
+  },
+  {
+    "id": "Q043",
+    "title": "URL Frontier 是什么？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q043-URL-Frontier-是什么.md",
+    "topics": [
+      "待抓 URL 集合",
+      "优先级",
+      "延迟与策略"
+    ]
+  },
+  {
+    "id": "Q044",
+    "title": "URL 如何分片到不同 Worker？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q044-URL-如何分片到不同-Worker.md",
+    "topics": [
+      "hash(host)",
+      "局部性",
+      "hot partition"
+    ]
+  },
+  {
+    "id": "Q045",
+    "title": "如何解决热门域名导致的 Partition Skew？",
+    "difficulty": "★★★★☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q045-如何解决热门域名导致的-Partition-Skew.md",
+    "topics": [
+      "热点识别",
+      "虚拟分区",
+      "全局 host budget"
+    ]
+  },
+  {
+    "id": "Q046",
+    "title": "Kafka 能不能直接当 URL Frontier？",
+    "difficulty": "★★★★☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q046-Kafka-能不能直接当-URL-Frontier.md",
+    "topics": [
+      "持久日志",
+      "缺少 priority/delay",
+      "组合架构"
+    ]
+  },
+  {
+    "id": "Q047",
+    "title": "Redis 在分布式 crawler 中适合做什么？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q047-Redis-在分布式-crawler-中适合做什么.md",
+    "topics": [
+      "轻量状态",
+      "计数器/锁/优先队列",
+      "内存成本"
+    ]
+  },
+  {
+    "id": "Q048",
+    "title": "如何保证 Worker Crash 后任务不丢？",
+    "difficulty": "★★★★☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q048-如何保证-Worker-Crash-后任务不丢.md",
+    "topics": [
+      "lease/visibility timeout",
+      "ACK",
+      "重投与幂等"
+    ]
+  },
+  {
+    "id": "Q049",
+    "title": "为什么 Exactly-once Crawling 几乎没有必要？",
+    "difficulty": "★★★★☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q049-为什么-Exactly-once-Crawling-几乎没有必要.md",
+    "topics": [
+      "分布式不确定性",
+      "at-least-once + idempotency",
+      "成本收益"
+    ]
+  },
+  {
+    "id": "Q050",
+    "title": "什么是 Backpressure？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第五章  分布式爬虫",
+    "path": "docs/05-distributed-crawling/Q050-什么是-Backpressure.md",
+    "topics": [
+      "生产/消费速率不匹配",
+      "队列膨胀",
+      "反馈控制"
+    ]
+  },
+  {
+    "id": "Q051",
+    "title": "URL 去重最简单怎么做？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q051-URL-去重最简单怎么做.md",
+    "topics": [
+      "Hash Set",
+      "内存估算",
+      "大规模替代"
+    ]
+  },
+  {
+    "id": "Q052",
+    "title": "Bloom Filter 为什么适合 URL 去重？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q052-Bloom-Filter-为什么适合-URL-去重.md",
+    "topics": [
+      "概率集合",
+      "空间效率",
+      "假阳性"
+    ]
+  },
+  {
+    "id": "Q053",
+    "title": "Bloom Filter 假阳性率怎么估？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q053-Bloom-Filter-假阳性率怎么估.md",
+    "topics": [
+      "m/n/k",
+      "最优 hash 数",
+      "容量规划"
+    ]
+  },
+  {
+    "id": "Q054",
+    "title": "URL Canonicalization 为什么困难？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q054-URL-Canonicalization-为什么困难.md",
+    "topics": [
+      "规范化与语义",
+      "query 参数",
+      "错误合并风险"
+    ]
+  },
+  {
+    "id": "Q055",
+    "title": "URL 去重和内容去重有什么区别？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q055-URL-去重和内容去重有什么区别.md",
+    "topics": [
+      "地址重复",
+      "内容重复",
+      "两阶段"
+    ]
+  },
+  {
+    "id": "Q056",
+    "title": "网页内容如何做近重复检测？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q056-网页内容如何做近重复检测.md",
+    "topics": [
+      "Shingling",
+      "Jaccard",
+      "MinHash + LSH"
+    ]
+  },
+  {
+    "id": "Q057",
+    "title": "什么时候使用 SimHash？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q057-什么时候使用-SimHash.md",
+    "topics": [
+      "局部敏感哈希",
+      "Hamming Distance",
+      "与 MinHash 对比"
+    ]
+  },
+  {
+    "id": "Q058",
+    "title": "数据应该存 MySQL、MongoDB 还是对象存储？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q058-数据应该存-MySQL、MongoDB-还是对象存储.md",
+    "topics": [
+      "冷热分层",
+      "原始/规范化/服务层",
+      "数据生命周期"
+    ]
+  },
+  {
+    "id": "Q059",
+    "title": "为什么原始 HTML 最好保留？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q059-为什么原始-HTML-最好保留.md",
+    "topics": [
+      "可重放",
+      "parser 版本升级",
+      "审计/provenance"
+    ]
+  },
+  {
+    "id": "Q060",
+    "title": "成熟 crawler 的数据模型应该有哪些 Metadata？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第六章  去重、调度、存储与数据质量",
+    "path": "docs/06-dedup-scheduling-storage-quality/Q060-成熟-crawler-的数据模型应该有哪些-Metadata.md",
+    "topics": [
+      "provenance",
+      "版本",
+      "抓取与解析上下文"
+    ]
+  },
+  {
+    "id": "Q061",
+    "title": "服务端如何判断一个请求是不是 Bot？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q061-服务端如何判断一个请求是不是-Bot.md",
+    "topics": [
+      "多信号融合",
+      "风险评分",
+      "规则 + ML"
+    ]
+  },
+  {
+    "id": "Q062",
+    "title": "为什么只改 User-Agent 不能解决 Bot Detection？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q062-为什么只改-User-Agent-不能解决-Bot-Detection.md",
+    "topics": [
+      "单特征易伪造",
+      "跨层一致性",
+      "会话历史"
+    ]
+  },
+  {
+    "id": "Q063",
+    "title": "什么是浏览器指纹？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q063-什么是浏览器指纹.md",
+    "topics": [
+      "环境特征组合",
+      "稳定性/熵",
+      "隐私与误报"
+    ]
+  },
+  {
+    "id": "Q064",
+    "title": "TLS Fingerprint 是什么？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q064-TLS-Fingerprint-是什么.md",
+    "topics": [
+      "ClientHello",
+      "cipher/extensions",
+      "网络栈特征"
+    ]
+  },
+  {
+    "id": "Q065",
+    "title": "IP Reputation 是怎么工作的？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q065-IP-Reputation-是怎么工作的.md",
+    "topics": [
+      "ASN/网络类型",
+      "历史行为",
+      "时间衰减"
+    ]
+  },
+  {
+    "id": "Q066",
+    "title": "为什么数据中心 IP 与普通用户网络的风险画像可能不同？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q066-为什么数据中心-IP-与普通用户网络的风险画像可能不同.md",
+    "topics": [
+      "先验分布",
+      "ASN",
+      "不能单独定罪"
+    ]
+  },
+  {
+    "id": "Q067",
+    "title": "行为检测主要看什么？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q067-行为检测主要看什么.md",
+    "topics": [
+      "时间序列",
+      "页面转移",
+      "会话一致性"
+    ]
+  },
+  {
+    "id": "Q068",
+    "title": "为什么固定频率访问容易形成异常特征？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q068-为什么固定频率访问容易形成异常特征.md",
+    "topics": [
+      "周期性",
+      "burstiness",
+      "单特征不足"
+    ]
+  },
+  {
+    "id": "Q069",
+    "title": "CAPTCHA 在 Bot Management 体系中处于什么位置？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q069-CAPTCHA-在-Bot-Management-体系中处于什么位置.md",
+    "topics": [
+      "挑战成本",
+      "风险分层",
+      "用户体验"
+    ]
+  },
+  {
+    "id": "Q070",
+    "title": "为什么“出现 CAPTCHA 就自动破解”不是成熟 crawler 的设计？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第七章  反爬检测原理",
+    "path": "docs/07-bot-detection-principles/Q070-为什么“出现-CAPTCHA-就自动破解”不是成熟-crawler-的设计.md",
+    "topics": [
+      "访问边界",
+      "业务授权",
+      "稳定替代路径"
+    ]
+  },
+  {
+    "id": "Q071",
+    "title": "如何设计最简单的 Rate Limiter？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q071-如何设计最简单的-Rate-Limiter.md",
+    "topics": [
+      "计数器",
+      "时间窗口",
+      "分布式状态"
+    ]
+  },
+  {
+    "id": "Q072",
+    "title": "Sliding Window 有什么优势？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q072-Sliding-Window-有什么优势.md",
+    "topics": [
+      "平滑速率",
+      "边界 burst",
+      "实现成本"
+    ]
+  },
+  {
+    "id": "Q073",
+    "title": "Token Bucket 原理是什么？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q073-Token-Bucket-原理是什么.md",
+    "topics": [
+      "平均速率",
+      "burst capacity",
+      "补充速率"
+    ]
+  },
+  {
+    "id": "Q074",
+    "title": "Leaky Bucket 和 Token Bucket 区别？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q074-Leaky-Bucket-和-Token-Bucket-区别.md",
+    "topics": [
+      "流量整形",
+      "burst",
+      "队列模型"
+    ]
+  },
+  {
+    "id": "Q075",
+    "title": "只按 IP Rate Limit 有什么问题？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q075-只按-IP-Rate-Limit-有什么问题.md",
+    "topics": [
+      "NAT 误伤",
+      "多 IP 绕过",
+      "多维身份"
+    ]
+  },
+  {
+    "id": "Q076",
+    "title": "如何保护一个昂贵 Search API？",
+    "difficulty": "★★★★☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q076-如何保护一个昂贵-Search-API.md",
+    "topics": [
+      "成本感知限流",
+      "端点配额",
+      "过载保护"
+    ]
+  },
+  {
+    "id": "Q077",
+    "title": "WAF 与 Bot Management 有什么区别？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q077-WAF-与-Bot-Management-有什么区别.md",
+    "topics": [
+      "攻击规则",
+      "自动化分类",
+      "协同策略"
+    ]
+  },
+  {
+    "id": "Q078",
+    "title": "Challenge、Block、Throttle 应该如何选择？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q078-Challenge、Block、Throttle-应该如何选择.md",
+    "topics": [
+      "风险分层",
+      "误报成本",
+      "渐进式响应"
+    ]
+  },
+  {
+    "id": "Q079",
+    "title": "如何评价一个反爬模型？",
+    "difficulty": "★★★★☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q079-如何评价一个反爬模型.md",
+    "topics": [
+      "Precision/Recall",
+      "FPR/FNR",
+      "成本加权与分群"
+    ]
+  },
+  {
+    "id": "Q080",
+    "title": "如何设计反爬系统的 Feature Pipeline？",
+    "difficulty": "★★★★☆",
+    "chapter": "第八章  服务端防爬体系",
+    "path": "docs/08-server-side-bot-mitigation/Q080-如何设计反爬系统的-Feature-Pipeline.md",
+    "topics": [
+      "Edge 特征",
+      "在线聚合",
+      "低延迟评分"
+    ]
+  },
+  {
+    "id": "Q081",
+    "title": "Crawler 最重要的指标是什么？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q081-Crawler-最重要的指标是什么.md",
+    "topics": [
+      "业务指标",
+      "系统指标",
+      "数据质量指标"
+    ]
+  },
+  {
+    "id": "Q082",
+    "title": "为什么 HTTP 200 不能代表抓取成功？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q082-为什么-HTTP-200-不能代表抓取成功.md",
+    "topics": [
+      "传输成功 vs 业务成功",
+      "软错误页",
+      "语义验证"
+    ]
+  },
+  {
+    "id": "Q083",
+    "title": "如何发现网站改版？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q083-如何发现网站改版.md",
+    "topics": [
+      "字段分布漂移",
+      "DOM signature",
+      "报警"
+    ]
+  },
+  {
+    "id": "Q084",
+    "title": "什么叫 Silent Data Corruption？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q084-什么叫-Silent-Data-Corruption.md",
+    "topics": [
+      "无异常但数据错误",
+      "字段空值",
+      "比 Crash 更危险"
+    ]
+  },
+  {
+    "id": "Q085",
+    "title": "如何做 Crawler Regression Test？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q085-如何做-Crawler-Regression-Test.md",
+    "topics": [
+      "HTML fixtures",
+      "golden output",
+      "parser diff"
+    ]
+  },
+  {
+    "id": "Q086",
+    "title": "如何做 Canary Crawling？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q086-如何做-Canary-Crawling.md",
+    "topics": [
+      "灰度发布",
+      "新旧对比",
+      "自动回滚"
+    ]
+  },
+  {
+    "id": "Q087",
+    "title": "Retry 应如何设计？",
+    "difficulty": "★★★☆☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q087-Retry-应如何设计.md",
+    "topics": [
+      "错误分类",
+      "指数退避 + jitter",
+      "Retry-After"
+    ]
+  },
+  {
+    "id": "Q088",
+    "title": "哪些错误不应该反复 Retry？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q088-哪些错误不应该反复-Retry.md",
+    "topics": [
+      "永久错误",
+      "策略拒绝",
+      "毒任务"
+    ]
+  },
+  {
+    "id": "Q089",
+    "title": "Dead Letter Queue 是什么？",
+    "difficulty": "★★☆☆☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q089-Dead-Letter-Queue-是什么.md",
+    "topics": [
+      "失败隔离",
+      "人工分析",
+      "可重放"
+    ]
+  },
+  {
+    "id": "Q090",
+    "title": "如何定位“爬虫今天突然变慢”？",
+    "difficulty": "★★★★☆",
+    "chapter": "第九章  稳定性、可观测性与数据质量",
+    "path": "docs/09-reliability-observability-quality/Q090-如何定位“爬虫今天突然变慢”.md",
+    "topics": [
+      "延迟分解",
+      "队列/CPU/存储",
+      "数据驱动排障"
+    ]
+  },
+  {
+    "id": "Q091",
+    "title": "设计一个每天抓取 1 亿网页的系统。",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q091-设计一个每天抓取-1-亿网页的系统.md",
+    "topics": [
+      "容量估算",
+      "分布式 Frontier",
+      "限速/容错/存储"
+    ]
+  },
+  {
+    "id": "Q092",
+    "title": "设计一个搜索引擎 Web Crawler。",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q092-设计一个搜索引擎-Web-Crawler.md",
+    "topics": [
+      "coverage",
+      "freshness",
+      "importance/crawl traps/spam"
+    ]
+  },
+  {
+    "id": "Q093",
+    "title": "如何设计 Recrawl Scheduler？",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q093-如何设计-Recrawl-Scheduler.md",
+    "topics": [
+      "变化率估计",
+      "条件请求",
+      "SLA"
+    ]
+  },
+  {
+    "id": "Q094",
+    "title": "如何检测 Crawl Trap？",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q094-如何检测-Crawl-Trap.md",
+    "topics": [
+      "URL 空间爆炸",
+      "参数基数",
+      "内容重复"
+    ]
+  },
+  {
+    "id": "Q095",
+    "title": "如何抓取 1000 个域名，同时保证每个域名不超过自己的 QPS？",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q095-如何抓取-1000-个域名，同时保证每个域名不超过自己的-QPS.md",
+    "topics": [
+      "per-host queue",
+      "token bucket",
+      "eligible-host scheduling"
+    ]
+  },
+  {
+    "id": "Q096",
+    "title": "设计一个“HTTP + Browser”混合爬虫。",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q096-设计一个“HTTP-+-Browser”混合爬虫.md",
+    "topics": [
+      "Fast path / slow path",
+      "内容能力检测",
+      "Browser Queue"
+    ]
+  },
+  {
+    "id": "Q097",
+    "title": "Browser Pool 应该怎么设计？",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q097-Browser-Pool-应该怎么设计.md",
+    "topics": [
+      "进程复用",
+      "Context 隔离",
+      "资源回收"
+    ]
+  },
+  {
+    "id": "Q098",
+    "title": "设计一个企业级反爬系统。",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q098-设计一个企业级反爬系统.md",
+    "topics": [
+      "Edge 低延迟",
+      "Feature/Model/Policy 分层",
+      "误报治理"
+    ]
+  },
+  {
+    "id": "Q099",
+    "title": "Crawler 成功率从 99% 突然降到 30%，怎么排查？",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q099-Crawler-成功率从-99%-突然降到-30%，怎么排查.md",
+    "topics": [
+      "分层排障",
+      "指标证据",
+      "不要先入为主"
+    ]
+  },
+  {
+    "id": "Q100",
+    "title": "终极题：设计一个十亿级 URL、可增量更新、合规、稳定且不压垮目标网站的爬虫平台。",
+    "difficulty": "★★★★★",
+    "chapter": "第十章  高级系统设计",
+    "path": "docs/10-system-design/Q100-终极题：设计一个十亿级-URL、可增量更新、合规、稳定且不压垮目标网站的爬虫平台.md",
+    "topics": [
+      "全局架构",
+      "控制/状态/数据三平面",
+      "容量、合规、可恢复"
+    ]
+  }
+]

@@ -1,0 +1,902 @@
+[
+  {
+    "n": 1,
+    "expert_note": "把参考输入、输入扰动、输出扰动、测量噪声分别注入标准负反馈结构，可以得到不同闭环通道：reference 到 output 主要由 T 决定，输出扰动常由 S 衰减，测量噪声到 output 常带有 T。真正的反馈设计因此不是只看一个 T，而是同时检查 S、T 以及控制输入通道。",
+    "followup_answers": {
+      "灵敏度函数为什么能表示鲁棒性？": "对 $T=L/(1+L)$ 做对象相对扰动的一阶微分，可得到闭环相对变化近似被 $S=1/(1+L)$ 缩放。因此 $|S|$ 小的频段，参数小扰动对闭环传递影响较弱；但这只是局部/小扰动解释，完整鲁棒稳定还要结合不确定性权重和 Nyquist/small-gain 条件。",
+      "S+T=1 对设计意味着什么？": "因为 $S+T=1$，同一频率上不可能同时让二者都趋近 0。低频为了跟踪/抗扰希望 $S\\ll1$，于是 $T\\approx1$；高频为了抑制测量噪声和乘性不确定性希望 $T\\ll1$，于是 $S\\approx1$。这直接导出‘低频高环路增益、高频低环路增益’的基本 loop-shaping 目标。",
+      "为什么反馈系统会出现 waterbed effect？": "Bode sensitivity integral 表明在满足相应稳定、严格真等条件时，$\\log|S|$ 在频率轴上的积分受约束。某段把 $|S|$ 压得更低，通常会迫使另一段出现大于 1 的峰值，RHP poles/zeros 会使约束更苛刻。因此要控制 $M_s=\\|S\\|_\\infty$，而不是只追求低频误差。"
+    }
+  },
+  {
+    "n": 2,
+    "expert_note": "开环的优势是结构简单、不会因闭环相位问题而失稳；闭环的优势是能利用测量修正不确定性。成熟设计往往不是二选一，而是 feedforward 负责名义动作、feedback 负责误差闭合。两自由度结构进一步把 setpoint response 与 disturbance rejection 分开塑形。",
+    "followup_answers": {
+      "为什么前馈不能替代反馈？": "前馈依赖模型或可测扰动，模型一旦偏差就没有自动纠错机制；反馈直接测量结果并对残差闭环修正。最常见结构是 $u=u_{ff}+u_{fb}$：前馈提供主要名义动作，反馈提供鲁棒性和抗未知扰动能力。",
+      "什么时候开环更合适？": "当对象和环境高度可重复、扰动很小、输出难以测量，或者安全规范要求简单确定行为时，开环可能更合适，例如定时加热、预标定剂量或某些前馈轨迹。即使如此，也通常会在更慢层级增加监测/监督闭环，而不是完全无反馈。",
+      "两自由度控制结构为什么常用？": "两自由度结构让 reference 路径和 disturbance/noise regulation 路径拥有不同滤波或权重。例如 setpoint prefilter/β,γ 权重可以改变跟踪瞬态，而不必破坏为抗扰设计的主反馈环。"
+    }
+  },
+  {
+    "n": 3,
+    "expert_note": "‘快、准、稳、抗噪’冲突可以用频域统一解释：低频提高 L 改善跟踪/抗扰，交越频率提高通常加快响应，但高频过大的 L 会提高噪声耦合并减小对延迟、柔性模态的余量。优秀答案应主动给出可实现带宽由 RHP 零点、delay、actuator 和未建模动态共同限制。",
+    "followup_answers": {
+      "如何从相位裕度估计可容许纯延迟？": "额外纯延迟在 $\\omega$ 处引入 $-\\omega\\tau$ 相位。若当前相位裕度为 $PM$（弧度），粗略 delay margin 为 $\\tau_{max}\\approx PM/\\omega_{gc}$。这是局部估计；多 crossover、强共振或非线性时应直接做 delay sweep/Nyquist 验证。",
+      "为什么积分会降低稳定裕度？": "积分器 $1/s$ 在所有正频率贡献约 $-90^\\circ$ 相位，同时提高低频增益。若交越频率落在积分作用仍很强的区域，就会减少相位裕度，因此 PI 通常通过零点位置让交越附近逐渐恢复相位。",
+      "如何用 lead compensator 提高速度同时维持裕度？": "Lead $C(s)=K(1+s/\\omega_z)/(1+s/\\omega_p)$ 且 $\\omega_z<\\omega_p$，在两者之间提供正相位并抬高 crossover。设计时常先计算目标相位缺额，再把最大相位超前频率放在目标 $\\omega_c$ 附近，最后重新校准增益并检查噪声。"
+    }
+  },
+  {
+    "n": 4,
+    "expert_note": "传递函数只描述选定输入到选定输出的零初始条件关系；它不能唯一恢复内部状态，也可能因极零相消隐藏不可控/不可观模态。所谓 minimal realization，就是既可控又可观、没有多余内部模态的最低阶状态实现。",
+    "followup_answers": {
+      "什么是最小实现？": "最小实现要求 realization 同时 controllable 与 observable，没有无法从输入激发或无法从输出看到的冗余模态。其阶次等于传递函数/传递矩阵的 McMillan degree；最小实现之间只差可逆相似变换。",
+      "为什么不稳定极零相消很危险？": "代数上相消不代表内部模态消失。若控制器用零点取消 plant 的 RHP pole，任何模型误差都会留下不稳定残差，而且内部状态可能在外部 I/O 看似平静时发散，因此这是典型的内部不稳定设计。",
+      "MIMO 下传递函数矩阵有什么局限？": "传递矩阵能描述输入输出，但内部 realization、状态耦合和隐藏模态并不唯一；逐元素 pole/zero 也不能完整表达 MIMO 的方向性。MIMO 还需要 transmission zeros、singular values、RGA、state-space 等工具来描述“哪个输入方向影响哪个输出方向”。"
+    }
+  },
+  {
+    "n": 5,
+    "expert_note": "极点决定自然模态，零点决定输入如何激发这些模态及输出如何组合它们。RHP 零点意味着 inverse response 与额外相位损失；从稳定逆的角度看，若直接取 G^{-1}，RHP 零点会变成不稳定极点，因此无法用稳定因果前馈完全抵消。",
+    "followup_answers": {
+      "什么是 inverse response？": "Inverse response 指输出初始方向与最终稳态方向相反，常由 RHP zero 导致。物理上通常表示不同内部通道先后作用方向相反；这会迫使控制器在追求快速响应时面对额外相位和非因果/不稳定逆限制。",
+      "最小相位系统如何定义？": "连续时间稳定系统若所有 transmission zeros 都在左半平面，并且没有纯延迟等非最小相位因子，通常称 minimum phase。其优势是给定幅频特性下相位滞后最小，稳定因果逆更容易实现。",
+      "右半平面零点为何限制 bandwidth？": "RHP zero 带来额外相位滞后，并要求快速输出变化前先产生反向动作。若 crossover 接近或超过零点频率，phase margin 会迅速恶化，因此可实现 bandwidth 通常要显著低于最靠近原点的 RHP zero。"
+    }
+  },
+  {
+    "n": 6,
+    "expert_note": "建模时应区分守恒/动力学方程、执行器模型、传感器模型和时延。只建‘机械本体’而忽略电机、电流环、滤波器或通信延迟，是仿真与实机不一致的常见原因。状态选择最好同时满足物理可解释性与最小性。",
+    "followup_answers": {
+      "如何判断状态选得是否最小？": "先确认这些变量能唯一决定未来演化，再检查是否存在代数依赖或冗余动态。线性系统可构造 realization 后做 controllability/observability 分解；若存在既不可控或不可观的冗余模态，就不是最小实现。",
+      "何时用 Lagrange 比 Newton 更方便？": "当系统存在广义坐标、约束、旋转或多自由度耦合时，Lagrange 用动能/势能自动组织方程，通常比逐个画受力图更简洁；Newton 方法在力学结构简单、力直接可列时更直观。",
+      "执行器一阶动态对闭环有什么影响？": "执行器可近似 $1/(\\tau_a s+1)$ 时，会额外增加一个极点和相位滞后。如果该极点离 crossover 不够远，原先基于‘理想执行器’设计的 PM 会下降，甚至出现饱和/速率限制共同作用。"
+    }
+  },
+  {
+    "n": 7,
+    "expert_note": "LTI 的价值不仅是数学方便，而是允许指数/正弦成为特征函数，从而把微分方程变成代数频率响应。线性化得到的 LTI 只在工作点邻域有效；若 Jacobian 有临界特征值或运动范围很大，就不能只依赖局部一阶模型。",
+    "followup_answers": {
+      "如何检验一个系统是否时不变？": "把任意输入 u(t) 的输出记为 y(t)，再输入 u(t-t0)。若输出严格等于 y(t-t0) 对所有 t0 成立，则系统时不变。注意“系数看起来不含 t”通常是充分线索，但带时钟触发、老化参数或时变边界条件时仍需按定义检查。",
+      "线性化以后原系统一定局部稳定吗？": "不一定。若 Jacobian 所有特征值实部严格为负，通常可推出非线性平衡点局部渐近稳定；若存在正实部则局部不稳定。若有零实部/纯虚特征值，线性化结论不充分，需要高阶项、Lyapunov 或中心流形分析。",
+      "LTI 频率响应为什么可以用正弦稳态定义？": "复指数 e^{jωt} 是 LTI 系统的特征函数，卷积后仍为同频复指数，只乘以 H(jω)。因此正弦稳态只发生幅值缩放和相位移动，H(jω) 就完整记录了每个频率的稳态响应。"
+    }
+  },
+  {
+    "n": 8,
+    "expert_note": "平衡点设计本质是把系统平移到误差坐标：δx=x-x*、δu=u-u*。对随时间移动的参考轨迹，应沿轨迹做 time-varying linearization 或采用 gain scheduling / trajectory tracking，而不是把每个时刻都当同一个固定平衡点。",
+    "followup_answers": {
+      "轨迹跟踪和定点稳定有何区别？": "定点稳定围绕固定 equilibrium，使误差趋于零；轨迹跟踪的参考 x*(t),u*(t) 随时间变化，误差动力学本身通常是时变的。前者常用固定增益，后者可能需要 feedforward、TVLQR、gain scheduling 或 nonlinear tracking。",
+      "移动工作点如何处理？": "可沿 operating variable 建立多个局部模型/增益并插值，也可在线计算 Jacobian 得到时变线性模型。关键是保证 scheduling 变量可测、增益变化平滑，并验证整个工作包线而不是只验证离散工作点。",
+      "gain scheduling 的思想是什么？": "Gain scheduling 在多个工作点分别线性化/设计控制器，再用速度、姿态、载荷等 scheduling variable 插值参数。它不是自动的非线性稳定证明；还需检查切换/插值连续性和整个 operating envelope。"
+    }
+  },
+  {
+    "n": 9,
+    "expert_note": "‘阶次’需要区分物理状态维数、最小实现阶次和传递函数分母次数。不可控/不可观模态或精确极零相消会让表面传递函数阶次低于内部实现阶次；descriptor/DAE 系统还可能包含代数约束，不能简单把所有变量都当独立状态。",
+    "followup_answers": {
+      "什么叫最小实现？": "最小实现要求 realization 同时 controllable 与 observable，没有无法从输入激发或无法从输出看到的冗余模态。其阶次等于传递函数/传递矩阵的 McMillan degree；最小实现之间只差可逆相似变换。",
+      "极零相消如何降低传递函数阶次？": "如果分子和分母有完全相同因子，化简后该 pole/zero 从输入输出传递函数中消失，因此表面阶次降低。但内部 realization 可能仍含对应模态；只有在最小实现意义下不可控/不可观冗余被移除后，阶次才真正减少。",
+      "descriptor system 与普通状态空间有何区别？": "Descriptor/DAE 常写 E x_dot = A x + B u，其中 E 可能奇异，意味着部分变量受代数约束而不是独立微分方程控制。普通状态空间相当于 E=I；DAE 需要讨论 regularity、index 和 consistent initial conditions。"
+    }
+  },
+  {
+    "n": 10,
+    "expert_note": "不确定性建模要和频率结构对应：加性不确定性适合描述绝对误差，乘性不确定性适合描述相对误差，后者常用于高频未建模动态。鲁棒稳定只要求所有允许模型稳定；鲁棒性能还要求所有允许模型同时满足 S/T 等性能约束。",
+    "followup_answers": {
+      "如何选择乘性还是加性不确定性？": "若误差更像与 plant 大小成比例，尤其高频相对误差增长，常用乘性模型 G=G0(1+WΔ)。若误差是一个近似固定绝对动态项，常用加性 G=G0+WΔ；最终应根据辨识模型族在频域中的误差包络来选择，而不是按习惯。",
+      "为什么高频建模误差通常更大？": "低阶模型通常只保留主导慢模态，高频会逐渐暴露柔性结构、传感器/执行器动态、采样保持、延迟和寄生效应。相对 plant 本身越来越小的幅值，高频漏模态还会形成更大的相对误差。",
+      "鲁棒稳定和鲁棒性能有何区别？": "鲁棒稳定要求不确定模型集合里的每个 plant 闭环都稳定；鲁棒性能还要求每个 plant 同时满足跟踪、抗扰、噪声或控制输入等指标。一个系统可以“怎么变都不爆”，但性能在某些参数下已经不可接受。"
+    }
+  },
+  {
+    "n": 11,
+    "expert_note": "一阶时间常数 τ 是极点实部的倒数尺度。阶跃达到 63.2% 只是其一个表象；更本质的是自然响应 e^{-t/τ} 的指数衰减速度。若存在纯延迟 θ，响应首先经历 dead time，因此不能再用 4τ 代表总 settling time。",
+    "followup_answers": {
+      "为什么极点 -1/tau 决定速度？": "一阶自然响应为 exp(-t/τ)，其极点正是 -1/τ。极点实部绝对值越大，指数衰减越快，因此 τ 是最直接的时间尺度。",
+      "一阶系统加纯延迟后还能用 4tau 吗？": "4τ 只描述一阶指数从开始响应后进入 2% 带的时间，不包含 dead time。若模型为 K exp(-θs)/(τs+1)，总响应时间至少还要加上 θ，并且 delay 会影响闭环相位，不能只做时域平移处理。",
+      "如何从实验阶跃辨识 K、tau、delay？": "先由稳态输出变化/输入变化估计 K；由响应开始明显偏离基线的时间估计 delay θ；再从去掉 delay 后达到 63.2% 最终变化量的时间估计 τ。实际数据应先处理噪声、baseline drift，并用最小二乘/非线性拟合做最终校准。"
+    }
+  },
+  {
+    "n": 12,
+    "expert_note": "二阶系统中 ω_n 决定时间尺度，ζ 决定能量衰减与振铃。只说‘ω_n 越大越快，ζ 越大越稳’过于粗糙：固定 ω_n 时 ζ 增大到过阻尼区后 rise time 反而会明显变慢，因此必须结合极点位置而不是孤立记参数。",
+    "followup_answers": {
+      "固定 wn 时 zeta 增大，rise time 会怎样？": "在欠阻尼区，增加 ζ 会减少振铃但通常使初始上升略慢；超过临界阻尼后，两个实极点中慢极点会主导，rise time 可能明显增大。因此“ζ 越大越快”是错误的。",
+      "为什么复极点的实部决定包络？": "复极点 σ±jω 对应时域项 exp(σt)(A cosωt+B sinωt)。振荡频率由虚部决定，整个正弦项的幅值包络由 exp(σt) 决定，所以实部就是衰减/增长率。",
+      "如何从峰值时间反推 wd？": "标准欠阻尼二阶阶跃的第一次峰值满足 ωd tp = π，因此 ωd=π/tp。再结合 ωd=ωn sqrt(1-ζ²) 可反推出 ωn 或与超调联合估计 ζ。"
+    }
+  },
+  {
+    "n": 13,
+    "expert_note": "超调公式来自欠阻尼阶跃响应在第一次峰值时的指数包络。它只对标准二阶、无显著零点/高阶模态的模型成立；RHP 零点或近端 LHP 零点都可能让实际 overshoot 与公式偏离。",
+    "followup_answers": {
+      "给定 10% 超调如何反求 zeta？": "由 Mp=exp[-πζ/sqrt(1-ζ²)]，令 Mp=0.1，可解得 ζ≈0.591。工程上通常用公式/计算器反解，并说明该结果仅适用于标准二阶主导模型。",
+      "右半平面零点对超调公式有什么影响？": "标准公式假设无显著零点。RHP 零点会造成 inverse response 和额外相位滞后，峰值可能被延后/放大，因此由 ζ 单独预测的 overshoot 不再可靠。",
+      "为什么峰值时间取 pi/wd？": "对标准二阶阶跃求导并令 y_dot=0，第一次非零极值发生在阻尼正弦项相位推进约 π 的位置，最终得到 tp=π/ωd。该结论依赖标准二阶 numerator。"
+    }
+  },
+  {
+    "n": 14,
+    "expert_note": "2% settling-time 近似本质是解 e^{-ζω_n t}=0.02；5% 标准对应约 3/(ζω_n)。高阶系统若存在相近实部的多个模态或显著 residue，单个主导二阶包络会失效。",
+    "followup_answers": {
+      "5% settling time 是多少？": "用包络 exp(-ζωn t)=0.05，得到 ts≈-ln(0.05)/(ζωn)≈3/(ζωn)。2% 标准对应约 4/(ζωn)。",
+      "高阶系统如何定义 dominant poles？": "通常选实部最靠近虚轴且 residue 足够大的模态作为 dominant poles，并要求其余模态衰减明显更快。单纯用“慢 5 倍/10 倍”只是经验，还要检查零点和各模态对目标 I/O 的参与度。",
+      "为什么 zeta 很小时公式仍可能低估振铃影响？": "虽然 2% 包络公式数学上仍给出时间尺度，但 ζ 很小时振荡周期多、峰值序列密集，实际进入误差带可能对采样、噪声和高阶模态非常敏感。工程上应直接检查峰值序列和能量衰减。"
+    }
+  },
+  {
+    "n": 15,
+    "expert_note": "时域指标不能只看 y(t)。实际工程还应看控制输入峰值、RMS、rate、饱和时间、积分状态以及约束违规。一个输出很漂亮但长期打满执行器的控制器，不能算成功设计。",
+    "followup_answers": {
+      "为什么控制输入峰值也应该作为时域指标？": "控制器最终受 actuator 幅值、rate、热功率和能量限制。输出指标再好，如果 peak u 超限，就会触发 saturation、windup 或硬件保护，使实际闭环与线性设计完全不同。",
+      "10-90% rise time 为什么更适合实验？": "避开 0% 附近的噪声/死区和 100% 附近的缓慢尾部，更容易对有噪阶跃数据稳定测量。不同标准要明确，不能拿 0–100% 与 10–90% 的数字直接比较。",
+      "非最小相位系统的 rise time 有什么限制？": "非最小相位尤其是 RHP zero 会先要求输出朝“错误方向”运动，再转向最终值，因此无法像 minimum-phase 系统那样任意加快 rise time。若把 closed-loop bandwidth 推近 RHP-zero frequency，inverse response、overshoot 和相位裕度会迅速恶化，所以该 zero 构成基本性能限制。"
+    }
+  },
+  {
+    "n": 16,
+    "expert_note": "系统型别是开环在原点的积分器数量，本质上对应闭环中嵌入了多少阶参考/扰动的内部模型。Type 1 能对常值输入零误差，但对一般正弦参考并不自动零误差；要实现特定频率的无差跟踪，需要相应的内模。",
+    "followup_answers": {
+      "内部模型原理如何解释系统型别？": "要对某类外生信号实现零稳态误差，控制环内部必须包含产生该信号的动态模型。常值信号由积分器 1/s 生成，因此一个积分器可对 step 实现零误差；更高阶多项式需要更多积分器。",
+      "Type 1 对正弦参考误差为零吗？": "一般不会。Type 1 只保证对 DC/step 有内模。要对频率 ω0 的正弦实现理想无差，需要内部包含 s²+ω0² 对应的谐振内模，或使用 repetitive/resonant control。",
+      "加入积分器为什么会损失相位裕度？": "积分器在目标频段贡献接近 -90° 相位。如果交越仍落在其强作用区，Nyquist 会更靠近 -1，因此 PM 下降；PI 通过零点在交越附近恢复一部分相位。"
+    }
+  },
+  {
+    "n": 17,
+    "expert_note": "终值定理使用前必须确认 sE(s) 的所有极点都在左半平面，允许在原点存在与稳态结构相容的情形，但不能有持续振荡的虚轴共轭极点。面试中先检查稳定性再代 s→0，是比直接套公式更专业的习惯。",
+    "followup_answers": {
+      "初值定理是什么？": "在适当条件下 f(0+)=lim_{s→∞} sF(s)。它适合判断响应的初始值/初始斜率，但若含冲激、非严格真传函或不满足条件，需要更谨慎解释。",
+      "有虚轴共轭极点时为什么终值不存在？": "终值定理要求 $sF(s)$ 的极点位于左半平面（允许与最终常值相关的原点结构）。若存在不衰减的虚轴共轭极点，时域量持续振荡，没有单一极限，因此不能用 $\\lim_{s\\to0}sF(s)$ 代表最终值。",
+      "如何从误差传递函数判断稳态误差？": "先写 E(s)=S(s)R(s) 或对应误差通道，再用终值定理 ess=lim_{s→0}sE(s)。由 R(s) 的原点阶次与 L(s) 的低频积分器数量即可判断 step/ramp/parabolic 输入误差类型。"
+    }
+  },
+  {
+    "n": 18,
+    "expert_note": "主导极点不仅看‘离虚轴最近’，还要看模态 residue。一个很慢但几乎不被输入激发或不出现在输出上的模态，可能对某个 I/O 通道不主导；相反，近端零点会显著改变某个模态在输出中的权重。",
+    "followup_answers": {
+      "什么是 modal residue？": "传递函数部分分式中的 residue 决定某个 pole 对该输入输出通道的幅值权重。极点很慢但 residue 很小，可能几乎不出现在测量输出；因此 dominant mode 判断要同时看 pole location 与 residue。",
+      "什么时候三阶系统不能用二阶近似？": "第三极点与主导复极点实部同量级、其 residue 很大、或附近有零点/延迟时不能简单忽略。经验上“第三极点快 5–10 倍”只是一条初筛，不是证明。",
+      "近端零点如何扭曲超调？": "零点改变各模态 residue 与初始斜率。LHP 零点靠近主导极点时可能加快初始响应并增大 overshoot；RHP 零点会造成反向初始响应，使二阶峰值公式更失真。"
+    }
+  },
+  {
+    "n": 19,
+    "expert_note": "LHP 零点可加快初始响应、提高某些频段相位，但过近会造成较强 overshoot；RHP 零点的幅频形状与镜像 LHP 零点类似，相位却相反，这是 minimum/non-minimum phase 的关键区别。",
+    "followup_answers": {
+      "零点远到多远可以忽略？": "没有固定倍数。若零点频率远高于闭环 bandwidth/主导 pole，并且在关注频段对 magnitude/phase 的贡献足够小，才可忽略；常用 5–10 倍只是经验起点，应以误差容限验证。",
+      "RHP 零点和 LHP 零点的幅值为什么相似、相位却不同？": "因子 1±jω/z 的模长都为 sqrt(1+(ω/z)²)，所以幅频相同；但其复角分别为 ±atan(ω/z)，相位符号相反。这就是 all-pass/minimum-phase 分解的直观来源。",
+      "如何从初值定理看零点影响？": "高频极限决定初始响应的值/导数，而零点直接改变高频 numerator 的符号和阶次。对某些 RHP-zero 系统，初始导数符号与最终 DC gain 相反，可由高频展开或初值定理看出 inverse response。"
+    }
+  },
+  {
+    "n": 20,
+    "expert_note": "阶跃辨识适合快速估计 DC gain、主时间常数、delay 和阻尼，但频率覆盖有限。PRBS、chirp 或 multisine 能提供更宽频信息；真正工程辨识还应记录实际输入而不是只记录控制器命令。",
+    "followup_answers": {
+      "怎样用 relay test 找临界频率？": "Relay autotuning 用受控的非线性继电器产生有限幅稳定极限环，通过描述函数估计 ultimate gain/frequency。相比手动持续增大 Kp 到临界，它更可重复，也更容易限制激励幅值，但仍需在安全 operating envelope 内执行。",
+      "为什么 PRBS 比单一阶跃包含更多频率信息？": "PRBS 的频谱覆盖一段较宽频率，可在一次实验中激发多个时间尺度，因此比单一阶跃更适合辨识频率响应。需要注意输入幅值、安全约束、周期长度和信噪比。",
+      "怎么区分传感器延迟和 plant delay？": "最好同时记录 actuator actual、原始 sensor 和独立参考测量。Plant delay 会反映在真实物理输出相对 actuator 的滞后；sensor delay 则是物理输出已变化但报告数据后到，二者可通过时间戳/外部高速测量交叉验证。"
+    }
+  },
+  {
+    "n": 21,
+    "expert_note": "PID 可视为在低频提供积分增益、在中频用比例设定交越、在交越附近用有限微分提供相位超前。工业上 PI 常见，是因为许多对象本身已有足够相位，D 的噪声代价不值得。",
+    "followup_answers": {
+      "为什么很多工业环路只用 PI？": "大量过程/电机对象本身低通且相位足够，P+I 已能获得速度与零静差；D 对测量噪声、量化和高频未建模动态敏感，收益常小于实现成本。",
+      "PID 在频域里等价于什么零极点结构？": "理想 PID 可写 (Kd s²+Kp s+Ki)/s，因此包含一个原点 pole 和最多两个 zeros。实际 PID 还会给 D 增加高频 pole，因此本质上是一个低频积分、交越附近零点相位塑形、高频受限的 compensator。",
+      "两自由度 PID 为什么能分离跟踪和扰动响应？": "两自由度结构让 reference 路径和 disturbance/noise regulation 路径拥有不同滤波或权重。例如 setpoint prefilter/β,γ 权重可以改变跟踪瞬态，而不必破坏为抗扰设计的主反馈环。"
+    }
+  },
+  {
+    "n": 22,
+    "expert_note": "积分消除常值误差可以从终值定理和 internal model principle 两个角度说明。实际系统中常加入 leaky integrator 或积分限幅，用有限 DC 增益换取更好的漂移、饱和和传感器偏置鲁棒性。",
+    "followup_answers": {
+      "积分为什么会使相位减少 90 度？": "积分器 $1/s$ 在所有正频率贡献约 $-90^\\circ$ 相位，同时提高低频增益。若交越频率落在积分作用仍很强的区域，就会减少相位裕度，因此 PI 通常通过零点位置让交越附近逐渐恢复相位。",
+      "什么是 internal model principle？": "若希望闭环在某类持久参考/扰动下零稳态误差，稳定控制器必须在内部包含该外生信号生成器的模型。积分器对应常值，谐振器对应正弦，repetitive control 对应周期信号内模。",
+      "积分器泄漏 leaky integrator 有什么用途？": "把 1/s 改成 1/(s+ε) 或离散中加入衰减，使 DC gain 很大但有限。可防止长期 bias、传感器漂移和长时间 saturation 把积分状态推到极端，代价是严格零稳态误差变成很小但非零。"
+    }
+  },
+  {
+    "n": 23,
+    "expert_note": "理想微分器高频增益无限，实际 D 必须带滤波。常见形式 Kd*s/(1+s/ωf) 的高频增益趋于 Kd*ωf，而非继续随频率增长。离散实现还要关注差分对编码器量化与采样抖动的放大。",
+    "followup_answers": {
+      "滤波微分器高频增益是多少？": "对 Kd s/(1+s/ωf)，当 ω→∞ 时幅值趋于 Kd ωf，而不是无穷大。ωf 越高越接近理想微分，但噪声增益也越高。",
+      "D on measurement 为什么常见？": "若 D 作用于 error，setpoint step 会被微分产生 kick；对 measurement 求导可避免 reference 的冲激，同时仍对输出变化提供阻尼。缺点是仍会放大 measurement noise，因此需滤波。",
+      "离散差分为什么对量化噪声敏感？": "一阶差分约为 [y[k]-y[k-1]]/Ts，两个相邻量化误差相减后再除以很小 Ts，等效高频增益很大。采样越快并不自动让微分更干净，需滤波或 observer。"
+    }
+  },
+  {
+    "n": 24,
+    "expert_note": "Derivative kick 不是 D 的唯一 setpoint kick；若比例项直接对 error，P 也会在 setpoint step 时跳变。两自由度 PID 用 β、γ 分别给 P、D 的设定值权重，可在不改变 regulation 的情况下改善 setpoint transient。",
+    "followup_answers": {
+      "两自由度 PID 的 beta、gamma 权重有什么作用？": "常见 2-DOF PID 让 P 项使用 βr-y、D 项使用 γr-y，而 I 项仍对完整 error r-y 积分。β<1 可降低 setpoint 的 proportional kick/overshoot，γ 常取 0 以避免 derivative kick；因为 disturbance regulation 主要经过 measurement feedback，所以这些权重能在基本不改变抗扰主环的前提下塑造 setpoint response。",
+      "reference prefilter 和 D on measurement 的区别？": "Prefilter 改变 reference 进入闭环的频谱，主要塑造 setpoint response；D on measurement 改的是控制器内部微分信号路径，避免 derivative kick。两者可同时存在，作用点不同。",
+      "setpoint kick 与 proportional kick 有什么关系？": "若 P 作用在 error，reference step 会使 P 项瞬间跳 Kp Δr，这就是 proportional kick；D on error 还会有更剧烈 derivative kick。两自由度 PID 通过 setpoint weights 降低这些 kick。"
+    }
+  },
+  {
+    "n": 25,
+    "expert_note": "Windup 的根因是控制器内部状态按‘理想执行器’继续演化，而真实执行器受到幅值或速率约束。即使 amplitude 没饱和，rate limiter 也会造成内部命令与实际执行量不一致，从而产生类似 windup 的动态失配。",
+    "followup_answers": {
+      "rate saturation 也会 windup 吗？": "会。即使命令幅值未超过上限，执行器变化速率受限时 actual u 跟不上 raw u，积分器仍按理想执行器积累误差，形成动态 windup。",
+      "为什么串级控制更容易出现 hidden saturation？": "内环 actuator 可能已经饱和，但外环只看到内环闭环输出并继续增加 reference，导致多个积分器同时累积。需要向外传播 saturation/available authority，或做 coordinated anti-windup。",
+      "anti-windup 与 bumpless transfer 有何联系？": "两者都要求控制器内部状态与实际 actuator 输出保持一致。Bumpless transfer 在手/自动、模式切换时通过 tracking 初始化积分器；anti-windup 在饱和期间持续做同类 tracking。"
+    }
+  },
+  {
+    "n": 26,
+    "expert_note": "Clamping 是逻辑式阻止错误方向继续积分，简单但在边界附近可能不够平滑；back-calculation 通过 u_sat-u_raw 的 tracking error 连续地把积分器拉回。设计 anti-windup time constant 时要在快速恢复和额外闭环动态之间折中。",
+    "followup_answers": {
+      "如何选择 anti-windup time constant？": "Back-calculation 常写 $\\dot I=e+(u_{sat}-u_{raw})/T_t$。$T_t$ 太大则 unwind 太慢，太小则 tracking feedback 太强，可能引入噪声/额外动态；通常与积分时间常数和 actuator dynamics 同量级起步，再仿真扫参。",
+      "外部饱和如何接回 tracking port？": "把最终实际 actuator command 与控制器未限幅输出的差值送入 anti-windup/tracking 输入，使内部积分状态跟随真实执行量。若还有下游 rate limiter，应尽量用最靠近 actuator 的 actual command 做 tracking。",
+      "为什么 feedforward 存在时要区分 PID contribution？": "总命令可能是 u_ff+u_pid。若总命令饱和，真正该停止/回算的是 PID 可调部分；否则把前馈也当积分误差补偿，可能导致积分器错误抵消物理前馈。"
+    }
+  },
+  {
+    "n": 27,
+    "expert_note": "电流环对象常近似 RL 一阶环节，PI 能用一个零点补偿主要电气极点并通过积分获得零静差；速度/位置外环则面对机械积分器和测量噪声，控制结构常与内环不同。",
+    "followup_answers": {
+      "位置环为什么可能用 PD/PI-P？": "机械 plant 常自带从速度到位置的积分器，因此位置环未必需要再强积分。PD/PI-P 可用速度/微分提供阻尼，并把积分作用更多用于消除负载/偏置而减少 setpoint overshoot。",
+      "电流环带宽为何应高于速度环？": "速度环希望把电流/转矩视为近似即时可控输入，因此电流内环必须更快。若带宽接近，速度环会感受到电气极点和电流限幅，独立设计假设失效。",
+      "PI 零点如何放置？": "PI 的零点 $\\omega_z=K_i/K_p$ 常放在主要 plant pole 附近或略低频，用于在 crossover 前恢复积分器带来的相位损失，同时维持低频高增益。精确位置应结合目标 crossover 和鲁棒裕度，不建议机械完全相消。"
+    }
+  },
+  {
+    "n": 28,
+    "expert_note": "串级的关键条件是时间尺度分离。外环应看到一个近似低阶、快速的内环闭环对象；如果两环 crossover 太接近，外环会直接感知内环相位变化与饱和，简单独立调参假设就会失效。",
+    "followup_answers": {
+      "相邻带宽为什么不能太近？": "时间尺度分离不够时，外环会在内环相位快速变化区域交越，两环互相改变有效 plant，PM 和增益余量会显著恶化。",
+      "内环闭环应该近似成什么模型给外环？": "理想情况下在外环 bandwidth 内近似为单位增益、低延迟的一阶闭环，或至少有已知 dominant pole。外环建模应使用内环“闭环传函”，不是原始 actuator plant。",
+      "串级系统如何做 anti-windup propagation？": "当内环饱和时，将 available command/饱和标志或 tracking residual 向外环反馈，冻结/回算外环积分器，并限制外环 reference。这样避免外环继续要求内环无法实现的动作。"
+    }
+  },
+  {
+    "n": 29,
+    "expert_note": "前馈最好从可逆的 nominal dynamics 得到，反馈只修正残差。computed torque 本质是利用模型前馈/反馈线性化补偿非线性动力学；若模型偏差大，必须保留足够 feedback authority。",
+    "followup_answers": {
+      "computed torque control 属于什么思想？": "Computed-torque 利用机器人动力学 $M(q)\\ddot q+C(q,\\dot q)\\dot q+g(q)=\\tau$ 构造前馈/非线性反馈，把名义误差动力学近似线性化。它属于 model-based nonlinear compensation/feedback linearization 思想，性能强但依赖模型准确度。",
+      "disturbance feedforward 需要测量什么？": "需要能提前或同步测到与扰动相关的信号，并有从扰动到输出/控制输入的模型。例如已测负载扭矩、道路坡度、供电电压。无法测量的扰动只能通过 observer/feedback 间接估计。",
+      "两自由度控制如何分开设计 tracking 与 regulation？": "两自由度结构让 reference 路径和 disturbance/noise regulation 路径拥有不同滤波或权重。例如 setpoint prefilter/β,γ 权重可以改变跟踪瞬态，而不必破坏为抗扰设计的主反馈环。"
+    }
+  },
+  {
+    "n": 30,
+    "expert_note": "Ziegler–Nichols 的历史价值是无需精确模型即可给出可用初值，但目标通常偏激进且接近临界稳定。现代工程更常把它作为起点，再基于目标 PM、IMC、模型辨识或优化做约束化整定。",
+    "followup_answers": {
+      "relay autotuning 为什么比手动推到临界更安全？": "Relay autotuning 用受控的非线性继电器产生有限幅稳定极限环，通过描述函数估计 ultimate gain/frequency。相比手动持续增大 Kp 到临界，它更可重复，也更容易限制激励幅值，但仍需在安全 operating envelope 内执行。",
+      "IMC-PID tuning 的基本思想是什么？": "IMC 先围绕可逆的 nominal model 设计内部模型控制器，再等价转换成 PID；单一滤波时间常数常直接控制速度-鲁棒性折中。对一阶加纯延迟过程尤其常见，参数物理意义比 ZN 更清晰。",
+      "如何用频率响应直接定目标 phase margin？": "先由允许 overshoot/robustness 选大致 PM 区间，再把 crossover 设在 plant 可信且满足速度要求的区域；在目标 ωc 读取 plant phase，所需 compensator phase≈目标 PM-[180°+plant phase] 再加安全余量。"
+    }
+  },
+  {
+    "n": 31,
+    "expert_note": "BIBO、状态渐近稳定和内部稳定只有在适当最小实现等条件下才可相互对应。极零相消可能使某个 I/O 看起来稳定，但内部隐藏的 RHP 模态仍发散，因此大型闭环互联要检查所有内部通道。",
+    "followup_answers": {
+      "边界稳定和渐近稳定差别是什么？": "边界稳定通常存在不衰减振荡或常值模态，状态不发散但也不收敛；渐近稳定要求状态趋向平衡点。若虚轴 pole 重复，常出现 $t\\sin\\omega t$ 等增长项，连边界稳定也不成立。",
+      "为什么 minimal realization 很重要？": "只有最小 realization 时，传递函数 pole 与内部模态一一对应，BIBO 稳定和内部状态稳定之间关系才清晰。非最小实现可能隐藏不稳定不可控/不可观模态。",
+      "内部稳定如何用闭环互联系统判断？": "不只看 r→y，而要检查所有外部注入点到所有内部信号的闭环传递均稳定，等价于 closed-loop state matrix Hurwitz/Schur（在良构互联下）。"
+    }
+  },
+  {
+    "n": 32,
+    "expert_note": "连续极点的实部控制指数包络；离散极点模长控制 k 步衰减。极点越靠左并非永远更好，因为过快动态意味着更高控制增益、噪声放大、离散化敏感和执行器压力。",
+    "followup_answers": {
+      "重复虚轴极点会发生什么？": "简单虚轴 pole 产生不衰减振荡；重复虚轴 pole 会出现 t e^{jωt} 等多项式增长项，幅值随时间增大，因此不属于有界边界稳定。",
+      "离散系统为什么变成单位圆？": "连续模式 e^{st} 在采样点 t=kTs 变为 (e^{sTs})^k=z^k。要使其衰减必须 |z|<1，所以稳定区域是单位圆内部。",
+      "稳定极点越靠左是否永远越好？": "不是。更靠左通常需要更高增益/控制能量，并提高噪声、delay、sampling 和未建模高频动态敏感性。设计目标是足够快并有鲁棒余量，而非无限快。"
+    }
+  },
+  {
+    "n": 33,
+    "expert_note": "Routh 的价值是不用显式求根就能数 RHP 根，并能直接推导参数稳定区间。它是代数稳定判据，不直接给相位裕度或鲁棒性能；遇到首列零或整行零时必须使用专门处理规则。",
+    "followup_answers": {
+      "整行全零怎么处理？": "Routh 表整行全零意味着存在关于原点对称的根结构。需用上一行构造 auxiliary polynomial，对其求导替换零行，再继续表格；这通常对应虚轴成对根或对称根。",
+      "首列出现零但整行不零怎么办？": "若首列为零但整行不零，可先以小正数 $\\epsilon$ 代替，完成 Routh 表后令 $\\epsilon\\to0^+$ 判断符号变化；也可通过行变换避免数值奇异。",
+      "Routh 能直接给稳定裕度吗？": "Routh 主要给 RHP 根数量和参数稳定区间，不直接给 PM/GM 或到不稳定边界的频域距离。可通过引入参数/频率变换求某些相对稳定性条件，但工程裕度通常用 Bode/Nyquist。"
+    }
+  },
+  {
+    "n": 34,
+    "expert_note": "Root locus 同时满足角度条件和幅值条件。它回答的是‘当某个标量增益变化时闭环极点如何移动’，因此特别适合解释 gain tuning 的结构性后果，而不只是画一张曲线。",
+    "followup_answers": {
+      "根轨迹幅值条件是什么？": "Root locus 上点满足 $|K G(s)H(s)|=1$，即 $K=1/|G(s)H(s)|$；角度条件决定该点是否在轨迹上，幅值条件再给对应 K。",
+      "为什么实轴上某些区段属于根轨迹？": "对实轴测试点，位于其右侧的实 pole/zero 数若为奇数，角度总和满足 180° 模 360° 的根轨迹角度条件，因此该区段属于 root locus。",
+      "如何用阻尼比线选择期望极点？": "在 s 平面画从原点出发的等 ζ 射线，再按 settling time/ωn 约束画实部或圆弧区域；与 root locus 的交点给候选闭环 pole，再由幅值条件求 K。"
+    }
+  },
+  {
+    "n": 35,
+    "expert_note": "根轨迹的 breakaway/break-in 点来自 dK/ds=0；departure/arrival angle 来自角度条件。RHP zero 会吸引分支向右移动，并往往显著限制可达到的阻尼与速度。",
+    "followup_answers": {
+      "breakaway 点怎么计算？": "由特征方程写出 $K(s)=-1/G_0(s)$，实轴 breakaway/break-in 候选满足 $dK/ds=0$。求得候选后还要检查是否位于实际 root-locus 实轴区段。",
+      "departure angle 怎么求？": "在复开环 pole 附近应用根轨迹角度条件：departure angle = 180° + 所有 zeros 对该 pole 的角度和 - 其他 poles 的角度和（模 360°，按约定调整）。",
+      "有 RHP zero 时根轨迹如何受影响？": "根轨迹分支最终要终止于该 RHP zero，因此至少一部分闭环 pole 会被向右吸引；随着增益增大可能降低阻尼甚至进入 RHP，限制可用 K 和速度。"
+    }
+  },
+  {
+    "n": 36,
+    "expert_note": "Lead 的 zero 位于 pole 的低频侧，因此在两者之间提供正相位；最大相位超前发生在几何中心频率。它和实用 PD 很接近，但额外高频 pole 限制了噪声增益。",
+    "followup_answers": {
+      "最大相位超前频率在哪里？": "对 lead 比值 $\\alpha=\\omega_p/\\omega_z>1$，最大相位超前满足 $\\sin\\phi_{max}=(\\alpha-1)/(\\alpha+1)$，发生在 $\\omega_m=\\sqrt{\\omega_z\\omega_p}$。",
+      "为什么 zero 先于 pole？": "Lead 需要在一段频率上让 numerator 已开始增加相位/幅值，而 denominator 尚未完全生效，所以 zero 放低频、pole 放高频。若顺序反过来就是 lag，提供负相位。",
+      "lead 与 PD 的关系是什么？": "PD 的零点提供相位超前，但理想 Kd s 高频增益无限；lead 相当于带高频 pole 的可实现 PD，限制高频增益并保持 proper。"
+    }
+  },
+  {
+    "n": 37,
+    "expert_note": "Lag 通过在低频增加增益比来改善稳态精度，而尽量保持交越附近增益不变。与纯积分相比，lag 只在有限频段增加低频增益，因此相位代价通常更可控。",
+    "followup_answers": {
+      "lag 与积分器有什么差别？": "积分器 DC 增益无穷且固定 -90° 相位；lag 只有有限低/高频增益比，并把相位损失集中在 pole-zero 附近，所以能以较小相位代价提高低频增益。",
+      "为什么 lag 常配合 lead？": "Lead 主要解决交越相位和速度，lag 主要增加低频增益/稳态精度。组合可分别塑造不同频段，避免单个补偿器承担冲突目标。",
+      "低频增益提高多少由什么决定？": "Lag 的低频/高频增益比由 pole-zero 比决定。常设 $\\beta=\\omega_z/\\omega_p>1$，低频可多约 $20\\log_{10}\\beta$ dB；同时把 pole/zero 放在 crossover 明显以下以减小额外相位损失。"
+    }
+  },
+  {
+    "n": 38,
+    "expert_note": "不稳定极零相消的问题不是代数上能否消掉，而是任何小模型误差都会留下一个慢/快不稳定残差模态。鲁棒设计通常避免依赖精确 cancellation，尤其不取消 RHP pole 或以不稳定逆去取消 RHP zero。",
+    "followup_answers": {
+      "最小实现与相消是什么关系？": "精确 pole-zero cancellation 往往意味着某个内部模态在所选 I/O 通道中不可控或不可观，因此未化简 realization 不是 minimal。做 Kalman decomposition 并删除不可控/不可观冗余后，才得到真正最小阶；若被相消的是不稳定模态，外部化简还会掩盖内部不稳定。",
+      "为什么 RHP zero 也不能稳定逆？": "逆系统会把 plant 的 RHP zero 变成 RHP pole，因此精确逆不稳定；若用非因果 stable inversion，又需要未来 reference。两者都说明非最小相位系统不能用普通稳定实时前馈完全反演。",
+      "鲁棒控制如何看 cancellation？": "把 cancellation 视为对模型误差极敏感的结构：在被取消频率附近 uncertainty 权重会被放大。鲁棒设计通常避免精确取消不稳定/轻阻尼模态，而用 loop shaping 保留安全距离。"
+    }
+  },
+  {
+    "n": 39,
+    "expert_note": "Minimum phase 意味着系统及其稳定因果逆都不包含 RHP 零点（连续时间情形）。纯延迟幅值为 1，却带来不可逆的相位滞后；从广义角度它也是非最小相位因素。",
+    "followup_answers": {
+      "纯延迟是不是 minimum phase？": "纯延迟 $e^{-s\\tau}$ 幅值恒为 1，但相位随频率不断减小，稳定因果逆 $e^{+s\\tau}$ 需要未来信息，因此不属于可稳定因果逆的 minimum-phase 部分。",
+      "全通因子有什么作用？": "All-pass 因子幅值为 1，只改变相位。非最小相位系统可分解为 minimum-phase 部分乘 all-pass/nonminimum-phase 部分，从而直观看到相同 magnitude 下额外相位损失。",
+      "非最小相位零点为什么限制前馈逆？": "如果 G(s) 有 RHP zero z>0，精确逆 G^{-1}(s) 会包含 pole at z，从而是不稳定的；若改用非因果稳定逆，则需要未来 reference。也就是说实时稳定前馈不能同时做到精确逆和因果，这就是 non-minimum-phase 的硬约束。"
+    }
+  },
+  {
+    "n": 40,
+    "expert_note": "Root-locus 选极点应从需求反推目标阻尼比、自然频率、settling time，再用角度缺额决定补偿器。之后必须回 Bode 和时域验证，因为极点满足要求不代表噪声、延迟或 actuator constraint 满足。",
+    "followup_answers": {
+      "如何用 angle deficiency 设计 lead？": "先在期望闭环 pole $s_d$ 计算现有开环 pole/zero 贡献的总角度，与 $(2k+1)180^\\circ$ 的差就是 angle deficiency；再用 lead zero/pole 几何位置补足该相位。",
+      "为什么还要做 Bode 验证？": "Root locus 只显示某参数变化下 poles，不直接显示 noise amplification、delay margin、crossover 或高频未建模动态。Bode/Nyquist 是对同一设计的频域鲁棒性复核。",
+      "极点位置满足要求但 actuator 饱和怎么办？": "说明线性 pole design 不可实现。需要降低带宽/增益、加入 reference shaping/feedforward、anti-windup，或改用带输入约束的 MPC/reference governor，并重新评估可达性能。"
+    }
+  },
+  {
+    "n": 41,
+    "expert_note": "对稳定 LTI，正弦输入在稳态仍是同频正弦，只改变幅值和相位，这是频率响应成为工程核心的根本原因。FRF 可以用 swept sine、multisine、随机激励等方法从输入输出谱估计。",
+    "followup_answers": {
+      "为什么正弦是 LTI 的特征函数？": "对复指数 $e^{j\\omega t}$，LTI 卷积输出为 $H(j\\omega)e^{j\\omega t}$，只改变复幅值，因此正弦稳态保持同频。这个特性使任意信号可借 Fourier 分解逐频分析。",
+      "频域与卷积如何联系？": "时域输出 y=h*u；Fourier/Laplace 变换把卷积变成乘法 Y=HU，因此每个频率分量只被 H(jω) 乘一个复增益。频域分析就是利用这个对角化性质。",
+      "如何从实验得到 FRF？": "在安全幅值下对闭环/开环注入单频或 multisine，测量 input-output gain/phase；若振荡频率附近出现尖锐 resonance 或 phase cliff，就能区分单纯 gain tuning 与结构模态问题。"
+    }
+  },
+  {
+    "n": 42,
+    "expert_note": "Bode 手画规则来自每个 pole/zero 因子的渐近展开。二阶欠阻尼 pole 在 ζ 小时会出现 resonant peak，因此不能只把它机械拆成两条 -20 dB/dec 的一阶渐近线。",
+    "followup_answers": {
+      "二阶共振 pole 的 Bode 特征是什么？": "共轭 pole 对最终 slope 贡献 -40 dB/dec，相位总共趋向 -180°。当 ζ<约0.707 时，natural frequency 附近可能出现 resonant peak，ζ 越小峰越高。",
+      "积分器和微分器相位是多少？": "理想 1/s 的相位恒为 -90°，s 的相位恒为 +90°（正频率）。实际微分必须滤波，因此高频相位最终会回落。",
+      "corner 处为什么约 -3 dB？": "一阶因子 $1/(1+j\\omega/\\omega_c)$ 在 $\\omega=\\omega_c$ 时幅值为 $1/\\sqrt2$，换算为 $20\\log_{10}(1/\\sqrt2)\\approx-3.01$ dB。"
+    }
+  },
+  {
+    "n": 43,
+    "expert_note": "PM/GM 是围绕关键交越点的局部余量；多 crossover 或强共振时，单一 PM/GM 可能误导。此时应看完整 Nyquist、sensitivity peak、disk margin 等更全局指标。",
+    "followup_answers": {
+      "PM 与阻尼比有什么近似关系？": "对典型二阶主导、交越斜率合适的系统，PM 与 ζ 有单调近似关系，约 45–60° 常对应中等阻尼。但这是经验映射，高阶零极点、delay、非最小相位会破坏对应关系。",
+      "为什么延迟直接消耗 PM？": "delay 幅值为 1，因此不改变 0 dB crossover 的 magnitude，却额外增加 -ωτ 相位，直接把该点离 -180° 的距离缩小。",
+      "多 crossover 时该选哪个 margin？": "不能只取软件显示的某一个。应检查所有 0 dB/−180° crossing 和完整 Nyquist，关注最接近 -1 的区域；更稳妥用 disk/modulus margin 或 sensitivity peak。"
+    }
+  },
+  {
+    "n": 44,
+    "expert_note": "纯延迟不改变 magnitude，却产生线性随频率增加的相位损失 -ωτ，因此高带宽环路对 delay 极敏感。Padé 只能用于有理近似分析，阶数过低会扭曲高频，阶数过高又可能引入数值和设计复杂度。",
+    "followup_answers": {
+      "Padé 近似有什么用途和风险？": "Padé 用有理函数逼近 $e^{-s\\tau}$，便于根轨迹/状态空间等有理工具分析。低阶只在有限频段准确，高阶会引入大量 pole/zero，因此不能把 Padé 的高频伪动态当真实物理模态。",
+      "ZOH 等效增加多少相位滞后？": "在低于 Nyquist 很多的频段，ZOH 频响常近似带来约半个采样周期的 delay，即相位约 -ωTs/2，同时还有 sinc magnitude 衰减。精确分析应使用离散模型。",
+      "网络控制如何处理 variable delay？": "把 delay 作为随机/有界时变不确定性，使用 timestamp、buffer、prediction，必要时做 delay-aware control/robust MPC。验证时应注入延迟分布和 packet loss，而不是只测平均 latency。"
+    }
+  },
+  {
+    "n": 45,
+    "expert_note": "Nyquist 本质是 argument principle：把闭环特征方程 1+L(s) 的零点问题转成 L(s) 对 -1 点的绕行问题。开环若有 RHP pole，必须把已有不稳定极点数 P 纳入 N=Z-P 的计数。",
+    "followup_answers": {
+      "开环有一个 RHP pole 时需要怎样环绕？": "按所采用的 Nyquist 正方向约定，N=Z-P。若希望 Z=0 且 P=1，Nyquist 必须对 -1 产生相应一次净绕行；答题时应先声明 clockwise/CCW 的符号约定，避免只背正负号。",
+      "虚轴 pole 如何绕开？": "Nyquist contour 不能直接穿过虚轴 pole，需在 s 平面用小半圆缩进绕开，并把该小弧映射到 L 平面。积分器原点 pole 是最常见例子。",
+      "Nyquist 与 argument principle 的关系？": "Argument principle 说明复函数沿闭合 contour 的相位总变化等于内部零点数减极点数的 $2\\pi$ 倍。对 $1+L(s)$ 应用它，就得到 Nyquist 对 -1 点的绕行与闭环 RHP 零点（不稳定极点）数量之间的关系。"
+    }
+  },
+  {
+    "n": 46,
+    "expert_note": "PM/GM 分别考察沿相位或增益单独变化的余量，而 modulus/disk margin 考察复平面中更一般的联合扰动。对真实增益和相位同时变化的系统，后者通常更接近鲁棒性问题。",
+    "followup_answers": {
+      "什么是 modulus margin？": "Modulus margin 常定义为 Nyquist 曲线到 -1 点的最小距离，等价于 $1/\\|S\\|_\\infty$。它直接反映 sensitivity peak，比单独 PM/GM 更能捕捉某些联合增益-相位风险。",
+      "Ms 与阻尼/鲁棒性如何联系？": "$M_s=\\max_\\omega|S(j\\omega)|$ 衡量 sensitivity peak，和 Nyquist 到 -1 的最近距离直接相关。$M_s$ 太大意味着对模型/增益变化和扰动在某频段非常敏感；工程上常把它作为比 PM 更统一的鲁棒性指标之一。",
+      "disk margin 为什么比独立 PM/GM 更完整？": "PM 假设只加相位、GM 假设只改增益；disk margin 允许一个复数乘性扰动同时改变增益和相位，并可扩展到多回路，因此更接近真实校准误差/耦合变化。"
+    }
+  },
+  {
+    "n": 47,
+    "expert_note": "S 和 T 必须和信号注入点一起解释。output disturbance、input disturbance、measurement noise 的路径不同；multiplicative plant uncertainty 常通过 T 进入 robust stability 条件，因此高频 T 滚降尤其关键。",
+    "followup_answers": {
+      "measurement noise 的闭环路径如何推导？": "标准负反馈中若测量为 $y+n$，则 $y=T r - T n$（符号依框图约定），所以高频希望 $|T|$ 小。控制输入对噪声还会经过 $CS$ 或相关通道，可能造成 actuator chatter。",
+      "input disturbance 与 output disturbance 路径有什么不同？": "输入扰动若加在 plant 输入，y 对 d 的通道通常是 G S；输出扰动直接加在 plant 输出时，闭环残余通常是 S d。两者低频都能被高 loop gain 抑制，但尺度和 plant dynamics 不同。",
+      "为什么 multiplicative uncertainty 常与 T 相关？": "若 $G=G_0(1+W_m\\Delta)$ 且 $\\|\\Delta\\|_\\infty\\le1$，small-gain 条件常导出 $\\|W_m T\\|_\\infty<1$ 一类鲁棒稳定要求，因此高频模型相对误差大的区域必须让 T 足够小。"
+    }
+  },
+  {
+    "n": 48,
+    "expert_note": "Waterbed effect 表示对稳定因果反馈系统，某些频段把 S 压低通常会在其他频段形成峰值。RHP poles/zeros 会进一步加重这种限制，因此 Ms=max|S| 是常见鲁棒性指标。",
+    "followup_answers": {
+      "RHP pole 对 sensitivity integral 有什么影响？": "不稳定开环 pole 会给 Bode sensitivity integral 增加正的不可消除项，意味着闭环必须在某些频段支付更大的 sensitivity peak；直观上稳定一个本来发散的模态需要更强反馈代价。",
+      "Ms 为什么是常见鲁棒指标？": "$M_s=\\max_\\omega|S(j\\omega)|$ 衡量 sensitivity peak，和 Nyquist 到 -1 的最近距离直接相关。$M_s$ 太大意味着对模型/增益变化和扰动在某频段非常敏感；工程上常把它作为比 PM 更统一的鲁棒性指标之一。",
+      "如何通过 loop shaping 控制 sensitivity peak？": "避免 crossover 附近过陡相位下降，保持足够 PM，必要时降低 bandwidth、用 lead 增相位，并避免共振/延迟落在交越处。最终直接优化/检查 Ms，而不是只看低频 S。"
+    }
+  },
+  {
+    "n": 49,
+    "expert_note": "闭环 bandwidth 常与 ωgc 同量级，但高阶、强零点或共振系统可能差很多。想提高 bandwidth 需要保证 crossover 前后没有危险的柔性模态、RHP zero 和 delay；notch 只是局部处理共振，不会免费消除相位和不确定性代价。",
+    "followup_answers": {
+      "bandwidth 与 wgc 什么时候差别大？": "当闭环不是标准低阶、存在强零点、resonance、非单位 DC gain 或 T 有显著 peak 时，-3dB bandwidth 与 loop 0dB crossover 可能差很多。应直接从 T 测 bandwidth。",
+      "柔性模态距离 crossover 多远更安全？": "没有通用倍数；经验上希望第一未建模 resonance 明显高于 crossover，并在该处已有充分 loop roll-off。应依据模态 Q、幅值不确定性和目标 robust margin 做 worst-case 验证。",
+      "为什么 notch filter 不能无成本提高 bandwidth？": "Notch 能压某个 resonance 的 magnitude，但会在附近引入相位变化、参数敏感和额外状态；若共振频率漂移，notch 还可能错位。因此它不能替代对 plant uncertainty 和 bandwidth 的整体约束。"
+    }
+  },
+  {
+    "n": 50,
+    "expert_note": "专业 loop shaping 要同时看 L、S、T 和 KS。KS 反映扰动/误差被控制器转换成执行器命令的强度，直接关系 saturation 与 noise-induced control activity；若权重和 MIMO 耦合很复杂，H∞ mixed-sensitivity 能把这些目标统一成优化问题。",
+    "followup_answers": {
+      "control sensitivity KS 为什么重要？": "$KS=C/(1+L)$ 描述 error/disturbance 如何转成 control effort。即使 S/T 很漂亮，若 $|KS|$ 在某频段过大，sensor noise 或 disturbance 仍可能导致 actuator RMS/峰值过高、饱和或热负荷。",
+      "如何把噪声 PSD 融入 loop shaping？": "若已知噪声 PSD $\\Phi_n(\\omega)$，可用相应闭环传递函数计算输出/控制信号 PSD，例如 $\\Phi_y=|T|^2\\Phi_n$（具体通道依注入点）。因此 loop shaping 可以直接针对真实噪声能量分布，而不是只看白噪声假设。",
+      "何时用 H-infinity 替代手工 loop shaping？": "当目标涉及 MIMO、多个加权通道、强不确定性或手工 lead/lag 难以统一折中时，H∞ mixed-sensitivity 更合适。它把 $S,T,KS$ 等经过权重后的最坏奇异值统一优化，但权重选择仍需要工程判断。"
+    }
+  },
+  {
+    "n": 51,
+    "expert_note": "状态是使未来演化在给定未来输入后唯一确定的最小信息。状态变量不唯一，可逆坐标变换不改变系统本质；高阶 ODE 的 companion states 只是方便的一种选择，不一定最具物理意义。",
+    "followup_answers": {
+      "状态变量为什么不唯一？": "任意可逆变换 $z=Tx$ 都是等价状态坐标，因为给定 z 可唯一恢复 x。不同坐标可能强调物理意义、可控标准型、模态或数值条件，但系统输入输出行为和 eigenvalues 不变。",
+      "如何由高阶 ODE 选 companion states？": "对 n 阶标量 ODE，可取 x1=y, x2=y_dot,…,xn=y^{(n-1)}，从而得到 companion form。若有更自然的能量/物理变量，也可选其他可逆状态坐标。",
+      "DAE 系统的 state 概念有何不同？": "DAE 中并非每个变量都可自由指定初值，代数约束定义了 consistent manifold。真正动态自由度可能小于变量个数，需先做 index/constraint 分析。"
+    }
+  },
+  {
+    "n": 52,
+    "expert_note": "A 定义自由动态，B 定义输入能进入哪些状态方向，C 定义哪些状态组合能被测到，D 定义瞬时直通。B 的列空间与 controllability、C 的行空间与 observability 有直接联系。",
+    "followup_answers": {
+      "B 的列空间有什么意义？": "B 的每一列是一个输入瞬时作用到状态空间的方向；经过 A 的传播形成 $B,AB,A^2B,...$，其 span 决定 controllable subspace。",
+      "C 的行空间如何影响 observability？": "C 的行给出传感器直接测量的状态组合；通过 $C,CA,CA^2,...$ 可以看到动力学把其他状态信息传入测量的过程，因此决定 observability。",
+      "为什么严格真传递函数对应 D=0？": "若 D≠0，输入变化可通过 y=Cx+Du 立即直通输出，G(s) 在 s→∞ 时趋于 D，不是严格真。严格真要求高频增益趋于 0，因此状态实现可取 D=0。"
+    }
+  },
+  {
+    "n": 53,
+    "expert_note": "矩阵指数 e^{At} 是连续 LTI 的状态转移矩阵，既包含所有 eigenmodes，也构成输入卷积核。离散化时 A_d=e^{ATs}，B_d 则是对 e^{Aτ}B 的积分。",
+    "followup_answers": {
+      "Jordan block 对 e^{At} 有什么影响？": "Jordan block $J=\\lambda I+N$ 满足 $e^{Jt}=e^{\\lambda t}(I+Nt+N^2t^2/2!+...)$，所以会出现 $t^k e^{\\lambda t}$ 项。即使 eigenvalue 相同，缺少足够 eigenvectors 会改变瞬态。",
+      "如何从 e^{ATs} 得离散 A_d？": "零输入时 x((k+1)Ts)=e^{ATs}x(kTs)，因此 A_d=e^{ATs}。这不是近似，而是 ZOH/采样下状态自由演化的精确结果。",
+      "状态转移矩阵对时变系统如何定义？": "时变系统 x_dot=A(t)x 的状态转移矩阵 Φ(t,t0) 满足 ∂Φ/∂t=A(t)Φ、Φ(t0,t0)=I。一般不能写成 e^{A(t-t0)}，除非 A 在不同时刻满足特殊可交换条件。"
+    }
+  },
+  {
+    "n": 54,
+    "expert_note": "若 A 可对角化，e^{At}=V e^{Λt} V^{-1} 直接显示每个 eigenvalue 对应一个指数模态；Jordan block 会额外出现 t^k e^{λt}。non-normal A 即使所有特征值稳定，也可能出现很强暂态放大。",
+    "followup_answers": {
+      "什么是 non-normal dynamics？": "Non-normal 指 $AA^*\ne A^*A$，其 eigenvectors 可能高度非正交。即使所有 eigenvalues 都稳定，不同模态可短时间相干叠加产生大 transient growth，因此只看谱位置可能低估峰值。",
+      "Jordan block 为什么出现 t e^{lambda t}？": "Jordan block $J=\\lambda I+N$ 满足 $e^{Jt}=e^{\\lambda t}(I+Nt+N^2t^2/2!+...)$，所以会出现 $t^k e^{\\lambda t}$ 项。即使 eigenvalue 相同，缺少足够 eigenvectors 会改变瞬态。",
+      "左右特征向量分别有什么作用？": "右特征向量给状态空间中的模态形状 A v=λv；左特征向量 w^T A=λ w^T 描述输入如何激发模态、输出如何投影，并用于 participation factor、PBH controllability。"
+    }
+  },
+  {
+    "n": 55,
+    "expert_note": "坐标变换 z=Tx 产生 A'=TAT^{-1}、B'=TB、C'=CT^{-1}，保持 transfer behavior 与 eigenvalues。canonical/balanced coordinates 的价值在于凸显可控/可观结构或改善降阶数值性质。",
+    "followup_answers": {
+      "canonical form 有什么用途？": "Canonical form 把系统变换成可控、可观或 Jordan 等标准结构，便于理论证明、pole placement 和结构分析。但实际数值计算不一定使用它，因为可能 condition 很差。",
+      "balanced realization 为什么有利于降阶？": "Balanced realization 通过坐标变换让 controllability 与 observability Gramians 相等且对角，其对角 Hankel singular values 衡量状态同时‘易控且易观’程度，适合 balanced truncation 降阶。",
+      "controllability rank 在坐标变换下为什么不变？": "z=Tx 后 controllability matrix 变为 T[B,AB,...]，左乘可逆 T 不改变 rank，所以可控性是系统结构性质而非坐标性质。"
+    }
+  },
+  {
+    "n": 56,
+    "expert_note": "状态到传函由 G=C(sI-A)^{-1}B+D 得到；反向 realization 不唯一。可控标准型便于构造，但 numerical conditioning 不一定好；minimal realization 要同时可控、可观。",
+    "followup_answers": {
+      "什么是 controllable canonical form？": "SISO 最小传函可构造成 companion A、B=[0…1]^T 的形式，使 characteristic polynomial 系数直接出现在 A 中，且 controllability matrix 满秩，便于 pole placement 理论推导。",
+      "如何判断 realization minimal？": "线性有限维系统 realization minimal 当且仅当 (A,B) controllable 且 (A,C) observable。也可做 Kalman decomposition 并删除不可控/不可观块。",
+      "MIMO transfer matrix 的 McMillan degree 是什么？": "它是该传递矩阵所有最小状态空间 realization 的共同最小状态维数，不能简单把各元素分母次数相加。它反映共享内部动态后的真实系统阶次。"
+    }
+  },
+  {
+    "n": 57,
+    "expert_note": "MIMO 的难点不只是矩阵变大，而是通道耦合、方向性和 transmission zeros。多个独立 PID 可能互相‘打架’，RGA 等工具用于分析输入输出配对，但强耦合系统通常更适合集中式状态空间设计。",
+    "followup_answers": {
+      "为什么 decentralized PID 可能失败？": "每个 PID 把其他回路当扰动，但强耦合时一个 actuator 同时显著影响多个 output，闭合一条回路会改变另一条的有效增益/符号，甚至出现 interaction instability。",
+      "RGA 用于什么场景？": "RGA（Relative Gain Array）比较不同 input-output 配对在其他回路开/闭时的相对增益，用于选择 decentralized loop pairing。接近 1 的配对通常较自然，负值或很大值提示强耦合/方向冲突。",
+      "MIMO zeros 与 SISO zeros 有何不同？": "MIMO transmission zero 指某个复频率下存在非零输入方向使输出为零，同时满足内部动态约束；它是方向性概念，不等同于每个传函元素的分子零点。"
+    }
+  },
+  {
+    "n": 58,
+    "expert_note": "Jacobian 是非线性向量场在工作点的一阶导数，描述小扰动如何局部传播。平衡点线性化得到常系数模型；沿轨迹线性化通常得到 A(t),B(t) 的时变系统。",
+    "followup_answers": {
+      "轨迹线性化与平衡点线性化差别？": "平衡点线性化得到常数 A,B；沿名义轨迹 $(x^*(t),u^*(t))$ 线性化得到 $\\delta\\dot x=A(t)\\delta x+B(t)\\delta u$，适合 TVLQR 等轨迹跟踪设计。",
+      "线性化稳定能否推出非线性局部稳定？": "若 Jacobian 在 equilibrium 的所有 eigenvalues 实部严格负，则在常见光滑条件下可推出非线性局部渐近稳定；若有正实部则不稳定。临界零实部情形线性化无法判定。",
+      "Jacobian 有零实部 eigenvalue 时怎么办？": "需要看非线性高阶项，可用 Lyapunov、中心流形、normal form 或 LaSalle 等工具。不能因为线性模型“没有正实部”就声称稳定。"
+    }
+  },
+  {
+    "n": 59,
+    "expert_note": "state feedback u=-Kx 把 A 改为 A-BK，因此 pole placement 是直接设计闭环 eigenvalues。MIMO 中 K 通常不唯一；Ackermann 公式适合理论和小 SISO，工程上更常用数值稳定的算法。",
+    "followup_answers": {
+      "Ackermann formula 有什么局限？": "Ackermann 通过 controllability matrix 显式构造 SISO pole-placement gain，理论清晰但对高阶系统数值条件差，MIMO 也不直接适用。工程实现更偏向 Schur/QR 等稳健算法。",
+      "MIMO pole placement 解是否唯一？": "一般不唯一。多个输入提供额外自由度，可在保持 eigenvalues 的同时调整 eigenvectors、gain norm 或结构；数值算法通常会选条件更好的解。",
+      "reference tracking 如何加入 precompensator？": "使用 u=-Kx+Nr。对常值 reference，选择 N 使闭环 DC map C[-(A-BK)^{-1}B]N+D 等于目标 identity；MIMO 情况需检查可逆性/维度。"
+    }
+  },
+  {
+    "n": 60,
+    "expert_note": "纯 state feedback 并不自动保证 reference 零误差。可通过静态 precompensator/Nbar 修正 DC gain，或扩展积分状态形成 servo LQR/pole placement；后者对常值扰动和模型误差更鲁棒。",
+    "followup_answers": {
+      "Nbar 如何计算？": "对 SISO 连续系统 $u=-Kx+N_{bar}r$，可根据闭环 DC gain 求 $N_{bar}$，使常值 reference 的稳态输出等于 r。它依赖模型准确度，对常值未知扰动不如积分 augmentation 鲁棒。",
+      "为什么 integral action 可视为 internal model？": "积分状态 z_dot=r-y 内含常值信号生成器的 pole at zero。把 z 增广进 plant 后，闭环若稳定就会迫使稳态 z_dot=0，即 r-y=0。",
+      "MIMO reference integral 如何选择维度？": "通常对需要零稳态误差的独立输出各加一个积分状态，但必须检查 augmented system stabilizable、输出通道不在不利 invariant zero 上，并避免积分维数超过可实现控制自由度。"
+    }
+  },
+  {
+    "n": 61,
+    "expert_note": "可控性问的是输入能否在有限时间影响全部状态方向。PBH test 直接检查每个 eigenmode 是否能被 B 激发；Gramian 很小的 eigenvalue 表示理论可控但需要巨大能量，属于‘难控’。",
+    "followup_answers": {
+      "PBH controllability test 是什么？": "PBH test：对每个 eigenvalue $\\lambda$ 检查 $\\operatorname{rank}[\\lambda I-A\\; B]=n$；等价地，不存在 A 的左特征向量 $v^T$ 满足 $v^TB=0$。它直接检查每个模态是否被输入触达。",
+      "可控但非常难控是什么意思？": "rank 满只说明理论上存在有限输入能到达状态；若 controllability Gramian 极小 eigenvalue，某方向所需能量巨大，实际 actuator 限制下几乎不可达。",
+      "Gramian eigenvalue 小代表什么？": "有限/无限时域 controllability Gramian 的小 eigenvalue 表示沿某状态方向达到单位幅值需要很大输入能量。rank 只告诉可控/不可控，Gramian 则体现‘好不好控’和 numerical conditioning。"
+    }
+  },
+  {
+    "n": 62,
+    "expert_note": "Stabilizable 只要求所有不可控模态本身稳定，这已经足够设计稳定反馈。LQR 的存在性通常要求 stabilizable 以及相应 detectability，而不是完整 controllability。",
+    "followup_answers": {
+      "detectability 与 stabilizability 对偶是什么？": "(A,B) stabilizable 等价于所有不可控模态稳定；(A,C) detectable 等价于所有不可观模态稳定。通过转置，detectability of (A,C) 对偶于 stabilizability of (A^T,C^T)。",
+      "LQR 为什么只要求 stabilizable？": "LQR 只需要能控制所有不稳定/非衰减模态；不可控但本身稳定的模态不需要被反馈移动。再配合 (Q^{1/2},A) detectability 可保证稳定 Riccati 解。",
+      "不可控稳定模态会不会影响输出？": "会，取决于 C 和初始条件/扰动。它可能出现在输出中但无法由 u 改变；若很慢，仍会限制 transient performance，即使不破坏稳定性。"
+    }
+  },
+  {
+    "n": 63,
+    "expert_note": "可观性问的是输出历史能否区分不同初始状态。传感器数量少不等于不可观，因为系统动力学会把未直接测量状态的信息传播到输出；sensor placement 会改变 observability Gramian 的条件数。",
+    "followup_answers": {
+      "PBH observability test？": "PBH observability test 检查 $\\operatorname{rank}[\\lambda I-A; C]=n$；等价地，不存在 A 的右特征向量 v 满足 Cv=0。它逐模态判断是否能在输出中看到。",
+      "observable 与 identifiable 有何区别？": "Observability 通常是在已知模型参数下由输入输出恢复状态；identifiability 是能否从数据唯一估计未知模型参数。系统可观并不保证所有参数都可辨识。",
+      "sensor placement 如何影响 Gramian？": "不同 C 改变 observability Gramian 的 eigenvalues/condition number。好的 sensor placement 不仅使 rank 满，还让最难观方向的 Gramian eigenvalue 足够大，并考虑噪声和成本。"
+    }
+  },
+  {
+    "n": 64,
+    "expert_note": "Detectability 只要求所有不可观模态稳定，因此即使不能重构每个稳定内部模态，估计误差仍可收敛到可接受行为。它是 observer/Kalman 存在性的更弱、更实用条件。",
+    "followup_answers": {
+      "为什么 Kalman filter 常要求 detectability？": "若某不可观模态本身不稳定，任何 measurement update 都无法修正该方向的估计误差，协方差会发散。Detectability 保证所有看不到的模态至少稳定，因此稳定 Kalman observer 才可能存在。",
+      "detectability 与 stabilizability 如何对偶？": "Detectability 与 stabilizability 是转置意义下的对偶：$(A,C)$ detectable 等价于 $(A^T,C^T)$ stabilizable。前者要求所有不可观模态稳定，后者要求所有不可控模态稳定；这正是 observer 与 state-feedback 存在条件的镜像结构。",
+      "不可观稳定模态会留在估计误差中多久？": "它不能被 measurement correction 直接消除，只按自身稳定 dynamics 自然衰减。若 pole 很接近虚轴/单位圆，误差可能持续很久，因此 detectability 虽保证最终稳定，不保证估计速度好。"
+    }
+  },
+  {
+    "n": 65,
+    "expert_note": "Luenberger observer 用 innovation y-Cxhat 注入校正，误差动力学为 e_dot=(A-LC)e。reduced-order observer 利用已直接测量状态减少估计维度；未知输入 observer 则要求对某些扰动解耦。",
+    "followup_answers": {
+      "observer poles 通常比 controller 快多少？": "常见经验是比 controller 主要极点快约 2–5 倍，但这不是定律。应根据 sensor noise、sampling rate、unmodeled dynamics 和 estimator peaking 验证；高噪声系统往往不能追求过快 observer。",
+      "reduced-order observer 何时用？": "当部分状态被直接测量时，可只估计剩余未测状态，降低 observer 阶次和计算量。设计需要先做坐标分解，使已测与未测状态结构显式化。",
+      "未知输入 observer 是什么问题？": "希望在存在未测扰动 d 的情况下估计状态，同时让 estimation error 对 d 解耦或可重构。可行性依赖未知输入进入矩阵与输出矩阵的 rank/结构条件。"
+    }
+  },
+  {
+    "n": 66,
+    "expert_note": "Observer poles 太快会需要大 L，从而把 measurement noise、model mismatch 和离散误差强烈注入估计。高增益 observer 是非线性/快速估计中的典型思想，但需要明确噪声与 peaking 问题。",
+    "followup_answers": {
+      "高增益 observer 是什么？": "通过把 observer error poles 放得很快，让输出误差迅速校正未测状态，常见于可观规范形的非线性系统。代价是 peaking、measurement noise 放大和未建模动态敏感。",
+      "为什么 Kalman filter 自动权衡噪声？": "Kalman gain 由 predicted covariance 与 R 的相对大小决定：模型不确定度大时更信 measurement，R 大时更信 prediction。这个权衡来自最小化估计误差协方差，而非手工指定 pole。",
+      "observer 与 low-pass filter 有什么本质区别？": "Low-pass 只按信号频率衰减，不利用 plant 状态方程；observer 用 dynamics、input 和 measurement 联合重构内部状态，可估计未直接测变量并在模型可信时获得更低相位延迟。"
+    }
+  },
+  {
+    "n": 67,
+    "expert_note": "Separation principle 说明线性 observer-based feedback 的控制极点和估计极点可分开设计，闭环 eigenvalues 是 A-BK 与 A-LC 的并集。但这不等于鲁棒性也能分开优化；LQG 的脆弱性就是典型提醒。",
+    "followup_answers": {
+      "LQG 的 separation principle 是什么？": "LQG 的最优控制与最优估计可以分别求解：LQR 由 control Riccati 得 K，Kalman 由 estimation Riccati 得 L；组合后闭环稳定性在相应 stabilizable/detectable 条件下成立。",
+      "非线性系统还有分离原理吗？": "一般没有像 LTI 那样普适的严格 separation principle。某些非线性 observer/controller 在额外 ISS、小增益或局部条件下可组合，但必须单独证明整体稳定。",
+      "observer-based controller 的内部稳定条件？": "典型 LTI 条件是 plant stabilizable、detectable，并选 K 使 A-BK Hurwitz、L 使 A-LC Hurwitz；组合后的 augmented closed-loop matrix 可变换为块三角，其 eigenvalues 为两者并集。"
+    }
+  },
+  {
+    "n": 68,
+    "expert_note": "steady-state Kalman filter 本质上是一个由 Riccati 方程决定 L 的 Luenberger observer。区别在于 Kalman 不是直接选 pole，而是根据 process/measurement noise covariance 最小化估计误差协方差。",
+    "followup_answers": {
+      "steady-state Kalman gain 与 Luenberger L 有何关系？": "稳态 Kalman filter 的 gain 是特定 Luenberger gain：L 由稳态 Riccati covariance 和 Q/R 决定，而普通 Luenberger L 可按 pole placement 等任意稳定设计。",
+      "innovation 应满足什么统计特性？": "理想正确建模的 Kalman filter 中，innovation 应近似零均值、时间白化，其 covariance 应匹配理论 $S_k=CP_k^-C^T+R$。持续偏置、相关性或 NIS 超界都提示 Q/R、模型、bias 或时序问题。",
+      "如何用 innovation 做 filter consistency check？": "检查 innovation 是否近似零均值、白噪声，并且 NIS 统计与理论 chi-square 区间匹配；再看频谱/自相关判断是否有模型遗漏、bias 或时间同步问题。"
+    }
+  },
+  {
+    "n": 69,
+    "expert_note": "Predict 使用模型传播均值和不确定度；Update 用 innovation 和其 covariance 做贝叶斯式校正。Joseph form 的协方差更新数值上更能保持对称与半正定，工程实现中比简化公式更稳健。",
+    "followup_answers": {
+      "Joseph covariance update 是什么？": "Joseph form 为 $P^+=(I-KC)P^-(I-KC)^T+KRK^T$。它与理想代数下的简式等价，但有限精度下更容易保持 P 的对称和半正定。",
+      "innovation covariance S 如何计算？": "离散 Kalman 中 S_k=C P_k^- C^T+R（若 measurement matrix 时变则用 C_k）。它是计算 gain K=P^- C^T S^{-1} 和 NIS 的核心归一化尺度。",
+      "缺测量时 filter 怎么做？": "缺 measurement 时只做 predict，不做 update；协方差会随过程噪声增长。恢复测量后再用实际 timestamp 对齐更新，若长时间 dropout 还需考虑重新初始化/一致性门限。"
+    }
+  },
+  {
+    "n": 70,
+    "expert_note": "Kalman 的 Q/R 应来自噪声统计或模型失配尺度，而不是单纯‘滤波强弱’。NIS/NEES、innovation whiteness、Allan variance 等工具可用于一致性检查；若状态相关或非高斯，应考虑 EKF/UKF/robust filtering 等扩展。",
+    "followup_answers": {
+      "如何从 Allan variance 估 IMU 噪声？": "Allan variance/deviation 通过不同 averaging time 下的统计斜率分离白噪声、bias instability、random walk 等 IMU 噪声成分，可据此建立更物理的 process/measurement noise 参数。",
+      "NIS/NEES consistency test 是什么？": "NIS 用 innovation 与其 covariance 做归一化二次型，NEES 用真实状态误差（仿真/有真值时）与 P 做归一化。长期统计应落在相应卡方置信区间内，用于检查 filter 是否过度自信或过度保守。",
+      "状态相关噪声如何处理？": "若噪声 covariance 随状态/输入变化，可在线更新 Q(x,u),R(x,u)，或在 EKF/UKF 中按当前线性化传播。若噪声强非高斯/乘性，还可能需要 particle/robust filter。"
+    }
+  },
+  {
+    "n": 71,
+    "expert_note": "Pole placement 直接指定 dynamics，LQR 则通过 cost 间接决定 closed-loop poles，并自然权衡 state error 与 control effort。LQR poles 不能任意预先指定，但通过 Q/R 可以系统地移动。",
+    "followup_answers": {
+      "LQR poles 能预先指定吗？": "不能像 pole placement 那样任意逐个指定；它们由 A,B,Q,R 的 Riccati 解共同决定。可以通过调 Q/R、inverse LQR 等方法间接塑形，但要保留最优问题结构。",
+      "Bryson rule 是什么？": "Bryson rule 常取 $Q_{ii}=1/x_{i,max}^2$、$R_{jj}=1/u_{j,max}^2$ 作为尺度化初值，使每个归一化状态/输入在接近允许上限时产生同量级 cost。之后仍需根据性能迭代。",
+      "LQR 的鲁棒性有哪些经典性质？": "连续全状态 LQR 在标准条件下具有很好的 return difference 性质，SISO 常提到至少约 6 dB gain margin 和 60° phase margin 的经典结果（需满足对应假设和 loop opening 定义）。加入 observer 后这些性质不自动保持。"
+    }
+  },
+  {
+    "n": 72,
+    "expert_note": "Q/R 选取首先要做尺度归一化。Bryson rule 用允许最大状态/输入作为初值；off-diagonal Q 可以惩罚状态耦合组合，但需要保证 Q 半正定并有明确物理意义。",
+    "followup_answers": {
+      "Q 可以有 off-diagonal 项吗？": "可以。off-diagonal 表示惩罚状态间相关组合或交叉项，但必须让 Q 保持半正定。若没有明确物理/几何意义，通常先用归一化对角 Q 更容易调试和解释。",
+      "R 很小会发生什么？": "控制输入几乎不受惩罚，LQR 会倾向大 gain/快 poles，可能产生巨大的 peak u、噪声敏感和饱和。数学最优不等于硬件可实现。",
+      "如何把 tracking 问题改成 LQR？": "可围绕参考 equilibrium 做误差坐标 LQR，并加入稳态 feedforward；对常值未知偏差，常增广积分状态；对时间轨迹则使用 trajectory linearization + TVLQR。"
+    }
+  },
+  {
+    "n": 73,
+    "expert_note": "Riccati 方程来自 Bellman optimality / Hamilton-Jacobi-Bellman 对二次 value function V=x^TPx 的代入。finite-horizon 情形是从 terminal cost 向后递推 P_k；无限时域稳定后收敛到代数 Riccati 方程。",
+    "followup_answers": {
+      "离散 Riccati 方程长什么样？": "离散无限时域 DARE：$P=A^TPA-A^TPB(R+B^TPB)^{-1}B^TPA+Q$，最优增益 $K=(R+B^TPB)^{-1}B^TPA$。",
+      "finite-horizon LQR 为什么是 Riccati backward recursion？": "动态规划从终端 value function V_N=x_N^T P_N x_N 开始，向前一个时间步最小化 u 后得到新的二次 value function，因此 P 必须从 N 向 0 递推。",
+      "P 与 Lyapunov 函数有何联系？": "LQR 的 value function $V=x^TPx$ 同时可作为闭环 Lyapunov function；代入最优闭环可证明 $\\dot V=-(x^TQx+u^TRu)$，把最优性与稳定性连接起来。"
+    }
+  },
+  {
+    "n": 74,
+    "expert_note": "LQG 把 LQR 与 Kalman 组合，并保留 separation principle，但经典 LQR 的良好 gain/phase margin 并不会原样传给 observer-based LQG。LQG/LTR 的目标之一就是恢复部分 loop-transfer 鲁棒特性。",
+    "followup_answers": {
+      "LQG/LTR 是什么？": "LQG/LTR（loop transfer recovery）通过调整 Kalman 设计中的虚拟噪声强度等方式，使 observer-based loop transfer 在某个位置逼近 LQR 全状态反馈的鲁棒 loop shape，从而恢复部分 margin。",
+      "为什么 separation 不等于 robust separation？": "控制器和 observer 的 nominal poles 可独立设计，但它们对 model uncertainty/noise 的 loop interaction 仍耦合。特别是高增益 observer 可能破坏全状态反馈原本的 margin。",
+      "LQR gain margin 的经典结果是什么？": "对标准连续 SISO 全状态 LQR，经典 return-difference 结果给出很强的 nominal gain/phase robustness，常引用 gain 可缩小到 1/2、放大任意以及约 ±60° 相位的性质；具体表述依 loop breaking/假设，面试最好说明“observer-based LQG 不自动继承”。"
+    }
+  },
+  {
+    "n": 75,
+    "expert_note": "MPC 每次求有限时域约束优化，只执行第一个控制量，再用新状态滚动重算，因此天然形成 feedback。terminal cost/set 对递归可行性和稳定性很重要；explicit MPC 则预先离线求出分段仿射控制律。",
+    "followup_answers": {
+      "为什么只执行第一步？": "执行后系统会收到新 measurement，模型误差和扰动使原先整条 open-loop optimal sequence 不再最优。只执行第一步并滚动重算，才能把优化器变成 feedback controller。",
+      "terminal cost/terminal set 有什么作用？": "Terminal cost 常近似剩余无限时域 cost，terminal set 则保证在预测末端存在一个局部控制律可持续满足约束。两者用于建立递归可行性与稳定性证明，而不只是数值调参。",
+      "explicit MPC 是什么？": "对线性系统、二次 cost 和多面体约束，可离线求解参数化 QP，把状态空间划分成多个 polyhedral regions，每个区域控制律是仿射函数。在线只需区域查找，适合算力有限但维数不高的系统。"
+    }
+  },
+  {
+    "n": 76,
+    "expert_note": "Prediction horizon 越长通常越接近长远最优，但计算量、模型误差积累和数值问题也增加。Control horizon/move blocking 可减少自由变量，warm start 可显著降低实时求解时间。",
+    "followup_answers": {
+      "control horizon 与 prediction horizon 有何区别？": "Prediction horizon 决定向未来预测/计 cost 多远；control horizon 决定有多少未来 control moves 独立优化，之后可保持不变或按规则延伸。较短 control horizon 能减变量但降低自由度。",
+      "warm start 为什么重要？": "MPC 相邻两个采样时刻的最优解通常很接近，因此可把上一周期解向前平移作为初值，显著减少 QP/NLP solver iteration 和 worst-case latency。",
+      "move blocking 用来做什么？": "把多个未来时间步共享同一个 control decision，减少优化变量和计算量，也能让控制更平滑。代价是可实现 trajectory 集合变小，最优性下降。"
+    }
+  },
+  {
+    "n": 77,
+    "expert_note": "Robust stability 是对整个不确定模型集合的稳定保证。small-gain theorem 对 unstructured norm-bounded uncertainty 很直接；structured uncertainty 需要保留参数/块结构，μ-analysis 用于更少保守地评估。",
+    "followup_answers": {
+      "small-gain theorem 怎么用于 robust stability？": "若两个稳定块 M 与 Δ 构成反馈互联，且 $\\|M\\|_\\infty\\|\\Delta\\|_\\infty<1$，则互联稳定。鲁棒控制中把不确定性归一化为 $\\|\\Delta\\|\\le1$ 后，就得到对加权 T/S 等通道的约束。",
+      "structured uncertainty 与 unstructured 区别？": "Unstructured 用一个 full norm-bounded dynamic block 包住所有误差，简单但可能保守；structured 保留多个实参数、重复标量、独立动态块等真实结构，可用 μ 等方法得到更精细 margin。",
+      "mu-analysis 解决什么问题？": "Structured singular value μ 保留不确定性的块对角/实参数/复动态结构，判断最小多大结构化扰动会使系统奇异/失稳。相比把所有不确定性合并成一个 full block 的 small-gain，通常更少保守。"
+    }
+  },
+  {
+    "n": 78,
+    "expert_note": "H∞ 最小化最坏频率方向上的增益，MIMO 下用最大奇异值衡量最坏输入方向。mixed sensitivity 常把 W1S、W2KS、W3T 同时作为性能输出，把跟踪、控制努力和高频鲁棒性统一起来。",
+    "followup_answers": {
+      "mixed sensitivity formulation 是什么？": "典型目标 $\\min_K\\|[W_1S,\\;W_2KS,\\;W_3T]\\|_\\infty$。$W_1$ 编码低频误差，$W_2$ 编码 actuator/control effort，$W_3$ 编码高频噪声与不确定性。权重选择决定真正的工程需求。",
+      "H2 与 H-infinity 区别？": "H2 更接近“平均/能量”指标：对稳定系统，其 H2 norm 可解释为单位脉冲响应能量，在线性白噪声模型下与输出方差/RMS 性能相关。H∞ 则取所有频率和输入方向中的最大增益，强调最坏情况 disturbance amplification；所以 H2 偏 stochastic/average performance，H∞ 偏 worst-case robustness。",
+      "为什么 MIMO 用最大奇异值？": "对矩阵频响 G(jω)，最大奇异值等于所有单位输入方向中输出 2-norm 的最大放大倍数，是最坏方向增益；因此很自然用于 H∞ worst-case 分析。"
+    }
+  },
+  {
+    "n": 79,
+    "expert_note": "Robust control 用一个固定控制器覆盖参数集合；adaptive control 在线更新参数/控制律。MRAC 通过 reference model 定义期望动态，persistent excitation 决定参数能否真正收敛；σ-modification 可改善噪声/未建模动态下的漂移。",
+    "followup_answers": {
+      "MRAC 的 reference model 做什么？": "Reference model 明确定义希望闭环呈现的目标动态 x_m。Adaptive law 根据 tracking error 调整 controller 参数，使 plant output/state 跟随该 model，而不是直接追求某个固定 gain。",
+      "persistent excitation 为什么重要？": "PE 意味着回归向量在时间上提供足够丰富方向信息，使未知参数可辨识。没有 PE 时 adaptive controller 仍可能实现 tracking，但参数估计不一定收敛到真实值。",
+      "sigma modification 有什么作用？": "σ-modification 在参数更新律中加入泄漏项如 $-\\sigma\\hat\\theta$，抑制噪声和未建模动态导致的 parameter drift，代价是引入小的稳态偏差。"
+    }
+  },
+  {
+    "n": 80,
+    "expert_note": "DOB/ADRC 都试图把未知动态和外扰压缩成可估计的‘总扰动’，再实时补偿。DOB 的 Q-filter 决定估计带宽和噪声权衡；ESO 通过扩张状态估计总扰动。它们与积分控制都能抗常值扰动，但动态范围和结构假设不同。",
+    "followup_answers": {
+      "DOB 的 Q-filter 起什么作用？": "DOB 的 Q-filter 限制逆模型和 disturbance estimation 的带宽：低频让 Q≈1 以估计/补偿扰动，高频让 Q→0 避免模型逆和测量噪声放大。其带宽不能超过 plant inverse 可信频段。",
+      "ESO 扩张状态是什么？": "ESO 把未知总扰动当作额外状态，例如把 $f(x,t)+d$ 扩展为一个待估状态，再用高带宽 observer 估计并补偿。设计关键仍是 observer bandwidth 与噪声/未建模动态折中。",
+      "disturbance rejection 与 integral action 如何比较？": "积分对常值/低频扰动非常有效但反应由误差积累触发；DOB/ESO 可在更宽频段估计并前馈补偿扰动，但依赖模型/observer bandwidth。两者可以组合，但需避免重复高增益和噪声放大。"
+    }
+  },
+  {
+    "n": 81,
+    "expert_note": "数字实现会引入采样、ZOH、计算延迟、量化和数值误差，因此‘连续设计稳定’不是上线保证。ZOH 表示执行器在两次更新间保持命令，实际产生额外相位滞后与 intersample behavior。",
+    "followup_answers": {
+      "ZOH 在采样间隔做什么？": "ZOH 在 $[kT_s,(k+1)T_s)$ 内保持 $u(t)=u[k]$。它是多数 DAC/PWM command update 的自然模型，导致 intersample response，并在频域引入 sinc 幅值与近似半采样周期相位滞后。",
+      "fixed-point PID 有哪些风险？": "主要风险包括系数/状态量化、积分器 overflow、乘加溢出、舍入 bias、差分噪声和 limit cycle。需要 Q-format/range 分析、饱和算术、单元测试和 worst-case input sweep。",
+      "multi-rate control 如何设计？": "先按动态时间尺度给 inner/outer loops 和 sensors 选不同 rates；明确 fast-to-slow 的 anti-alias/downsample 与 slow-to-fast hold/interpolation，并把 rate-transition delay 放入模型。多速率 estimator 需按各 measurement timestamp 更新。"
+    }
+  },
+  {
+    "n": 82,
+    "expert_note": "映射 z=e^{sTs} 把左半平面映到单位圆内部；连续阻尼线在 z 平面变为对数螺旋结构。离散频率对应单位圆角度 Ω=ωTs（模 2π），而 aliasing 是不同连续频率映射到同一离散频率的采样现象。",
+    "followup_answers": {
+      "连续阻尼比如何映射到 z-plane？": "连续 pole $s=-\\zeta\\omega_n\\pm j\\omega_d$ 映成 $z=e^{sT_s}$，模长 $e^{-\\zeta\\omega_nT_s}$ 决定每采样衰减，角度 $\\omega_dT_s$ 决定离散振荡频率。",
+      "单位圆角度对应什么离散频率？": "z=e^{jΩ} 的角度 Ω 是 rad/sample，连续角频率满足 Ω=ωTs（在 Nyquist 区间）。因此单位圆从 0 到 π 对应 DC 到 fs/2。",
+      "aliasing 与 pole mapping 有什么区别？": "Pole mapping z=e^{sTs} 描述连续动态在采样点的模态对应；aliasing 是不同连续频率相差整数倍采样频率后产生同一离散正弦。前者是模型变换，后者是信息不可区分。"
+    }
+  },
+  {
+    "n": 83,
+    "expert_note": "Nyquist 2 倍只是避免理想带限信号混叠的理论下限，不保证控制性能。控制采样通常应显著高于 closed-loop bandwidth，并留出 anti-alias filter、计算 delay 和 jitter 的相位余量。",
+    "followup_answers": {
+      "anti-alias filter 如何选 cutoff？": "Anti-alias filter cutoff 必须低于 Nyquist，同时不应在控制 crossover 附近引入过多相位。通常需要结合 sensor noise spectrum、desired bandwidth 和采样率联合设计，而不是固定取 $f_s/2$。",
+      "inner loop 与 outer loop 可不同采样率吗？": "可以而且常见。内环通常更快；外环慢速计算降低 CPU 负担。关键是跨速率信号同步、hold、滤波和 latency，避免把异步更新当成同一时刻数据。",
+      "sampling jitter 如何等效成相位噪声？": "Jitter 相当于采样/actuation 时间的小随机延迟，某频率上的相位误差约为 $\\omega\\delta t$。高频或高 crossover 系统因此对时间抖动特别敏感，可在 robustness test 中注入 timing distribution。"
+    }
+  },
+  {
+    "n": 84,
+    "expert_note": "ZOH 精确离散化为 A_d=e^{ATs}、B_d=∫_0^Ts e^{Aτ}B dτ。block-matrix exponential 可以一次得到 A_d,B_d；Forward Euler 只是近似，采样不够快时会把稳定连续系统映成不稳定离散模型。",
+    "followup_answers": {
+      "forward Euler 的稳定性问题是什么？": "Forward Euler 用 $A_d\\approx I+AT_s$，连续 pole λ 映成 $1+\\lambda T_s$。即使 Re(λ)<0，只要 $|1+\\lambda T_s|>1$ 就会产生离散数值不稳定，因此不能把它当精确离散化。",
+      "matrix exponential block trick 怎么做？": "构造块矩阵 $M=\\begin{bmatrix}A&B\\0&0\\end{bmatrix}$，计算 $e^{MT_s}=\\begin{bmatrix}A_d&B_d\\0&I\\end{bmatrix}$，可一次得到 ZOH 的 $A_d,B_d$，避免显式求 $A^{-1}$。",
+      "FOH 与 ZOH 区别？": "ZOH 假设每个采样区间输入保持常值；FOH 假设输入在相邻样本间线性变化。FOH 对某些连续指令重构更准确，但 realization 与实时实现更复杂。"
+    }
+  },
+  {
+    "n": 85,
+    "expert_note": "Tustin 用双线性变换把整个左半平面映到单位圆内，稳定性映射好，但频率轴发生 warping。Prewarping 让某个关键频率精确匹配，常选 crossover 或 resonance 附近。",
+    "followup_answers": {
+      "prewarping 怎么选频率？": "Tustin 频率映射为 $\\omega_a=(2/T_s)\\tan(\\Omega/2)$。若希望某关键模拟频率 $\\omega_0$ 精确对应，可调整变换系数使该点不发生 warping，通常选 crossover/resonance。",
+      "matched pole-zero method 与 Tustin 比较？": "Matched method 直接把连续 poles/zeros 用 z=e^{sTs} 映射，再调 gain，能保持关键模态但频率整体匹配不统一；Tustin 全局一一映射左半平面并保持稳定性，但有 frequency warping。",
+      "integrator 用 Tustin 后是什么差分形式？": "由 1/s 和 s=(2/T)(z-1)/(z+1)，得到离散积分 I[k]=I[k-1]+(T/2)(e[k]+e[k-1])，即 trapezoidal integration。"
+    }
+  },
+  {
+    "n": 86,
+    "expert_note": "一个 sample delay 在频域近似增加 -ωTs 相位；对高 crossover 系统非常致命。实际链路常包含 sensor timestamp、bus、scheduler、compute、PWM update，多项延迟需要按最坏情况/分布共同建模。",
+    "followup_answers": {
+      "PWM zero-order hold 带来什么延迟？": "PWM 更新通常只能在载波边界生效，等效产生 0 到 1 个 PWM 周期的 update delay，平均常近似半周期。具体取决于 center/edge aligned 和 shadow register 更新策略。",
+      "如何做 timestamp-based sensor fusion？": "每条 measurement 带采样时刻而非到达时刻。Estimator 先把 state propagate 到该 timestamp 做 update，再传播到当前控制时刻；对乱序/延迟数据可用 buffer、OOSM 方法或固定滞后 smoother。",
+      "deadline miss 应如何进入 robustness test？": "把 miss 建模成随机/突发额外 sample delay、保持旧控制量或丢更新，并按实测 worst-case distribution 注入 HIL/Monte Carlo。KPI 要包含连续 miss 长度而不只平均 CPU load。"
+    }
+  },
+  {
+    "n": 87,
+    "expert_note": "离散 PID 不应只把连续公式直接换成差分。应明确积分离散法、derivative filter、anti-windup、setpoint weighting、输出限幅与更新顺序；incremental PID 可减少大偏置并便于 bumpless transfer。",
+    "followup_answers": {
+      "incremental PID 有什么优势？": "Incremental/velocity PID 直接计算 $\\Delta u[k]$ 而不是绝对 u，便于限制 rate、bumpless transfer 和固定点实现，也能减少大 DC 偏置存储；但积分 windup 与 saturation 逻辑仍需显式处理。",
+      "derivative filter 如何离散化？": "先选连续 filtered derivative，例如 Kd s/(1+s/ωf)，再用 Tustin/ZOH 等一致方法离散；避免先差分再随意加 moving average，因为那会产生额外未知相位。",
+      "anti-windup 逻辑放在什么顺序？": "通常先计算 P/I/D 与 feedforward，形成 raw command；经过总输出 saturation/rate limit 得 actual/limited command，再用二者 residual 回算积分器。若有内外环，需明确哪一级实际 actuator residual 回传到哪一级。"
+    }
+  },
+  {
+    "n": 88,
+    "expert_note": "量化会产生 limit cycle、deadband 和稳态抖动；fixed-point 还会 overflow、roundoff 和系数量化导致 pole shift。工程上需做 scaling、saturation arithmetic、range analysis，并在必要时使用 dither 打破确定性量化循环。",
+    "followup_answers": {
+      "encoder resolution 如何限制位置稳态抖动？": "编码器位置只能以最小计数 Δx 变化，闭环在目标落在两个码之间时会出现 deadband 或在相邻计数间来回切换。高 Kp 会把 1 count 误差变成较大 torque，差分速度估计还会放大量化噪声，因此实际稳态精度和抖动下限受 resolution、mechanical compliance、friction 与滤波共同限制。",
+      "fixed-point overflow 如何避免？": "做 worst-case range analysis，为 state/accumulator 留 guard bits；采用 saturation arithmetic 而非 wrap-around；选择合适 Q-format，离线扫极端输入并对 C/汇编实现做 bit-exact test。",
+      "dither 为什么能改变量化行为？": "加入小随机/确定扰动可打破量化误差与信号的锁定，使确定性 limit cycle/deadzone 变成近似零均值噪声，改善平均分辨率；代价是噪声能量增加。"
+    }
+  },
+  {
+    "n": 89,
+    "expert_note": "Multi-rate 常用于内环快速、外环慢速或不同传感器异步更新。关键是 rate transition、anti-aliasing、hold 方式和时间戳一致性；异步 Kalman 应按实际 measurement timestamp 做 propagation/update。",
+    "followup_answers": {
+      "rate transition block 解决什么？": "Rate transition block 用确定的 hold/buffer/同步策略在不同任务速率间传递数据，避免读写竞争和隐式随机 delay。控制分析时要把其 hold 与 latency 作为系统的一部分。",
+      "如何避免 downsample aliasing？": "在降采样前先低通，使超过新 Nyquist 的能量充分衰减，再 decimate。控制系统还要把滤波器相位/群延迟计入 loop。",
+      "异步传感器如何融入 Kalman？": "按事件驱动：模型以控制/IMU 高频传播，每个 sensor 到来时用自己的 H,R 和 timestamp 做 measurement update。不要强行把所有数据插值到一个虚假同步时刻而忽略 delay。"
+    }
+  },
+  {
+    "n": 90,
+    "expert_note": "上线验证应形成 SIL→PIL→HIL→受限实机的证据链，并注入 saturation、delay、noise、dropout、parameter spread 等非理想因素。最终需要自动回归 KPI，而不是靠人工看曲线。",
+    "followup_answers": {
+      "PIL 与 SIL 差别？": "SIL 在主机上验证控制代码逻辑与数值；PIL 把同一代码放到目标处理器上，进一步暴露编译器、fixed-point、执行时间和硬件数值差异。HIL 再加入实时 plant/IO 仿真。",
+      "HIL 里怎样模拟 actuator saturation？": "在实时 plant model 中同时实现 amplitude、rate、deadzone、delay、current/thermal limit，并输出 actual actuator state。控制器应看到和真实硬件相同的 feedback/状态，而不只是对命令简单 clip。",
+      "如何设计自动回归控制指标？": "定义按场景计算的 peak/RMS error、settling、overshoot、control effort/rate、saturation duty、stability proxy、timing miss 等，并设 baseline+tolerance。CI/HIL 中每次版本自动跑相同场景并输出 pass/fail 与趋势。"
+    }
+  },
+  {
+    "n": 91,
+    "expert_note": "Lyapunov 方法把‘轨迹是否收敛’转成‘是否存在沿轨迹单调下降的能量函数’。V 正定、Vdot 负定给渐近稳定；Vdot 仅半负定时通常要借助 LaSalle 不变性原理。",
+    "followup_answers": {
+      "LaSalle invariance principle 解决什么？": "当 $\\dot V\\le0$ 但不是严格负定时，LaSalle 考察集合 $\\{x:\\dot V=0\\}$ 中最大的 invariant set；若其中只有平衡点，就仍可推出渐近收敛。",
+      "positive definite 如何判断？": "二次型 V=x^T P x 时，P 对称正定可用 eigenvalues 全正、Sylvester leading principal minors 全正或 Cholesky 成功判断。一般非线性函数则需证明 V(0)=0 且邻域内 x≠0 时 V(x)>0。",
+      "region of attraction 如何用 level set 估计？": "选 Lyapunov level set $\\Omega_c=\\{x:V(x)\\le c\\}$，若其位于模型有效域/约束域内且边界上 $\\dot V<0$，则该集合可作为吸引域的保守内估计。"
+    }
+  },
+  {
+    "n": 92,
+    "expert_note": "线性 Lyapunov 方程 A^TP+PA=-Q 将 Hurwitz 稳定性与正定二次函数连接起来。P 的 level set 是椭球，可用于局部 invariant set/region-of-attraction 估计；common Lyapunov function 可证明一族切换/不确定系统共同稳定。",
+    "followup_answers": {
+      "离散 Lyapunov 方程是什么？": "离散 LTI $x_{k+1}=Ax_k$ 的 Lyapunov 方程为 $A^TPA-P=-Q$。若对任意 Q>0 存在 P>0，则 A 的所有 eigenvalues 在单位圆内。",
+      "P 的 level set 如何形成 invariant ellipsoid？": "V=x^TPx 的集合 V≤c 是椭球。若在其边界上 V_dot<0 且集合不越过约束/模型有效域，则向量场指向内部，该 ellipsoid 正向不变。",
+      "common Lyapunov function 用于什么？": "若同一个 V 对多个系统矩阵/模式都满足 V_dot<0，可证明任意切换或一族不确定系统在统一条件下稳定。它通常保守，但给出很强的全局统一证书。"
+    }
+  },
+  {
+    "n": 93,
+    "expert_note": "Feedback linearization 用非线性反馈主动消除已知非线性，而 Jacobian linearization 只是工作点附近的一阶近似。关键限制是 relative degree 与 zero dynamics；若内部 zero dynamics 不稳定，即使输出被线性化也可能内部失稳。",
+    "followup_answers": {
+      "relative degree 怎么定义？": "Relative degree 是输入 u 第一次显式出现在输出 y 的第几阶导数中。它决定能否通过输入输出 feedback linearization 得到多少阶链式积分器；剩余内部状态形成 zero dynamics。",
+      "zero dynamics 是什么？": "Zero dynamics 是强制输出及其必要导数保持为零时内部状态的动态。如果 zero dynamics 不稳定，系统是非最小相位，输出线性化控制可能导致内部状态发散。",
+      "computed torque control 与 feedback linearization 的关系？": "Computed-torque 利用机器人动力学 $M(q)\\ddot q+C(q,\\dot q)\\dot q+g(q)=\\tau$ 构造前馈/非线性反馈，把名义误差动力学近似线性化。它属于 model-based nonlinear compensation/feedback linearization 思想，性能强但依赖模型准确度。"
+    }
+  },
+  {
+    "n": 94,
+    "expert_note": "Sliding mode 对 matched uncertainty 鲁棒，因为不确定性通过与控制相同通道进入，可被切换项覆盖。Chattering 来自有限频率执行器面对理想 sign 切换；super-twisting 等高阶滑模可在一定条件下降低抖振。",
+    "followup_answers": {
+      "matched 与 unmatched uncertainty 区别？": "Matched uncertainty 与控制输入通过同一分布矩阵/通道进入，因此滑模切换项可直接覆盖；unmatched uncertainty 进入不同状态方向，经典滑模鲁棒性不能直接保证。",
+      "super-twisting 是什么？": "Super-twisting 是二阶滑模算法，可在适当相对阶和扰动条件下使 s 与其导数有限时间收敛，同时控制输入连续，从而减轻一阶 sign control 的 chattering。",
+      "reaching condition 如何用 Lyapunov 证明？": "取 V=1/2 s²，设计控制使 V_dot=s s_dot ≤ -η|s|（η>0），则 s 在有限时间到达 0；到达后再分析 sliding manifold 上的 reduced dynamics。"
+    }
+  },
+  {
+    "n": 95,
+    "expert_note": "Backstepping 适合 strict-feedback 递归结构，通过把上一层虚拟控制目标作为下一层设计对象，并逐层扩展 Lyapunov function。Adaptive backstepping 可同时加入未知参数估计，但复杂度和鲁棒修正也随阶次增加。",
+    "followup_answers": {
+      "strict-feedback form 是什么？": "Strict-feedback 具有递归结构，如 $\\dot x_1=f_1(x_1)+g_1x_2,\\dots,\\dot x_n=f_n(x)+g_nu$，每一层可把下一状态当虚拟控制并逐步构造真实输入，这正是 backstepping 的结构基础。",
+      "adaptive backstepping 如何加入参数估计？": "在每一层 backstepping 的 Lyapunov derivative 中，未知参数会产生形如 estimation error × regressor 的交叉项。引入参数估计值 θhat，并选择 adaptation law 让这些交叉项抵消/变成非正项；实际还常加 projection、σ-modification 或 dead-zone 防止噪声和未建模动态导致 parameter drift。Tracking 可以在无 PE 时收敛，但参数本身要收敛通常需要 persistent excitation。",
+      "为什么 Lyapunov function 要逐层扩展？": "Backstepping 每加入一个真实状态，上一层虚拟控制误差会成为新动态变量，因此要在旧 V 上加新的正定误差项并设计下一层控制，使总 V_dot 继续负定/半负定。"
+    }
+  },
+  {
+    "n": 96,
+    "expert_note": "Amplitude saturation 与 rate limit 都改变真实 actuator dynamics，会造成 windup、limit cycle、PIO 等。Reference governor 在控制器外调整命令以保证约束，MPC 则直接把 actuator constraints 放入优化问题。",
+    "followup_answers": {
+      "reference governor 做什么？": "Reference governor 不改内部稳定控制器，而是在外部在线调整/限速参考命令，使预测状态和输入满足约束。适合已有成熟控制器但需要约束管理的系统。",
+      "rate limit 如何造成 PIO/振荡？": "Rate limit 引入相位滞后和幅值相关非线性。飞行员/外环继续增加命令而 actuator 跟不上时，会形成 pilot-induced oscillation/limit cycle；分析必须记录 commanded 与 actual actuator。",
+      "MPC 如何显式处理 actuator constraints？": "把 u_min≤u_k≤u_max、Δu limit、甚至 actuator state dynamics 直接写入每个预测步的优化约束。若约束可能不可行，可加 slack 并高权重惩罚，同时设计 terminal/backup strategy。"
+    }
+  },
+  {
+    "n": 97,
+    "expert_note": "振荡频率是定位关键：若接近 crossover，常与 margin/gain 有关；若贴近机械/传感器共振，可能是结构模态；若幅值固定且频率随幅值/非线性变化，可能是 limit cycle。FRF/injected sine 能把‘猜参数’变成证据。",
+    "followup_answers": {
+      "如何用 injected sine / FRF 定位共振？": "在安全幅值下对闭环/开环注入单频或 multisine，测量 input-output gain/phase；若振荡频率附近出现尖锐 resonance 或 phase cliff，就能区分单纯 gain tuning 与结构模态问题。",
+      "为什么 limit cycle 不一定来自线性不稳定？": "Limit cycle 可以由 saturation、deadzone、relay、quantization、friction 等非线性产生，即使线性化闭环极点全部稳定。其幅频往往依赖振幅，可用 describing function 或时域非线性仿真分析。",
+      "notch filter 的相位副作用是什么？": "Notch 的 pole/zero 对在抑制频率附近会引入快速相位变化和群延迟；阻尼/中心频率设置不当可能降低 crossover PM。共振漂移时，原本的 notch 还可能在错误频率制造相位问题。"
+    }
+  },
+  {
+    "n": 98,
+    "expert_note": "仿真到实机的差异优先检查 sign/scale/timestamp/saturation，再看 delay、sensor/actuator dynamics 和未建模共振。最小安全激励应限制幅值、频段和 operating envelope，同时记录 raw sensor 与 actual actuator 而非只有高层命令。",
+    "followup_answers": {
+      "如何设计最小安全激励做 system identification？": "先定义幅值、rate、频率和 operating envelope 限制，再选择低能量 chirp/PRBS/sine；在线监测 saturation、temperature、state limit，并设置立即退出条件。辨识不是越大激励越好，而是信噪比与安全的折中。",
+      "如何区分 sensor resonance 与 mechanical resonance？": "机械共振会真实出现在 plant motion/actuator load 中，通常可被独立传感器、外部激光/视觉或多位置测量共同看到；sensor resonance 可能只在某个传感器通道出现，物理输出并未同步共振。可比较 raw sensor、另一种 sensing modality、actuator current/force 与 FRF 的相干性，并做传感器安装/滤波 A/B test。",
+      "为什么日志要同时记录 raw 与 saturated command？": "只记录 raw command 不知道执行器是否真正实现；只记录 saturated/actual command 又看不到控制器内部想要多少。二者差值正是 saturation/windup/actuator-lag 诊断的重要 residual。"
+    }
+  },
+  {
+    "n": 99,
+    "expert_note": "开放设计题应先定义 plant、sensors、actuators、constraints 和 KPI，再选架构。无人机常时间尺度分层，电机常电流-速度-位置串级，倒立摆通常需要状态估计和稳定/摆起模式；算法名应最后出现。",
+    "followup_answers": {
+      "如何为 inner/outer loop 选 bandwidth？": "内环应明显快于外环，使外环看到近似低阶稳定对象。常见起点是 bandwidth 相差 3–10 倍，再根据 delay、noise、actuator dynamics 和耦合验证，而不是把倍数当固定标准。",
+      "如果只有位置传感器怎么估速度？": "可以用低通微分、状态 observer、Kalman filter 或 model-based estimator 估速度。直接差分最简单但噪声大；observer 能利用动力学提高低频精度，但要处理模型误差和延迟。",
+      "若 actuator 很弱应如何修改参考轨迹？": "先做可行性：根据 torque/force/rate limit 生成可跟踪的 reference trajectory，降低加速度/jerk，而不是让反馈长期饱和。必要时用 reference governor/MPC/trajectory optimization 把约束前置。"
+    }
+  },
+  {
+    "n": 100,
+    "expert_note": "高级控制调试的核心是建立时间同步的证据链：reference/error、raw/filtered sensor、state estimate、各控制分量、raw/actual actuator、saturation、timestamp、operating condition。任何根因都应对应可证伪预测，并最终沉淀成自动 regression test。",
+    "followup_answers": {
+      "如何设计 control KPI 自动监控？": "KPI 应同时覆盖 performance、robustness proxy 和 implementation：RMS/peak tracking error、settling/overshoot、control RMS/peak/rate、saturation duty、innovation NIS/whiteness、timing jitter/deadline miss、关键频段 PSD。并按 operating condition 分桶，避免平均值掩盖局部故障。",
+      "innovation 变大通常意味着什么？": "Innovation 变大表示 measurement 与 model prediction 的不一致增加，可能来自 sensor bias/noise 变化、模型参数漂移、外扰、时间戳错位或 Q/R 过小导致过度自信。应同时看 innovation mean、covariance、频谱和 NIS，而不是仅看绝对值。",
+      "如何把一次现场故障转成长期 regression test？": "保存能复现故障的最小数据/场景和 software/calibration version，定义一个在旧版本失败、新版本通过的量化 KPI，再加入 SIL/HIL/CI 自动执行。这样现场故障才真正转化为长期工程资产。"
+    }
+  }
+]

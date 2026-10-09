@@ -1,0 +1,412 @@
+{
+  "Q21": {
+    "model": [
+      "Path Traversal 关注路径解析逃离预期根目录；File Inclusion 关注可控资源被应用加载/解释，二者可以相互关联但根因不同。",
+      "核心对象不是字符串“../”，而是 canonical path 与允许资源集合之间的关系。",
+      "安全设计应避免把用户输入直接映射为文件系统路径，优先使用对象 ID/固定映射。"
+    ],
+    "boundary": [
+      "URL decode、Unicode、符号链接、Windows/Unix 路径语义会影响 canonicalization。",
+      "即使路径仍在根目录内，如果文件内容被解释为模板/代码，也可能形成 Inclusion 风险。",
+      "容器/沙箱能降低影响，但不能替代正确路径约束。"
+    ],
+    "design": [
+      "用内部资源 ID 映射固定路径；必须接受路径时先规范化再验证仍位于固定 root。",
+      "运行账户最小文件权限，敏感配置与上传目录分离。",
+      "模板/include 功能只允许预注册资源，不接受任意路径。",
+      "对符号链接、挂载点和不同 OS 路径规则建立测试。"
+    ],
+    "evidence": [
+      "应用记录资源 ID、normalized path、最终 resolved path 与拒绝原因。",
+      "文件访问审计可辅助发现异常目录访问。",
+      "代码审计关注 join/resolve/open/include/render 等 sink。"
+    ],
+    "validation": [
+      "测试编码、绝对路径、符号链接、不同分隔符和平台差异。",
+      "确认所有文件 API 使用同一安全封装。",
+      "验证最小权限账户即使路径控制失败也无法读取业务无关敏感文件。"
+    ],
+    "deep_questions": [
+      "为什么过滤 ../ 不是根治？",
+      "canonicalization 应在校验前还是后？",
+      "Path Traversal 与模板 File Inclusion 在影响上有什么不同？"
+    ],
+    "deliverable": "文件资源访问封装：ID→path 映射、canonical root 校验、权限模型、审计字段和跨平台 regression corpus。",
+    "summary": {
+      "root": "用户输入影响最终文件资源或解释路径。",
+      "boundary": "编码/符号链接/平台语义/解释器能力。",
+      "control": "对象映射 + canonical root + 最小文件权限。",
+      "evidence": "normalized/resolved path 与文件审计。",
+      "verify": "跨平台路径 corpus 与权限回归。"
+    }
+  },
+  "Q22": {
+    "model": [
+      "OS Command Injection 与 SQLi 同属“数据进入可执行语法”，但 sink 是 shell/命令解释器。",
+      "最优控制是避免 shell，把操作表达为固定 executable + 分离参数或直接使用系统库 API。",
+      "escaping 很难成为跨平台、跨 shell 的统一安全边界，因此应优先结构化接口。"
+    ],
+    "boundary": [
+      "即使没有 shell，调用外部程序仍需限制参数语义；某些程序参数本身会改变文件/网络行为。",
+      "不同 shell、OS、locale 的解析规则不同，黑名单不可维护。",
+      "低权限/容器可以降低影响，但不是“允许注入也没事”。"
+    ],
+    "design": [
+      "首选原生库 API；必须启动进程时固定 executable 与参数 schema。",
+      "参数使用 allowlist/类型约束，不拼接完整 command string。",
+      "运行账户最小权限、工作目录固定、环境变量最小化。",
+      "对危险 process-spawn API 做 SAST/代码审查治理。"
+    ],
+    "evidence": [
+      "EDR/process telemetry：parent、image、command line、user、network/file side effects。",
+      "应用审计保留业务操作而非敏感完整命令。",
+      "代码层证明不存在 shell=true 或字符串命令拼接路径。"
+    ],
+    "validation": [
+      "单元测试验证输入只进入参数值，无法改变 executable/参数个数/选项类别。",
+      "跨 Linux/Windows 环境验证行为一致。",
+      "检查错误处理不会回退到不安全 shell path。"
+    ],
+    "deep_questions": [
+      "为什么 subprocess 参数数组通常比 shell 字符串安全？",
+      "没有 shell 就一定没有命令执行风险吗？",
+      "如何在大型代码库定位 process-spawn sink？"
+    ],
+    "deliverable": "命令执行安全 API/封装 + 禁止 shell policy + process-spawn SAST 规则 + 参数 schema 与回归测试。",
+    "summary": {
+      "root": "不可信数据被命令解释器/外部程序当成控制语义。",
+      "boundary": "shell、程序参数、平台差异。",
+      "control": "避免 shell + 固定 executable + 参数 schema + 最小权限。",
+      "evidence": "process tree/command line/code path。",
+      "verify": "参数边界与跨平台回归。"
+    }
+  },
+  "Q23": {
+    "model": [
+      "反序列化风险不是“格式危险”，而是不可信数据驱动对象构造，并触发具有副作用的类型/钩子。",
+      "危险程度由 serializer 能力、可达 classpath/类型集合、自动回调和运行权限共同决定。",
+      "简单数据 schema 与对象图恢复是两种完全不同的信任模型。"
+    ],
+    "boundary": [
+      "签名可以验证来源/完整性，但如果可信来源本身能被滥用或签名密钥泄露，仍需最小类型集合。",
+      "“最新版库”不代表所有 gadget/类型副作用都消失。",
+      "反序列化入口可能来自 HTTP、缓存、消息队列、Session、RPC 等内部路径。"
+    ],
+    "design": [
+      "外部边界优先 JSON/Protobuf 等显式 schema 数据，不恢复任意对象。",
+      "必须使用对象序列化时限制允许类型并关闭危险多态/自动类型功能。",
+      "最小化 classpath 与运行权限，隔离高风险解析。",
+      "对序列化格式、版本和生产者建立清晰信任关系。"
+    ],
+    "evidence": [
+      "代码审计定位 deserialize/readObject/object mapper polymorphism 等入口。",
+      "应用日志记录格式、producer、schema/version 与解析失败。",
+      "EDR/process/file/network side effect 用于事件调查。"
+    ],
+    "validation": [
+      "使用不在 allowlist 的类型确认拒绝。",
+      "升级依赖后重新运行反序列化安全测试。",
+      "检查内部消息通道是否错误假定“内网消息都可信”。"
+    ],
+    "deep_questions": [
+      "为什么“数据签名”不等于“反序列化安全”？",
+      "JSON 也可能有反序列化风险吗？",
+      "为什么 classpath 越复杂，风险面往往越大？"
+    ],
+    "deliverable": "序列化信任矩阵：格式、生产者、schema、允许类型、版本、解析隔离与 regression tests。",
+    "summary": {
+      "root": "不可信数据驱动对象构造与副作用。",
+      "boundary": "类型集合、回调、classpath、生产者信任。",
+      "control": "简单 schema + 类型 allowlist + 最小能力。",
+      "evidence": "deserialize entry + producer/schema + runtime side effects。",
+      "verify": "非允许类型与依赖升级回归。"
+    }
+  },
+  "Q24": {
+    "model": [
+      "HTTP Desync/Request Smuggling 的核心是链路上不同 parser 对 message boundary 解释不一致。",
+      "风险通常发生在 CDN/WAF/proxy/backend 之间协议转换或规范化差异，而不是某个 header 名称本身。",
+      "高分回答应把它看成 parser differential + connection reuse 问题。"
+    ],
+    "boundary": [
+      "H1/H2/H3 转换、重复 header、非法 framing 的处理差异都可能形成边界。",
+      "关闭 keep-alive 可能降低某些影响但不是架构根治。",
+      "单个组件符合规范也不保证整条链路组合后没有歧义。"
+    ],
+    "design": [
+      "尽量减少不必要协议转换与多级代理。",
+      "边界层对模糊/冲突 framing 采用严格拒绝并规范化。",
+      "升级 proxy/backend 时做 parser compatibility regression。",
+      "高风险链路避免把未经一致解析的连接复用给多个安全主体。"
+    ],
+    "evidence": [
+      "对比 edge 与 backend 的 request count、path、request ID 是否一一对应。",
+      "代理错误日志、connection reset、framing reject 是关键证据。",
+      "Packet capture 仅在授权测试/故障环境用于确认字节边界。"
+    ],
+    "validation": [
+      "建立 malformed/ambiguous request corpus，验证各层一致拒绝。",
+      "H1↔H2 转换路径分别回归。",
+      "确认 edge request ID 与 origin request 始终保持一一映射。"
+    ],
+    "deep_questions": [
+      "为什么 parser differential 比“某个特殊 header”更接近根因？",
+      "H2 转 H1 为什么是高风险边界？",
+      "如何从日志发现 edge 与 origin 请求数量不一致？"
+    ],
+    "deliverable": "HTTP parser compatibility matrix + ambiguous framing regression corpus + edge-origin request correlation 检查。",
+    "summary": {
+      "root": "链路 parser 对请求边界理解不一致。",
+      "boundary": "协议转换、连接复用、规范化差异。",
+      "control": "严格解析 + 减少转换 + 兼容性回归。",
+      "evidence": "edge-origin request 对齐与 framing errors。",
+      "verify": "ambiguous request corpus。"
+    }
+  },
+  "Q25": {
+    "model": [
+      "BOLA/IDOR 是对象级授权缺失：用户通过合法接口操作了自己无权访问的 object。",
+      "认证只回答“你是谁”，对象授权回答“你能否对这个具体对象执行这个动作”。",
+      "API 容易出现 BOLA，因为 object ID 常直接暴露且服务端开发容易只检查登录状态。"
+    ],
+    "boundary": [
+      "不可猜测 UUID 只是降低枚举便利度，不是授权控制。",
+      "列表接口、批量接口、导出、异步任务和子资源都需独立对象授权。",
+      "缓存层/搜索索引也可能绕过主数据库授权策略。"
+    ],
+    "design": [
+      "授权策略以 subject-action-resource-context 建模并在服务端集中执行。",
+      "资源查询尽量带上 owner/tenant scope，而不是查到对象后再“顺便判断”。",
+      "多租户场景把 tenant boundary 作为强约束贯穿数据层。",
+      "建立角色×对象×动作的 authorization tests。"
+    ],
+    "evidence": [
+      "审计日志记录 actor、tenant、resource type/id、action、decision、policy。",
+      "异常跨 tenant/object access 是重要检测信号。",
+      "代码审计关注 getById 后缺少 policy check 的路径。"
+    ],
+    "validation": [
+      "使用两个不同租户/用户的对象做系统化 cross-access tests。",
+      "测试批量、导出、缓存、异步和 GraphQL 等不同入口。",
+      "授权失败必须默认拒绝且不泄露敏感 object existence。"
+    ],
+    "deep_questions": [
+      "为什么 UUID 不能替代授权？",
+      "对象授权应该在 controller、service 还是 data layer 做？",
+      "GraphQL/批量 API 如何避免遗漏对象级授权？"
+    ],
+    "deliverable": "Authorization matrix + policy enforcement library + cross-tenant regression suite + audit schema。",
+    "summary": {
+      "root": "对象访问缺少服务端 subject-resource-action 授权。",
+      "boundary": "UUID、缓存、批量/异步入口不能替代控制。",
+      "control": "集中策略 + tenant scoped query + default deny。",
+      "evidence": "authorization decision audit。",
+      "verify": "跨用户/跨租户系统回归。"
+    }
+  },
+  "Q26": {
+    "model": [
+      "水平越权是同权限主体跨对象，垂直越权是低权限主体执行高权限动作，未授权访问则没有有效认证主体。",
+      "三者都应回到 access-control policy，而不是 URL 是否隐藏或按钮是否显示。",
+      "成熟授权模型应能表达 subject、resource、action、context，而不是到处 if role==admin。"
+    ],
+    "boundary": [
+      "角色本身不能表达所有对象关系；RBAC 常需结合 ABAC/ReBAC 或 ownership。",
+      "前端路由守卫只是 UX，不是安全边界。",
+      "服务间调用若信任来自上游的 role/header，需要明确身份真实性和 delegation。"
+    ],
+    "design": [
+      "默认拒绝，权限显式授予。",
+      "统一 policy decision/enforcement 点并保留审计。",
+      "敏感管理动作使用独立权限与 JIT/审批机制。",
+      "对多租户、代理操作和 service account 建立特殊授权模型。"
+    ],
+    "evidence": [
+      "authz decision logs：subject、claims、resource、action、result。",
+      "IdP/session logs 用于确认主体身份；应用数据用于确认资源归属。",
+      "权限变更 audit 用于解释“为什么某人今天拥有这个权限”。"
+    ],
+    "validation": [
+      "角色×资源×动作矩阵覆盖 allow 和 deny。",
+      "验证 UI、API、批量任务、后台 job 对同一策略一致。",
+      "权限撤销、角色变更后验证缓存/长期 token 不延迟生效。"
+    ],
+    "deep_questions": [
+      "RBAC 为什么不能解决所有对象级授权？",
+      "授权缓存会带来什么一致性风险？",
+      "服务到服务如何传递用户上下文而不信任任意 header？"
+    ],
+    "deliverable": "企业授权模型：policy schema、角色/属性/关系、enforcement points、decision logs 和 regression matrix。",
+    "summary": {
+      "root": "服务端权限决策缺失或模型错误。",
+      "boundary": "RBAC 限制、缓存、跨服务上下文。",
+      "control": "default deny + central policy + JIT 敏感权限。",
+      "evidence": "authn + authz decision + permission change logs。",
+      "verify": "角色/对象/动作 deny/allow 回归。"
+    }
+  },
+  "Q27": {
+    "model": [
+      "JWT 是 token format；JWS 提供签名完整性/来源验证，JWE 才涉及加密，不能把“JWT”直接等同“加密 token”。",
+      "验证 JWT 不只是验签：还需校验算法、issuer、audience、时间、key selection 与业务 claims。",
+      "JWT 的无状态优势会把 revocation、权限变更和密钥轮换变成系统设计问题。"
+    ],
+    "boundary": [
+      "payload 默认可读，不能存放仅靠“别人看不到”保护的秘密。",
+      "同一 key/issuer 的 token 若 audience 校验松散，可能跨服务误用。",
+      "长生命周期 token 会扩大泄露窗口；短 token + refresh/session 管理更常见。"
+    ],
+    "design": [
+      "验证端固定允许算法，不从不可信 header 动态接受任意算法。",
+      "严格 iss/aud/exp/nbf 与 token type；不同用途 token 分离。",
+      "通过受控 JWKS/key rotation 管理公钥，并处理 kid/缓存边界。",
+      "敏感权限变化依赖短生命周期、revocation/session 或实时授权，而不是长期 claim。"
+    ],
+    "evidence": [
+      "认证日志记录 token issuer/audience/key id/result，不记录完整 token。",
+      "JWKS/key rotation audit 与异常签名失败趋势。",
+      "API gateway/backend 对 claims 的使用需可追踪。"
+    ],
+    "validation": [
+      "测试错误 issuer/audience/expired/wrong algorithm/unknown key 均默认拒绝。",
+      "密钥轮换演练验证旧/新 key 重叠窗口和缓存刷新。",
+      "确认 access token 与 ID token 不会被混用。"
+    ],
+    "deep_questions": [
+      "JWT 为什么不能天然支持即时注销？",
+      "ID Token 和 Access Token 为什么不能互换？",
+      "JWKS 缓存与 key rotation 如何避免可用性问题？"
+    ],
+    "deliverable": "JWT validation profile：token type、alg、iss/aud、TTL、key rotation、revocation strategy 和 negative tests。",
+    "summary": {
+      "root": "JWT 只是承载 claims 的格式，安全取决于严格验证与生命周期。",
+      "boundary": "可读 payload、audience、revocation、key rotation。",
+      "control": "固定算法 + claims 校验 + 短生命周期 + 密钥治理。",
+      "evidence": "validation result/key id/issuer audit。",
+      "verify": "负向 claims 与轮换测试。"
+    }
+  },
+  "Q28": {
+    "model": [
+      "Cookie 是浏览器存储/发送机制，Session 是服务端状态模型，JWT 是 token 数据格式，三者位于不同抽象层。",
+      "常见架构可以是 Cookie 存 session ID，也可以 Cookie 存 JWT；安全讨论必须先问“身份状态存在哪里、如何撤销”。",
+      "Session 与 JWT 的核心权衡是状态位置、撤销、一致性、扩展和泄露影响，而不是谁“更先进”。"
+    ],
+    "boundary": [
+      "localStorage/cookie 的威胁模型不同：Cookie 有 HttpOnly/SameSite，而 JS 可读存储更暴露于 XSS。",
+      "JWT 若仍保存在 Cookie 中，仍需考虑 CSRF。",
+      "Session store 故障、复制和过期策略是可用性/一致性问题。"
+    ],
+    "design": [
+      "浏览器会话优先使用 Secure/HttpOnly/SameSite 合适的 Cookie。",
+      "登录/提权后 rotation session ID，登出/风险事件有明确 invalidation。",
+      "token 生命周期按用途分层：short access、controlled refresh。",
+      "不要在客户端存不必要的长期高权限凭据。"
+    ],
+    "evidence": [
+      "session creation/rotation/revocation audit。",
+      "Cookie 属性通过实际响应/浏览器检查。",
+      "IdP/API 记录 token/session ID 的哈希/标识而非敏感原文。"
+    ],
+    "validation": [
+      "登录、登出、密码修改、权限变化、设备撤销后验证会话状态。",
+      "测试 Cookie Domain/Path/SameSite 在多子域/SSO 场景。",
+      "验证 session fixation 防护。"
+    ],
+    "deep_questions": [
+      "JWT 放 HttpOnly Cookie 后 CSRF 风险为什么还存在？",
+      "为什么 session ID 登录后要 rotation？",
+      "分布式系统使用 server session 是否一定不能扩展？"
+    ],
+    "deliverable": "Web session architecture：credential storage、Cookie policy、TTL、rotation、revocation、SSO 和风险事件处理。",
+    "summary": {
+      "root": "Cookie/Session/JWT 是不同层次概念，不能二选一比较。",
+      "boundary": "存储位置、CSRF/XSS、撤销与分布式一致性。",
+      "control": "安全 Cookie + session rotation + 生命周期/撤销设计。",
+      "evidence": "session/token lifecycle audit。",
+      "verify": "登录到撤销全生命周期测试。"
+    }
+  },
+  "Q29": {
+    "model": [
+      "OAuth 2.0 是授权框架，OIDC 在其上增加身份层；access token 面向资源访问，ID token 面向 client 了解认证结果/用户身份。",
+      "Authorization Code + PKCE 的核心是让前端重定向得到的 code 不能被截获者直接兑换。",
+      "安全性高度依赖 redirect URI、state/nonce、issuer、audience 和客户端类型。"
+    ],
+    "boundary": [
+      "OAuth 不定义用户登录 UI 和身份 claims 语义，OIDC 才补上 identity layer。",
+      "public client 不能可靠保守 client secret，因此依赖 PKCE 等机制。",
+      "access token 不应被 client 当 ID token 使用，反之亦然。"
+    ],
+    "design": [
+      "优先标准 Authorization Code + PKCE，避免自创 grant。",
+      "redirect URI 精确注册，state 防请求关联问题，OIDC 使用 nonce 等要求。",
+      "token audience/scopes 最小化，refresh token 保护与 rotation。",
+      "资源服务器独立验证 access token 和权限，不信任前端声明。"
+    ],
+    "evidence": [
+      "Authorization Server 审计：client、redirect、scope、grant、result。",
+      "Resource Server 记录 token issuer/aud/scope decision。",
+      "异常 consent、refresh、client configuration changes 需可观测。"
+    ],
+    "validation": [
+      "负向测试错误 redirect/state/nonce/aud/issuer。",
+      "多 client、多环境确保 token 不跨 audience 使用。",
+      "refresh rotation 与撤销演练。"
+    ],
+    "deep_questions": [
+      "PKCE 具体保护哪一步？",
+      "state 和 nonce 的目标有什么不同？",
+      "为什么 access token 不应该用于“证明用户是谁”？"
+    ],
+    "deliverable": "OAuth/OIDC flow diagram + client 类型/flow、redirect、scope、token type、validation 和 rotation policy。",
+    "summary": {
+      "root": "OAuth 授权，OIDC 认证身份层；不同 token 有不同受众。",
+      "boundary": "public client、redirect、token mix-up、audience。",
+      "control": "Code+PKCE + 严格 redirect/claims + scope 最小化。",
+      "evidence": "AS/RS token lifecycle audit。",
+      "verify": "flow 与 claim 负向测试。"
+    }
+  },
+  "Q30": {
+    "model": [
+      "SOP 是浏览器默认隔离不同 origin 的读取/交互能力；CORS 是目标服务通过响应头显式放宽部分跨源读取。",
+      "CORS 决定的是浏览器是否把响应暴露给脚本，不是服务器是否“收到请求”。",
+      "Origin 由 scheme+host+port 构成，安全判断需准确理解 origin，而不是域名字符串相似。"
+    ],
+    "boundary": [
+      "CORS 不是认证/授权；即使 origin 被允许，服务端仍需验证用户权限。",
+      "非浏览器客户端不受浏览器 CORS 限制，所以 CORS 不是 API 防火墙。",
+      "credentials 与 wildcard/动态 origin 反射会产生高风险配置边界。"
+    ],
+    "design": [
+      "只允许业务明确需要的 origin，精确匹配而不是字符串 contains/suffix 错误。",
+      "credentials 仅在必要场景开启，并与 CSRF/session policy 一起设计。",
+      "统一 gateway/framework CORS policy，避免每个服务自行实现。",
+      "预检/错误响应也应保持一致，防止环境差异。"
+    ],
+    "evidence": [
+      "实际 response 中 ACAO/ACAC/Vary 等 header。",
+      "浏览器 console/network 可确认是 CORS 阻断还是服务端错误。",
+      "网关配置和 origin access logs 用于审计。"
+    ],
+    "validation": [
+      "测试允许/不允许 origin、子域、scheme、port、null origin 等边界。",
+      "确认非浏览器直接请求仍由认证授权保护。",
+      "CDN cache 场景验证 Vary: Origin 等缓存隔离。"
+    ],
+    "deep_questions": [
+      "为什么 CORS 失败不代表请求没有到服务器？",
+      "Same-Origin Policy 与 CSRF 有什么关系？",
+      "动态反射 Origin 的实现容易犯什么逻辑错误？"
+    ],
+    "deliverable": "CORS policy matrix：allowed origins、credentials、methods/headers、cache/Vary、CSRF 与负向测试。",
+    "summary": {
+      "root": "SOP 默认隔离，CORS 由服务器声明允许的跨源读取。",
+      "boundary": "只约束浏览器读取，不是认证/授权/网络防火墙。",
+      "control": "精确 origin allowlist + credential/CSRF 协同。",
+      "evidence": "CORS headers + browser/network + gateway config。",
+      "verify": "origin/scheme/port/cache 负向回归。"
+    }
+  }
+}

@@ -1,0 +1,2000 @@
+[
+  {
+    "id": "001",
+    "title": "高中数学竞赛和普通高中数学教学，最大的三个区别是什么？",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "岗位认知",
+      "难度 ★★★☆☆",
+      "竞赛观、课程观、培养观"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "岗位认知",
+      "竞赛观、课程观、培养观"
+    ],
+    "path": "questions/01-foundations/Q001.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 162,
+    "char_count": 3344
+  },
+  {
+    "id": "002",
+    "title": "请解释全国高中数学联赛一试和二试在能力结构上的本质区别。",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "岗位认知",
+      "难度 ★★★☆☆",
+      "竞赛体系、能力分层、备赛设计"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "岗位认知",
+      "竞赛体系、能力分层、备赛设计"
+    ],
+    "path": "questions/01-foundations/Q002.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 159,
+    "char_count": 3109
+  },
+  {
+    "id": "003",
+    "title": "一个高一学生说：“我高考数学能考145，所以应该很适合竞赛。”你怎么判断？",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "学情诊断",
+      "难度 ★★★★☆",
+      "诊断设计、潜力识别、成长性评估"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "学情诊断",
+      "诊断设计、潜力识别、成长性评估"
+    ],
+    "path": "questions/01-foundations/Q003.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 160,
+    "char_count": 3078
+  },
+  {
+    "id": "004",
+    "title": "省一水平、CMO水平和国家集训队水平，训练方法有什么不同？",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "培养体系",
+      "难度 ★★★★☆",
+      "分层训练、目标管理、难度控制"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "培养体系"
+    ],
+    "path": "questions/01-foundations/Q004.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 162,
+    "char_count": 2956
+  },
+  {
+    "id": "005",
+    "title": "为什么竞赛教练本人会做题，不等于能带出竞赛学生？",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "岗位认知",
+      "难度 ★★★☆☆",
+      "教学转化、诊断、教练角色"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "岗位认知",
+      "教学转化、诊断、教练角色"
+    ],
+    "path": "questions/01-foundations/Q005.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 160,
+    "char_count": 2874
+  },
+  {
+    "id": "006",
+    "title": "你认为数学竞赛中最重要的能力是什么？",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "开放问答",
+      "难度 ★★★★☆",
+      "数学观、结构识别、探索策略"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "开放问答",
+      "数学观、结构识别、探索策略"
+    ],
+    "path": "questions/01-foundations/Q006.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 159,
+    "char_count": 2790
+  },
+  {
+    "id": "007",
+    "title": "竞赛是否应该尽早学习大学数学？",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "教育判断",
+      "难度 ★★★★☆",
+      "知识边界、工具观、初等证明"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教育判断",
+      "知识边界、工具观、初等证明"
+    ],
+    "path": "questions/01-foundations/Q007.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 162,
+    "char_count": 2783
+  },
+  {
+    "id": "008",
+    "title": "请评价“背结论、背模型、背套路”的竞赛训练。",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "教学方法",
+      "难度 ★★★☆☆",
+      "记忆与迁移、方法抽象"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "教学方法",
+      "记忆与迁移、方法抽象"
+    ],
+    "path": "questions/01-foundations/Q008.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 156,
+    "char_count": 2800
+  },
+  {
+    "id": "009",
+    "title": "如何判断一道竞赛题是不是“好题”？",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "教研能力",
+      "难度 ★★★★☆",
+      "题目评价、选题、迁移价值"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教研能力",
+      "题目评价、选题、迁移价值"
+    ],
+    "path": "questions/01-foundations/Q009.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 153,
+    "char_count": 2886
+  },
+  {
+    "id": "010",
+    "title": "如果让你用一年培养一批高一学生冲击省一，你总体怎么设计？",
+    "chapter": "竞赛体系与教练认知",
+    "tags": [
+      "课程设计",
+      "难度 ★★★★★",
+      "年度规划、分层、测评闭环"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "课程设计",
+      "年度规划、分层、测评闭环"
+    ],
+    "path": "questions/01-foundations/Q010.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 160,
+    "char_count": 2969
+  },
+  {
+    "id": "011",
+    "title": "为什么 AM-GM 不是一个“看到乘积就用”的公式？",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "不等式、结构识别、等号条件"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "不等式、结构识别、等号条件"
+    ],
+    "path": "questions/02-algebra/Q011.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 171,
+    "char_count": 3323
+  },
+  {
+    "id": "012",
+    "title": "怎样系统教授柯西不等式，而不是让学生背十几个形式？",
+    "chapter": "代数",
+    "tags": [
+      "数学+教学",
+      "难度 ★★★★☆",
+      "Cauchy、统一视角、变形能力"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学+教学",
+      "Cauchy、统一视角、变形能力"
+    ],
+    "path": "questions/02-algebra/Q012.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 174,
+    "char_count": 3508
+  },
+  {
+    "id": "013",
+    "title": "如何判断三元对称不等式是否值得尝试 $uvw$？",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "对称不等式、降维、严谨性"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "对称不等式、降维、严谨性"
+    ],
+    "path": "questions/02-algebra/Q013.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 158,
+    "char_count": 3092
+  },
+  {
+    "id": "014",
+    "title": "什么情况下应该齐次化？什么时候齐次化反而让问题更复杂？",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "齐次、不等式、归一化"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "齐次、不等式、归一化"
+    ],
+    "path": "questions/02-algebra/Q014.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 158,
+    "char_count": 3085
+  },
+  {
+    "id": "015",
+    "title": "现场证明一个 Schur 不等式版本，并给出两种证明。",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "对称不等式、多解、证明表达"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "对称不等式、多解、证明表达"
+    ],
+    "path": "questions/02-algebra/Q015.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 178,
+    "char_count": 3431
+  },
+  {
+    "id": "016",
+    "title": "怎样向学生解释 Jensen 不等式背后的“为什么”？",
+    "chapter": "代数",
+    "tags": [
+      "数学+教学",
+      "难度 ★★★★☆",
+      "凸性、几何直觉、条件"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学+教学",
+      "凸性、几何直觉、条件"
+    ],
+    "path": "questions/02-algebra/Q016.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 166,
+    "char_count": 3113
+  },
+  {
+    "id": "017",
+    "title": "含参数多项式问题中，怎样选择韦达、判别式还是根的定位？",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "多项式、策略选择、根结构"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "多项式、策略选择、根结构"
+    ],
+    "path": "questions/02-algebra/Q017.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 167,
+    "char_count": 2966
+  },
+  {
+    "id": "018",
+    "title": "为什么竞赛里经常构造辅助多项式？",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "多项式、信息编码、构造"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "多项式、信息编码、构造"
+    ],
+    "path": "questions/02-algebra/Q018.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 156,
+    "char_count": 2967
+  },
+  {
+    "id": "019",
+    "title": "请解释 Vieta Jumping 的核心思想。",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "整数方程、韦达跳跃、无限下降"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "整数方程、韦达跳跃、无限下降"
+    ],
+    "path": "questions/02-algebra/Q019.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 178,
+    "char_count": 3094
+  },
+  {
+    "id": "020",
+    "title": "函数方程中，怎样判断先代 $0$、$1$，还是先交换变量？",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "函数方程、信息提取、策略"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "函数方程、信息提取、策略"
+    ],
+    "path": "questions/02-algebra/Q020.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 163,
+    "char_count": 3003
+  },
+  {
+    "id": "021",
+    "title": "如何教函数方程中的“单射/满射”？",
+    "chapter": "代数",
+    "tags": [
+      "数学+教学",
+      "难度 ★★★★☆",
+      "函数方程、单射满射、工具化"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学+教学",
+      "函数方程、单射满射、工具化"
+    ],
+    "path": "questions/02-algebra/Q021.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 156,
+    "char_count": 2859
+  },
+  {
+    "id": "022",
+    "title": "什么叫“切线法证明不等式”？",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "凸函数、切线、最佳常数"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "凸函数、切线、最佳常数"
+    ],
+    "path": "questions/02-algebra/Q022.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 170,
+    "char_count": 2863
+  },
+  {
+    "id": "023",
+    "title": "怎样系统处理递推数列？",
+    "chapter": "代数",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "递推、代换、单调有界、周期"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "递推、代换、单调有界、周期"
+    ],
+    "path": "questions/02-algebra/Q023.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 172,
+    "char_count": 2894
+  },
+  {
+    "id": "024",
+    "title": "请设计一道让学生真正理解“配方”的竞赛题，而不是普通二次函数题。",
+    "chapter": "代数",
+    "tags": [
+      "教研设计",
+      "难度 ★★★★☆",
+      "配方、构造、题目设计"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教研设计",
+      "配方、构造、题目设计"
+    ],
+    "path": "questions/02-algebra/Q024.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 182,
+    "char_count": 2965
+  },
+  {
+    "id": "025",
+    "title": "学生做不等式永远第一反应“暴力展开”，你怎么纠正？",
+    "chapter": "代数",
+    "tags": [
+      "教学诊断",
+      "难度 ★★★★☆",
+      "不等式、元认知、策略训练"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教学诊断",
+      "不等式、元认知、策略训练"
+    ],
+    "path": "questions/02-algebra/Q025.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 158,
+    "char_count": 2918
+  },
+  {
+    "id": "026",
+    "title": "如何教学生判断一道几何题该不该作辅助线？",
+    "chapter": "平面几何",
+    "tags": [
+      "数学+教学",
+      "难度 ★★★★☆",
+      "几何构造、目标驱动、图形结构"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学+教学",
+      "几何构造、目标驱动、图形结构"
+    ],
+    "path": "questions/03-geometry/Q026.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 156,
+    "char_count": 2948
+  },
+  {
+    "id": "027",
+    "title": "怎么系统讲“追角”？",
+    "chapter": "平面几何",
+    "tags": [
+      "数学+教学",
+      "难度 ★★★☆☆",
+      "角关系、共圆、相似"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学+教学",
+      "角关系、共圆、相似"
+    ],
+    "path": "questions/03-geometry/Q027.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 155,
+    "char_count": 2810
+  },
+  {
+    "id": "028",
+    "title": "判断四点共圆有哪些互相联系的判据？",
+    "chapter": "平面几何",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "圆、共圆判据、转换"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "圆、共圆判据、转换"
+    ],
+    "path": "questions/03-geometry/Q028.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 177,
+    "char_count": 2823
+  },
+  {
+    "id": "029",
+    "title": "为什么圆幂是竞赛几何中的统一工具？",
+    "chapter": "平面几何",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "圆幂、切割线、根轴"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "圆幂、切割线、根轴"
+    ],
+    "path": "questions/03-geometry/Q029.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 164,
+    "char_count": 2866
+  },
+  {
+    "id": "030",
+    "title": "请解释根轴定理，并说明什么时候会主动寻找根轴。",
+    "chapter": "平面几何",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "根轴、三圆共点、幂"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "根轴、三圆共点、幂"
+    ],
+    "path": "questions/03-geometry/Q030.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 162,
+    "char_count": 2948
+  },
+  {
+    "id": "031",
+    "title": "什么时候用 Menelaus，什么时候用 Ceva？",
+    "chapter": "平面几何",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "共线、共点、比例"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "共线、共点、比例"
+    ],
+    "path": "questions/03-geometry/Q031.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 158,
+    "char_count": 2860
+  },
+  {
+    "id": "032",
+    "title": "你如何让学生理解正弦 Ceva，而不是背公式？",
+    "chapter": "平面几何",
+    "tags": [
+      "数学+教学",
+      "难度 ★★★★☆",
+      "正弦Ceva、角度到比例、正弦定理"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学+教学",
+      "正弦Ceva、角度到比例、正弦定理"
+    ],
+    "path": "questions/03-geometry/Q032.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 159,
+    "char_count": 2919
+  },
+  {
+    "id": "033",
+    "title": "哪些几何题适合坐标法？",
+    "chapter": "平面几何",
+    "tags": [
+      "方法选择",
+      "难度 ★★★☆☆",
+      "解析几何、建系、复杂度控制"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "方法选择",
+      "解析几何、建系、复杂度控制"
+    ],
+    "path": "questions/03-geometry/Q033.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 159,
+    "char_count": 2831
+  },
+  {
+    "id": "034",
+    "title": "哪些几何题适合复数法？",
+    "chapter": "平面几何",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "复数几何、单位圆、代数化"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "复数几何、单位圆、代数化"
+    ],
+    "path": "questions/03-geometry/Q034.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 161,
+    "char_count": 2853
+  },
+  {
+    "id": "035",
+    "title": "什么时候向量法比坐标法更自然？",
+    "chapter": "平面几何",
+    "tags": [
+      "方法选择",
+      "难度 ★★★☆☆",
+      "向量、仿射、内积"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "方法选择",
+      "向量、仿射、内积"
+    ],
+    "path": "questions/03-geometry/Q035.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 157,
+    "char_count": 2724
+  },
+  {
+    "id": "036",
+    "title": "如何解释反演的核心思想？",
+    "chapter": "平面几何",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "反演、多圆结构、变换观"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "反演、多圆结构、变换观"
+    ],
+    "path": "questions/03-geometry/Q036.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 163,
+    "char_count": 2891
+  },
+  {
+    "id": "037",
+    "title": "怎样判断一道题适合反演？",
+    "chapter": "平面几何",
+    "tags": [
+      "方法选择",
+      "难度 ★★★★★",
+      "反演触发信号、复杂度"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "方法选择",
+      "反演触发信号、复杂度"
+    ],
+    "path": "questions/03-geometry/Q037.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 158,
+    "char_count": 2701
+  },
+  {
+    "id": "038",
+    "title": "请讲一个“看起来应该解析几何，但纯几何更漂亮”的例子，并比较方法。",
+    "chapter": "平面几何",
+    "tags": [
+      "开放数学",
+      "难度 ★★★★☆",
+      "多解比较、审美与教学"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "开放数学",
+      "多解比较、审美与教学"
+    ],
+    "path": "questions/03-geometry/Q038.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 154,
+    "char_count": 2908
+  },
+  {
+    "id": "039",
+    "title": "学生几何很弱，你会让他先学高级工具还是先做基础几何？",
+    "chapter": "平面几何",
+    "tags": [
+      "培养体系",
+      "难度 ★★★★☆",
+      "几何课程、先修依赖、分层"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "培养体系",
+      "几何课程、先修依赖、分层"
+    ],
+    "path": "questions/03-geometry/Q039.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 153,
+    "char_count": 2876
+  },
+  {
+    "id": "040",
+    "title": "你如何训练学生的“几何直觉”？",
+    "chapter": "平面几何",
+    "tags": [
+      "教学方法",
+      "难度 ★★★★★",
+      "猜想、动态观察、严谨证明"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "教学方法",
+      "猜想、动态观察、严谨证明"
+    ],
+    "path": "questions/03-geometry/Q040.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 152,
+    "char_count": 2819
+  },
+  {
+    "id": "041",
+    "title": "为什么同余是初等数论最基本的语言之一？",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "同余、有限化、结构"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "同余、有限化、结构"
+    ],
+    "path": "questions/04-number-theory/Q041.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 157,
+    "char_count": 2790
+  },
+  {
+    "id": "042",
+    "title": "看到整数方程，第一轮你会检查什么？",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "整数方程、诊断清单"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "整数方程、诊断清单"
+    ],
+    "path": "questions/04-number-theory/Q042.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 153,
+    "char_count": 2698
+  },
+  {
+    "id": "043",
+    "title": "为什么平方数模4只能是0或1？你会怎么给初学者讲？",
+    "chapter": "数论",
+    "tags": [
+      "基础证明",
+      "难度 ★★☆☆☆",
+      "奇偶、同余、教学表达"
+    ],
+    "difficulty": "难度 ★★☆☆☆",
+    "competency_tags": [
+      "基础证明",
+      "奇偶、同余、教学表达"
+    ],
+    "path": "questions/04-number-theory/Q043.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 156,
+    "char_count": 2725
+  },
+  {
+    "id": "044",
+    "title": "怎样系统选择模数？",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "模数设计、剩余类、策略"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "模数设计、剩余类、策略"
+    ],
+    "path": "questions/04-number-theory/Q044.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 152,
+    "char_count": 2794
+  },
+  {
+    "id": "045",
+    "title": "证明 Euclid 引理：若素数 $p\\mid ab$，则 $p\\mid a$ 或 $p\\mid b$。",
+    "chapter": "数论",
+    "tags": [
+      "基础证明",
+      "难度 ★★★☆☆",
+      "素数、Bézout、整除"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "基础证明",
+      "素数、Bézout、整除"
+    ],
+    "path": "questions/04-number-theory/Q045.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 162,
+    "char_count": 3025
+  },
+  {
+    "id": "046",
+    "title": "如何向学生解释 $v_p(n)$？",
+    "chapter": "数论",
+    "tags": [
+      "数学+教学",
+      "难度 ★★★☆☆",
+      "p进估值、乘法转加法"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学+教学",
+      "p进估值、乘法转加法"
+    ],
+    "path": "questions/04-number-theory/Q046.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 184,
+    "char_count": 2990
+  },
+  {
+    "id": "047",
+    "title": "LTE 为什么重要？什么时候不能乱用？",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "LTE、估值、条件检查"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "LTE、估值、条件检查"
+    ],
+    "path": "questions/04-number-theory/Q047.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 162,
+    "char_count": 2938
+  },
+  {
+    "id": "048",
+    "title": "如何证明 $\\gcd(a,b)=\\gcd(a,b-ka)$？",
+    "chapter": "数论",
+    "tags": [
+      "基础证明",
+      "难度 ★★☆☆☆",
+      "gcd、欧几里得算法、不变量"
+    ],
+    "difficulty": "难度 ★★☆☆☆",
+    "competency_tags": [
+      "基础证明",
+      "gcd、欧几里得算法、不变量"
+    ],
+    "path": "questions/04-number-theory/Q048.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 171,
+    "char_count": 2957
+  },
+  {
+    "id": "049",
+    "title": "如何处理线性丢番图方程 $ax+by=c$？",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "Bézout、整数解、参数化"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "Bézout、整数解、参数化"
+    ],
+    "path": "questions/04-number-theory/Q049.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 167,
+    "char_count": 2906
+  },
+  {
+    "id": "050",
+    "title": "Pell 方程为什么在竞赛里特殊？",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "Pell、递推、最小解"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "Pell、递推、最小解"
+    ],
+    "path": "questions/04-number-theory/Q050.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 164,
+    "char_count": 2803
+  },
+  {
+    "id": "051",
+    "title": "什么叫无限下降法？",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "极小反例、下降、反证"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "极小反例、下降、反证"
+    ],
+    "path": "questions/04-number-theory/Q051.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 161,
+    "char_count": 2818
+  },
+  {
+    "id": "052",
+    "title": "从数论视角解释 Vieta Jumping 与无限下降的关系。",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "方法统一、Vieta jumping、下降"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "方法统一、Vieta jumping、下降"
+    ],
+    "path": "questions/04-number-theory/Q052.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 155,
+    "char_count": 2873
+  },
+  {
+    "id": "053",
+    "title": "如何处理阶乘中的素因子次数？",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "Legendre、计数、估值"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "Legendre、计数、估值"
+    ],
+    "path": "questions/04-number-theory/Q053.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 161,
+    "char_count": 2975
+  },
+  {
+    "id": "054",
+    "title": "如何求组合数 $\\binom nk$ 中的素因子次数？",
+    "chapter": "数论",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "组合数、估值、进位"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "组合数、估值、进位"
+    ],
+    "path": "questions/04-number-theory/Q054.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 158,
+    "char_count": 2845
+  },
+  {
+    "id": "055",
+    "title": "数论题试了十几个模数都没进展，下一步做什么？",
+    "chapter": "数论",
+    "tags": [
+      "解题策略",
+      "难度 ★★★★☆",
+      "卡题重启、数论方法选择"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "解题策略",
+      "卡题重启、数论方法选择"
+    ],
+    "path": "questions/04-number-theory/Q055.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 149,
+    "char_count": 2798
+  },
+  {
+    "id": "056",
+    "title": "如何讲抽屉原理，让学生不把它理解成一句废话？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学+教学",
+      "难度 ★★★☆☆",
+      "抽屉、建模、存在性"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学+教学",
+      "抽屉、建模、存在性"
+    ],
+    "path": "questions/05-combinatorics/Q056.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 158,
+    "char_count": 2809
+  },
+  {
+    "id": "057",
+    "title": "什么时候应该考虑极值原理？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "极值、存在性、局部到全局"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "极值、存在性、局部到全局"
+    ],
+    "path": "questions/05-combinatorics/Q057.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 155,
+    "char_count": 2708
+  },
+  {
+    "id": "058",
+    "title": "什么是不变量？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "不变量、状态过程、不可达性"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "不变量、状态过程、不可达性"
+    ],
+    "path": "questions/05-combinatorics/Q058.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 158,
+    "char_count": 2611
+  },
+  {
+    "id": "059",
+    "title": "什么是单调量？它与不变量有什么区别？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "单调量、终止性、算法证明"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "单调量、终止性、算法证明"
+    ],
+    "path": "questions/05-combinatorics/Q059.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 157,
+    "char_count": 2681
+  },
+  {
+    "id": "060",
+    "title": "染色法本质是什么？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "染色、不变量、空间分类"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "染色、不变量、空间分类"
+    ],
+    "path": "questions/05-combinatorics/Q060.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 153,
+    "char_count": 2617
+  },
+  {
+    "id": "061",
+    "title": "请解释双计数。",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "组合恒等式、计数对象设计"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "组合恒等式、计数对象设计"
+    ],
+    "path": "questions/05-combinatorics/Q061.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 156,
+    "char_count": 2645
+  },
+  {
+    "id": "062",
+    "title": "不用代数展开解释 $\\sum_{k=0}^n\\binom nk=2^n$。",
+    "chapter": "组合数学",
+    "tags": [
+      "基础证明",
+      "难度 ★★☆☆☆",
+      "组合解释、子集计数"
+    ],
+    "difficulty": "难度 ★★☆☆☆",
+    "competency_tags": [
+      "基础证明",
+      "组合解释、子集计数"
+    ],
+    "path": "questions/05-combinatorics/Q062.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 171,
+    "char_count": 2814
+  },
+  {
+    "id": "063",
+    "title": "为什么递推是组合问题的重要方法？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★☆",
+      "递推、状态定义、最后一步分类"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学专业",
+      "递推、状态定义、最后一步分类"
+    ],
+    "path": "questions/05-combinatorics/Q063.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 163,
+    "char_count": 2768
+  },
+  {
+    "id": "064",
+    "title": "什么情况下使用容斥原理？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★☆☆",
+      "容斥、重叠限制、计数"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学专业",
+      "容斥、重叠限制、计数"
+    ],
+    "path": "questions/05-combinatorics/Q064.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 163,
+    "char_count": 2788
+  },
+  {
+    "id": "065",
+    "title": "请解释 Hall 婚姻定理的直觉。",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "匹配、Hall、局部条件"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "匹配、Hall、局部条件"
+    ],
+    "path": "questions/05-combinatorics/Q065.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 162,
+    "char_count": 2759
+  },
+  {
+    "id": "066",
+    "title": "为什么图论能解决看起来没有“图”的题？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学建模",
+      "难度 ★★★☆☆",
+      "图论建模、关系抽象"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "数学建模",
+      "图论建模、关系抽象"
+    ],
+    "path": "questions/05-combinatorics/Q066.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 154,
+    "char_count": 2727
+  },
+  {
+    "id": "067",
+    "title": "如何处理 Ramsey 型问题？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "Ramsey、递归、存在性"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "Ramsey、递归、存在性"
+    ],
+    "path": "questions/05-combinatorics/Q067.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 157,
+    "char_count": 2748
+  },
+  {
+    "id": "068",
+    "title": "怎样给学生解释概率法？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学+教学",
+      "难度 ★★★★☆",
+      "概率法、存在性、期望"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "数学+教学",
+      "概率法、存在性、期望"
+    ],
+    "path": "questions/05-combinatorics/Q068.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 161,
+    "char_count": 2685
+  },
+  {
+    "id": "069",
+    "title": "什么是生成函数？高中竞赛中什么时候值得使用？",
+    "chapter": "组合数学",
+    "tags": [
+      "数学专业",
+      "难度 ★★★★★",
+      "生成函数、递推、卷积"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "数学专业",
+      "生成函数、递推、卷积"
+    ],
+    "path": "questions/05-combinatorics/Q069.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 168,
+    "char_count": 2754
+  },
+  {
+    "id": "070",
+    "title": "如何判断组合题应该“构造”还是“反证存在”？",
+    "chapter": "组合数学",
+    "tags": [
+      "解题策略",
+      "难度 ★★★★☆",
+      "构造、存在性、极值/概率"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "解题策略",
+      "构造、存在性、极值/概率"
+    ],
+    "path": "questions/05-combinatorics/Q070.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 153,
+    "char_count": 2738
+  },
+  {
+    "id": "071",
+    "title": "面试官给你一道完全没见过的题，前10分钟你做什么？",
+    "chapter": "综合解题与证明",
+    "tags": [
+      "现场解题",
+      "难度 ★★★★★",
+      "陌生题、探索流程、表达"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "现场解题",
+      "陌生题、探索流程、表达"
+    ],
+    "path": "questions/06-problem-solving-proof/Q071.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 152,
+    "char_count": 2687
+  },
+  {
+    "id": "072",
+    "title": "卡题30分钟后，怎样重新启动？",
+    "chapter": "综合解题与证明",
+    "tags": [
+      "解题策略",
+      "难度 ★★★★☆",
+      "卡点管理、换表示、元认知"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "解题策略",
+      "卡点管理、换表示、元认知"
+    ],
+    "path": "questions/06-problem-solving-proof/Q072.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 146,
+    "char_count": 2549
+  },
+  {
+    "id": "073",
+    "title": "什么叫“证明完整”？",
+    "chapter": "综合解题与证明",
+    "tags": [
+      "证明能力",
+      "难度 ★★★★☆",
+      "严谨性、边界、书写"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "证明能力",
+      "严谨性、边界、书写"
+    ],
+    "path": "questions/06-problem-solving-proof/Q073.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 155,
+    "char_count": 2593
+  },
+  {
+    "id": "074",
+    "title": "学生给出漂亮但有漏洞的证明，你怎么处理？",
+    "chapter": "综合解题与证明",
+    "tags": [
+      "教学诊断",
+      "难度 ★★★★☆",
+      "错误反馈、引导、证明修复"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教学诊断",
+      "错误反馈、引导、证明修复"
+    ],
+    "path": "questions/06-problem-solving-proof/Q074.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 154,
+    "char_count": 2600
+  },
+  {
+    "id": "075",
+    "title": "一道题有初等解法和高等解法，课堂怎么选？",
+    "chapter": "综合解题与证明",
+    "tags": [
+      "教学判断",
+      "难度 ★★★★☆",
+      "多解、认知负荷、课程目标"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教学判断",
+      "多解、认知负荷、课程目标"
+    ],
+    "path": "questions/06-problem-solving-proof/Q075.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 154,
+    "char_count": 2547
+  },
+  {
+    "id": "076",
+    "title": "你如何评价一个解法的质量？",
+    "chapter": "综合解题与证明",
+    "tags": [
+      "教研能力",
+      "难度 ★★★★☆",
+      "解法评价、正确性、推广性"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教研能力",
+      "解法评价、正确性、推广性"
+    ],
+    "path": "questions/06-problem-solving-proof/Q076.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 150,
+    "char_count": 2587
+  },
+  {
+    "id": "077",
+    "title": "学生解出一道题后，为什么还要复盘？",
+    "chapter": "综合解题与证明",
+    "tags": [
+      "教学方法",
+      "难度 ★★★☆☆",
+      "复盘、迁移、元认知"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "教学方法",
+      "复盘、迁移、元认知"
+    ],
+    "path": "questions/06-problem-solving-proof/Q077.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 151,
+    "char_count": 2519
+  },
+  {
+    "id": "078",
+    "title": "请设计一道题的三层变式。",
+    "chapter": "综合解题与证明",
+    "tags": [
+      "教研设计",
+      "难度 ★★★★★",
+      "变式、难度梯度、迁移"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "教研设计"
+    ],
+    "path": "questions/06-problem-solving-proof/Q078.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 148,
+    "char_count": 2568
+  },
+  {
+    "id": "079",
+    "title": "试讲10分钟：均值不等式。",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "试讲",
+      "难度 ★★★★☆",
+      "课堂结构、动机、例题、互动"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "试讲",
+      "课堂结构、动机、例题、互动"
+    ],
+    "path": "questions/07-demo-teaching/Q079.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 161,
+    "char_count": 2935
+  },
+  {
+    "id": "080",
+    "title": "试讲15分钟：Ceva定理。",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "试讲",
+      "难度 ★★★★☆",
+      "几何试讲、定理证明、应用"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "试讲",
+      "几何试讲、定理证明、应用"
+    ],
+    "path": "questions/07-demo-teaching/Q080.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 158,
+    "char_count": 2825
+  },
+  {
+    "id": "081",
+    "title": "试讲：Vieta Jumping。",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "试讲",
+      "难度 ★★★★★",
+      "高阶试讲、发现过程、下降"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "试讲",
+      "高阶试讲、发现过程、下降"
+    ],
+    "path": "questions/07-demo-teaching/Q081.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 154,
+    "char_count": 2878
+  },
+  {
+    "id": "082",
+    "title": "试讲：抽屉原理。",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "试讲",
+      "难度 ★★★☆☆",
+      "组合试讲、建模、梯度"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "试讲",
+      "组合试讲、建模、梯度"
+    ],
+    "path": "questions/07-demo-teaching/Q082.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 154,
+    "char_count": 2651
+  },
+  {
+    "id": "083",
+    "title": "学生问：“老师，这条辅助线到底怎么想到的？”你怎么回答？",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "教学沟通",
+      "难度 ★★★★☆",
+      "可解释思维、几何发现、提示设计"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教学沟通",
+      "可解释思维、几何发现、提示设计"
+    ],
+    "path": "questions/07-demo-teaching/Q083.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 150,
+    "char_count": 2653
+  },
+  {
+    "id": "084",
+    "title": "你如何讲一道自己花两小时才做出来的题？",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "教学方法",
+      "难度 ★★★★☆",
+      "专家盲点、探索压缩、课堂设计"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教学方法",
+      "专家盲点、探索压缩、课堂设计"
+    ],
+    "path": "questions/07-demo-teaching/Q084.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 150,
+    "char_count": 2606
+  },
+  {
+    "id": "085",
+    "title": "为什么竞赛课堂不能一直由老师讲？",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "教学方法",
+      "难度 ★★★☆☆",
+      "主动学习、独立探索、反馈"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "教学方法",
+      "主动学习、独立探索、反馈"
+    ],
+    "path": "questions/07-demo-teaching/Q085.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 152,
+    "char_count": 2555
+  },
+  {
+    "id": "086",
+    "title": "同一班学生水平差异很大，怎么讲同一道题？",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "分层教学",
+      "难度 ★★★★☆",
+      "分层、同题异构、课堂管理"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "分层教学",
+      "分层、同题异构、课堂管理"
+    ],
+    "path": "questions/07-demo-teaching/Q086.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 154,
+    "char_count": 2580
+  },
+  {
+    "id": "087",
+    "title": "你怎样讲学生的错题？",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "教学诊断",
+      "难度 ★★★★☆",
+      "错因分类、反馈、纠偏"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教学诊断",
+      "错因分类、反馈、纠偏"
+    ],
+    "path": "questions/07-demo-teaching/Q087.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 153,
+    "char_count": 2526
+  },
+  {
+    "id": "088",
+    "title": "什么样的板书适合竞赛课堂？",
+    "chapter": "试讲与教学能力",
+    "tags": [
+      "试讲",
+      "难度 ★★★☆☆",
+      "板书、信息结构、课堂呈现"
+    ],
+    "difficulty": "难度 ★★★☆☆",
+    "competency_tags": [
+      "试讲",
+      "板书、信息结构、课堂呈现"
+    ],
+    "path": "questions/07-demo-teaching/Q088.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 151,
+    "char_count": 2497
+  },
+  {
+    "id": "089",
+    "title": "从零设计高中数学竞赛课程体系，你怎样拆模块？",
+    "chapter": "课程研发与训练体系",
+    "tags": [
+      "课程研发",
+      "难度 ★★★★★",
+      "课程架构、知识与能力双维"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "课程研发",
+      "课程架构、知识与能力双维"
+    ],
+    "path": "questions/08-curriculum-research/Q089.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 161,
+    "char_count": 2675
+  },
+  {
+    "id": "090",
+    "title": "一个专题讲义应该如何组织？",
+    "chapter": "课程研发与训练体系",
+    "tags": [
+      "课程研发",
+      "难度 ★★★★☆",
+      "讲义设计、认知梯度、教研"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "课程研发",
+      "讲义设计、认知梯度、教研"
+    ],
+    "path": "questions/08-curriculum-research/Q090.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 153,
+    "char_count": 2775
+  },
+  {
+    "id": "091",
+    "title": "你如何选择例题？",
+    "chapter": "课程研发与训练体系",
+    "tags": [
+      "教研能力",
+      "难度 ★★★★☆",
+      "例题选择、教学效率、代表性"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "教研能力",
+      "例题选择、教学效率、代表性"
+    ],
+    "path": "questions/08-curriculum-research/Q091.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 157,
+    "char_count": 2600
+  },
+  {
+    "id": "092",
+    "title": "如何设计阶段测评？",
+    "chapter": "课程研发与训练体系",
+    "tags": [
+      "测评设计",
+      "难度 ★★★★★",
+      "测评、效度、能力分解"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "测评设计",
+      "测评、效度、能力分解"
+    ],
+    "path": "questions/08-curriculum-research/Q092.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 156,
+    "char_count": 2615
+  },
+  {
+    "id": "093",
+    "title": "如何根据测评结果诊断学生？",
+    "chapter": "课程研发与训练体系",
+    "tags": [
+      "学情诊断",
+      "难度 ★★★★☆",
+      "技能矩阵、错因、个性化训练"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "学情诊断",
+      "技能矩阵、错因、个性化训练"
+    ],
+    "path": "questions/08-curriculum-research/Q093.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 153,
+    "char_count": 2735
+  },
+  {
+    "id": "094",
+    "title": "学生还有三个月参加联赛，你怎么安排？",
+    "chapter": "课程研发与训练体系",
+    "tags": [
+      "备赛规划",
+      "难度 ★★★★★",
+      "冲刺、模拟、查漏补缺"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "备赛规划",
+      "冲刺、模拟、查漏补缺"
+    ],
+    "path": "questions/08-curriculum-research/Q094.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 156,
+    "char_count": 2658
+  },
+  {
+    "id": "095",
+    "title": "怎样建立竞赛题库？",
+    "chapter": "课程研发与训练体系",
+    "tags": [
+      "教研工程",
+      "难度 ★★★★★",
+      "题库元数据、检索、知识管理"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "教研工程",
+      "题库元数据、检索、知识管理"
+    ],
+    "path": "questions/08-curriculum-research/Q095.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 164,
+    "char_count": 2904
+  },
+  {
+    "id": "096",
+    "title": "很有天赋的学生长期不写完整证明，你怎么办？",
+    "chapter": "学生培养与职业素养",
+    "tags": [
+      "学生管理",
+      "难度 ★★★★☆",
+      "严谨性、习惯塑造、评价"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "学生管理",
+      "严谨性、习惯塑造、评价"
+    ],
+    "path": "questions/09-student-development/Q096.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 157,
+    "char_count": 2678
+  },
+  {
+    "id": "097",
+    "title": "学生连续几次比赛发挥失常，你怎样处理？",
+    "chapter": "学生培养与职业素养",
+    "tags": [
+      "学情与心理",
+      "难度 ★★★★☆",
+      "数据诊断、策略、表现波动"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "学情与心理",
+      "数据诊断、策略、表现波动"
+    ],
+    "path": "questions/09-student-development/Q097.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 159,
+    "char_count": 2638
+  },
+  {
+    "id": "098",
+    "title": "家长要求：“必须冲省一，多布置一点难题。”你怎么回答？",
+    "chapter": "学生培养与职业素养",
+    "tags": [
+      "家校沟通",
+      "难度 ★★★★☆",
+      "目标沟通、训练剂量、专业边界"
+    ],
+    "difficulty": "难度 ★★★★☆",
+    "competency_tags": [
+      "家校沟通",
+      "目标沟通、训练剂量、专业边界"
+    ],
+    "path": "questions/09-student-development/Q098.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 150,
+    "char_count": 2682
+  },
+  {
+    "id": "099",
+    "title": "高二学生竞赛成绩长期没有突破，你是否建议继续？",
+    "chapter": "学生培养与职业素养",
+    "tags": [
+      "教育判断",
+      "难度 ★★★★★",
+      "机会成本、成长曲线、学生意愿"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "教育判断",
+      "机会成本、成长曲线、学生意愿"
+    ],
+    "path": "questions/09-student-development/Q099.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 154,
+    "char_count": 2680
+  },
+  {
+    "id": "100",
+    "title": "为什么你适合成为高中数学竞赛教练？",
+    "chapter": "学生培养与职业素养",
+    "tags": [
+      "终面",
+      "难度 ★★★★★",
+      "自我呈现、证据链、岗位匹配"
+    ],
+    "difficulty": "难度 ★★★★★",
+    "competency_tags": [
+      "终面",
+      "自我呈现、证据链、岗位匹配"
+    ],
+    "path": "questions/09-student-development/Q100.md",
+    "status": "professional-v2",
+    "has_professional_v2": true,
+    "line_count": 159,
+    "char_count": 2866
+  }
+]

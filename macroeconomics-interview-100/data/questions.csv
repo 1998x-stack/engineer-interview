@@ -1,0 +1,101 @@
+﻿qid,title,module,module_title,difficulty,pdf_page,path,tags,sources
+Q001,什么是 GDP？为什么定义里必须强调“境内、一定时期、最终产品与服务”？,1,国民收入核算与宏观数据,foundation,4,docs/01-national-accounts/q001-gdp-definition.md,gdp,
+Q002,GDP 与 GNI/GNP 有什么区别？,1,国民收入核算与宏观数据,foundation,5,docs/01-national-accounts/q002-gdp-vs-gni.md,gdp|gni,
+Q003,为什么支出法是 Y = C + I + G + NX？进口为什么要减掉？,1,国民收入核算与宏观数据,intermediate,6,docs/01-national-accounts/q003-expenditure-identity-imports.md,macroeconomics,
+Q004,产品生产出来但没卖掉，为什么仍然进入 GDP？,1,国民收入核算与宏观数据,foundation,6,docs/01-national-accounts/q004-inventory-investment.md,gdp,
+Q005,买新房、二手房、股票和土地，分别如何进入 GDP？,1,国民收入核算与宏观数据,foundation,7,docs/01-national-accounts/q005-housing-stocks-land-gdp.md,gdp,
+Q006,名义 GDP、实际 GDP 与 GDP 平减指数是什么关系？,1,国民收入核算与宏观数据,intermediate,7,docs/01-national-accounts/q006-nominal-real-gdp-deflator.md,gdp,
+Q007,CPI 与 GDP 平减指数为什么会给出不同的通胀率？,1,国民收入核算与宏观数据,foundation,8,docs/01-national-accounts/q007-cpi-vs-gdp-deflator.md,gdp|inflation,
+Q008,为什么 GDP 增长不等于社会福利同比增长？,1,国民收入核算与宏观数据,intermediate,8,docs/01-national-accounts/q008-gdp-and-welfare.md,gdp|growth,
+Q009,为什么国民账户中储蓄恒等于投资？计划储蓄与计划投资又为什么可能不相等？,1,国民收入核算与宏观数据,intermediate,9,docs/01-national-accounts/q009-saving-investment-identity.md,macroeconomics,
+Q010,面对一组宏观数据，你如何判断经济“增长质量”，而不是只报 GDP 增速？,1,国民收入核算与宏观数据,intermediate,10,docs/01-national-accounts/q010-growth-quality-dashboard.md,gdp|growth,R3|R4|R8
+Q011,什么叫均衡产出？为什么均衡产出不一定等于充分就业产出？,2,凯恩斯交叉与乘数,intermediate,11,docs/02-keynesian-cross/q011-equilibrium-output.md,macroeconomics,
+Q012,如果计划支出小于产出，经济如何回到均衡？,2,凯恩斯交叉与乘数,foundation,12,docs/02-keynesian-cross/q012-planned-expenditure-below-output.md,macroeconomics,
+Q013,为什么政府购买乘数可能大于 1？,2,凯恩斯交叉与乘数,intermediate,12,docs/02-keynesian-cross/q013-government-purchase-multiplier.md,fiscal-policy,
+Q014,为什么税收乘数为负，且绝对值通常小于政府购买乘数？,2,凯恩斯交叉与乘数,foundation,13,docs/02-keynesian-cross/q014-tax-multiplier.md,fiscal-policy,
+Q015,为什么政府转移支付不直接计入 G，却仍能影响 GDP？,2,凯恩斯交叉与乘数,intermediate,13,docs/02-keynesian-cross/q015-transfers-and-gdp.md,gdp,
+Q016,什么是节俭悖论？它为什么不是说“储蓄有害”？,2,凯恩斯交叉与乘数,foundation,14,docs/02-keynesian-cross/q016-paradox-of-thrift.md,macroeconomics,
+Q017,什么叫自动稳定器？它为什么能降低经济波动？,2,凯恩斯交叉与乘数,foundation,14,docs/02-keynesian-cross/q017-automatic-stabilizers.md,macroeconomics,
+Q018,现实中的财政乘数由哪些因素决定？,2,凯恩斯交叉与乘数,intermediate,15,docs/02-keynesian-cross/q018-fiscal-multiplier-determinants.md,fiscal-policy,
+Q019,经济接近充分就业时，财政扩张为什么更容易推高价格而非产出？,2,凯恩斯交叉与乘数,foundation,15,docs/02-keynesian-cross/q019-fiscal-expansion-at-full-employment.md,ad-as|fiscal-policy,
+Q020,“发钱促消费”和“增加公共投资”应该怎么比较？,2,凯恩斯交叉与乘数,intermediate,16,docs/02-keynesian-cross/q020-cash-transfers-vs-public-investment.md,macroeconomics,R6|R7
+Q021,如何从产品市场均衡推导 IS 曲线？,3,IS-LM 与政策组合,intermediate,17,docs/03-is-lm/q021-derive-is-curve.md,is-lm,
+Q022,哪些因素使 IS 曲线移动？为什么利率变化不算移动？,3,IS-LM 与政策组合,foundation,18,docs/03-is-lm/q022-is-curve-shifts.md,is-lm,
+Q023,为什么 LM 曲线通常向右上倾斜？,3,IS-LM 与政策组合,intermediate,19,docs/03-is-lm/q023-lm-curve-slope.md,is-lm,
+Q024,扩张性财政政策在 IS-LM 中为什么会产生挤出效应？,3,IS-LM 与政策组合,intermediate,19,docs/03-is-lm/q024-fiscal-crowding-out.md,fiscal-policy|is-lm,
+Q025,扩张性货币政策如何从央行工具传导到产出？,3,IS-LM 与政策组合,intermediate,20,docs/03-is-lm/q025-monetary-transmission.md,monetary-policy,
+Q026,什么是流动性陷阱？为什么货币政策可能变弱？,3,IS-LM 与政策组合,foundation,20,docs/03-is-lm/q026-liquidity-trap.md,monetary-policy,
+Q027,财政政策与货币政策应该怎样搭配？,3,IS-LM 与政策组合,intermediate,21,docs/03-is-lm/q027-policy-mix.md,fiscal-policy|monetary-policy,
+Q028,如果央行以政策利率为操作目标，传统 LM 曲线应如何改写？,3,IS-LM 与政策组合,advanced,21,docs/03-is-lm/q028-interest-rate-target-and-lm.md,is-lm,
+Q029,为什么央行降息不一定立即刺激投资？,3,IS-LM 与政策组合,foundation,22,docs/03-is-lm/q029-why-rate-cuts-may-not-boost-investment.md,macroeconomics,
+Q030,IS-LM 与 AD-AS 是什么关系？,3,IS-LM 与政策组合,intermediate,23,docs/03-is-lm/q030-is-lm-to-ad-as.md,ad-as|is-lm,
+Q031,为什么宏观总需求 AD 曲线向右下倾斜？,4,AD-AS、通胀、失业与周期,intermediate,24,docs/04-ad-as/q031-why-ad-slopes-down.md,ad-as,
+Q032,为什么短期总供给 SRAS 通常向右上倾斜？,4,AD-AS、通胀、失业与周期,foundation,25,docs/04-ad-as/q032-why-sras-slopes-up.md,macroeconomics,
+Q033,如何用 AD-AS 区分需求冲击与供给冲击？,4,AD-AS、通胀、失业与周期,intermediate,26,docs/04-ad-as/q033-demand-vs-supply-shocks.md,ad-as,
+Q034,什么是滞胀？为什么它让政策制定更困难？,4,AD-AS、通胀、失业与周期,foundation,26,docs/04-ad-as/q034-stagflation.md,macroeconomics,
+Q035,短期与长期菲利普斯曲线有什么区别？,4,AD-AS、通胀、失业与周期,intermediate,27,docs/04-ad-as/q035-short-vs-long-run-phillips.md,phillips-curve,
+Q036,适应性预期与理性预期有什么区别？,4,AD-AS、通胀、失业与周期,foundation,27,docs/04-ad-as/q036-adaptive-vs-rational-expectations.md,macroeconomics,
+Q037,什么是自然失业率？为什么它通常大于零？,4,AD-AS、通胀、失业与周期,foundation,28,docs/04-ad-as/q037-natural-rate-of-unemployment.md,macroeconomics,
+Q038,奥肯定律表达了什么？为什么系数不是固定常数？,4,AD-AS、通胀、失业与周期,foundation,28,docs/04-ad-as/q038-okuns-law.md,macroeconomics,
+Q039,为什么通缩可能形成宏观恶性循环？,4,AD-AS、通胀、失业与周期,intermediate,29,docs/04-ad-as/q039-deflationary-spiral.md,macroeconomics,
+Q040,预期到的通胀和未预期通胀，经济成本有什么不同？,4,AD-AS、通胀、失业与周期,intermediate,30,docs/04-ad-as/q040-anticipated-vs-unanticipated-inflation.md,macroeconomics,
+Q041,名义汇率与实际汇率有什么区别？,5,开放经济与汇率,intermediate,32,docs/05-open-economy/q041-nominal-vs-real-exchange-rate.md,exchange-rate,
+Q042,本币贬值为什么可能改善净出口？,5,开放经济与汇率,foundation,32,docs/05-open-economy/q042-depreciation-and-net-exports.md,macroeconomics,
+Q043,什么是马歇尔-勒纳条件与 J 曲线？,5,开放经济与汇率,intermediate,33,docs/05-open-economy/q043-marshall-lerner-and-j-curve.md,macroeconomics,
+Q044,浮动汇率下财政扩张为什么可能被汇率升值部分抵消？,5,开放经济与汇率,intermediate,33,docs/05-open-economy/q044-fiscal-policy-floating-fx.md,exchange-rate|fiscal-policy,
+Q045,浮动汇率下货币政策为什么通常更强？,5,开放经济与汇率,intermediate,34,docs/05-open-economy/q045-monetary-policy-floating-fx.md,exchange-rate|monetary-policy,
+Q046,固定汇率下财政政策为什么通常更强？,5,开放经济与汇率,foundation,34,docs/05-open-economy/q046-fiscal-policy-fixed-fx.md,exchange-rate|fiscal-policy,
+Q047,固定汇率下为什么难以保持独立货币政策？,5,开放经济与汇率,intermediate,35,docs/05-open-economy/q047-monetary-independence-fixed-fx.md,exchange-rate|monetary-policy,
+Q048,什么是不可能三角？,5,开放经济与汇率,intermediate,35,docs/05-open-economy/q048-impossible-trinity.md,macroeconomics,
+Q049,美联储加息为什么会影响其他经济体？,5,开放经济与汇率,intermediate,36,docs/05-open-economy/q049-fed-hikes-spillovers.md,macroeconomics,
+Q050,人民币国际化应如何用宏观经济学语言分析？,5,开放经济与汇率,intermediate,37,docs/05-open-economy/q050-rmb-internationalization.md,macroeconomics,
+Q051,长期经济增长的主要源泉是什么？,6,长期增长,intermediate,38,docs/06-growth/q051-sources-of-long-run-growth.md,growth,
+Q052,Solow 模型的核心动态方程是什么？,6,长期增长,intermediate,39,docs/06-growth/q052-solow-dynamics.md,growth|solow,
+Q053,提高储蓄率会永久提高长期经济增长率吗？,6,长期增长,foundation,40,docs/06-growth/q053-saving-rate-and-growth.md,growth,
+Q054,什么是资本黄金律？,6,长期增长,intermediate,40,docs/06-growth/q054-golden-rule-capital.md,growth,
+Q055,人口增长率提高会怎样影响 Solow 稳态？,6,长期增长,foundation,41,docs/06-growth/q055-population-growth-solow.md,growth|solow,
+Q056,为什么技术进步是 Solow 模型中的长期核心？,6,长期增长,intermediate,41,docs/06-growth/q056-technology-in-solow.md,growth|solow,
+Q057,什么是绝对收敛与条件收敛？,6,长期增长,foundation,42,docs/06-growth/q057-absolute-vs-conditional-convergence.md,growth,
+Q058,Solow 与内生增长模型最核心的区别是什么？,6,长期增长,intermediate,42,docs/06-growth/q058-solow-vs-endogenous-growth.md,growth|solow,
+Q059,为什么人力资本可能产生正外部性？,6,长期增长,intermediate,43,docs/06-growth/q059-human-capital-externalities.md,growth,
+Q060,人口老龄化为什么可能降低潜在增长？,6,长期增长,foundation,44,docs/06-growth/q060-aging-and-potential-growth.md,growth,R7
+Q061,凯恩斯消费函数与生命周期/永久收入理论有何不同？,7,现代宏观与预期,foundation,45,docs/07-modern-macro/q061-consumption-theories.md,macroeconomics,
+Q062,什么是李嘉图等价？为什么现实中常不完全成立？,7,现代宏观与预期,foundation,46,docs/07-modern-macro/q062-ricardian-equivalence.md,macroeconomics,
+Q063,Tobin q 如何解释企业投资？,7,现代宏观与预期,foundation,46,docs/07-modern-macro/q063-tobins-q.md,macroeconomics,
+Q064,什么是加速数原理？,7,现代宏观与预期,foundation,47,docs/07-modern-macro/q064-accelerator-principle.md,macroeconomics,
+Q065,RBC 理论如何解释经济周期？它有哪些争议？,7,现代宏观与预期,advanced,48,docs/07-modern-macro/q065-rbc-theory.md,macroeconomics,
+Q066,新凯恩斯主义与传统凯恩斯主义最核心的升级是什么？,7,现代宏观与预期,intermediate,48,docs/07-modern-macro/q066-new-keynesian-upgrade.md,macroeconomics,
+Q067,什么是 Taylor Rule？,7,现代宏观与预期,intermediate,49,docs/07-modern-macro/q067-taylor-rule.md,monetary-policy,
+Q068,什么是货币政策的时间不一致性？,7,现代宏观与预期,foundation,49,docs/07-modern-macro/q068-time-inconsistency.md,monetary-policy,
+Q069,为什么理性预期会改变政策效果？什么是 Lucas critique 的直觉？,7,现代宏观与预期,advanced,50,docs/07-modern-macro/q069-rational-expectations-lucas-critique.md,macroeconomics,
+Q070,DSGE 模型是什么？优势和局限分别是什么？,7,现代宏观与预期,advanced,50,docs/07-modern-macro/q070-dsge-models.md,macroeconomics,
+Q071,政府债务是不是越低越好？,8,财政、债务、货币与金融传导,intermediate,52,docs/08-fiscal-monetary-finance/q071-optimal-public-debt.md,debt|fiscal-policy,
+Q072,债务率动态为什么高度依赖 r-g？,8,财政、债务、货币与金融传导,intermediate,53,docs/08-fiscal-monetary-finance/q072-debt-dynamics-r-minus-g.md,debt|fiscal-policy,
+Q073,什么是财政主导？,8,财政、债务、货币与金融传导,advanced,53,docs/08-fiscal-monetary-finance/q073-fiscal-dominance.md,fiscal-policy|monetary-policy,
+Q074,QE 与普通降息有什么区别？,8,财政、债务、货币与金融传导,foundation,54,docs/08-fiscal-monetary-finance/q074-qe-vs-rate-cuts.md,monetary-policy,
+Q075,为什么低通胀环境下名义利率不高也可能意味着实际政策偏紧？,8,财政、债务、货币与金融传导,intermediate,55,docs/08-fiscal-monetary-finance/q075-low-inflation-real-tightness.md,monetary-policy,R6|R7
+Q076,持续降息为什么可能压缩银行净息差？,8,财政、债务、货币与金融传导,foundation,55,docs/08-fiscal-monetary-finance/q076-bank-net-interest-margin.md,macroeconomics,R7
+Q077,什么是信贷渠道？它与传统利率渠道有什么不同？,8,财政、债务、货币与金融传导,foundation,56,docs/08-fiscal-monetary-finance/q077-credit-channel.md,macroeconomics,
+Q078,地方政府债务为什么会变成宏观问题？,8,财政、债务、货币与金融传导,intermediate,56,docs/08-fiscal-monetary-finance/q078-local-government-debt.md,debt,R6|R7
+Q079,房地产下行如何传导到宏观经济？,8,财政、债务、货币与金融传导,intermediate,57,docs/08-fiscal-monetary-finance/q079-property-downturn-transmission.md,property,R7
+Q080,Fisher 的债务-通缩机制是什么？,8,财政、债务、货币与金融传导,intermediate,57,docs/08-fiscal-monetary-finance/q080-debt-deflation.md,debt,
+Q081,2026 年 GDP 增长目标为什么采用 4.5%-5% 区间？,9,2026 中国宏观热点,intermediate,59,docs/09-china-2026/q081-china-2026-growth-target-range.md,china-2026|gdp|growth,R5
+Q082,2026 上半年 GDP 增长 4.7%、CPI 上涨 1.0%，两者矛盾吗？,9,2026 中国宏观热点,intermediate,60,docs/09-china-2026/q082-china-2026-growth-and-cpi.md,china-2026|gdp|growth|inflation,R3|R4
+Q083,赤字率约 4% 是否足以判断 2026 财政政策比上一年更宽松？,9,2026 中国宏观热点,intermediate,60,docs/09-china-2026/q083-china-2026-fiscal-stance.md,china-2026|fiscal-policy,R6
+Q084,如何把“适度宽松货币政策”翻译成标准宏观模型语言？,9,2026 中国宏观热点,intermediate,61,docs/09-china-2026/q084-china-2026-monetary-stance.md,china-2026|monetary-policy,R6
+Q085,为什么当前政策更强调扩大消费，而不仅是继续扩大投资？,9,2026 中国宏观热点,foundation,61,docs/09-china-2026/q085-china-consumption-vs-investment.md,china-2026,R7
+Q086,房地产调整为什么可能使居民提高储蓄，而不是趁低价购房？,9,2026 中国宏观热点,intermediate,62,docs/09-china-2026/q086-property-and-precautionary-saving.md,china-2026|property,R7
+Q087,如果出口很强，为什么还要扩大内需？,9,2026 中国宏观热点,intermediate,62,docs/09-china-2026/q087-exports-and-domestic-demand.md,china-2026,R7
+Q088,为什么国内通胀低于贸易伙伴可能造成实际汇率贬值？,9,2026 中国宏观热点,foundation,63,docs/09-china-2026/q088-inflation-differential-real-exchange-rate.md,china-2026|exchange-rate,R7
+Q089,“新质生产力”如何翻译成标准增长理论语言？,9,2026 中国宏观热点,intermediate,63,docs/09-china-2026/q089-new-quality-productive-forces.md,china-2026|growth,R5|R6
+Q090,如果你负责 2026 年宏观政策，财政和货币政策怎样组合？,9,2026 中国宏观热点,advanced,64,docs/09-china-2026/q090-china-2026-policy-mix.md,china-2026|fiscal-policy|monetary-policy,R3|R4|R6|R7
+Q091,不许说“IS-LM”，解释央行降息为什么可能提高 GDP。,10,研究能力与压力面试,foundation,65,docs/10-research-interview/q091-explain-rate-cuts-without-is-lm.md,gdp|is-lm,
+Q092,同一财政扩张，凯恩斯交叉、IS-LM 与 AD-AS 分别增加了什么？,10,研究能力与压力面试,intermediate,66,docs/10-research-interview/q092-compare-keynesian-cross-is-lm-ad-as.md,ad-as|fiscal-policy|is-lm,
+Q093,怎样实证估计政府支出乘数？,10,研究能力与压力面试,advanced,66,docs/10-research-interview/q093-estimate-government-spending-multiplier.md,identification,
+Q094,货币供应增长与 GDP 增长正相关，能证明货币导致 GDP 增长吗？,10,研究能力与压力面试,advanced,67,docs/10-research-interview/q094-money-growth-gdp-causality.md,gdp|growth|monetary-policy,
+Q095,VAR 能不能直接识别货币政策的因果效应？,10,研究能力与压力面试,advanced,67,docs/10-research-interview/q095-var-and-monetary-identification.md,econometrics|identification|monetary-policy,
+Q096,如何检验菲利普斯曲线在中国是否成立？,10,研究能力与压力面试,advanced,68,docs/10-research-interview/q096-test-phillips-curve-in-china.md,phillips-curve,
+Q097,预测明年 GDP，你最先看哪五类变量？,10,研究能力与压力面试,foundation,68,docs/10-research-interview/q097-forecast-gdp-framework.md,gdp,
+Q098,英文题：Why can real GDP grow while inflation remains weak?,10,研究能力与压力面试,foundation,69,docs/10-research-interview/q098-weak-inflation-with-real-growth.md,gdp,R3|R4
+Q099,“央行印钱肯定会立刻造成同比例通胀。”你同意吗？,10,研究能力与压力面试,foundation,70,docs/10-research-interview/q099-money-printing-and-inflation.md,macroeconomics,
+Q100,选择一个当前宏观现象：用一个模型解释，再说明模型哪里可能错。,10,研究能力与压力面试,advanced,70,docs/10-research-interview/q100-model-current-macro-phenomenon.md,macroeconomics,R3|R4|R7

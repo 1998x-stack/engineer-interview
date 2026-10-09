@@ -1,0 +1,12 @@
+{
+  "title": "Redis Interview 100 · Offer Style · 2026",
+  "version_baseline": "Redis Open Source 8.10.1 (2026-08)",
+  "questions": 100,
+  "chapters": 10,
+  "pdf_pages": 118,
+  "source_pdf_sha256": "893ac73c70ad92a73c9d2cc35fc4711ce6bdc0a910524cf7db27cf7102cba4fa",
+  "content_revision": "v2-deep-enhanced-2026-09-02",
+  "question_markdown_total_chars": 530986,
+  "question_markdown_avg_chars": 5309,
+  "editorial_standard": "docs/editorial-standard.md"
+}

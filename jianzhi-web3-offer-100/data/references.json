@@ -1,0 +1,117 @@
+{
+  "R1": {
+    "org": "Ethereum.org",
+    "title": "Ethereum Virtual Machine (EVM)",
+    "url": "https://ethereum.org/developers/docs/evm/"
+  },
+  "R2": {
+    "org": "Ethereum Improvement Proposals",
+    "title": "EIP-4844: Shard Blob Transactions",
+    "url": "https://eips.ethereum.org/EIPS/eip-4844"
+  },
+  "R3": {
+    "org": "Ethereum Improvement Proposals",
+    "title": "EIP-7702: Set Code for EOAs",
+    "url": "https://eips.ethereum.org/EIPS/eip-7702"
+  },
+  "R4": {
+    "org": "Ethereum Improvement Proposals",
+    "title": "EIP-1153: Transient storage opcodes",
+    "url": "https://eips.ethereum.org/EIPS/eip-1153"
+  },
+  "R5": {
+    "org": "Solidity Documentation",
+    "title": "Security Considerations",
+    "url": "https://docs.soliditylang.org/en/latest/security-considerations.html"
+  },
+  "R6": {
+    "org": "OpenZeppelin Contracts",
+    "title": "Access Control",
+    "url": "https://docs.openzeppelin.com/contracts/5.x/access-control"
+  },
+  "R7": {
+    "org": "OpenZeppelin Contracts",
+    "title": "Proxy - Transparent vs UUPS",
+    "url": "https://docs.openzeppelin.com/contracts/5.x/api/proxy"
+  },
+  "R8": {
+    "org": "OpenZeppelin Upgrades Plugins",
+    "title": "Storage compatibility / FAQ",
+    "url": "https://docs.openzeppelin.com/upgrades-plugins/faq"
+  },
+  "R9": {
+    "org": "Uniswap",
+    "title": "Uniswap v3 Core Whitepaper",
+    "url": "https://app.uniswap.org/whitepaper-v3.pdf"
+  },
+  "R10": {
+    "org": "Aave",
+    "title": "Health Factor & Liquidations",
+    "url": "https://aave.com/help/borrowing/liquidations"
+  },
+  "R11": {
+    "org": "Ethereum Improvement Proposals",
+    "title": "ERC-4337: Account Abstraction Using Alt Mempool",
+    "url": "https://eips.ethereum.org/EIPS/eip-4337"
+  },
+  "R12": {
+    "org": "Solana Documentation",
+    "title": "Core Concepts",
+    "url": "https://solana.com/docs/core"
+  },
+  "R13": {
+    "org": "Solana Documentation",
+    "title": "Program Derived Addresses (PDAs)",
+    "url": "https://solana.com/docs/core/pda"
+  },
+  "R14": {
+    "org": "Solana Documentation",
+    "title": "Cross Program Invocation (CPI)",
+    "url": "https://solana.com/docs/core/cpi"
+  },
+  "R15": {
+    "org": "Ethereum Improvement Proposals",
+    "title": "EIP-1559: Fee market change",
+    "url": "https://eips.ethereum.org/EIPS/eip-1559"
+  },
+  "R16": {
+    "org": "Solidity Documentation",
+    "title": "Contract ABI Specification",
+    "url": "https://docs.soliditylang.org/en/latest/abi-spec.html"
+  },
+  "R17": {
+    "org": "Ethereum Improvement Proposals",
+    "title": "EIP-712: Typed structured data hashing and signing",
+    "url": "https://eips.ethereum.org/EIPS/eip-712"
+  },
+  "R18": {
+    "org": "Ethereum Improvement Proposals",
+    "title": "ERC-2612: Permit Extension for EIP-20 Signed Approvals",
+    "url": "https://eips.ethereum.org/EIPS/eip-2612"
+  },
+  "R19": {
+    "org": "Ethereum.org",
+    "title": "Optimistic Rollups",
+    "url": "https://ethereum.org/developers/docs/scaling/optimistic-rollups/"
+  },
+  "R20": {
+    "org": "Ethereum.org",
+    "title": "Zero-knowledge rollups",
+    "url": "https://ethereum.org/developers/docs/scaling/zk-rollups/"
+  },
+  "R21": {
+    "org": "Ethereum.org",
+    "title": "Data availability",
+    "url": "https://ethereum.org/developers/docs/data-availability/"
+  },
+  "R22": {
+    "org": "OpenZeppelin Contracts",
+    "title": "Contracts 5.x",
+    "url": "https://docs.openzeppelin.com/contracts/5.x/"
+  },
+  "R23": {
+    "org": "Foundry Book",
+    "title": "Foundry documentation",
+    "url": "https://book.getfoundry.sh/"
+  }
+}

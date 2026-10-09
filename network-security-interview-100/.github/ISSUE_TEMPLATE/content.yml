@@ -1,0 +1,20 @@
+name: 内容问题 / Content issue
+description: 报告题解错误、过时内容或提出扩展建议
+title: "[Content] "
+labels: [content]
+body:
+  - type: input
+    id: question
+    attributes:
+      label: Question ID
+      placeholder: Q13
+  - type: textarea
+    id: issue
+    attributes:
+      label: 问题描述
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: 参考来源（如有）

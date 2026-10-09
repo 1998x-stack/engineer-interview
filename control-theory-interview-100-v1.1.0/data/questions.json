@@ -1,0 +1,2718 @@
+[
+  {
+    "n": 1,
+    "title": "反馈到底改变了什么？为什么负反馈是控制论的核心？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "反馈不是简单地“把输出接回来”，而是通过误差 e=r-y 形成闭环，使控制作用依赖实际输出。若开环为 L(s)=C(s)G(s)，闭环跟踪传递函数为 T=L/(1+L)，灵敏度函数为 S=1/(1+L)。低频把 |L| 做大，可让 S 变小，从而降低稳态误差、抑制低频扰动并减弱参数变化对闭环的影响；但高频若仍维持大增益，会把传感器噪声和未建模动态带进闭环。因此反馈的本质不是“增益越大越好”，而是对不同频段进行有目的的环路塑形。",
+    "math": "\\[\nT(s)=\\frac{L(s)}{1+L(s)},\\qquad S(s)=\\frac{1}{1+L(s)},\\qquad S+T=1.\n\\]\n若对象有小的乘性变化 $G\\to G(1+\\delta)$，闭环相对变化一阶近似受 $S$ 缩放：\n\\[\n\\frac{\\delta T/T}{\\delta G/G}\\approx S(s).\n\\]",
+    "intuition": "把反馈想成“不断对现实做校正”。开环只相信模型；闭环不断用测量告诉控制器“真实系统和预期差多少”。因此反馈最有价值的地方，是把对模型精度的要求从“必须非常准”降低为“在闭环带宽内足够准”。",
+    "pitfall": "常见错误是只说“负反馈提高稳定性”。负反馈并不自动稳定；若相位延迟足够大，所谓负反馈在某频率附近可能等价于正反馈。另一个错误是忽略噪声路径，认为把环路增益在所有频率做大都更好。",
+    "followups": [
+      "灵敏度函数为什么能表示鲁棒性？",
+      "S+T=1 对设计意味着什么？",
+      "为什么反馈系统会出现 waterbed effect？"
+    ],
+    "oral": "反馈通过 1+L 重新塑造闭环。低频高环路增益让 S 小，从而提高跟踪和抗扰；高频要降低 L，避免噪声和未建模动态。核心不是“大增益”，而是“正确的频率分布”。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 1,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty"
+    ]
+  },
+  {
+    "n": 2,
+    "title": "开环与闭环控制的根本差别是什么？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "开环控制根据命令和模型直接给出输入，控制器不知道真实输出是否偏离目标；闭环控制把测量输出反馈回来，因此具有自动纠偏能力。对负载变化、参数漂移和外扰而言，开环性能直接依赖模型精度，而闭环可用误差信号持续修正。代价是闭环引入稳定性设计、传感器噪声、延迟、采样和执行器非线性等新问题。",
+    "math": "开环：\\[u=F(r).\\]\n闭环：\\[u=C(r-y).\\]\n若对象为 $G$，单位负反馈下：\n\\[\n\\frac{Y}{R}=\\frac{CG}{1+CG}.\n\\]",
+    "intuition": "开环像“按地图走”；闭环像“边走边看 GPS”。地图准确时开环可以很好，但真实环境稍变就会偏。闭环的传感器相当于持续提供现实校正。",
+    "pitfall": "闭环并非总优于开环。若测量非常差、目标动作高度可重复、反馈延迟很大，合理的前馈/开环反而可能更直接。工程系统通常是 feedforward + feedback，而不是二选一。",
+    "followups": [
+      "为什么前馈不能替代反馈？",
+      "什么时候开环更合适？",
+      "两自由度控制结构为什么常用？"
+    ],
+    "oral": "开环靠模型，闭环靠误差纠偏。闭环更鲁棒，但引入稳定性、噪声、延迟和饱和问题。实际工程通常前馈负责“做对大部分动作”，反馈负责“修正剩余误差”。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 2,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty",
+      "sampling",
+      "nonlinear-control",
+      "delay"
+    ]
+  },
+  {
+    "n": 3,
+    "title": "为什么“快、准、稳、抗噪”不能同时无限提升？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "控制设计存在不可避免的性能权衡。提高低频环路增益有利于跟踪和抗扰；提高交越频率通常能加快响应；但交越频率越高，就越靠近传感器噪声、计算延迟、柔性模态和未建模高频动态。积分提高 DC 增益，却增加相位滞后；微分或超前校正增加相位裕度，却提升高频增益。因此优秀控制器不是把单个指标做到极致，而是在对象不确定性、执行器能力和噪声频谱约束下找到可实现的折中。",
+    "math": "常用近似关系：\n\\[\n t_s\\sim \\frac{1}{\\text{闭环衰减率}},\\qquad \\omega_{BW}\\sim \\omega_{gc}.\n\\]\n延迟产生相位：\n\\[\n e^{-s\\tau}\\Rightarrow \\angle=-\\omega\\tau.\n\\]\n所以当 $\\omega_{gc}$ 增大时，同样的延迟会消耗更多相位裕度。",
+    "intuition": "“快”意味着控制器要更积极地推动系统；但真实硬件存在最大电流、最大力矩、采样周期和延迟。越想让系统快，就越容易撞到这些物理边界。",
+    "pitfall": "只用阶跃响应调快慢而不看频域，会把系统推到柔性共振或时延主导区。另一个误区是认为相位裕度越大越好；过大的裕度往往意味着过低带宽和过慢响应。",
+    "followups": [
+      "如何从相位裕度估计可容许纯延迟？",
+      "为什么积分会降低稳定裕度？",
+      "如何用 lead compensator 提高速度同时维持裕度？"
+    ],
+    "oral": "快、准、稳、抗噪之间有结构性冲突。低频要高增益，高频要低增益，交越区要有足够相位裕度；控制设计的本质是 loop shaping 和约束下的折中。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 3,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty",
+      "delay"
+    ]
+  },
+  {
+    "n": 4,
+    "title": "传递函数是什么？它隐藏了哪些信息？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "传递函数是在零初始条件下，用 Laplace 域描述输入到输出的线性关系。它非常适合分析极点、零点、稳态增益以及频率响应，也是根轨迹、Bode、Nyquist 的自然语言。但它只描述外部输入输出映射，可能隐藏内部状态、初始条件以及不可控或不可观的内部模态。对 MIMO、高阶和估计问题，状态空间通常更自然。",
+    "math": "对\n\\[\n\\dot x=Ax+Bu,\\quad y=Cx+Du,\n\\]\n零初值下：\n\\[\nG(s)=C(sI-A)^{-1}B+D.\n\\]",
+    "intuition": "传递函数像从系统外部看“黑箱”；状态空间则像打开箱子，看内部能量如何在各状态间流动。",
+    "pitfall": "不要把“传递函数稳定”与“所有内部状态稳定”无条件等同。如果存在不稳定的 pole-zero cancellation，外部传递函数可能看不见某个危险内部模态。",
+    "followups": [
+      "什么是最小实现？",
+      "为什么不稳定极零相消很危险？",
+      "MIMO 下传递函数矩阵有什么局限？"
+    ],
+    "oral": "传递函数是零初值下的输入输出比值，适合经典控制；但会隐藏内部状态和某些内部不稳定性。现代控制通常用状态空间补足这些信息。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 4,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty",
+      "nyquist",
+      "bode",
+      "root-locus",
+      "controllability"
+    ]
+  },
+  {
+    "n": 5,
+    "title": "极点、零点分别决定什么？为什么右半平面零点很麻烦？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "极点决定系统的自然模态和主要稳定性，零点决定输入如何激励或抑制这些模态。连续系统右半平面极点带来指数增长；右半平面零点本身不一定导致 BIBO 不稳定，却造成非最小相位特性：阶跃响应可能先向错误方向运动，并给频域引入额外相位滞后。它还限制闭环可实现带宽，不能简单用稳定控制器“消掉”这一限制。",
+    "math": "若\n\\[\nG(s)=K\\frac{\\prod_i(s-z_i)}{\\prod_j(s-p_j)},\n\\]\n自由响应含 $e^{p_j t}$。对右半平面零点 $z>0$，其因子 $1-s/z$ 在幅频上与左半平面零点相似，但相位方向相反，带来非最小相位约束。",
+    "intuition": "极点像系统自己的“自然振动模式”；零点像输入到输出路径中的“抵消/反向通道”。右半平面零点意味着你想让输出往目标走时，系统短时间内不得不先做相反动作。",
+    "pitfall": "常见误区是把零点也当作“稳定性根”。更高阶的误区是试图通过控制器零点精确消掉不稳定对象极点或右半平面零点；模型稍有误差就会暴露危险动态。",
+    "followups": [
+      "什么是 inverse response？",
+      "最小相位系统如何定义？",
+      "右半平面零点为何限制 bandwidth？"
+    ],
+    "oral": "极点主要决定自然动态和稳定性；零点塑造输入输出瞬态。右半平面零点使系统非最小相位，会带来反向响应和相位损失，因此成为性能硬约束。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 5,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty",
+      "zeros",
+      "poles"
+    ]
+  },
+  {
+    "n": 6,
+    "title": "如何从物理定律建立控制模型？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "建模面试题不应从套公式开始，而应先明确系统边界、输入、输出、状态、储能元件和约束。机械系统常从 Newton/Euler 或 Lagrange 方程出发，电气系统从 KCL/KVL，热过程从能量守恒。之后选状态变量，把高阶微分方程写成一阶状态方程，再根据测量关系定义输出。最后检查单位、平衡点和模型阶次，避免漏掉执行器或传感器动态。",
+    "math": "质量-弹簧-阻尼系统：\n\\[\nm\\ddot q+b\\dot q+kq=u.\n\\]\n取 $x_1=q,x_2=\\dot q$：\n\\[\n\\dot x=\\begin{bmatrix}0&1\\\\-k/m&-b/m\\end{bmatrix}x+\n\\begin{bmatrix}0\\\\1/m\\end{bmatrix}u.\n\\]",
+    "intuition": "最有用的建模习惯是问：“能量存在哪里？”位置/速度、电感电流、电容电压、温度库存等往往就是自然状态。",
+    "pitfall": "只建 plant 而忽略 actuator、sensor、delay，是仿真与实机不一致的主要来源之一。另一个常见错误是忘记在指定 operating point 附近定义输入偏置和状态偏置。",
+    "followups": [
+      "如何判断状态选得是否最小？",
+      "何时用 Lagrange 比 Newton 更方便？",
+      "执行器一阶动态对闭环有什么影响？"
+    ],
+    "oral": "先划系统边界，再用守恒定律得到动力学；选能完整决定未来的最小状态；写成一阶状态方程；最后把执行器、传感器、时延和工作点补进模型。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 5,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty",
+      "state-space"
+    ]
+  },
+  {
+    "n": 7,
+    "title": "什么是线性、时不变、因果？为什么 LTI 如此重要？",
+    "level": "基础",
+    "freq": "★★★★☆",
+    "core": "线性要求满足叠加原理；时不变表示输入整体平移时输出也只做同样平移；因果表示当前输出不能依赖未来输入。LTI 系统之所以重要，是因为它同时拥有卷积、传递函数、频率响应、特征值与状态空间等强大的等价描述。许多真实系统虽然非线性，但在平衡点附近可以线性化，从而把局部控制问题转成 LTI 设计。",
+    "math": "线性：\n\\[\n\\mathcal{H}(a u_1+b u_2)=a\\mathcal{H}(u_1)+b\\mathcal{H}(u_2).\n\\]\nLTI 卷积：\n\\[\ny(t)=\\int_{-\\infty}^{\\infty}h(\\tau)u(t-\\tau)d\\tau.\n\\]",
+    "intuition": "LTI 的优势不是“真实世界线性”，而是它构成了一个可计算、可验证、可局部逼近真实系统的核心工具箱。",
+    "pitfall": "把“非线性系统不能用线性控制”理解成绝对命题是错误的。大量姿态稳定、伺服和过程控制都在局部工作点上用线性控制成功实现。",
+    "followups": [
+      "如何检验一个系统是否时不变？",
+      "线性化以后原系统一定局部稳定吗？",
+      "LTI 频率响应为什么可以用正弦稳态定义？"
+    ],
+    "oral": "LTI 同时满足叠加与时间平移不变，因此能用卷积、Laplace、Bode、状态空间统一分析。真实系统常通过工作点附近线性化进入这个框架。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 6,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty",
+      "nonlinear-control",
+      "state-space"
+    ]
+  },
+  {
+    "n": 8,
+    "title": "什么是平衡点？为什么控制器常围绕平衡点设计？",
+    "level": "基础",
+    "freq": "★★★★☆",
+    "core": "对非线性系统 xdot=f(x,u)，若某个 (x*,u*) 满足 f(x*,u*)=0，则该点在恒定输入下可以保持不动，称为平衡点。许多稳定控制问题本质上是把状态从附近拉回平衡点。将坐标平移为 delta x=x-x*、delta u=u-u* 后，可以在原点附近线性化并设计控制器。",
+    "math": "平衡条件：\n\\[\nf(x^\\star,u^\\star)=0.\n\\]\n一阶线性化：\n\\[\n\\delta\\dot x=A\\delta x+B\\delta u,\n\\quad A=\\left.\\frac{\\partial f}{\\partial x}\\right|_\\star,\n\\quad B=\\left.\\frac{\\partial f}{\\partial u}\\right|_\\star.\n\\]",
+    "intuition": "控制器常不是在控制“绝对变量”，而是在控制相对某个工作点的小偏差。比如无人机悬停时，重力补偿本身就是 u*，反馈只需要管增量。",
+    "pitfall": "如果忘记输入偏置 u*，线性控制器会用积分或反馈硬扛一个本应由前馈提供的恒定作用，造成饱和或积分累积。",
+    "followups": [
+      "轨迹跟踪和定点稳定有何区别？",
+      "移动工作点如何处理？",
+      "gain scheduling 的思想是什么？"
+    ],
+    "oral": "平衡点满足 f(x*,u*)=0。把变量改写为相对平衡点的偏差后，局部线性化和反馈设计会非常清晰；工程上别忘了把平衡输入作为前馈偏置。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 7,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty",
+      "nonlinear-control",
+      "state-space"
+    ]
+  },
+  {
+    "n": 9,
+    "title": "什么是系统阶次？阶次与状态数量、极点数量是什么关系？",
+    "level": "基础",
+    "freq": "★★★★☆",
+    "core": "在最小实现条件下，连续 LTI 系统的阶次等于独立状态变量数量，也等于传递函数最简形式分母的阶数。每个独立储能机制通常引入一个状态。若存在不可控/不可观状态或精确极零相消，某个状态可能不会出现在外部传递函数里，因此“物理状态数”和“最简输入输出阶次”不一定相同。",
+    "math": "最小 SISO 有理传递函数：\n\\[\nG(s)=\\frac{b_m s^m+\\cdots+b_0}{s^n+a_{n-1}s^{n-1}+\\cdots+a_0},\\quad m<n.\n\\]\n最小状态实现维数为 $n$。",
+    "intuition": "阶次可理解为系统“需要记住多少独立过去信息”。一阶 RC 电路只需电容电压；二阶机械振子需要位置和速度。",
+    "pitfall": "不要只看微分方程最高阶数而忽略约束关系。多个状态若被代数约束绑定，真实自由度可能更低。",
+    "followups": [
+      "什么叫最小实现？",
+      "极零相消如何降低传递函数阶次？",
+      "descriptor system 与普通状态空间有何区别？"
+    ],
+    "oral": "最小 LTI 系统中，阶次=独立状态数=最简传递函数分母阶数。若有不可控/不可观模态或极零相消，外部看到的阶次可能低于内部物理状态数。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 8,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty",
+      "controllability",
+      "observability",
+      "state-space",
+      "poles"
+    ]
+  },
+  {
+    "n": 10,
+    "title": "模型为什么永远不完全准确？控制设计如何面对模型误差？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "任何控制模型都是对真实系统的抽象：会忽略摩擦变化、柔性、温度、执行器限幅、传感器动态、网络延迟、参数漂移和外部环境。成熟设计应把对象写成 nominal model 加 uncertainty，并在验证阶段进行参数扫频、Monte Carlo、极端工况和频域鲁棒裕度检查。对高风险系统，不能只证明 nominal 稳定。",
+    "math": "常见不确定性表示：\n\\[\nG_{real}=G_0(1+W_m\\Delta),\\qquad \\|\\Delta\\|_\\infty\\le1,\n\\]\n或加性形式：\n\\[\nG_{real}=G_0+W_a\\Delta.\n\\]",
+    "intuition": "模型不是现实本身，而是一张为某个控制目标服务的地图。低频刚体模型可能很准，高频柔性模态却完全被省略；因此模型有效范围和控制带宽必须配套。",
+    "pitfall": "常见错误是“仿真通过=控制器正确”。真正需要验证的是模型族、采样、延迟、量化、饱和、噪声、参数变化和传感器故障等组合。",
+    "followups": [
+      "如何选择乘性还是加性不确定性？",
+      "为什么高频建模误差通常更大？",
+      "鲁棒稳定和鲁棒性能有何区别？"
+    ],
+    "oral": "真实对象永远是模型加不确定性。设计时要明确模型有效频段，并用增益/相位裕度、灵敏度、参数扫描和鲁棒工具验证“模型族”而不是单一 nominal plant。",
+    "chapter": 1,
+    "chapter_title": "控制论基础与建模",
+    "chapter_slug": "01-foundations-modeling",
+    "pdf_page": 9,
+    "tags": [
+      "feedback",
+      "modeling",
+      "poles-zeros",
+      "uncertainty",
+      "robust-control",
+      "delay"
+    ]
+  },
+  {
+    "n": 11,
+    "title": "一阶系统的时间常数到底表示什么？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "标准一阶系统 K/(tau s+1) 的时间常数 tau 决定指数衰减速度。单位阶跃响应为 K(1-exp(-t/tau))；在 1tau 时达到最终值约 63.2%，3tau 约 95%，4tau 约 98.2%。一阶系统没有欠阻尼振荡，速度主要由极点 -1/tau 决定。",
+    "math": "\\[\nG(s)=\\frac{K}{\\tau s+1},\\qquad y(t)=K(1-e^{-t/\\tau}).\n\\]\n2\\% settling time 近似：\n\\[\nt_s\\approx4\\tau.\n\\]",
+    "intuition": "tau 是系统“忘掉初始误差”的时间尺度。tau 越小，极点越靠左，系统越快。",
+    "pitfall": "不要把 rise time、settling time 和 time constant 混成一个概念。它们相关但定义不同，尤其在高阶系统中不能简单使用 4tau。",
+    "followups": [
+      "为什么极点 -1/tau 决定速度？",
+      "一阶系统加纯延迟后还能用 4tau 吗？",
+      "如何从实验阶跃辨识 K、tau、delay？"
+    ],
+    "oral": "一阶系统的 tau 是指数衰减时间尺度：1tau 到 63.2%，约 4tau 进入 2% 误差带。它和极点位置 -1/tau 是同一件事的时域/频域表达。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 10,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state",
+      "poles"
+    ]
+  },
+  {
+    "n": 12,
+    "title": "标准二阶系统中的自然频率和阻尼比分别控制什么？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "标准二阶系统分母为 s^2+2 zeta wn s+wn^2。wn 主要设置整体时间尺度，zeta 主要决定振荡程度和超调；真正控制指数包络的是 zeta wn，振荡频率是 wd=wn sqrt(1-zeta^2)。因此只增大 wn 而维持 zeta 不变，会近似等比例加快响应；只改变 zeta 会显著改变超调和振铃。",
+    "math": "\\[\np_{1,2}=-\\zeta\\omega_n\\pm j\\omega_n\\sqrt{1-\\zeta^2}.\n\\]\n\\[\n\\omega_d=\\omega_n\\sqrt{1-\\zeta^2}.\n\\]",
+    "intuition": "把二阶极点画到 s 平面：到原点的距离是 wn，与负实轴夹角对应 zeta；所以极点几何位置直接编码了快慢和阻尼。",
+    "pitfall": "只用“zeta=0.707 最优”是过度简化。0.707 只是常见折中，并非所有对象和代价函数下的普适最优。",
+    "followups": [
+      "固定 wn 时 zeta 增大，rise time 会怎样？",
+      "为什么复极点的实部决定包络？",
+      "如何从峰值时间反推 wd？"
+    ],
+    "oral": "wn 决定总体时间尺度，zeta 决定阻尼和超调，zeta*wn 决定衰减速度，wd 决定振铃频率。面试最好把这四个量联系到极点几何位置。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 11,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state"
+    ]
+  },
+  {
+    "n": 13,
+    "title": "二阶系统超调量如何从阻尼比得到？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "对无零点、单位 DC 增益的标准欠阻尼二阶系统，百分比超调可由阻尼比直接求得。公式来自阶跃响应中指数包络在第一个峰值时刻的幅度。这个公式很常用，但它依赖“标准二阶主导”假设；若有近端零点、高阶极点或强非线性，实际超调可能明显偏离。",
+    "math": "峰值时间：\n\\[\nt_p=\\frac{\\pi}{\\omega_d}.\n\\]\n超调比：\n\\[\nM_p=e^{-\\pi\\zeta/\\sqrt{1-\\zeta^2}},\\qquad PO=100M_p\\%.\n\\]",
+    "intuition": "zeta 越大，指数包络衰减越快，系统到第一个峰值时剩余振幅越小，因此超调下降。",
+    "pitfall": "看到超调就直接套公式是常见错误。先确认系统是否确实由一对二阶极点主导，而且零点没有强烈扭曲响应。",
+    "followups": [
+      "给定 10% 超调如何反求 zeta？",
+      "右半平面零点对超调公式有什么影响？",
+      "为什么峰值时间取 pi/wd？"
+    ],
+    "oral": "标准欠阻尼二阶系统的超调由 zeta 唯一决定：PO=100 exp(-pi zeta/sqrt(1-zeta^2))。但有明显零点或高阶模态时不要盲套。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 12,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state",
+      "nonlinear-control",
+      "zeros",
+      "poles"
+    ]
+  },
+  {
+    "n": 14,
+    "title": "为什么 settling time 常近似为 4/(zeta wn)？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "欠阻尼二阶响应的振荡包络按 exp(-zeta wn t) 衰减。若使用 2% settling band，令指数包络降到 0.02，可得 t=-ln(0.02)/(zeta wn)，数值约为 3.9/(zeta wn)，工程上写成 4/(zeta wn)。这说明 settling time 本质上由闭环极点实部决定。",
+    "math": "\\[\ne^{-\\zeta\\omega_n t_s}=0.02\n\\Rightarrow\n t_s=\\frac{-\\ln 0.02}{\\zeta\\omega_n}\\approx\\frac{3.9}{\\zeta\\omega_n}.\n\\]",
+    "intuition": "极点实部越负，状态能量衰减越快。4/(zeta wn) 不是神秘经验式，而是指数衰减到 2% 的直接结果。",
+    "pitfall": "不同 settling band 会改变系数。5% 常得到约 3/(zeta wn)。不要在面试中把“4”当成基本常数。",
+    "followups": [
+      "5% settling time 是多少？",
+      "高阶系统如何定义 dominant poles？",
+      "为什么 zeta 很小时公式仍可能低估振铃影响？"
+    ],
+    "oral": "2% settling time 的 4/(zeta wn) 来自指数包络降到 0.02；真正关键量是极点实部 -zeta wn，而不是死记数字 4。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 13,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state",
+      "poles"
+    ]
+  },
+  {
+    "n": 15,
+    "title": "Rise time、peak time、settling time、overshoot 各自反映什么？",
+    "level": "基础",
+    "freq": "★★★★☆",
+    "core": "Rise time 衡量初始上升速度，peak time 衡量首次达到峰值所需时间，settling time 衡量进入误差带并保持其中的时间，overshoot 衡量峰值超过最终值的比例。它们不能互相替代：一个系统可以 rise 很快却 settle 很慢，例如低阻尼系统会快速穿过目标但持续振铃。工程评价应结合至少速度、超调、稳态误差和控制输入。",
+    "math": "欠阻尼标准二阶常用：\n\\[\nt_p=\\pi/\\omega_d,\\qquad t_s\\approx4/(\\zeta\\omega_n).\n\\]\nRise time 的精确表达依赖采用 0--100% 还是 10--90% 定义。",
+    "intuition": "“快”至少有两种含义：第一次到达目标快，和真正稳定下来快。低阻尼系统往往第一种很快、第二种很慢。",
+    "pitfall": "面试时不要只报一个 settling time。实际 actuator saturation、rate limit 可能让时域指标在大信号下完全不同。",
+    "followups": [
+      "为什么控制输入峰值也应该作为时域指标？",
+      "10-90% rise time 为什么更适合实验？",
+      "非最小相位系统的 rise time 有什么限制？"
+    ],
+    "oral": "Rise time 看第一次上升速度，peak time 看首峰，settling time 看最终安定，overshoot 看冲过头多少。真正的性能评价要同时看这几个量以及输入约束。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 13,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state"
+    ]
+  },
+  {
+    "n": 16,
+    "title": "什么是系统型别？它为什么决定标准输入的稳态误差？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "单位反馈中，系统型别通常由开环 L(s) 在原点的极点个数决定。每个原点极点相当于一个积分器，使低频增益多一个 1/s，因此提高对多项式参考的跟踪能力。Type 0 对阶跃一般有有限误差，Type 1 对阶跃零误差、对斜坡有限误差，Type 2 对斜坡零误差、对抛物线有限误差。",
+    "math": "位置、速度、加速度误差常数：\n\\[\nK_p=\\lim_{s\\to0}L(s),\\quad\nK_v=\\lim_{s\\to0}sL(s),\\quad\nK_a=\\lim_{s\\to0}s^2L(s).\n\\]",
+    "intuition": "积分器的数量等价于系统对低频多项式信号的“记忆阶数”。想长期跟踪 ramp，就需要比只跟踪 constant 更强的低频内部模型。",
+    "pitfall": "型别分析默认闭环稳定且不存在改变原点极点的相消。不能看到一个积分器就直接宣布稳态误差必为零。",
+    "followups": [
+      "内部模型原理如何解释系统型别？",
+      "Type 1 对正弦参考误差为零吗？",
+      "加入积分器为什么会损失相位裕度？"
+    ],
+    "oral": "系统型别看开环原点积分器数量，它决定 DC 附近增益增长速度，因此决定对 step、ramp、parabolic 输入的稳态误差阶次。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 14,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state",
+      "poles"
+    ]
+  },
+  {
+    "n": 17,
+    "title": "终值定理怎样求稳态误差？什么时候不能用？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "终值定理把 t 到无穷的极限转换为 s 到 0 的极限，是求稳态误差的标准工具。单位反馈下 E=R/(1+L)，于是 e_ss=lim sE(s)。但它要求 sE(s) 的所有极点位于左半平面，允许最多在原点满足特定条件；若系统不稳定或存在持续振荡，直接套终值定理会得到没有物理意义的结果。",
+    "math": "\\[\n\\lim_{t\\to\\infty}e(t)=\\lim_{s\\to0}sE(s),\n\\]\n成立条件应先检查 $sE(s)$ 的极点。",
+    "intuition": "终值定理是一个“先判断长期极限是否存在，再用 Laplace 快速算”的工具，不是替代稳定性检查的魔法公式。",
+    "pitfall": "最典型错误：对不稳定闭环仍然计算 lim sE(s) 并把结果当稳态误差。面试官经常故意用这一点设坑。",
+    "followups": [
+      "初值定理是什么？",
+      "有虚轴共轭极点时为什么终值不存在？",
+      "如何从误差传递函数判断稳态误差？"
+    ],
+    "oral": "先确认闭环长期极限存在，再用 e_ss=lim sE(s)。如果 sE(s) 有右半平面极点或持续振荡极点，终值定理不能直接用。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 15,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state",
+      "poles"
+    ]
+  },
+  {
+    "n": 18,
+    "title": "什么是主导极点？高阶系统何时可近似为二阶？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "高阶系统的时域响应是多个模态叠加。实部最靠近虚轴的稳定极点衰减最慢，往往主导长期瞬态。如果一对复共轭极点显著慢于其他极点，并且对应残差不小，则可用二阶系统近似主要响应。常见经验是非主导极点实部至少比主导极点快 4--5 倍，但是否成立还要看零点和模态残差。",
+    "math": "若\n\\[\ny(t)=\\sum_i c_i e^{p_i t},\n\\]\n则 $\\Re(p_i)$ 越接近 0，模态衰减越慢。仅凭极点距离还不够，系数 $c_i$ 也决定模态是否显著。",
+    "intuition": "主导极点不是“最靠近虚轴就一定主导”，还要看该模态是否被输入激励、是否在输出中可见。",
+    "pitfall": "把一个高阶系统机械地按极点位置做二阶近似而忽略近端零点，是常见失误。零点可能让瞬态完全偏离标准二阶形状。",
+    "followups": [
+      "什么是 modal residue？",
+      "什么时候三阶系统不能用二阶近似？",
+      "近端零点如何扭曲超调？"
+    ],
+    "oral": "主导模态由慢极点和对应残差共同决定。若一对复极点明显比其他模态慢且可见，就可以用标准二阶指标近似高阶系统。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 16,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state",
+      "zeros",
+      "poles"
+    ]
+  },
+  {
+    "n": 19,
+    "title": "左半平面零点如何改变阶跃响应？",
+    "level": "进阶",
+    "freq": "★★★★☆",
+    "core": "稳定零点虽然不决定闭环稳定性，却会显著改变瞬态。把零点放得靠近主导极点区域，会增强早期响应、常使 rise time 变短，但可能增加超调。若零点远离闭环带宽，其影响较小。这也是不能只看极点预测时域性能的原因。",
+    "math": "例如\n\\[\nG(s)=\\frac{1+s/z}{s^2+2\\zeta\\omega_n s+\\omega_n^2}.\n\\]\n当 $z$ 与 $\\omega_n$ 同量级时，分子零点会显著改变阶跃响应的系数与初始斜率。",
+    "intuition": "极点告诉你有哪些自然模态，零点告诉你这些模态在输入输出之间“怎么被组合”。所以相同极点、不同零点的系统，阶跃形状可以很不一样。",
+    "pitfall": "“闭环极点相同，所以响应相同”是错误的。即使稳定性和主衰减率相同，零点也能显著改变 peak 和初始响应。",
+    "followups": [
+      "零点远到多远可以忽略？",
+      "RHP 零点和 LHP 零点的幅值为什么相似、相位却不同？",
+      "如何从初值定理看零点影响？"
+    ],
+    "oral": "零点不决定自然稳定性，却决定输入输出模态权重。靠近带宽的 LHP 零点常加快初始响应、也可能增大超调；RHP 零点则更困难。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 16,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state",
+      "zeros",
+      "poles"
+    ]
+  },
+  {
+    "n": 20,
+    "title": "如何从实验阶跃数据快速判断对象类型？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "面对未知对象，先观察是否存在纯延迟、初始斜率、单调性、超调、稳态增益和积分行为。单调指数接近一阶；S 形且无超调可能是多阶惯性；持续线性增长暗示积分环节；先反向再正向暗示非最小相位；固定周期振铃说明有欠阻尼模态。再结合频响或 PRBS/扫频辨识，避免只用一次阶跃过度拟合。",
+    "math": "一阶加纯延迟 FOPDT 常写为：\n\\[\nG(s)=\\frac{K e^{-Ls}}{\\tau s+1}.\n\\]\n可从最终变化估计 $K$，从反应曲线估计 $L$ 和 $\\tau$。",
+    "intuition": "阶跃是最便宜的“系统体检”：看方向、延迟、斜率、振铃、最终值，通常就能排除很多模型结构。",
+    "pitfall": "生产系统上做阶跃时要考虑安全约束、饱和和工作点依赖。小信号阶跃得到的是局部模型，大信号可能进入完全不同的非线性区域。",
+    "followups": [
+      "怎样用 relay test 找临界频率？",
+      "为什么 PRBS 比单一阶跃包含更多频率信息？",
+      "怎么区分传感器延迟和 plant delay？"
+    ],
+    "oral": "先看阶跃的延迟、单调性、振铃、积分趋势、最终增益和是否反向响应，再决定是一阶、二阶、积分、非最小相位还是多模态对象；最后用频域辨识验证。",
+    "chapter": 2,
+    "chapter_title": "时域响应与二阶系统",
+    "chapter_slug": "02-time-domain-second-order",
+    "pdf_page": 17,
+    "tags": [
+      "time-domain",
+      "second-order",
+      "steady-state",
+      "delay"
+    ]
+  },
+  {
+    "n": 21,
+    "title": "PID 三项的本质作用分别是什么？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "P 使用当前误差，提供直接刚度；I 累积历史误差，建立无限 DC 增益以消除恒定误差和恒定扰动；D 利用误差变化趋势提供相位超前和等效阻尼。三项不是独立的“快、准、稳”按钮，而是共同改变开环零极点和频率响应。工程上常用 PI、PD 或带滤波的 PID，而不是理想形式。",
+    "math": "\\[\nu(t)=K_p e(t)+K_i\\int e(t)dt+K_d\\dot e(t),\n\\]\n\\[\nC(s)=K_p+\\frac{K_i}{s}+K_d s.\n\\]",
+    "intuition": "P 像弹簧：误差越大推得越强；I 像记账：过去欠的误差必须补回来；D 像减震器：看到变化过快就提前刹车。",
+    "pitfall": "把 Kp、Ki、Kd 的影响背成固定表格容易误导，因为效果依赖 plant。比如增大 Kp 不保证所有系统都降低 rise time，也可能触发高频模态或饱和。",
+    "followups": [
+      "为什么很多工业环路只用 PI？",
+      "PID 在频域里等价于什么零极点结构？",
+      "两自由度 PID 为什么能分离跟踪和扰动响应？"
+    ],
+    "oral": "P 管现在，I 管长期偏差，D 管变化趋势。真正理解要落到 loop shaping：I 提高低频增益，D/lead 提供相位，P 调整体尺度。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 19,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward",
+      "poles"
+    ]
+  },
+  {
+    "n": 22,
+    "title": "为什么积分能消除阶跃稳态误差？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "积分器在 s=0 处提供极点，使 DC 环路增益趋于无穷。若闭环稳定且误差长期保持常数非零，积分状态会不断增长，控制器会继续改变输入，直到误差被压到零附近。因此积分相当于在控制器内部加入了恒定信号的模型，也可从内部模型原理理解。",
+    "math": "\\[\nC_I(s)=\\frac{K_i}{s},\\qquad \\lim_{s\\to0}|C_I(s)|=\\infty.\n\\]\n单位阶跃 $R=1/s$ 下，若闭环稳定：\n\\[\ne_{ss}=\\lim_{s\\to0}\\frac{1}{1+L(s)}=0.\n\\]",
+    "intuition": "只要系统持续“欠一点”，积分器就持续把这笔欠账累积起来，不允许长期存在固定偏差。",
+    "pitfall": "积分并非免费：它增加相位滞后、引发 windup，并可能让慢对象振荡。应根据对象低频动态和执行器约束设计 anti-windup。",
+    "followups": [
+      "积分为什么会使相位减少 90 度？",
+      "什么是 internal model principle？",
+      "积分器泄漏 leaky integrator 有什么用途？"
+    ],
+    "oral": "积分通过原点极点把 DC 增益做成无穷，稳定闭环下不能容忍恒定误差。代价是相位和饱和问题，因此必须与稳定裕度和 anti-windup 一起考虑。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 20,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward",
+      "state-space",
+      "poles"
+    ]
+  },
+  {
+    "n": 23,
+    "title": "为什么理想微分 Kd*s 几乎不直接实现？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "理想微分器的幅值与频率成正比，因此对高频传感器噪声具有无限增益趋势；真实数字系统还会放大量化噪声和采样抖动。实际 D 项通常加入一阶低通形成 band-limited differentiator，只在目标交越频率附近提供相位超前，超过滤波频率后停止继续增加增益。",
+    "math": "常用形式：\n\\[\nC_D(s)=K_d\\frac{s}{1+s/\\omega_f}\n=K_d\\frac{\\omega_f s}{s+\\omega_f}.\n\\]",
+    "intuition": "微分的目的不是“准确计算数学导数”，而是在控制所需频段预测趋势。对比目标频段更高的噪声没有必要被微分。",
+    "pitfall": "滤波频率也不能设得无限高；过高失去滤波意义，过低又会吃掉 D 项的相位提升。",
+    "followups": [
+      "滤波微分器高频增益是多少？",
+      "D on measurement 为什么常见？",
+      "离散差分为什么对量化噪声敏感？"
+    ],
+    "oral": "理想微分高频增益无界，会放大噪声。实际 D 必须带低通，只在需要的频段提供相位超前；D 的目标是阻尼和趋势预测，不是追求精确导数。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 21,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward",
+      "sampling"
+    ]
+  },
+  {
+    "n": 24,
+    "title": "什么是 derivative kick？如何避免？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "若 D 项对误差 e=r-y 求导，reference 的阶跃会在 de/dt 中产生很大的瞬时项，使控制输出出现尖峰。常见解决方法是只对测量 y 求导，即 derivative on measurement；也可以对 reference 做预滤波或采用两自由度 PID。这样 setpoint 变化不会直接进入微分通道，同时仍保留对输出变化的阻尼作用。",
+    "math": "传统：\n\\[\nu_D=K_d\\frac{d(r-y)}{dt}.\n\\]\n常见实现：\n\\[\nu_D=-K_d\\frac{dy}{dt}.\n\\]",
+    "intuition": "D 项应该响应“系统真的在快速运动”，而不是因为操作者瞬间改了目标就输出一个巨大冲击。",
+    "pitfall": "只在软件里 clip D 输出不是根本解决方法，因为仍可能造成瞬时饱和和积分耦合。更好的结构是从信号路径上消除 setpoint kick。",
+    "followups": [
+      "两自由度 PID 的 beta、gamma 权重有什么作用？",
+      "reference prefilter 和 D on measurement 的区别？",
+      "setpoint kick 与 proportional kick 有什么关系？"
+    ],
+    "oral": "Derivative kick 来自对阶跃参考求导。工程上通常对 measurement 做 D，或对 reference 预滤波/用 2DOF PID，使微分只提供阻尼而不对指令突变产生尖峰。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 21,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward"
+    ]
+  },
+  {
+    "n": 25,
+    "title": "Integral Windup 是什么？为什么饱和时尤其严重？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "当执行器达到上下限时，实际施加给 plant 的输入不再等于 PID 内部计算的未饱和输出。如果误差仍存在，积分器会继续累加，内部控制状态越积越大。等系统终于接近目标时，积分器还需要很长时间才能“退饱和”，导致大超调和缓慢恢复。Windup 本质上是控制器内部状态与真实执行器之间失去一致。",
+    "math": "\\[\nu_{raw}=u_P+u_I+u_D,\\qquad\nu_{act}=\\operatorname{sat}(u_{raw}).\n\\]\n饱和期间 $u_{act}\\neq u_{raw}$，但若仍用 $\\dot I=e$，则内部积分状态继续增长。",
+    "intuition": "像司机把油门踩到底后，控制算法仍以为“再踩更多”有效，并把这些额外油门记账；解除饱和后，这笔错误记账会拖累恢复。",
+    "pitfall": "只限制最终输出不等于 anti-windup。必须管理积分器内部状态，尤其是串级环、外部限幅、rate limit 和 feedforward 共同存在时。",
+    "followups": [
+      "rate saturation 也会 windup 吗？",
+      "为什么串级控制更容易出现 hidden saturation？",
+      "anti-windup 与 bumpless transfer 有何联系？"
+    ],
+    "oral": "Windup 是“执行器已经饱和，但积分器还假装控制输入能继续增加”。关键是让积分状态跟实际可实现输入保持一致，而不是只 clip 最终输出。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 22,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward",
+      "state-space"
+    ]
+  },
+  {
+    "n": 26,
+    "title": "Clamping 与 back-calculation anti-windup 有什么区别？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "Clamping/conditional integration 在输出饱和且积分会进一步推动饱和时暂停积分，逻辑简单；back-calculation 则把饱和输出与未饱和输出的差反馈到积分器，用一个 anti-windup 增益主动把积分状态拉回可实现区域。后者通常更平滑，也更适合复杂的执行器与外部饱和。MathWorks 的工业 PID 文档也把两者列为标准 anti-windup 方案。",
+    "math": "Back-calculation 可写为：\n\\[\n\\dot I=e+K_{aw}(u_{sat}-u_{raw}).\n\\]\n若 $u_{raw}$ 超过上限，则第二项为负，主动解卷积分器。",
+    "intuition": "Clamping 像“停止继续记错账”；back-calculation 像“根据真实执行器输出主动对账并纠正账户余额”。",
+    "pitfall": "Kaw 过大可能引入快速内部动态和噪声敏感；过小则退饱和太慢。若饱和发生在控制器之后的复杂执行链，必须把真实可实现输入反馈给 anti-windup。",
+    "followups": [
+      "如何选择 anti-windup time constant？",
+      "外部饱和如何接回 tracking port？",
+      "为什么 feedforward 存在时要区分 PID contribution？"
+    ],
+    "oral": "Clamping 是条件停止积分；back-calculation 用 u_sat-u_raw 主动解卷。两者都要解决内部积分状态与真实 actuator 不一致的问题，复杂系统更偏向 tracking/back-calculation。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 23,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward",
+      "state-space"
+    ]
+  },
+  {
+    "n": 27,
+    "title": "PI 和 PID 怎么选？为什么电机电流环常见 PI？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "若 plant 本身近似一阶、噪声较强且主要目标是零稳态误差，PI 往往已能提供良好性能。电机电流环在适当变换后常呈电气一阶动态，PI 可通过一个零点抵消/补偿电气极点附近的动态并提供 DC 积分，不需要额外 D。PID 更适合需要增加阻尼或相位的对象，但必须支付噪声敏感成本。",
+    "math": "典型 RL 电流对象：\n\\[\nG_i(s)=\\frac{1}{Ls+R}.\n\\]\nPI：\n\\[\nC(s)=K_p+\\frac{K_i}{s}=K_p\\frac{s+K_i/K_p}{s}.\n\\]",
+    "intuition": "先问“对象缺什么”：缺 DC 精度就 I，缺阻尼/相位才考虑 D。不是功能越多越高级。",
+    "pitfall": "不要把 D 项当成所有环路的默认配置。速度估计本身可能已由观测器/滤波器提供，额外 D 只会引入噪声。",
+    "followups": [
+      "位置环为什么可能用 PD/PI-P？",
+      "电流环带宽为何应高于速度环？",
+      "PI 零点如何放置？"
+    ],
+    "oral": "PI 适合一阶、低噪、要求零稳态误差的环路；PID 只有在确实需要额外阻尼/相位时才值得加入 D。控制器结构应由对象和测量质量决定。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 24,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward",
+      "zeros",
+      "poles"
+    ]
+  },
+  {
+    "n": 28,
+    "title": "串级控制为什么有效？内外环带宽如何分配？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "串级控制用快速内环先把内部变量和扰动“驯服”，外环再把闭合后的内环视为近似简单对象。例如伺服系统可按电流-速度-位置分层。内环必须明显快于外环，否则环路之间强耦合，外环设计假设失效。常见经验是相邻带宽相差 3--10 倍，但最终应以相位裕度、采样和执行器能力验证。",
+    "math": "典型关系：\n\\[\n\\omega_{BW,current}\\gg \\omega_{BW,velocity}\\gg \\omega_{BW,position}.\n\\]\n外环看到的是内环闭环传递函数 $T_{inner}$，而不是裸 plant。",
+    "intuition": "内环像先把“肌肉”做成一个可靠力源，外环再管“身体怎么走”。如果肌肉反应比大脑命令还慢，层级结构就失效。",
+    "pitfall": "外环输出通常是内环 reference，因此外环饱和可能实际发生在内环 actuator。anti-windup 必须跨环路考虑。",
+    "followups": [
+      "相邻带宽为什么不能太近？",
+      "内环闭环应该近似成什么模型给外环？",
+      "串级系统如何做 anti-windup propagation？"
+    ],
+    "oral": "串级控制靠时间尺度分离：快内环先抑制内部扰动，慢外环只控制简化后的等效对象。关键是带宽分离、饱和传递和采样延迟。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 24,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward",
+      "sampling"
+    ]
+  },
+  {
+    "n": 29,
+    "title": "Feedforward 与 feedback 怎样组合？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "前馈利用模型和参考/可测扰动提前计算所需输入，反馈只修正模型误差和不可测扰动。理想情况下若存在可实现的逆模型，feedforward 可以显著降低 tracking error 和反馈负担；但若对象有右半平面零点、时延或不确定性，直接求逆可能不稳定或非因果，因此前馈通常只做可实现的低频/稳态逆。",
+    "math": "常见结构：\n\\[\nu=u_{ff}+u_{fb},\\qquad u_{fb}=C(r-y).\n\\]\n理想 $u_{ff}=G^{-1}r$ 仅在 $G^{-1}$ 稳定、因果且模型可靠时成立。",
+    "intuition": "前馈是“提前算出大概要用多少力”，反馈是“看结果后补差”。两者相加可以同时获得快和稳健。",
+    "pitfall": "不要对非最小相位对象做直接精确逆；也不要让 feedforward 绕过执行器限幅和 anti-windup 逻辑。",
+    "followups": [
+      "computed torque control 属于什么思想？",
+      "disturbance feedforward 需要测量什么？",
+      "两自由度控制如何分开设计 tracking 与 regulation？"
+    ],
+    "oral": "前馈用模型提前给 nominal 输入，反馈负责鲁棒修正。逆模型只能在稳定、因果、可实现频段使用；实际应把前馈、限幅和反馈状态管理统一设计。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 25,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward",
+      "zeros"
+    ]
+  },
+  {
+    "n": 30,
+    "title": "Ziegler-Nichols 为什么经典但不应迷信？",
+    "level": "工程",
+    "freq": "★★★★☆",
+    "core": "Ziegler-Nichols 提供无需精确模型的经验调参：闭环法通过找到临界增益 Ku 和持续振荡周期 Tu，再套经验系数。它历史意义大、操作简单，但通常给出激进、超调较大的参数，而且故意把真实系统推到临界稳定附近，对高延迟、非线性、贵重硬件并不友好。现代工程更常使用 relay autotune、模型辨识、频域整形或优化式 tuning。",
+    "math": "闭环法核心信息是临界点：\n\\[\nL(j\\omega_u)=-1,\n\\]\n由此获得 $K_u$ 与 $T_u=2\\pi/\\omega_u$，再根据经验规则设置 PID 参数。",
+    "intuition": "ZN 的价值在于“从一次临界实验提取对象的主要动态尺度”，不是那些固定系数本身。",
+    "pitfall": "在具有饱和、危险共振或大延迟的设备上直接寻找持续振荡，可能不安全且不必要。",
+    "followups": [
+      "relay autotuning 为什么比手动推到临界更安全？",
+      "IMC-PID tuning 的基本思想是什么？",
+      "如何用频率响应直接定目标 phase margin？"
+    ],
+    "oral": "ZN 是历史上重要的经验起点，但参数通常激进。成熟方案应从频率响应、模型和硬件约束出发，把目标带宽与稳定裕度显式设计出来。",
+    "chapter": 3,
+    "chapter_title": "PID 与工程实现",
+    "chapter_slug": "03-pid-engineering",
+    "pdf_page": 26,
+    "tags": [
+      "pid",
+      "anti-windup",
+      "cascade",
+      "feedforward",
+      "nonlinear-control",
+      "delay"
+    ]
+  },
+  {
+    "n": 31,
+    "title": "BIBO 稳定、渐近稳定、内部稳定有什么区别？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "BIBO 稳定描述外部输入输出：所有有界输入都产生有界输出。状态渐近稳定描述零输入下内部状态是否趋于平衡点。对最小、因果、有限维 LTI 系统，两者与极点位于左半平面高度一致；但存在不可控/不可观的不稳定内部模态时，某个传递通道可能看起来 BIBO 稳定，内部状态却发散。因此高级面试会追问 internal stability，而不是只看某个 SISO 传递函数。",
+    "math": "连续 LTI 自由响应：\n\\[\nx(t)=e^{At}x(0).\n\\]\n渐近稳定要求 $A$ Hurwitz。最小有理传递函数 BIBO 稳定要求所有极点严格在左半平面。",
+    "intuition": "外部稳定像“仪表读数不爆”，内部稳定像“机器内部任何隐藏能量都不爆”。只观察一个输出可能漏掉危险内部模态。",
+    "pitfall": "最典型陷阱是不稳定极零相消：传递函数化简后不稳定极点消失，但内部状态可能仍不稳定，且真实参数误差使相消根本不精确。",
+    "followups": [
+      "边界稳定和渐近稳定差别是什么？",
+      "为什么 minimal realization 很重要？",
+      "内部稳定如何用闭环互联系统判断？"
+    ],
+    "oral": "BIBO 看输入输出，渐近稳定看零输入状态，internal stability 看闭环所有内部信号。最小 LTI 下它们关系紧密，但隐藏不稳定模态会让只看传递函数产生误判。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 27,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator",
+      "controllability",
+      "observability",
+      "state-space",
+      "poles"
+    ]
+  },
+  {
+    "n": 32,
+    "title": "为什么连续时间极点在左半平面才稳定？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "每个极点对应指数模态 e^{pt}。若 p=sigma+j omega，振幅由 e^{sigma t} 决定：sigma<0 衰减，sigma>0 增长，sigma=0 则不衰减。复数虚部只决定振荡频率，不决定包络增长/衰减。因此连续 LTI 渐近稳定要求所有可见内部特征值严格具有负实部。",
+    "math": "\\[\ne^{(\\sigma+j\\omega)t}=e^{\\sigma t}(\\cos\\omega t+j\\sin\\omega t).\n\\]",
+    "intuition": "在 s 平面中，向左意味着“时间往前时指数越来越小”；向右意味着“指数越来越大”。所以极点图是时间响应的几何地图。",
+    "pitfall": "虚轴极点不等于渐近稳定。单个简单虚轴极点可产生持续振荡，重复虚轴极点甚至会出现 t sin(omega t) 这样的增长项。",
+    "followups": [
+      "重复虚轴极点会发生什么？",
+      "离散系统为什么变成单位圆？",
+      "稳定极点越靠左是否永远越好？"
+    ],
+    "oral": "极点 p 的实部就是指数包络增长率。左半平面负实部衰减，右半平面增长，虚轴不衰减；因此渐近稳定要求所有内部极点严格在左半平面。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 28,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator",
+      "poles"
+    ]
+  },
+  {
+    "n": 33,
+    "title": "Routh-Hurwitz 判据为什么有用？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "Routh-Hurwitz 在不显式计算高阶多项式全部根的情况下，直接根据系数构造 Routh 表并判断右半平面根数。它特别适合求控制增益 K 的稳定区间、分析参数变化和手算闭环特征方程。第一列符号变化次数等于右半平面根数；若希望严格稳定，通常要求第一列同号且无特殊退化情况。",
+    "math": "若特征多项式：\n\\[\na_n s^n+a_{n-1}s^{n-1}+\\cdots+a_0=0,\n\\]\nRouth 表第一列的符号变化数给出 RHP roots 数量。",
+    "intuition": "它把“求所有根”转换为“判断根在哪一边”，这正好匹配稳定性真正关心的信息。",
+    "pitfall": "Routh 表出现首元素为零、整行为零时需要特殊处理，不能继续机械除法。整行为零通常提示关于原点对称的根，包括虚轴成对根。",
+    "followups": [
+      "整行全零怎么处理？",
+      "首列出现零但整行不零怎么办？",
+      "Routh 能直接给稳定裕度吗？"
+    ],
+    "oral": "Routh 不求根，只数右半平面根；第一列符号变化次数就是不稳定根数。它非常适合手算参数稳定范围，但要会处理零首项和全零行。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 29,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator"
+    ]
+  },
+  {
+    "n": 34,
+    "title": "根轨迹是什么？它回答了什么设计问题？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "根轨迹描述当某个实增益 K 从 0 变化到无穷时，闭环特征方程 1+K L0(s)=0 的极点如何在 s 平面移动。它把“增益变化”和“闭环动态变化”建立几何联系：可以直接看稳定区间、阻尼比、自然频率和可能的 breakaway/break-in。根轨迹特别适合 SISO 低阶系统和补偿器零极点设计。",
+    "math": "闭环特征方程：\n\\[\n1+K L_0(s)=0 \\iff K L_0(s)=-1.\n\\]\n因此根轨迹点满足角度条件：\n\\[\n\\angle L_0(s)=(2k+1)180^\\circ.\n\\]",
+    "intuition": "根轨迹把“调一个旋钮 K”变成“观察极点在地图上走哪条路”。极点进入右半平面，就意味着某个 K 后开始失稳。",
+    "pitfall": "根轨迹只展示所选参数变化下的极点，不直接给完整的噪声抑制和鲁棒性；最终仍应做频域检查。",
+    "followups": [
+      "根轨迹幅值条件是什么？",
+      "为什么实轴上某些区段属于根轨迹？",
+      "如何用阻尼比线选择期望极点？"
+    ],
+    "oral": "根轨迹是 K 从 0 到无穷时闭环极点轨迹。它用于把增益/补偿器选择与阻尼、速度和稳定区间直接联系起来，是经典控制最直观的设计工具之一。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 30,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator",
+      "poles"
+    ]
+  },
+  {
+    "n": 35,
+    "title": "根轨迹从哪里出发、在哪里结束？渐近线怎么求？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "若开环有 n 个极点、m 个有限零点，根轨迹有 n 条分支，从 K=0 时的 n 个开环极点出发。当 K 趋于无穷时，m 条分支终止于有限零点，其余 n-m 条趋向无穷远零点。趋向无穷的分支沿固定渐近线，其交点由极点和零点的几何中心决定。",
+    "math": "渐近线角度：\n\\[\n\\theta_k=\\frac{(2k+1)180^\\circ}{n-m},\\quad k=0,\\ldots,n-m-1.\n\\]\n交点：\n\\[\n\\sigma_a=\\frac{\\sum p_i-\\sum z_i}{n-m}.\n\\]",
+    "intuition": "有限零点不够“接住”所有分支时，剩余分支只能向无穷远走；渐近线描述它们最终的方向。",
+    "pitfall": "根轨迹“从 pole 到 zero”里的 zero 包括无穷远零点。只说“结束于开环零点”是不完整的。",
+    "followups": [
+      "breakaway 点怎么计算？",
+      "departure angle 怎么求？",
+      "有 RHP zero 时根轨迹如何受影响？"
+    ],
+    "oral": "n 条根轨迹都从开环 poles 出发；m 条去有限 zeros，剩下 n-m 条沿渐近线去无穷。渐近线角度和中心由 n-m、极点和零点和式直接计算。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 30,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator",
+      "zeros",
+      "poles"
+    ]
+  },
+  {
+    "n": 36,
+    "title": "Lead compensator 为什么能提高相位裕度和响应速度？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "超前校正器通常把零点放在较低频、极点放在较高频，使两者之间产生正相位贡献，并提升该频段的幅值。设计时把最大相位超前安排在新的交越频率附近，可以在保持所需 phase margin 的同时把 crossover 推高，因而提高闭环带宽和响应速度。根轨迹上，它也能把轨迹向更期望的阻尼区域弯曲。",
+    "math": "常见形式：\n\\[\nC_{lead}(s)=K\\frac{1+s/\\omega_z}{1+s/\\omega_p},\\qquad \\omega_z<\\omega_p.\n\\]\n令 $\\alpha=\\omega_p/\\omega_z>1$，最大相位超前与 $\\alpha$ 有确定关系。",
+    "intuition": "Lead 像在交越频率附近“补相位预算”，让系统可以在更高频率 crossing 0 dB 而仍不靠近 -180 度。",
+    "pitfall": "lead 会提高高频增益，因此噪声和 actuator activity 可能增加；不能只看 phase margin 提升而忽略 noise gain。",
+    "followups": [
+      "最大相位超前频率在哪里？",
+      "为什么 zero 先于 pole？",
+      "lead 与 PD 的关系是什么？"
+    ],
+    "oral": "Lead 在目标 crossover 附近提供正相位，使 PM 增加，并允许更高交越频率，因此常用于“想更快但不能牺牲稳定裕度”的场景。代价是更高的高频增益。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 31,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator",
+      "zeros",
+      "poles"
+    ]
+  },
+  {
+    "n": 37,
+    "title": "Lag compensator 为什么能改善稳态误差？",
+    "level": "进阶",
+    "freq": "★★★★☆",
+    "core": "滞后校正器通过让低频增益相对于交越附近增益更高，从而改善稳态跟踪和低频抗扰，同时尽量不显著抬高 crossover。其 pole 更靠近原点、zero 稍高频，因此在一段频率内引入负相位。设计时通常把 pole/zero 放得低于 crossover，避免过多消耗 phase margin。",
+    "math": "常见形式：\n\\[\nC_{lag}(s)=K\\frac{1+s/\\omega_z}{1+s/\\omega_p},\\qquad \\omega_p<\\omega_z.\n\\]\n低频与高频增益比可由 $\\omega_z/\\omega_p$ 设计。",
+    "intuition": "Lag 的目的不是“加慢”，而是“把增益预算重新偏向低频”：DC 更强，交越附近尽量不变。",
+    "pitfall": "zero/pole 放得太接近 crossover，会明显降低相位裕度并拖慢响应。",
+    "followups": [
+      "lag 与积分器有什么差别？",
+      "为什么 lag 常配合 lead？",
+      "低频增益提高多少由什么决定？"
+    ],
+    "oral": "Lag 把更多增益放在低频，因此降低稳态误差和增强抗扰；为了不破坏稳定裕度，其 pole/zero 应远低于 crossover。它常与 lead 组合。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 32,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator"
+    ]
+  },
+  {
+    "n": 38,
+    "title": "为什么不稳定 pole-zero cancellation 是危险设计？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "如果对象有右半平面极点 p>0，控制器放置零点精确相消，外部传递函数代数上可能看不到该极点。但内部状态仍可能包含不稳定模态，而且任何参数误差都会使相消残差重新出现。更严重的是，稳定、因果的鲁棒控制通常不能靠“隐藏”不稳定动态获得真正内部稳定。",
+    "math": "形式上\n\\[\nG(s)=\\frac{1}{s-p},\\quad C(s)=s-p\n\\]\n可使外部乘积看似为 1，但实际实现中 $p$ 只要变成 $p+\\delta$，残余因子就重新暴露。",
+    "intuition": "用精确 cancellation 控制不稳定模态，就像把一个正在增长的内部振动通过输出通道恰好遮掉；仪表不显示并不等于能量消失。",
+    "pitfall": "稳定左半平面快速 pole 的近似相消在工程上有时可接受；关键区别是不能用相消“处理”不稳定或非常脆弱的动态。",
+    "followups": [
+      "最小实现与相消是什么关系？",
+      "为什么 RHP zero 也不能稳定逆？",
+      "鲁棒控制如何看 cancellation？"
+    ],
+    "oral": "不稳定极点相消只是在代数上隐藏模态，不能保证内部稳定，而且任何模型误差都会破坏相消。稳定设计应真正移动/稳定该模态，而不是把它从传递函数里擦掉。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 33,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator",
+      "robust-control",
+      "state-space",
+      "zeros",
+      "poles"
+    ]
+  },
+  {
+    "n": 39,
+    "title": "什么叫 minimum phase？为什么它代表“可逆性最好”的系统？",
+    "level": "进阶",
+    "freq": "★★★★☆",
+    "core": "对稳定有理系统，minimum-phase 通常意味着所有有限零点也在稳定区域，因此其逆系统在适当相对阶条件下可以稳定实现。具有相同幅频特性的系统中，minimum-phase 系统拥有最小相位滞后。RHP 零点或纯延迟会产生额外相位，使逆控制、快速跟踪和前馈设计受到限制。",
+    "math": "连续时间稳定 minimum-phase SISO 常要求 poles 和 zeros 均在 LHP。若\n\\[\nG(s)=G_{min}(s)G_{ap}(s),\n\\]\n全通因子 $G_{ap}$ 可保持幅值却增加相位滞后。",
+    "intuition": "minimum phase 可以理解为“给定同样幅值响应时，相位代价最低、稳定逆最容易”的系统。",
+    "pitfall": "不能把“minimum phase”理解为“相位永远小”。它是相对概念，与零点位置和稳定逆有关。",
+    "followups": [
+      "纯延迟是不是 minimum phase？",
+      "全通因子有什么作用？",
+      "非最小相位零点为什么限制前馈逆？"
+    ],
+    "oral": "Minimum-phase 系统的零点也在稳定区域，因此稳定逆和快速跟踪更容易；RHP 零点与纯延迟会引入额外相位代价，形成性能硬约束。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 33,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator",
+      "zeros",
+      "delay"
+    ]
+  },
+  {
+    "n": 40,
+    "title": "怎么从根轨迹选闭环极点而不是“凭感觉点一个 K”？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "应先把时域指标转换成极点区域：由超调确定阻尼比 zeta，由 settling time 确定实部衰减率，再在 s 平面得到期望区域。检查原始根轨迹是否通过该区域；若不通过，就通过 lead/lag 或 PID 零极点重塑轨迹，最后用幅值条件求 K，并回到完整高阶模型验证。",
+    "math": "例如 2% settling 要求：\n\\[\n\\sigma=\\zeta\\omega_n\\gtrsim4/t_s.\n\\]\n超调给出 $\\zeta$，因此期望极点近似：\n\\[\ns_d=-\\zeta\\omega_n\\pm j\\omega_n\\sqrt{1-\\zeta^2}.\n\\]",
+    "intuition": "不是“先调 K 再看结果”，而是“先从需求得到极点区域，再看 K 和补偿器怎样把极点送进去”。",
+    "pitfall": "设计完成后一定检查控制输入和非主导极点。理想二阶极点满足要求，不代表完整系统一定满足。",
+    "followups": [
+      "如何用 angle deficiency 设计 lead？",
+      "为什么还要做 Bode 验证？",
+      "极点位置满足要求但 actuator 饱和怎么办？"
+    ],
+    "oral": "先把 overshoot、settling time 转成 zeta 和实部约束，在根轨迹上选目标极点；若轨迹不到，就用补偿器塑形，再求 K，并用完整模型和输入约束验证。",
+    "chapter": 4,
+    "chapter_title": "稳定性与根轨迹",
+    "chapter_slug": "04-stability-root-locus",
+    "pdf_page": 34,
+    "tags": [
+      "stability",
+      "routh",
+      "root-locus",
+      "compensator",
+      "pid",
+      "poles"
+    ]
+  },
+  {
+    "n": 41,
+    "title": "为什么控制工程特别重视频率响应？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "频率响应把不同时间尺度的任务拆开：低频通常代表参考和慢扰动，高频常代表噪声、柔性模态和未建模动态。通过 Bode/Nyquist 可以直接观察增益、相位、带宽、稳定裕度和时延影响，而且实验扫频可在不完全知道物理模型时获得。频域因此是“性能与鲁棒性共用的一张图”。",
+    "math": "LTI 对 $u=e^{j\\omega t}$ 的稳态输出：\n\\[\ny=G(j\\omega)e^{j\\omega t},\n\\]\n其中 $|G|$ 给幅值比，$\\angle G$ 给相位差。",
+    "intuition": "频域像把系统按“慢动作、正常动作、快速抖动”分开检查；不同频段可以设不同控制目标。",
+    "pitfall": "只看 Bode magnitude 不看 phase，或只看 PM/GM 不看 sensitivity peak，都会遗漏重要信息。",
+    "followups": [
+      "为什么正弦是 LTI 的特征函数？",
+      "频域与卷积如何联系？",
+      "如何从实验得到 FRF？"
+    ],
+    "oral": "频域把不同时间尺度分开：低频做跟踪和抗扰，交越区决定速度与裕度，高频控制噪声和未建模动态。它是经典鲁棒设计最核心的视角。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 36,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity",
+      "robust-control"
+    ]
+  },
+  {
+    "n": 42,
+    "title": "Bode 图上的 pole/zero 规则怎样快速手画？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "一阶 LHP pole 在 corner frequency 后使幅值斜率减少 20 dB/dec，并贡献约 -90 度总相位；一阶 LHP zero 相反，增加 20 dB/dec 并贡献约 +90 度。原点积分器从一开始就是 -20 dB/dec、-90 度。高阶系统可把各因子 dB 和相位近似相加，快速判断 crossover 与裕度。",
+    "math": "一阶 pole：\n\\[\n\\frac{1}{1+s/\\omega_p}.\n\\]\n一阶 zero：\n\\[\n1+s/\\omega_z.\n\\]\n在 $\\omega=\\omega_c$ 附近相位过渡约跨两个 decade。",
+    "intuition": "Bode 的“斜率记账”本质是乘法变加法：每个 pole/zero 都贡献一段可叠加的模板。",
+    "pitfall": "RHP zero 的幅值模板与 LHP zero 相同，但相位是负方向；只看幅频会漏掉非最小相位风险。",
+    "followups": [
+      "二阶共振 pole 的 Bode 特征是什么？",
+      "积分器和微分器相位是多少？",
+      "corner 处为什么约 -3 dB？"
+    ],
+    "oral": "每个 LHP pole：-20 dB/dec 和约 -90°；每个 LHP zero 相反；积分器自始 -20 dB/dec、-90°。高阶 Bode 可通过这些模板叠加快速判断。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 37,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity"
+    ]
+  },
+  {
+    "n": 43,
+    "title": "Gain crossover、phase crossover、PM、GM 分别是什么？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "Gain crossover 是 |L|=1 的频率，常与闭环带宽同量级；phase crossover 是相位到 -180 度的位置。Phase margin 是 gain crossover 处距离 -180 度还剩多少相位；gain margin 是 phase crossover 处增益距离 1 还差多少倍。它们反映 nominal loop 距离 Nyquist 临界点 -1 的局部余量。",
+    "math": "\\[\n|L(j\\omega_{gc})|=1,\n\\quad PM=180^\\circ+\\angle L(j\\omega_{gc}).\n\\]\n\\[\n\\angle L(j\\omega_{pc})=-180^\\circ,\n\\quad GM=1/|L(j\\omega_{pc})|.\n\\]",
+    "intuition": "PM 可以理解为“还能再承受多少相位滞后”；GM 是“还能把环路增益整体放大多少才到临界”。",
+    "pitfall": "多交越、开环不稳定或复杂非最小相位系统中，仅凭单个 PM/GM 可能误导；应回到 Nyquist 或 disk margin 等更完整指标。",
+    "followups": [
+      "PM 与阻尼比有什么近似关系？",
+      "为什么延迟直接消耗 PM？",
+      "多 crossover 时该选哪个 margin？"
+    ],
+    "oral": "wgc 是 0 dB crossing，PM 是那里离 -180° 的相位余量；wpc 是 -180° crossing，GM 是那里离 0 dB 的增益余量。它们是 Nyquist 距离 -1 的简化指标。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 38,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity"
+    ]
+  },
+  {
+    "n": 44,
+    "title": "为什么时间延迟特别危险？如何估计 delay margin？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "纯延迟 e^{-s tau} 不改变幅值，却带来随频率线性增加的负相位 -omega tau。因此时域阶跃可能看起来只是“晚一点”，频域却可能在 crossover 附近直接把 phase margin 吃光。若原系统 PM 已知，可粗略用 tau_max≈PM_rad/omega_gc 估算额外纯延迟容限。实际还要计入 ZOH、计算、通信和滤波延迟。",
+    "math": "\\[\n e^{-j\\omega\\tau}:\\quad |\\cdot|=1,\\qquad \\angle=-\\omega\\tau.\n\\]\n近似：\n\\[\n\\tau_{margin}\\approx\\frac{PM\\;(rad)}{\\omega_{gc}}.\n\\]",
+    "intuition": "越高带宽的系统，每毫秒延迟“价值”越昂贵；这就是高性能机器人和电机控制为什么特别重视实时调度。",
+    "pitfall": "不要只看平均延迟。实时系统 jitter、偶发 missed deadline 可能造成比固定 delay 更糟的相位和非周期扰动。",
+    "followups": [
+      "Padé 近似有什么用途和风险？",
+      "ZOH 等效增加多少相位滞后？",
+      "网络控制如何处理 variable delay？"
+    ],
+    "oral": "纯延迟幅值不变、相位按 -omega tau 下降，因此高 crossover 系统极其敏感。delay margin 粗略等于 PM(rad)/wgc，但工程上要把采样、计算和通信延迟全算进去。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 39,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity",
+      "delay"
+    ]
+  },
+  {
+    "n": 45,
+    "title": "Nyquist 判据到底在数什么？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "闭环特征方程为 1+L(s)=0，因此闭环极点对应 L(s) 映射到 -1 的情况。Nyquist 通过 argument principle，把包围右半平面的 s 域轮廓映射到 L 平面，并用对 -1 点的净环绕数 N、开环右半平面极点数 P 推出闭环右半平面极点数 Z。其价值是允许开环本身不稳定，仍能严格判断闭环稳定。",
+    "math": "按常见符号约定：\n\\[\nN=Z-P\n\\]\n（具体正负号取决于环绕方向约定，面试时应先说明约定）。闭环稳定目标是 $Z=0$。",
+    "intuition": "Nyquist 不只是“看曲线碰不碰 -1”，而是看曲线绕 -1 的拓扑次数，并把开环已有的不稳定极点也计入。",
+    "pitfall": "只说“不包围 -1 就稳定”只对开环 P=0 的特定约定成立。若 plant 有 RHP poles，必须按照 P 补偿需要的环绕数。",
+    "followups": [
+      "开环有一个 RHP pole 时需要怎样环绕？",
+      "虚轴 pole 如何绕开？",
+      "Nyquist 与 argument principle 的关系？"
+    ],
+    "oral": "Nyquist 用 L(s) 对 -1 的净环绕数，加上开环 RHP pole 数 P，推断闭环 RHP pole 数 Z。关键不是死记方向，而是理解 1+L=0 与 argument principle。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 39,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity",
+      "poles"
+    ]
+  },
+  {
+    "n": 46,
+    "title": "为什么 Bode margin 是 Nyquist 的局部简化？",
+    "level": "进阶",
+    "freq": "★★★★☆",
+    "core": "PM 只看 Nyquist 轨迹穿过单位圆时距离负实轴还剩多少角度，GM 只看轨迹穿过负实轴时距离 -1 的径向余量。对单交越、形状规则的系统，这两个标量很直观；但曲线可能在其他频率更接近 -1，或存在多次穿越，此时 PM/GM 并不能描述真正最危险距离。",
+    "math": "真正与鲁棒性更直接的几何量之一是：\n\\[\n\\min_\\omega |1+L(j\\omega)|,\n\\]\n它与 sensitivity peak $\\|S\\|_\\infty$ 互为倒数关系：\n\\[\n|S|=1/|1+L|.\n\\]",
+    "intuition": "PM/GM 像从两个特定方向量安全距离；Nyquist 是看完整轨迹离悬崖 -1 最近的地方。",
+    "pitfall": "只报告“PM 60 度，GM 10 dB”而不检查 Ms=max|S|，对复杂环路可能不充分。",
+    "followups": [
+      "什么是 modulus margin？",
+      "Ms 与阻尼/鲁棒性如何联系？",
+      "disk margin 为什么比独立 PM/GM 更完整？"
+    ],
+    "oral": "PM/GM 是 Nyquist 几何的两个切片；复杂系统要看完整轨迹和最小 |1+L|，因为真正危险点未必恰好出现在 0 dB 或 -180° crossing。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 40,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity"
+    ]
+  },
+  {
+    "n": 47,
+    "title": "Sensitivity S 和 complementary sensitivity T 各自控制什么？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "单位反馈下 S=1/(1+L)，T=L/(1+L)，且 S+T=1。输出扰动、模型摄动和跟踪误差常受 S 控制；参考到输出通常受 T 控制；测量噪声进入输出的典型路径也与 T 相关。设计目标通常是低频 |S| 小以抗扰/跟踪，高频 |T| 小以抑制噪声和不确定性。",
+    "math": "\\[\nS=\\frac{1}{1+L},\\qquad T=\\frac{L}{1+L},\\qquad S+T=1.\n\\]\n例如输出端扰动 $d$：\n\\[\nY_d=S d.\n\\]",
+    "intuition": "S 和 T 像一张毯子的两面：某个频率 S 很小，T 就接近 1；高频想让 T 小，S 就回到 1。",
+    "pitfall": "不能要求所有频率 S 和 T 都同时接近 0，因为 S+T=1。真正设计是选择哪些频段优先跟踪/抗扰，哪些频段优先隔离噪声。",
+    "followups": [
+      "measurement noise 的闭环路径如何推导？",
+      "input disturbance 与 output disturbance 路径有什么不同？",
+      "为什么 multiplicative uncertainty 常与 T 相关？"
+    ],
+    "oral": "S 管误差、扰动和模型敏感度，T 管参考跟踪以及很多噪声/不确定性路径。低频希望 S 小，高频希望 T 小；S+T=1 体现了基本权衡。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 41,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity"
+    ]
+  },
+  {
+    "n": 48,
+    "title": "什么是 waterbed effect？为什么 S 不可能处处很小？",
+    "level": "高级",
+    "freq": "★★★★☆",
+    "core": "对满足一定条件的稳定反馈系统，Bode sensitivity integral 约束了 log|S| 在频率上的积分。若对象含不稳定极点等因素，约束更严格。直观上，在一段频率把 S 压得很低，往往必须在另一段频率出现 S>1 的峰值，因此像水床：按下一边，另一边鼓起。它提醒我们抗扰不是“全频免费”的。",
+    "math": "稳定 minimum-phase 的经典情形可得到类似：\n\\[\n\\int_0^\\infty \\ln |S(j\\omega)|\\,d\\omega=0\n\\]\n（严格形式取决于系统条件）。",
+    "intuition": "如果你在低频极强地压制扰动，就需要在某个过渡频带接受更高的 sensitivity 峰值；设计任务是把这个峰放到不危险的频段并限制其高度。",
+    "pitfall": "不要把简化积分公式对所有系统直接套用。RHP poles、zeros、时延和相对阶都会改变严格条件与结论细节。",
+    "followups": [
+      "RHP pole 对 sensitivity integral 有什么影响？",
+      "Ms 为什么是常见鲁棒指标？",
+      "如何通过 loop shaping 控制 sensitivity peak？"
+    ],
+    "oral": "Waterbed effect 表示 sensitivity 不能全频任意压低；低频强抗扰会在其他频段付出峰值代价。控制设计要管理这笔代价，而不是假设可以消除。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 42,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity",
+      "poles"
+    ]
+  },
+  {
+    "n": 49,
+    "title": "闭环带宽与响应速度有什么关系？为什么带宽不能无限高？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "闭环带宽通常定义为 T(j omega) 相对低频下降到某个幅值阈值的频率，常与 rise time 成反比，并与开环 gain crossover 同量级。提高 bandwidth 通常加快响应，但也把闭环暴露给更高频噪声、时延、柔性共振和模型误差，同时要求更大的 actuator rate/energy。因此带宽应低于未建模动态并给稳定裕度留空间。",
+    "math": "经验上常有：\n\\[\nt_r\\propto1/\\omega_{BW}.\n\\]\n但系数依赖闭环形状，不能作为精确恒等式。",
+    "intuition": "带宽就是控制器“试图认真管到多快的变化”。超过这个速度，系统应该逐渐放手，否则会追着噪声和结构振动跑。",
+    "pitfall": "追求更高 bandwidth 时最容易遗漏 actuator rate limit。即使幅值不饱和，变化率饱和也会产生大相位滞后和等效非线性。",
+    "followups": [
+      "bandwidth 与 wgc 什么时候差别大？",
+      "柔性模态距离 crossover 多远更安全？",
+      "为什么 notch filter 不能无成本提高 bandwidth？"
+    ],
+    "oral": "更高 bandwidth 通常更快，但会增加噪声、时延、未建模模态和 actuator burden。合理 bandwidth 必须由模型可信频段和硬件能力共同决定。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 42,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity"
+    ]
+  },
+  {
+    "n": 50,
+    "title": "如何做一次真正的 loop-shaping 设计？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "先从需求定义低频跟踪/抗扰目标、目标 bandwidth、噪声频段和不确定性上界；画 plant Bode，判断当前 crossover、PM 和高频 roll-off。用积分/lag 增强低频，用 lead 提供 crossover 附近相位，用高频 pole/滤波限制噪声，再检查 S、T、控制灵敏度和输入饱和。最后在带时延、参数变化和高阶模态的模型上验证，不以一张 nominal Bode 图结束。",
+    "math": "典型形状目标：\n\\[\n|L|\\gg1\\;(\\omega\\ll\\omega_c),\\quad\n|L|\\approx1\\;(\\omega\\approx\\omega_c),\\quad\n|L|\\ll1\\;(\\omega\\gg\\omega_c).\n\\]",
+    "intuition": "Loop shaping 就是在频率轴上分配“控制权”：慢变化强控制，中间频段保持稳定过渡，快速噪声主动放弃。",
+    "pitfall": "只调整 magnitude 到目标 slope 而不看 phase 是不完整的；反过来只追求 PM 而忽略 S/T 和 input sensitivity 也不够。",
+    "followups": [
+      "control sensitivity KS 为什么重要？",
+      "如何把噪声 PSD 融入 loop shaping？",
+      "何时用 H-infinity 替代手工 loop shaping？"
+    ],
+    "oral": "先定低频误差、crossover、PM、高频噪声目标，再用 I/lag/lead/filter 塑造 L；最后检查 S、T、控制输入、时延和模型不确定性。Loop shaping 是性能与鲁棒性的统一设计过程。",
+    "chapter": 5,
+    "chapter_title": "频率响应与鲁棒直觉",
+    "chapter_slug": "05-frequency-robustness",
+    "pdf_page": 43,
+    "tags": [
+      "bode",
+      "nyquist",
+      "margins",
+      "sensitivity"
+    ]
+  },
+  {
+    "n": 51,
+    "title": "状态到底是什么？如何判断一组变量能否作为状态？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "状态是在某一时刻、结合未来输入后，足以唯一决定系统未来行为的最小信息集合。状态变量不唯一，但状态维数在最小实现中固定。选择状态时优先考虑储能变量、积分器输出或物理广义坐标；验证时应能把系统写成一阶方程 xdot=f(x,u)，且不需要额外历史信息。",
+    "math": "LTI 标准形式：\n\\[\n\\dot x=Ax+Bu,\\qquad y=Cx+Du.\n\\]",
+    "intuition": "状态就是系统必须“记住”的信息。位置不足以预测质量块未来，还需要速度；电容电压和电感电流则记录电磁能量。",
+    "pitfall": "把所有可测量量都塞进 state 并不等于更正确；状态应是独立且足以决定未来的变量，冗余状态会造成约束和数值问题。",
+    "followups": [
+      "状态变量为什么不唯一？",
+      "如何由高阶 ODE 选 companion states？",
+      "DAE 系统的 state 概念有何不同？"
+    ],
+    "oral": "状态是决定未来所需的最小记忆。只要能写成一阶闭合方程并在给定未来输入后唯一决定未来，就可以作为状态；不同坐标可表示同一系统。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 45,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback"
+    ]
+  },
+  {
+    "n": 52,
+    "title": "状态空间中的 A、B、C、D 分别代表什么物理意义？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "A 描述没有外部输入时状态之间如何相互演化；B 描述输入如何注入各状态方向；C 描述哪些状态组合被测量为输出；D 描述输入是否瞬时直接进入输出。理解这些矩阵比机械记维度更重要：可控性由 A 与 B 的组合决定，可观性由 A 与 C 的组合决定。",
+    "math": "\\[\nA\\in\\mathbb{R}^{n\\times n},\\;B\\in\\mathbb{R}^{n\\times m},\\;C\\in\\mathbb{R}^{p\\times n},\\;D\\in\\mathbb{R}^{p\\times m}.\n\\]",
+    "intuition": "A 是系统内部网络，B 是执行器接在哪里，C 是传感器看哪里，D 是有没有不经过内部状态的直接通道。",
+    "pitfall": "不要把 D=0 当作必然。某些电路、代数传感通道或离散模型存在直接传递。",
+    "followups": [
+      "B 的列空间有什么意义？",
+      "C 的行空间如何影响 observability？",
+      "为什么严格真传递函数对应 D=0？"
+    ],
+    "oral": "A 管内部动态，B 管输入注入，C 管状态测量组合，D 管直接通道。后续 controllability、observability 和 feedback 都是这些结构的直接延伸。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 46,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback",
+      "controllability",
+      "observability"
+    ]
+  },
+  {
+    "n": 53,
+    "title": "矩阵指数 e^{At} 为什么是状态空间的核心？",
+    "level": "进阶",
+    "freq": "★★★★☆",
+    "core": "矩阵指数是标量指数解 xdot=ax 的推广。零输入状态转移为 x(t)=e^{At}x0；带输入时，e^{A(t-tau)} 还决定过去某个输入对当前状态的传播。其特征值模态结构直接连接稳定性、可控性 Gramian 和离散化。",
+    "math": "\\[\nx(t)=e^{At}x(0)+\\int_0^t e^{A(t-\\tau)}Bu(\\tau)d\\tau.\n\\]\n\\[\ne^{At}=I+At+\\frac{A^2t^2}{2!}+\\cdots.\n\\]",
+    "intuition": "e^{At} 是“状态从现在传播到未来的算子”，就像传递函数是输入到输出的频域算子。",
+    "pitfall": "用 eigendecomposition 计算 e^{At} 时要注意 A 不一定可对角化；数值算法通常使用 Schur/Padé 等更稳健方法。",
+    "followups": [
+      "Jordan block 对 e^{At} 有什么影响？",
+      "如何从 e^{ATs} 得离散 A_d？",
+      "状态转移矩阵对时变系统如何定义？"
+    ],
+    "oral": "e^{At} 是线性系统的状态转移矩阵，既决定自由响应，也决定输入传播；特征值如何进入 e^{At}，就是稳定性与模态分析的数学核心。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 47,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback",
+      "controllability",
+      "discrete-control"
+    ]
+  },
+  {
+    "n": 54,
+    "title": "为什么 A 的特征值就是系统模态？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "若 Av=lambda v，沿特征向量 v 的状态分量满足标量动力学 alpha_dot=lambda alpha，因此按 e^{lambda t} 演化。一般状态可分解为多个模态叠加。复特征值产生振荡，实部决定衰减/增长，虚部决定频率。不可对角化时还会出现多项式乘指数项，但稳定性仍由实部主导。",
+    "math": "\\[\nx(0)=\\sum_i c_i v_i\\Rightarrow x(t)=\\sum_i c_i e^{\\lambda_i t}v_i\n\\]\n（可对角化情形）。",
+    "intuition": "特征向量是系统天然的“运动方向”，特征值是每个方向自己的时间常数/振荡率。",
+    "pitfall": "只看 eigenvalues 不看 eigenvectors/conditioning 可能低估非正规系统的 transient growth；稳定特征值并不保证所有短时响应都单调衰减。",
+    "followups": [
+      "什么是 non-normal dynamics？",
+      "Jordan block 为什么出现 t e^{lambda t}？",
+      "左右特征向量分别有什么作用？"
+    ],
+    "oral": "A 的特征向量给自然模态方向，特征值给每个模态的指数率和频率。稳定性看实部，但高阶非正规系统还要注意模态非正交导致的短时放大。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 47,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback"
+    ]
+  },
+  {
+    "n": 55,
+    "title": "状态坐标变换为什么不改变系统本质？",
+    "level": "进阶",
+    "freq": "★★★★☆",
+    "core": "取可逆变换 z=Tx 后，新系统矩阵为 A_z=TAT^{-1}、B_z=TB、C_z=CT^{-1}。这是 similarity transform，因此 A 与 A_z 具有相同特征值和特征多项式，输入输出传递函数也不变。不同坐标可强调不同结构，例如 modal form、controllable canonical form 或 balanced coordinates。",
+    "math": "\\[\nz=Tx\\Rightarrow \\dot z=TAT^{-1}z+TBu,\n\\quad y=CT^{-1}z+Du.\n\\]",
+    "intuition": "换状态坐标就像把同一个三维物体换一个坐标系描述；数字变了，但物理运动没变。",
+    "pitfall": "T 必须可逆。非满秩变换是降维或投影，可能丢失信息，不能当普通坐标变换。",
+    "followups": [
+      "canonical form 有什么用途？",
+      "balanced realization 为什么有利于降阶？",
+      "controllability rank 在坐标变换下为什么不变？"
+    ],
+    "oral": "可逆状态变换只改变描述，不改变 eigenvalues、transfer function 和可控可观性质。选择好的坐标可以让结构、数值和设计更清晰。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 48,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback"
+    ]
+  },
+  {
+    "n": 56,
+    "title": "如何从状态空间得到传递函数？反过来怎么做？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "零初值下对状态方程做 Laplace，可得 X=(sI-A)^{-1}BU，进而 G=C(sI-A)^{-1}B+D。反向从传递函数构造状态空间有多种 realization，例如 controllable canonical form；同一传递函数可以有无穷多个相似状态实现，而最小实现维数由 McMillan degree 决定。",
+    "math": "\\[\nG(s)=C(sI-A)^{-1}B+D.\n\\]",
+    "intuition": "传递函数到状态空间不是唯一翻译，因为“内部坐标”可以任意旋转；真正不变的是输入输出关系和最小阶次。",
+    "pitfall": "从非最简传递函数直接构造 realization 可能把可相消模态带入状态模型。实际设计前应检查 minimality。",
+    "followups": [
+      "什么是 controllable canonical form？",
+      "如何判断 realization minimal？",
+      "MIMO transfer matrix 的 McMillan degree 是什么？"
+    ],
+    "oral": "状态到传函用 G=C(sI-A)^-1B+D；反向 realization 不唯一。最小 realization 才代表输入输出所需的最小动态维数。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 49,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback"
+    ]
+  },
+  {
+    "n": 57,
+    "title": "为什么状态空间特别适合 MIMO 控制？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "MIMO 系统中多个输入同时影响多个状态与输出，通道之间存在耦合。状态空间把所有耦合统一放在 A、B、C 中，反馈可以直接设计矩阵 K，而不是逐通道把大量传递函数独立调 PID。可控性、LQR、observer、Kalman 和 MPC 都天然在 MIMO 状态空间中表达。",
+    "math": "\\[\nu=-Kx,\\quad K\\in\\mathbb{R}^{m\\times n},\n\\qquad A_{cl}=A-BK.\n\\]",
+    "intuition": "SISO 像控制一根绳子；MIMO 像同时控制多根相互连接的绳子。矩阵语言能显式看见交叉耦合。",
+    "pitfall": "MIMO 也不能只依赖 state-space 形式就忽略输入输出尺度。不同单位会严重影响 LQR 权重、condition number 和优化器。",
+    "followups": [
+      "为什么 decentralized PID 可能失败？",
+      "RGA 用于什么场景？",
+      "MIMO zeros 与 SISO zeros 有何不同？"
+    ],
+    "oral": "状态空间把多输入、多输出和内部耦合统一放进矩阵，因而 state feedback、observer、LQR、Kalman、MPC 都能自然推广到 MIMO。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 50,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback",
+      "pid",
+      "kalman",
+      "lqr",
+      "mpc"
+    ]
+  },
+  {
+    "n": 58,
+    "title": "非线性系统如何线性化？Jacobian 的物理意义是什么？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "在平衡点附近把 f(x,u) 做一阶 Taylor 展开，Jacobian A 和 B 给出状态/输入的小变化如何影响状态导数。线性化是局部切平面模型，偏差足够小时高阶项可忽略。它不是把原系统“变线性”，而是得到某个 operating point 附近的局部近似。",
+    "math": "\\[\n\\delta\\dot x=A\\delta x+B\\delta u,\n\\quad A=\\left.\\frac{\\partial f}{\\partial x}\\right|_\\star,\n\\quad B=\\left.\\frac{\\partial f}{\\partial u}\\right|_\\star.\n\\]",
+    "intuition": "Jacobian 就是非线性流场在工作点的局部斜率；像在曲面上取切平面。",
+    "pitfall": "如果工作点不是 equilibrium，需要把参考轨迹动态也纳入；如果姿态误差很大，小角度线性化会严重失效。",
+    "followups": [
+      "轨迹线性化与平衡点线性化差别？",
+      "线性化稳定能否推出非线性局部稳定？",
+      "Jacobian 有零实部 eigenvalue 时怎么办？"
+    ],
+    "oral": "线性化用 Jacobian 给非线性系统在工作点的切平面动态。它是局部模型，适合小偏差稳定，不应直接外推到大范围运动。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 50,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback",
+      "nonlinear-control"
+    ]
+  },
+  {
+    "n": 59,
+    "title": "什么是状态反馈？Pole placement 如何工作？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "若状态可测，令 u=-Kx+r_ff 后闭环矩阵变为 A-BK。只要 (A,B) 可控，可以通过选择 K 把闭环极点配置到任意期望位置。Pole placement 直接控制动态位置，但不显式考虑输入能量、状态尺度和鲁棒性，因此高阶 MIMO 中常用 LQR 等更系统的方法。",
+    "math": "\\[\n\\dot x=(A-BK)x.\n\\]\n目标是令\n\\[\n\\operatorname{eig}(A-BK)=\\{p_1^d,\\ldots,p_n^d\\}.\n\\]",
+    "intuition": "状态反馈相当于给每个状态方向加“虚拟弹簧/阻尼”，从而重新塑造系统自然模态。",
+    "pitfall": "把极点放得极左会得到很大 K，引发噪声放大、饱和和 unmodeled dynamics；数学上可配置不等于工程上可实现。",
+    "followups": [
+      "Ackermann formula 有什么局限？",
+      "MIMO pole placement 解是否唯一？",
+      "reference tracking 如何加入 precompensator？"
+    ],
+    "oral": "State feedback 把 A 改成 A-BK；可控时理论上可任意配极点。但极点过快意味着大控制增益和低鲁棒性，因此设计还要考虑输入和模型限制。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 51,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback",
+      "lqr",
+      "controllability",
+      "robust-control",
+      "poles"
+    ]
+  },
+  {
+    "n": 60,
+    "title": "状态反馈如何实现零稳态跟踪？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "纯 u=-Kx 主要稳定原点，并不自动保证对非零 reference 零误差。常见方法有静态 reference prefilter Nbar，使稳态映射正确；或者在误差通道加入积分状态并对增广系统设计反馈。后者对常值扰动和模型 DC 偏差更鲁棒，但会增加系统阶次和相位/饱和问题。",
+    "math": "增广积分：\n\\[\n\\dot x_I=r-y=r-Cx,\n\\]\n\\[\nu=-K_x x-K_I x_I.\n\\]",
+    "intuition": "Nbar 是“模型精确时一次性算准偏置”，积分是“模型不准也会不断修到零误差”。",
+    "pitfall": "加入积分前必须检查增广系统可控性；执行器饱和时同样需要 anti-windup。",
+    "followups": [
+      "Nbar 如何计算？",
+      "为什么 integral action 可视为 internal model？",
+      "MIMO reference integral 如何选择维度？"
+    ],
+    "oral": "State feedback 稳定状态但不自动跟踪非零目标。可用模型前馈 Nbar 或增广积分状态；积分更鲁棒，但带来额外动态和 windup。",
+    "chapter": 6,
+    "chapter_title": "状态空间与现代线性控制",
+    "chapter_slug": "06-state-space-linear-control",
+    "pdf_page": 52,
+    "tags": [
+      "state-space",
+      "mimo",
+      "linearization",
+      "state-feedback",
+      "robust-control"
+    ]
+  },
+  {
+    "n": 61,
+    "title": "可控性是什么意思？Kalman rank test 在看什么？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "可控性问的是：是否存在有限时间输入，把系统从任意初始状态送到任意目标状态。Kalman controllability matrix [B AB ... A^{n-1}B] 收集了输入经过系统动态传播后能够覆盖的状态方向；若其秩为 n，则所有状态方向都可被输入影响。",
+    "math": "\\[\n\\mathcal C=[B\\;AB\\;A^2B\\;\\cdots\\;A^{n-1}B],\\qquad\n\\operatorname{rank}\\mathcal C=n.\n\\]",
+    "intuition": "B 告诉执行器直接推哪些方向，AB 表示推力经过一段系统动态后能传到哪里，继续乘 A 就看更深层传播。",
+    "pitfall": "rank test 受数值尺度影响。实际大系统应看 controllability Gramian、PBH test 和 condition，而不是仅用浮点 rank 黑盒判断。",
+    "followups": [
+      "PBH controllability test 是什么？",
+      "可控但非常难控是什么意思？",
+      "Gramian eigenvalue 小代表什么？"
+    ],
+    "oral": "可控性是“输入能否触达所有状态方向”。Kalman matrix 把 B 经 A 的传播方向全部展开，满秩就表示理论上每个状态方向都能被操纵。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 54,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman",
+      "state-space"
+    ]
+  },
+  {
+    "n": 62,
+    "title": "不可控系统一定不能稳定吗？Stabilizable 是什么？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "不可控不等于一定无法稳定。若所有不可控模态本身都稳定，只需要控制可控的不稳定/慢模态，整体仍可通过反馈稳定，这称为 stabilizable。真正致命的是存在不可控且不稳定的特征值，因为任何输入都无法改变它。LQR 的常见存在条件也使用 stabilizability，而非必须完全 controllable。",
+    "math": "PBH 视角：对所有 $\\Re(\\lambda)\\ge0$，若\n\\[\n\\operatorname{rank}[\\lambda I-A\\; B]=n,\n\\]\n则 $(A,B)$ stabilizable。",
+    "intuition": "不能控制一个已经天然快速衰减的隐藏模态通常没关系；不能控制一个会自己发散的模态才是硬故障。",
+    "pitfall": "面试中回答“不可控就不能 pole placement”是对的，但若进一步说“不可控系统一定不能稳定”就是错的。",
+    "followups": [
+      "detectability 与 stabilizability 对偶是什么？",
+      "LQR 为什么只要求 stabilizable？",
+      "不可控稳定模态会不会影响输出？"
+    ],
+    "oral": "不可控只说明不能任意配置所有模态；只要不可控模态都稳定，系统仍可 stabilizable。不可控且不稳定模态才无法通过反馈救回来。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 55,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman",
+      "lqr"
+    ]
+  },
+  {
+    "n": 63,
+    "title": "可观性是什么意思？为什么“传感器少”不等于不可观？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "可观性问的是能否从有限时间的输入输出历史唯一恢复初始状态。即使传感器只直接测一个变量，内部动态 A 也可能把其他状态的信息逐步投影到输出中。因此传感器数量小于状态数量并不必然不可观。",
+    "math": "\\[\n\\mathcal O=\\begin{bmatrix}C\\\\CA\\\\CA^2\\\\\\vdots\\\\CA^{n-1}\\end{bmatrix},\\qquad\n\\operatorname{rank}\\mathcal O=n.\n\\]",
+    "intuition": "如果系统动态会把隐藏状态的影响“传到传感器所看见的方向”，时间序列就包含足够信息恢复它。",
+    "pitfall": "可观性是模型结构性质，不等于实际估计质量。即使理论满秩，若 observability Gramian 极病态，噪声下估计仍可能很差。",
+    "followups": [
+      "PBH observability test？",
+      "observable 与 identifiable 有何区别？",
+      "sensor placement 如何影响 Gramian？"
+    ],
+    "oral": "可观性看输出历史是否包含所有状态的信息。传感器少并不可怕，只要 A 的动态能把隐藏状态逐步映射到 C 所测方向，仍可完全观测。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 55,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman",
+      "state-space"
+    ]
+  },
+  {
+    "n": 64,
+    "title": "Detectability 是什么？为什么观测器不一定要求完全可观？",
+    "level": "进阶",
+    "freq": "★★★★☆",
+    "core": "Detectability 是 observability 的稳定性版本：所有不可观模态都必须稳定。即使某些稳定快速模态永远无法从输出恢复，只要它们自己会衰减，仍可以构造使估计误差趋零的 observer。真正危险的是不可观且不稳定的模态，因为误差会增长而传感器又看不到。",
+    "math": "对所有 $\\Re(\\lambda)\\ge0$，若\n\\[\n\\operatorname{rank}\\begin{bmatrix}\\lambda I-A\\\\C\\end{bmatrix}=n,\n\\]\n则 $(A,C)$ detectable。",
+    "intuition": "看不见一个自己会消失的误差通常没问题；看不见一个会增长的误差就无法纠正。",
+    "pitfall": "不要把 detectability 和 “传感器检测故障”混淆，它是线性系统的结构定义。",
+    "followups": [
+      "为什么 Kalman filter 常要求 detectability？",
+      "detectability 与 stabilizability 如何对偶？",
+      "不可观稳定模态会留在估计误差中多久？"
+    ],
+    "oral": "Detectability 要求不可观模态至少是稳定的，因此 observer 仍能让总体估计误差衰减。不可观且不稳定的模态才无法估计。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 56,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman"
+    ]
+  },
+  {
+    "n": 65,
+    "title": "Luenberger Observer 如何推导？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "先用同一模型做状态预测 A xhat+Bu，再用测量创新 y-C xhat 纠正模型。Observer gain L 决定纠正强度。定义误差 e=x-xhat，可得到 edot=(A-LC)e，因此只要 (A,C) 可观/可检测，就能通过 L 配置估计误差动态。",
+    "math": "\\[\n\\dot{\\hat x}=A\\hat x+Bu+L(y-C\\hat x),\n\\]\n\\[\n\\dot e=(A-LC)e.\n\\]",
+    "intuition": "Observer 本质是“模型预测 + 传感器纠偏”。L 小则更信模型，L 大则更激进地相信测量。",
+    "pitfall": "把 observer poles 设得非常快会放大噪声和模型误差。理论 pole placement 可行，不代表传感器噪声下合理。",
+    "followups": [
+      "observer poles 通常比 controller 快多少？",
+      "reduced-order observer 何时用？",
+      "未知输入 observer 是什么问题？"
+    ],
+    "oral": "Luenberger observer 用 model prediction 加 innovation correction；误差矩阵 A-LC 决定收敛，所以可观时可以设计 L，但过快会带来噪声敏感。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 57,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman",
+      "state-space"
+    ]
+  },
+  {
+    "n": 66,
+    "title": "Observer poles 为什么不能无限快？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "把 A-LC 的极点大幅左移意味着 L 往往很大，测量噪声会通过 L 直接注入状态估计；采样、量化和传感器延迟也更显著。另一方面模型中的未建模高频动态会被快速 observer 当作状态误差去追踪，造成估计振荡。一般 observer 应比 controller 快一些，但仍低于传感器可靠带宽和未建模模态。",
+    "math": "测量 $y=Cx+v$ 时：\n\\[\n\\dot{\\hat x}=\\cdots+L(Ce+v),\n\\]\n所以噪声通道直接含 $Lv$。",
+    "intuition": "Observer 越快越像“看到一点噪声就立刻大幅修正”；速度和滤波之间存在同样的 bandwidth trade-off。",
+    "pitfall": "“observer 5~10 倍快”只是经验，不是定律。应根据 noise PSD、sample rate、model uncertainty 和 closed-loop needs 设计。",
+    "followups": [
+      "高增益 observer 是什么？",
+      "为什么 Kalman filter 自动权衡噪声？",
+      "observer 与 low-pass filter 有什么本质区别？"
+    ],
+    "oral": "快 observer 提升收敛，却需要更大 L，从而放大 measurement noise 和未建模动态。速度应高于控制需求但低于传感器/模型可信高频范围。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 58,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman",
+      "sampling",
+      "state-space",
+      "poles",
+      "delay"
+    ]
+  },
+  {
+    "n": 67,
+    "title": "Separation Principle 为什么重要？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "线性系统中，使用 u=-K xhat 和 Luenberger observer 时，可以分别设计 state feedback K 与 observer gain L。通过适当坐标变换，闭环增广矩阵呈块三角结构，其特征值就是 A-BK 与 A-LC 的特征值并集。这极大简化了输出反馈设计。",
+    "math": "闭环 eigenvalues：\n\\[\n\\sigma_{cl}=\\sigma(A-BK)\\cup\\sigma(A-LC).\n\\]",
+    "intuition": "控制器管“真实状态如果知道了该怎么推”，observer 管“状态不知道时怎么估”。线性理论允许这两件事先分别解决再拼起来。",
+    "pitfall": "分离原理不代表鲁棒性也完全分离；模型误差、噪声、饱和和非线性会使实际 controller-observer interaction 更复杂。",
+    "followups": [
+      "LQG 的 separation principle 是什么？",
+      "非线性系统还有分离原理吗？",
+      "observer-based controller 的内部稳定条件？"
+    ],
+    "oral": "Separation Principle 让 K 和 L 可独立设计，闭环 poles 是 controller poles 与 observer poles 的并集。它是线性输出反馈最重要的结构结果之一。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 59,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman"
+    ]
+  },
+  {
+    "n": 68,
+    "title": "Kalman Filter 和 Luenberger Observer 的本质关系？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "两者都是 model prediction + innovation correction。Luenberger gain 主要按期望误差极点人工选择；Kalman filter 在给定过程噪声与测量噪声协方差的随机模型下，递推最小化估计误差协方差，从而得到随时间变化或稳态的最优 gain。在线性高斯假设下，它具有严格 MMSE 最优性。",
+    "math": "更新结构：\n\\[\n\\hat x^+=\\hat x^-+K(y-C\\hat x^-).\n\\]",
+    "intuition": "两者骨架相同，区别是“gain 怎么来”：一个按极点/工程经验，一个按概率不确定度计算。",
+    "pitfall": "Kalman optimal 是相对于所假设的 Q、R 和模型而言；协方差设错、噪声非高斯或模型偏差大时，不等于实际最优。",
+    "followups": [
+      "steady-state Kalman gain 与 Luenberger L 有何关系？",
+      "innovation 应满足什么统计特性？",
+      "如何用 innovation 做 filter consistency check？"
+    ],
+    "oral": "Kalman 与 Luenberger 都是预测加创新修正；Kalman gain 由噪声协方差和 Riccati 递推得到，在模型假设下最小化估计均方误差。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 59,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman",
+      "poles"
+    ]
+  },
+  {
+    "n": 69,
+    "title": "Kalman Filter 的 predict/update 两步各在做什么？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "Predict 用系统模型把上一步估计和协方差传播到当前；Update 用新测量的 innovation 修正状态。Kalman gain 由预测不确定度 P^- 和测量噪声 R 决定：预测越不确定、测量越可靠，就越相信测量。协方差更新同时量化“修正后我们还有多不确定”。",
+    "math": "\\[\n\\hat x^-_k=A\\hat x_{k-1}+Bu_{k-1},\\quad\nP^-_k=AP_{k-1}A^T+Q,\n\\]\n\\[\nK_k=P^-C^T(CP^-C^T+R)^{-1},\n\\]\n\\[\n\\hat x_k=\\hat x^-_k+K_k(y_k-C\\hat x^-_k).\n\\]",
+    "intuition": "Predict 是“相信物理模型往前走”，Update 是“看到传感器后纠偏”；P 则是对自己信心的量化。",
+    "pitfall": "数值实现中 Joseph form 可提高协方差正定性；大系统还要关注 square-root filter。",
+    "followups": [
+      "Joseph covariance update 是什么？",
+      "innovation covariance S 如何计算？",
+      "缺测量时 filter 怎么做？"
+    ],
+    "oral": "Predict 用模型传播状态和不确定度，Update 用 innovation 按 Kalman gain 融合测量。P^- 大或 R 小会让 gain 更偏向测量，反之更信模型。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 60,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman",
+      "state-space"
+    ]
+  },
+  {
+    "n": 70,
+    "title": "Kalman 中 Q、R 怎么调？为什么不能把它们当普通“滤波强度旋钮”？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "Q 表示模型中未解释的过程扰动协方差，R 表示测量噪声协方差。Q 增大通常让滤波器更快跟随测量，R 增大则更依赖模型。但它们应尽量来自物理噪声统计、传感器标定和 innovation consistency，而不是盲调。错误尺度会导致 covariance 与真实误差不一致，进而影响 gating、sensor fusion 和下游控制。",
+    "math": "离散模型：\n\\[\nw_k\\sim\\mathcal N(0,Q),\\qquad v_k\\sim\\mathcal N(0,R).\n\\]",
+    "intuition": "Q 是“我有多不信模型”，R 是“我有多不信传感器”。但这份不信任最好有数据依据。",
+    "pitfall": "连续噪声谱密度离散化后 Q 会随 sample time 改变；更改采样率却沿用原 Q，是常见工程错误。",
+    "followups": [
+      "如何从 Allan variance 估 IMU 噪声？",
+      "NIS/NEES consistency test 是什么？",
+      "状态相关噪声如何处理？"
+    ],
+    "oral": "Q 建模过程扰动，R 建模测量噪声。它们决定 Kalman gain，但应由物理噪声和创新统计校准；采样周期变化时离散 Q 也必须重新计算。",
+    "chapter": 7,
+    "chapter_title": "可控可观、观测器与 Kalman",
+    "chapter_slug": "07-controllability-observability-kalman",
+    "pdf_page": 61,
+    "tags": [
+      "controllability",
+      "observability",
+      "observer",
+      "kalman"
+    ]
+  },
+  {
+    "n": 71,
+    "title": "为什么 Pole Placement 之后还需要 LQR？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "Pole placement 只指定闭环特征值，没有直接惩罚状态偏差和控制能量，也不告诉你 MIMO 下众多可行 K 中哪个更合理。LQR 把性能写成二次型 cost，自动在状态收敛与输入 effort 之间折中，并通过 Riccati 方程得到反馈增益。它还具有良好的鲁棒性质，但前提是权重和模型尺度合理。",
+    "math": "\\[\nJ=\\int_0^\\infty(x^TQx+u^TRu)dt,\n\\qquad u=-Kx.\n\\]",
+    "intuition": "Pole placement 是“我要 poles 在这里”；LQR 是“我在乎哪些状态、愿意付多少控制代价，让优化器选 K”。",
+    "pitfall": "LQR 不会自动理解物理单位。Q=I 往往只是“方便”，不是合理设计；应先 scale states 和 inputs。",
+    "followups": [
+      "LQR poles 能预先指定吗？",
+      "Bryson rule 是什么？",
+      "LQR 的鲁棒性有哪些经典性质？"
+    ],
+    "oral": "Pole placement 只管 poles；LQR 通过 Q/R 同时管状态误差和控制 effort，更适合 MIMO 和系统化权衡。权重必须有尺度和物理意义。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 62,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control",
+      "state-space"
+    ]
+  },
+  {
+    "n": 72,
+    "title": "LQR 中 Q、R 如何选？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "Q 对状态偏差加权，R 对控制输入加权。一个实用起点是先把每个状态和输入按允许最大偏差归一化，再用 Bryson-like 权重 1/x_max^2、1/u_max^2，使各项在接近边界时具有相似 cost。之后根据目标 trade-off 调整。若 Q/R 比增大，控制通常更激进、带宽更高；R 增大则更节省输入。",
+    "math": "对角起点：\n\\[\nQ_{ii}\\approx1/x_{i,max}^2,\\qquad R_{jj}\\approx1/u_{j,max}^2.\n\\]",
+    "intuition": "先把“1 米、1 弧度、1 米每秒”变成相近的无量纲严重程度，再讨论权重，避免单位主导优化。",
+    "pitfall": "只看状态响应不看 u(t) 峰值是错误的。LQR 没有硬约束，实际输入仍可能饱和；强约束问题更适合 MPC。",
+    "followups": [
+      "Q 可以有 off-diagonal 项吗？",
+      "R 很小会发生什么？",
+      "如何把 tracking 问题改成 LQR？"
+    ],
+    "oral": "Q 决定哪些状态误差昂贵，R 决定控制动作多昂贵。先归一化，再根据物理容限和性能调权；LQR 不处理硬输入约束。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 63,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control",
+      "state-space"
+    ]
+  },
+  {
+    "n": 73,
+    "title": "CARE / Riccati 方程在 LQR 中为什么出现？",
+    "level": "高级",
+    "freq": "★★★★☆",
+    "core": "无限时域线性二次最优控制的 value function 假设为 V=x^TPx。把它代入 Hamilton-Jacobi-Bellman 方程，对 u 求极小，可得到 u=-R^{-1}B^TPx，并要求 P 满足代数 Riccati 方程。它把动态规划的无限时域问题压缩成一个矩阵方程。",
+    "math": "\\[\nA^TP+PA-PBR^{-1}B^TP+Q=0,\n\\]\n\\[\nK=R^{-1}B^TP.\n\\]",
+    "intuition": "P 可以理解为“从当前状态 x 出发，未来最优累计代价的二次度量”。",
+    "pitfall": "不是任何 Q,R,A,B 都存在 stabilizing P；通常需要 stabilizability 和 detectability 等条件。",
+    "followups": [
+      "离散 Riccati 方程长什么样？",
+      "finite-horizon LQR 为什么是 Riccati backward recursion？",
+      "P 与 Lyapunov 函数有何联系？"
+    ],
+    "oral": "Riccati 方程来自二次 value function 和动态规划；解 P 同时给最优 cost V=x^TPx 和反馈 K=R^-1B^TP。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 64,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control"
+    ]
+  },
+  {
+    "n": 74,
+    "title": "LQG 是什么？为什么“最优”不等于“鲁棒”？",
+    "level": "高级",
+    "freq": "★★★★☆",
+    "core": "LQG 把 LQR state feedback 与 Kalman state estimator 组合，在线性、高斯、二次 cost 模型下具有 separation principle 和随机最优性。但 LQG 的最优性是针对名义模型和噪声统计的期望性能，不保证对模型摄动拥有很大的稳定裕度；特别是 estimator dynamics 与 controller dynamics 组合后，经典 LQR 的某些鲁棒裕度可能不保留。",
+    "math": "\\[\nu=-K\\hat x,\n\\]\n其中 $K$ 来自 LQR，$\\hat x$ 来自 Kalman filter。",
+    "intuition": "LQG 是“最优控制 + 最优估计”，但两个“最优”都建立在模型和统计假设上；模型错了，最优性就不是 worst-case 保障。",
+    "pitfall": "不要把 LQG 当作 H-infinity 的替代。前者偏期望二次性能，后者显式关注最坏频率增益。",
+    "followups": [
+      "LQG/LTR 是什么？",
+      "为什么 separation 不等于 robust separation？",
+      "LQR gain margin 的经典结果是什么？"
+    ],
+    "oral": "LQG=LQR+Kalman，在名义线性高斯模型下最优且可分离设计；但 nominal stochastic optimal 不自动代表对建模误差的 worst-case 鲁棒。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 65,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control",
+      "kalman"
+    ]
+  },
+  {
+    "n": 75,
+    "title": "MPC 和 LQR 最大区别是什么？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "MPC 每个采样时刻基于当前状态，求有限预测时域内的最优控制序列，并显式加入输入、状态和输出约束；只执行第一步，然后滚动重算。无约束线性二次、足够合适终端 cost 的极限情形与 LQR 密切相关。MPC 的核心优势是约束处理与未来预测，代价是在线优化和模型依赖。",
+    "math": "\\[\n\\min_{u_0\\ldots u_{N-1}}\\sum_{k=0}^{N-1}(x_k^TQx_k+u_k^TRu_k)+x_N^TPx_N\n\\]\nsubject to dynamics and constraints.",
+    "intuition": "LQR 给一个固定线性反馈律；MPC 每一步都“看未来 N 步并考虑道路边界/执行器上限”，然后只走第一步。",
+    "pitfall": "MPC 不是“有优化器就一定更好”。若模型差、solver deadline 不可靠或 horizon/terminal design 不当，同样可能表现很差。",
+    "followups": [
+      "为什么只执行第一步？",
+      "terminal cost/terminal set 有什么作用？",
+      "explicit MPC 是什么？"
+    ],
+    "oral": "MPC 的关键是 receding horizon + explicit constraints。它每次优化未来 N 步，只实施第一个动作，再用新测量滚动重算；非常适合受约束 MIMO 系统。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 65,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control",
+      "sampling",
+      "state-space"
+    ]
+  },
+  {
+    "n": 76,
+    "title": "MPC horizon N 怎么选？越长越好吗？",
+    "level": "工程",
+    "freq": "★★★★☆",
+    "core": "更长 horizon 能看得更远，通常改善对慢动态和未来约束的预见，但决策变量更多、计算更慢，模型预测误差也在远期累积。若终端 cost/terminal set 设计合理，适中 horizon 已可获得接近长时域性能。选择应基于主要系统时间常数、采样时间、约束预见需求和 solver deadline。",
+    "math": "物理预测时间：\n\\[\nT_{pred}=N T_s.\n\\]",
+    "intuition": "真正有意义的是“看未来多少秒”，而不是单独比较 N。采样更快时同样 N 只看到更短物理时间。",
+    "pitfall": "horizon 太长但模型远期不准，可能只是花更多算力优化错误未来。",
+    "followups": [
+      "control horizon 与 prediction horizon 有何区别？",
+      "warm start 为什么重要？",
+      "move blocking 用来做什么？"
+    ],
+    "oral": "MPC 看的是 N*Ts 的物理未来。N 太短看不到约束，太长算力和模型误差都增加；应覆盖关键动态并满足实时 solver deadline。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 66,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control",
+      "sampling"
+    ]
+  },
+  {
+    "n": 77,
+    "title": "什么是鲁棒控制？Nominal stability 与 robust stability 有何区别？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "Nominal stability 只保证标称 plant G0 稳定；robust stability 要求在规定不确定性集合内所有可能 plant 都稳定。鲁棒性能进一步要求这些 plant 不只稳定，还满足灵敏度、跟踪或扰动衰减指标。设计时必须明确 uncertainty model，而不是笼统说“参数可能变化”。",
+    "math": "例如乘性不确定性：\n\\[\nG=G_0(1+W_m\\Delta),\\quad\\|\\Delta\\|_\\infty\\le1.\n\\]",
+    "intuition": "Nominal 是“这一个模型能飞”；robust 是“在允许的质量、气动、延迟变化范围内都能飞”。",
+    "pitfall": "参数 Monte Carlo 不是严格 robust proof，尤其可能漏掉 worst-case 组合；但它是很好的工程验证补充。",
+    "followups": [
+      "small-gain theorem 怎么用于 robust stability？",
+      "structured uncertainty 与 unstructured 区别？",
+      "mu-analysis 解决什么问题？"
+    ],
+    "oral": "Robust stability 针对一个模型族保证稳定，robust performance 还要保证性能。前提是把不确定性频率形状和结构明确建模，而不是只调大 PM。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 67,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control"
+    ]
+  },
+  {
+    "n": 78,
+    "title": "H-infinity 控制的核心目标是什么？",
+    "level": "高级",
+    "freq": "★★★★☆",
+    "core": "H-infinity 把外扰 w 到性能输出 z 的闭环传递矩阵最坏频率增益作为指标，并设计控制器使其上界尽量小。通过 weighting functions 可以同时编码低频 tracking、控制 effort、高频 noise 和 uncertainty。它不是简单“让所有增益小”，而是构造 generalized plant 后对指定通道进行 worst-case 能量增益优化。",
+    "math": "\\[\n\\min_K \\|T_{w\\to z}(K)\\|_\\infty,\n\\qquad \\|G\\|_\\infty=\\sup_\\omega \\bar\\sigma(G(j\\omega)).\n\\]",
+    "intuition": "LQR 更像平均二次代价，H-infinity 更像问“最坏哪个频率能把扰动放大最多，我要压住这个最坏值”。",
+    "pitfall": "weight selection 是设计本身；错误 weights 会得到数学最优但工程意义错误的控制器。",
+    "followups": [
+      "mixed sensitivity formulation 是什么？",
+      "H2 与 H-infinity 区别？",
+      "为什么 MIMO 用最大奇异值？"
+    ],
+    "oral": "H-infinity 最小化指定闭环通道的最坏频率增益，用权重表达 tracking、effort、noise 和 uncertainty，是系统化 worst-case loop shaping。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 68,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control"
+    ]
+  },
+  {
+    "n": 79,
+    "title": "自适应控制和鲁棒控制有何本质不同？",
+    "level": "进阶",
+    "freq": "★★★★☆",
+    "core": "鲁棒控制通常假设参数属于已知不确定集合，并设计固定控制器对整个集合工作；自适应控制则在线利用输入输出更新参数估计或控制律，让控制器随对象变化。前者强调 worst-case 保证，后者强调在线学习/调整。自适应并不意味着“自动更鲁棒”，还需要 excitation、稳定性证明和参数漂移管理。",
+    "math": "一般可写为：\n\\[\n\\dot{\\hat\\theta}=\\Gamma\\phi e\n\\]\n之类 adaptation law，再由 $\\hat\\theta$ 更新 control law。",
+    "intuition": "鲁棒像提前准备一件能适应各种天气的外套；自适应像根据实时温度不断调整衣服。",
+    "pitfall": "没有 persistent excitation 时参数可能不收敛；控制性能收敛和参数真值收敛不是同一件事。",
+    "followups": [
+      "MRAC 的 reference model 做什么？",
+      "persistent excitation 为什么重要？",
+      "sigma modification 有什么作用？"
+    ],
+    "oral": "鲁棒控制用固定 K 覆盖不确定集合；自适应控制在线更新参数/控制律。自适应要额外处理 excitation、噪声和参数漂移，不能等同于“自动调参 PID”。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 68,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control"
+    ]
+  },
+  {
+    "n": 80,
+    "title": "什么是 disturbance observer / ADRC 类思想？",
+    "level": "工程",
+    "freq": "★★★★☆",
+    "core": "Disturbance observer 的共同思想是把未知外扰和一部分模型误差等效为“总扰动”，利用 nominal model 与测量估计该扰动，再通过前馈补偿。这样反馈控制器不用独自承担全部低频扰动。不同 DOB、ESO/ADRC 的具体结构不同，但核心都是 model-based estimation + disturbance cancellation，并受 observer bandwidth、噪声和 model inversion 限制。",
+    "math": "概念上：\n\\[\n\\hat d\\approx \\text{observer}(u,y,G_n),\\qquad\nu=u_c-\\hat d.\n\\]",
+    "intuition": "与其让反馈看到偏差后慢慢纠正，不如先估计“谁在推我”，再直接抵消它。",
+    "pitfall": "扰动估计带宽不能无限高；过高会把测量噪声解释成扰动并主动注入 actuator。非最小相位 nominal inverse 也需要谨慎。",
+    "followups": [
+      "DOB 的 Q-filter 起什么作用？",
+      "ESO 扩张状态是什么？",
+      "disturbance rejection 与 integral action 如何比较？"
+    ],
+    "oral": "DOB/ADRC 类方法把模型误差和外扰估成总扰动再补偿。核心 trade-off 仍是 observer bandwidth、噪声和可逆模型范围，不是“无需模型”。",
+    "chapter": 8,
+    "chapter_title": "最优、MPC、鲁棒与自适应",
+    "chapter_slug": "08-optimal-mpc-robust-adaptive",
+    "pdf_page": 69,
+    "tags": [
+      "lqr",
+      "mpc",
+      "robust-control",
+      "adaptive-control"
+    ]
+  },
+  {
+    "n": 81,
+    "title": "连续控制器为什么必须认真做离散实现？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "真实控制器运行在 MCU/DSP/CPU 上，只在采样时刻更新。连续设计转成数字实现后会引入采样、ZOH、计算延迟、量化和差分近似，因此不是把公式照抄成代码。要明确 sample time、discretization method、filter states、saturation order 和 numeric precision。",
+    "math": "离散状态模型：\n\\[\nx_{k+1}=A_d x_k+B_d u_k.\n\\]",
+    "intuition": "连续控制律是假设随时都能修正；数字控制则每隔 Ts 才看一次、改一次，中间 plant 仍在运动。",
+    "pitfall": "最危险的错误之一是算法仿真用 1 kHz，而嵌入式任务实际受调度只有 400--800 Hz 且 jitter 很大。",
+    "followups": [
+      "ZOH 在采样间隔做什么？",
+      "fixed-point PID 有哪些风险？",
+      "multi-rate control 如何设计？"
+    ],
+    "oral": "数字实现会额外引入采样、保持、计算延迟和量化。必须把实际 Ts 和执行顺序纳入模型，而不是认为连续设计自动等价。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 72,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation",
+      "delay",
+      "saturation"
+    ]
+  },
+  {
+    "n": 82,
+    "title": "连续 s 平面与离散 z 平面稳定区域如何对应？",
+    "level": "基础",
+    "freq": "★★★★★",
+    "core": "采样映射 z=e^{sTs}。若连续极点 s=sigma+jomega，则 |z|=e^{sigma Ts}。因此 LHP sigma<0 映射到单位圆内部，虚轴映射到单位圆，RHP 映射到单位圆外。离散渐近稳定要求所有闭环极点严格位于 |z|<1。",
+    "math": "\\[\nz=e^{sT_s},\\qquad |z|=e^{\\Re(s)T_s}.\n\\]",
+    "intuition": "连续“向左”代表衰减，离散“圆内”代表每步乘一个模小于 1 的因子；两者是同一个指数规律。",
+    "pitfall": "z=-0.9 虽稳定，但每个采样点符号交替，会表现成高频振荡；只看模值不看角度也不够。",
+    "followups": [
+      "连续阻尼比如何映射到 z-plane？",
+      "单位圆角度对应什么离散频率？",
+      "aliasing 与 pole mapping 有什么区别？"
+    ],
+    "oral": "z=e^{sTs} 把 LHP 映射到单位圆内，所以离散稳定条件是 |z|<1。极点角度还决定采样后的振荡频率。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 72,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation",
+      "poles"
+    ]
+  },
+  {
+    "n": 83,
+    "title": "采样频率应该怎么选？Nyquist 2 倍为什么远远不够？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "Nyquist 2 倍条件针对理想 bandlimited 信号重建，并不是控制设计推荐。控制环需要在 crossover 附近保留相位和足够时间分辨率；ZOH 与计算延迟都会消耗相位。因此常把 control sample rate 设为 closed-loop bandwidth 的 10--20 倍或更高，再根据 plant、sensor filter 和 processor deadline验证。",
+    "math": "若 $f_s=1/T_s$，相对 crossover 的离散相位损失与 $\\omega_c T_s$ 同量级。",
+    "intuition": "每个控制周期相当于只能“看一帧电影”。两帧/周期只够证明没有完全 alias，并不足以看清动作并稳定纠正。",
+    "pitfall": "提高 sample rate 也不是免费：噪声带宽、计算负载、通信和量化都可能变糟。",
+    "followups": [
+      "anti-alias filter 如何选 cutoff？",
+      "inner loop 与 outer loop 可不同采样率吗？",
+      "sampling jitter 如何等效成相位噪声？"
+    ],
+    "oral": "控制采样不能只满足 2x Nyquist；通常需要远高于闭环 bandwidth，给 ZOH、计算延迟和滤波留下相位余量，同时满足处理器实时性。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 73,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation",
+      "nyquist",
+      "delay"
+    ]
+  },
+  {
+    "n": 84,
+    "title": "ZOH 离散化如何得到 Ad、Bd？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "假设采样间隔内输入保持常数，连续 xdot=Ax+Bu 的精确离散模型为 Ad=e^{ATs}，Bd=integral_0^Ts e^{A tau}B d tau。它把 ZOH 的真实输入保持行为包含在离散 plant 中，比简单 Euler 在较大 Ts 时准确得多。",
+    "math": "\\[\nA_d=e^{AT_s},\\qquad\nB_d=\\int_0^{T_s}e^{A\\tau}B\\,d\\tau.\n\\]",
+    "intuition": "Ad 是“自由演化一整个采样周期”，Bd 是“这一周期恒定输入累计产生多少状态变化”。",
+    "pitfall": "若 A 可逆常写 Bd=A^{-1}(Ad-I)B，但 A 奇异时不能直接用；应使用 block matrix exponential 等稳健方法。",
+    "followups": [
+      "forward Euler 的稳定性问题是什么？",
+      "matrix exponential block trick 怎么做？",
+      "FOH 与 ZOH 区别？"
+    ],
+    "oral": "ZOH 精确离散化是 Ad=e^{ATs}、Bd=积分 e^{Atau}B。它反映输入在一个 sample 内保持不变的真实数字控制接口。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 74,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation"
+    ]
+  },
+  {
+    "n": 85,
+    "title": "Tustin / Bilinear Transform 的优缺点是什么？",
+    "level": "进阶",
+    "freq": "★★★★☆",
+    "core": "Tustin 用 s=(2/T)(z-1)/(z+1) 把整个左半 s 平面映射到单位圆内，因此连续稳定滤波器/控制器可保持稳定性结构。它对频率轴是非线性映射，会产生 frequency warping；若有关键 crossover 或 notch frequency，可用 prewarping 让该频率准确匹配。",
+    "math": "\\[\ns\\approx\\frac{2}{T_s}\\frac{z-1}{z+1}.\n\\]\n频率映射：\n\\[\n\\omega_a=\\frac{2}{T_s}\\tan\\frac{\\omega_dT_s}{2}.\n\\]",
+    "intuition": "Tustin 像把无限长的模拟频率轴压缩进数字 Nyquist 区间，稳定区域映射得很好，但距离会被扭曲。",
+    "pitfall": "对包含纯延迟或强高频结构的控制器，不能只做 Tustin 后就认为时域完全等价；要重新检查离散闭环。",
+    "followups": [
+      "prewarping 怎么选频率？",
+      "matched pole-zero method 与 Tustin 比较？",
+      "integrator 用 Tustin 后是什么差分形式？"
+    ],
+    "oral": "Tustin 稳定映射好、广泛用于 emulation，但会 frequency warp；在重要 crossover/notch 处可 prewarp，并必须重新验证离散闭环。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 74,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation",
+      "nonlinear-control"
+    ]
+  },
+  {
+    "n": 86,
+    "title": "一个 sample delay 为什么可能把高带宽控制环弄崩？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "一拍延迟 z^{-1} 在频域相当于额外相位 -omega Ts，而不降低低频幅值。若 crossover 已接近 sample rate 的显著比例，一拍或两拍 latency 就会消耗大量 PM。真实延迟还包含 ADC、sensor filter、task scheduling、computation、PWM update 等，应建立 end-to-end latency budget。",
+    "math": "\\[\nz^{-1}\\leftrightarrow e^{-sT_s},\\qquad \\angle=-\\omega T_s.\n\\]",
+    "intuition": "高带宽环路里的“一拍”不是一个小数字，而可能是相位裕度的一大块。",
+    "pitfall": "平均计算 200 us 不代表 delay=200 us；若输入采样与 PWM 更新时序不对齐，effective delay 可能接近一个完整周期甚至更多。",
+    "followups": [
+      "PWM zero-order hold 带来什么延迟？",
+      "如何做 timestamp-based sensor fusion？",
+      "deadline miss 应如何进入 robustness test？"
+    ],
+    "oral": "sample delay 等价于纯时延，会线性吃相位。高 bandwidth 系统必须做端到端 latency budget，考虑采样、计算、调度和 actuator update，而非只看算法执行时间。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 75,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation",
+      "delay"
+    ]
+  },
+  {
+    "n": 87,
+    "title": "离散 PID 的积分和微分怎么写才可靠？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "离散 PID 不是唯一形式。积分可用 forward/backward Euler 或 trapezoidal/Tustin；微分应带数字低通并尽量对 measurement。实现时还需明确 positional 或 incremental form、anti-windup、输出限幅、rate limit 和 sample time scaling。参数若以连续 Ki、Kd 表示，代码中必须正确乘/除 Ts。",
+    "math": "简单 Euler：\n\\[\nI_k=I_{k-1}+K_iT_s e_k,\n\\]\n\\[\nD_k\\approx K_d\\frac{e_k-e_{k-1}}{T_s}.\n\\]",
+    "intuition": "数字 PID 的每一项都是有“单位”的。采样时间改变，积分每步积多少、微分每步除多少都会改变。",
+    "pitfall": "常见严重 bug：调参时把 Ki 当每秒增益，代码却每 sample 直接加 Ki*e，换采样率后整个闭环性格改变。",
+    "followups": [
+      "incremental PID 有什么优势？",
+      "derivative filter 如何离散化？",
+      "anti-windup 逻辑放在什么顺序？"
+    ],
+    "oral": "离散 PID 必须把 Ts 显式进积分和微分，并带滤波、限幅和 anti-windup。最重要的是参数单位和执行顺序可追踪，改 sample rate 时重新验证。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 76,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation",
+      "pid",
+      "anti-windup"
+    ]
+  },
+  {
+    "n": 88,
+    "title": "量化、固定点和数值精度会怎样破坏控制？",
+    "level": "工程",
+    "freq": "★★★★☆",
+    "core": "ADC/PWM 和 fixed-point 把连续变量映射到有限分辨率，可能造成 limit cycle、deadband、积分器卡顿和小信号噪声。高增益 observer/derivative 对量化尤敏感。固定点还需管理 overflow、scaling 和 saturation arithmetic。工程设计应把量化直接加入 SIL/HIL 仿真，而不是只在最后移植。",
+    "math": "量化步长 $\\Delta$ 常可粗略建模为误差 $q\\in[-\\Delta/2,\\Delta/2]$，但闭环中量化与信号相关，可能形成确定性 limit cycle。",
+    "intuition": "数字控制器不是无限精度数学；当误差比一个 encoder count 还小，算法看到的世界已经是离散格点。",
+    "pitfall": "把量化简单当白噪声只适合某些统计条件，低速伺服中的 limit cycle 往往是确定性非线性现象。",
+    "followups": [
+      "encoder resolution 如何限制位置稳态抖动？",
+      "fixed-point overflow 如何避免？",
+      "dither 为什么能改变量化行为？"
+    ],
+    "oral": "量化会产生 deadband、limit cycle 和噪声放大；fixed-point 还会 overflow。应在控制设计阶段就仿真真实分辨率和数值格式，尤其关注积分和高增益估计。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 77,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation",
+      "saturation"
+    ]
+  },
+  {
+    "n": 89,
+    "title": "多速率控制 multi-rate 为什么常见？",
+    "level": "工程",
+    "freq": "★★★★☆",
+    "core": "不同物理环路的带宽和计算负担不同，因此常让电流环、姿态角速度环高频运行，位置/规划等外环低频运行。Multi-rate 可节省计算并匹配传感器更新率，但会引入 sample-and-hold、异步数据、aliasing 与延迟管理问题。设计时应明确每个信号的时间戳和跨速率接口。",
+    "math": "例如：\n\\[\nf_{inner}=1\\text{kHz},\\quad f_{outer}=100\\text{Hz}\n\\]\n时，outer command 在 10 个 inner samples 之间通常保持。",
+    "intuition": "不同层像不同节奏的团队：肌肉反射快，路径规划慢；关键是它们交换信息时要知道信息有多旧。",
+    "pitfall": "简单用“最新值”跨线程共享而没有 timestamp，可能造成隐式 variable delay 和 race condition。",
+    "followups": [
+      "rate transition block 解决什么？",
+      "如何避免 downsample aliasing？",
+      "异步传感器如何融入 Kalman？"
+    ],
+    "oral": "Multi-rate 按动态时间尺度分配采样频率，但必须管理 hold、timestamp、aliasing 和跨线程延迟；否则省下的算力会变成隐蔽相位问题。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 77,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation",
+      "delay"
+    ]
+  },
+  {
+    "n": 90,
+    "title": "数字控制上线前应该做哪些验证？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "至少覆盖 MIL/SIL/PIL/HIL 层级：先验证离散数学模型，再验证实际代码和数值精度，最后接真实/模拟 plant 测试时序。测试参数扫频、噪声、延迟、jitter、packet loss、saturation、rate limit、sensor dropout、启动/切模态等极端工况。日志必须包含 reference、state estimate、raw measurement、control components、raw/saturated command 和 timing。",
+    "math": "验证重点不是一个公式，而是闭环 envelope：\n\\[\n\\text{plant uncertainty}\\times\\text{timing uncertainty}\\times\\text{nonlinearity}\\times\\text{noise}.\n\\]",
+    "intuition": "控制器从 notebook 到 MCU 的风险主要来自“那些设计时被默认理想的接口”：时间、数值、限幅、传感器和状态初始化。",
+    "pitfall": "只做 nominal HIL 而不注入 timing fault 和 sensor fault，覆盖面仍很有限。",
+    "followups": [
+      "PIL 与 SIL 差别？",
+      "HIL 里怎样模拟 actuator saturation？",
+      "如何设计自动回归控制指标？"
+    ],
+    "oral": "上线前要从数学离散到真实代码时序逐层验证，故障注入延迟、jitter、量化、饱和和传感器异常，并记录足够内部状态支持闭环诊断。",
+    "chapter": 9,
+    "chapter_title": "离散控制与数字实现",
+    "chapter_slug": "09-discrete-digital-control",
+    "pdf_page": 78,
+    "tags": [
+      "discrete-control",
+      "sampling",
+      "z-transform",
+      "implementation",
+      "delay",
+      "saturation"
+    ]
+  },
+  {
+    "n": 91,
+    "title": "Lyapunov 稳定性为什么能在不求解析解时证明稳定？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "Lyapunov 方法寻找一个类似能量的标量 V(x)，要求平衡点处最小、附近为正，并沿系统轨迹不增加。如果 Vdot<0，则每条轨迹都持续降低这份“能量”，因此可证明向平衡点收敛。它把难解的非线性轨迹问题变成寻找正定函数和验证导数符号的问题。",
+    "math": "\\[\nV(0)=0,\\quad V(x)>0\\;(x\\neq0),\n\\]\n\\[\n\\dot V=\\nabla V^T f(x)<0\n\\]\n可推出局部/全局渐近稳定，具体范围取决于条件。",
+    "intuition": "你不需要知道球从山坡上的每条精确路径，只要证明“势能一直下降且最低点只有一个”，就能判断最终去向。",
+    "pitfall": "Vdot<=0 只给稳定或需要 LaSalle 进一步判断；不能自动宣布 asymptotic stable。还要区分 local、global 和 radial unbounded。",
+    "followups": [
+      "LaSalle invariance principle 解决什么？",
+      "positive definite 如何判断？",
+      "region of attraction 如何用 level set 估计？"
+    ],
+    "oral": "Lyapunov 用一个沿轨迹下降的能量型函数证明稳定，不必求解非线性 ODE。关键是 V 正定、Vdot 的符号，以及是否满足更强的全局条件。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 80,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging"
+    ]
+  },
+  {
+    "n": 92,
+    "title": "线性系统的 Lyapunov 方程如何判断稳定？",
+    "level": "进阶",
+    "freq": "★★★★★",
+    "core": "对 xdot=Ax，选 V=x^TPx。若能找到 P>0，使 A^TP+PA=-Q 且 Q>0，则 Vdot=-x^TQx<0，系统渐近稳定。反过来，对 Hurwitz A 和任意 Q>0，都存在唯一 P>0。这个等价性连接了 eigenvalue stability 与能量证书，也成为 LQR/robust analysis 的基础。",
+    "math": "\\[\nA^TP+PA=-Q,\n\\quad P\\succ0,\\;Q\\succ0.\n\\]",
+    "intuition": "特征值给频谱证据，Lyapunov 方程给一个椭球形“能量地形”；两者从不同角度证明同一稳定事实。",
+    "pitfall": "数值上 P condition 很差可能暗示系统接近不稳定或坐标尺度不佳；不要只检查 solver 是否返回矩阵。",
+    "followups": [
+      "离散 Lyapunov 方程是什么？",
+      "P 的 level set 如何形成 invariant ellipsoid？",
+      "common Lyapunov function 用于什么？"
+    ],
+    "oral": "A Hurwitz 等价于对任意 Q>0 存在唯一 P>0 解 A^TP+PA=-Q。它给线性系统一个严格下降的二次 Lyapunov 能量。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 81,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging",
+      "lqr"
+    ]
+  },
+  {
+    "n": 93,
+    "title": "Feedback Linearization 和普通 Jacobian 线性化有什么区别？",
+    "level": "高级",
+    "freq": "★★★★☆",
+    "core": "Jacobian 线性化是局部近似：在工作点附近忽略高阶项；feedback linearization 则通过非线性状态反馈和坐标变换主动抵消已知非线性，使某些输入输出动态精确变成线性形式。后者可在更大区域工作，但要求模型准确、relative degree 条件成立，并检查 zero dynamics 稳定。",
+    "math": "控制仿射系统：\n\\[\n\\dot x=f(x)+g(x)u.\n\\]\n设计 $u=\\alpha(x)+\\beta(x)v$ 使输出满足 $y^{(r)}=v$。",
+    "intuition": "普通线性化是在曲面上画切线；feedback linearization 是利用控制输入把曲面“主动拉直”。",
+    "pitfall": "若 zero dynamics 不稳定，输入输出表面线性化可能隐藏内部发散；这是面试高频追问。",
+    "followups": [
+      "relative degree 怎么定义？",
+      "zero dynamics 是什么？",
+      "computed torque control 与 feedback linearization 的关系？"
+    ],
+    "oral": "Jacobian 是局部近似；feedback linearization 用非线性反馈主动消除结构，可能更精确但依赖模型，并必须检查 relative degree 和 zero dynamics。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 82,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging",
+      "state-space"
+    ]
+  },
+  {
+    "n": 94,
+    "title": "Sliding Mode Control 为什么鲁棒？chattering 从哪里来？",
+    "level": "高级",
+    "freq": "★★★★☆",
+    "core": "滑模控制先定义 sliding surface s(x)=0，再设计不连续控制把状态有限时间推到该面，并让面上动态稳定。对 matched uncertainty，达到滑模后不确定项可被切换控制抵消，因此鲁棒性强。经典 sign(s) 产生高频切换，真实 actuator bandwidth 有限会出现 chattering、磨损和未建模动态激励。",
+    "math": "常见面：\n\\[\ns=\\dot e+\\lambda e,\n\\]\n控制含：\n\\[\nu=u_{eq}-K\\operatorname{sign}(s).\n\\]",
+    "intuition": "它像把系统轨迹“吸”到一条设计好的轨道上，然后沿轨道滑向目标；强切换确保即使有一定扰动也不容易离开轨道。",
+    "pitfall": "用 saturation 替代 sign 可减少 chattering，但会形成 boundary layer，换来有限稳态误差；并非免费。",
+    "followups": [
+      "matched 与 unmatched uncertainty 区别？",
+      "super-twisting 是什么？",
+      "reaching condition 如何用 Lyapunov 证明？"
+    ],
+    "oral": "SMC 通过不连续控制强迫状态到 sliding surface，对 matched uncertainty 鲁棒；实际主要问题是 chattering，需要 boundary layer 或高阶滑模折中。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 83,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging",
+      "robust-control",
+      "state-space"
+    ]
+  },
+  {
+    "n": 95,
+    "title": "Backstepping 适合什么类型的非线性系统？",
+    "level": "高级",
+    "freq": "★★★☆☆",
+    "core": "Backstepping 适合 strict-feedback 结构：把某个状态看作前一级系统的“虚拟控制”，先设计期望虚拟控制，再逐层向真实输入递推，并在每一步扩展 Lyapunov 函数。它是 Lyapunov-based constructive design 的代表，常用于非线性、参数不确定和自适应控制。",
+    "math": "典型两级结构：\n\\[\n\\dot x_1=f_1(x_1)+g_1(x_1)x_2,\n\\]\n\\[\n\\dot x_2=f_2(x)+g_2(x)u.\n\\]",
+    "intuition": "像先假设“如果 x2 能随我控制，我该让它是多少”，再设计真正的 u 让 x2 去追这个虚拟目标，逐层倒推。",
+    "pitfall": "复杂系统可能出现 explosion of complexity，即递推中反复求导导致表达式巨大；dynamic surface control 等方法用于缓解。",
+    "followups": [
+      "strict-feedback form 是什么？",
+      "adaptive backstepping 如何加入参数估计？",
+      "为什么 Lyapunov function 要逐层扩展？"
+    ],
+    "oral": "Backstepping 对 strict-feedback 非线性系统逐层设计虚拟控制，再回推真实输入，同时构造 Lyapunov 证明，是典型的“设计与稳定性证明同步完成”方法。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 83,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging",
+      "adaptive-control",
+      "state-space"
+    ]
+  },
+  {
+    "n": 96,
+    "title": "为什么 actuator saturation / rate limit 是控制面试必须会的非线性？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "执行器幅值和变化率限制是最普遍的硬非线性。线性设计预测的输入若超限，实际闭环矩阵已经不再是 A-BK，可能出现 windup、limit cycle、性能严重退化甚至失稳。设计应在需求阶段把最大电流、力矩、舵角、速度和 slew rate 纳入，采用 anti-windup、reference governor、MPC 或 command shaping。",
+    "math": "\\[\nu_{act}=\\operatorname{sat}(u_c),\\qquad\n|\\dot u_{act}|\\le r_{max}.\n\\]",
+    "intuition": "再聪明的控制律也不能要求马达提供不存在的力矩。约束不是实现细节，而是闭环动力学的一部分。",
+    "pitfall": "只检查 steady saturation 不够；rate limit 在高带宽系统里会像额外相位延迟一样危险。",
+    "followups": [
+      "reference governor 做什么？",
+      "rate limit 如何造成 PIO/振荡？",
+      "MPC 如何显式处理 actuator constraints？"
+    ],
+    "oral": "幅值和 rate limit 会让线性闭环假设失效。应在设计阶段显式模拟并使用 anti-windup、reference shaping 或 MPC，而不是上线后只 clip command。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 84,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging",
+      "mpc",
+      "saturation",
+      "anti-windup"
+    ]
+  },
+  {
+    "n": 97,
+    "title": "控制系统出现振荡，怎样区分是“增益太高”还是结构问题？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "先测振荡频率并与 loop crossover、机械共振、采样 Nyquist、sensor filter cutoff 比较。降低整体 gain 若频率/幅值明显变化，可能是稳定裕度问题；若振荡锁定在固定结构频率，可能是柔性模态；若接近半采样频率，考虑 discrete delay/aliasing；若只在饱和出现，考虑 limit cycle/windup。应同时看 command、actual actuator、measurement raw/filtered 和 timing。",
+    "math": "诊断核心是频率定位：\n\\[\n\\omega_{osc}\\stackrel{?}{\\approx}\\omega_{gc},\\;\\omega_{res},\\;\\pi/T_s.\n\\]",
+    "intuition": "振荡频率是“故障指纹”。先找到它属于哪个物理/数字时间尺度，再决定调 gain、加 notch 还是改时序。",
+    "pitfall": "盲目降 Kp 可能只是掩盖 sensor delay、符号错误或结构共振，不应作为唯一诊断动作。",
+    "followups": [
+      "如何用 injected sine / FRF 定位共振？",
+      "为什么 limit cycle 不一定来自线性不稳定？",
+      "notch filter 的相位副作用是什么？"
+    ],
+    "oral": "先用振荡频率做定位：crossover 附近看 margin，固定机械频率看共振，Nyquist 附近看采样，饱和工况看 windup/limit cycle；再有针对性处理。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 85,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging",
+      "nyquist",
+      "sampling",
+      "anti-windup"
+    ]
+  },
+  {
+    "n": 98,
+    "title": "仿真稳定但实机振荡，系统化排查顺序是什么？",
+    "level": "工程",
+    "freq": "★★★★★",
+    "core": "第一步确认反馈符号、单位、坐标和传感器方向；第二步核对实际 sample time、end-to-end delay 和 jitter；第三步检查 actuator amplitude/rate saturation 与 anti-windup；第四步比较 raw/filtered sensor noise、bias 和 timestamp；第五步做低幅辨识或扫频找未建模柔性模态；第六步把真实这些因素逐项加回仿真，建立能复现故障的 model。只有能在模型中复现，调参才不是盲调。",
+    "math": "推荐日志至少包含：\n\\[\nr,e,y_{raw},y_{filt},\\hat x,u_{raw},u_{sat},\\text{timing}.\n\\]",
+    "intuition": "实机问题常不在“控制公式”，而在公式和世界之间的接口：单位、时间戳、限幅、传感器和未建模结构。",
+    "pitfall": "不要一开始就重新调 PID。调参会改变症状，反而可能把根因隐藏。",
+    "followups": [
+      "如何设计最小安全激励做 system identification？",
+      "如何区分 sensor resonance 与 mechanical resonance？",
+      "为什么日志要同时记录 raw 与 saturated command？"
+    ],
+    "oral": "按“符号/单位 -> 时序 -> 饱和 -> 传感器 -> 未建模动态”排查，并把发现逐项加入仿真直到能复现。先找根因，再调 controller。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 86,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging",
+      "saturation",
+      "anti-windup"
+    ]
+  },
+  {
+    "n": 99,
+    "title": "如何回答“设计一个无人机/电机/倒立摆控制器”的开放题？",
+    "level": "综合",
+    "freq": "★★★★★",
+    "core": "先声明目标和 operating envelope，再建立或选择模型；明确 state、sensor、actuator、sample rate 和 constraints；按时间尺度拆 inner/outer loops；选择控制结构并给目标 bandwidth/margins；设计 observer/filter；加入 feedforward、anti-windup 和 limits；最后给验证计划，包括 nonlinear simulation、uncertainty sweep、delay/jitter、sensor noise、HIL 和 fallback。面试官更看重系统性，而非某个高级算法名词。",
+    "math": "开放题可用统一框架：\n\\[\n\\text{Requirement}\\to\\text{Model}\\to\\text{Architecture}\\to\\text{Design}\\to\\text{Estimator}\\to\\text{Constraints}\\to\\text{Validation}.\n\\]",
+    "intuition": "优秀控制工程师不是先说“我用 MPC/LQR”，而是先问 plant、传感器、执行器和约束到底是什么。算法是架构推导出来的。",
+    "pitfall": "堆砌“LQR+Kalman+MPC+RL”会暴露缺乏系统工程思维。先给最简单可验证架构，再说明何时升级。",
+    "followups": [
+      "如何为 inner/outer loop 选 bandwidth？",
+      "如果只有位置传感器怎么估速度？",
+      "若 actuator 很弱应如何修改参考轨迹？"
+    ],
+    "oral": "开放控制题按需求、模型、架构、估计、约束、验证回答。先给可落地的最简单方案，再根据耦合、约束和不确定性说明为什么升级算法。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 86,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging",
+      "anti-windup"
+    ]
+  },
+  {
+    "n": 100,
+    "title": "终极调试题：闭环性能突然变差，你如何用数据而不是猜测定位？",
+    "level": "综合",
+    "freq": "★★★★★",
+    "core": "先建立“变化发生前后”的对照数据：reference、error、raw measurement、state estimate、P/I/D 或 feedback components、feedforward、raw/saturated actuator、CPU timing 和关键 operating conditions。用频谱/FRF 看新增频率成分，用 residual/innovation 看 sensor/model 是否异常，用 saturation statistics 看 actuator margin，用 timing histogram 看实时性。然后一次只修改一个假设，做可重复 A/B 实验。最终输出应是可证伪的根因链，而不是“参数不合适”。",
+    "math": "诊断可分成四类残差：\n\\[\n\\text{tracking residual},\\quad\n\\text{model/innovation residual},\\quad\n\\text{actuator residual}=u_{raw}-u_{act},\\quad\n\\text{timing residual}.\n\\]",
+    "intuition": "控制调试本质上是闭环系统辨识：哪些信号先异常、在哪个频率异常、是否伴随饱和/延迟，能把根因空间快速缩小。",
+    "pitfall": "只看 y(t) 一条曲线几乎无法诊断。没有内部 control components、actual actuator 和 timestamps 的日志，很多问题只能猜。",
+    "followups": [
+      "如何设计 control KPI 自动监控？",
+      "innovation 变大通常意味着什么？",
+      "如何把一次现场故障转成长期 regression test？"
+    ],
+    "oral": "用对照数据和残差定位：跟踪、模型/innovation、actuator、timing 四类证据同时看；频域找时间尺度，A/B 实验逐个验证假设，最终把根因固化成回归测试。",
+    "chapter": 10,
+    "chapter_title": "非线性与系统级工程面试",
+    "chapter_slug": "10-nonlinear-system-engineering",
+    "pdf_page": 87,
+    "tags": [
+      "nonlinear-control",
+      "lyapunov",
+      "sliding-mode",
+      "debugging",
+      "saturation"
+    ]
+  }
+]

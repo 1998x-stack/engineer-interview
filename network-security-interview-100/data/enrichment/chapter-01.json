@@ -1,0 +1,412 @@
+{
+  "Q01": {
+    "model": [
+      "OSI/TCP-IP 是分层抽象，不是设备分类表；安全控制真正依赖的是它能看到、理解和约束哪一层语义。",
+      "同一设备可能同时执行 L3/L4 访问控制、L7 协议解析和跨层关联，因此“某设备工作在第几层”通常是简化说法。",
+      "安全分析应从 packet/frame、flow、session、request、identity 五类语义逐级上升。"
+    ],
+    "boundary": [
+      "只看到五元组的设备无法直接判断业务对象级越权；看到 HTTP 也不意味着理解应用授权语义。",
+      "TLS 会改变中间设备可见性：未终止 TLS 的设备通常只能看到连接和部分握手元数据。",
+      "代理、隧道、NAT、QUIC 等会让传统“IP=用户/资产”的假设失效。"
+    ],
+    "design": [
+      "先按控制目标选择观测点：分段用网络控制，身份风险用 IdP/EDR，应用风险用网关/应用日志。",
+      "避免把单一产品当作完整安全边界，采用 endpoint、network、application、identity 的分层控制。",
+      "绘制数据流图时标明每个跨层转换点，例如 TLS termination、reverse proxy、service mesh。",
+      "对关键路径定义“谁负责认证、谁负责授权、谁负责记录证据”。"
+    ],
+    "evidence": [
+      "Packet/flow 证据：源/目的、端口、协议、连接状态。",
+      "L7 证据：Host、method、path、status、upstream latency 等应用协议字段。",
+      "身份与端点证据：进程、用户、设备、token/认证事件，用于弥补纯网络可见性。"
+    ],
+    "validation": [
+      "用架构图逐跳确认每个控制实际看到的字段，而不是只看产品名称。",
+      "对 TLS、代理、NAT、IPv6、HTTP/3 场景做可见性回归。",
+      "验证关键检测在流量加密、服务迁移或代理链变化后仍有足够 telemetry。"
+    ],
+    "deep_questions": [
+      "为什么 WAF 不能替代服务端授权？",
+      "TLS 终止在 CDN 时，源站和边界各自能看到什么？",
+      "当应用改用 HTTP/3 后，现有 NDR/防火墙策略需要重新验证哪些能力？"
+    ],
+    "deliverable": "一张端到端网络与应用数据流图：标出协议层、TLS 终止点、代理链、信任边界、身份来源、控制点和日志来源。",
+    "summary": {
+      "root": "分层模型描述通信抽象；安全能力取决于实际可见和可控语义。",
+      "boundary": "跨层、加密、代理会改变设备看到的上下文。",
+      "control": "按目标组合网络、应用、身份与端点控制。",
+      "evidence": "packet/flow + L7 + identity/endpoint telemetry。",
+      "verify": "逐跳验证可见性和控制有效性。"
+    }
+  },
+  "Q02": {
+    "model": [
+      "三次握手的核心是双方交换并确认初始序列空间，同时确认双向通信能力，不只是“确认在线”。",
+      "服务端收到 SYN 后进入半连接状态；第三次 ACK 使双方对连接状态达成一致。",
+      "安全视角要把 TCP 状态机和资源分配联系起来：协议状态会占用内核/负载均衡等资源。"
+    ],
+    "boundary": [
+      "两次消息无法让服务端确认客户端已收到自己的初始序列信息。",
+      "SYN Flood 的影响取决于 backlog、超时、SYN cookie、上游清洗和连接代理，而不是固定结果。",
+      "现代代理、负载均衡、QUIC 会改变“握手发生在哪里”的架构边界。"
+    ],
+    "design": [
+      "边界服务对新连接做容量规划和速率治理。",
+      "在合适平台启用 SYN cookie/连接代理等抗资源耗尽能力。",
+      "为关键服务设置连接队列、超时和健康度监控，避免单纯靠应用层限流。",
+      "把 DDoS 与正常流量突增的可观测性分开设计。"
+    ],
+    "evidence": [
+      "SYN/ACK 比例、半连接队列、retransmission 和 listen overflow。",
+      "负载均衡器新建连接速率、被拒连接、源分布。",
+      "CPU/内存正常但连接表耗尽，是典型的状态资源信号之一。"
+    ],
+    "validation": [
+      "压力测试关注新建连接速率而不仅是带宽。",
+      "验证防护启用后正常客户端的握手成功率与延迟。",
+      "验证源站在边界保护失效或绕过路径下仍有合理资源上限。"
+    ],
+    "deep_questions": [
+      "三次握手与四次挥手为什么设计不同？",
+      "SYN cookie 解决了什么，又牺牲/限制了什么？",
+      "如果前面有 L4 Load Balancer，半连接状态主要在哪里维护？"
+    ],
+    "deliverable": "TCP 连接容量与 DDoS 防护基线：包括新建连接率、backlog、超时、保护策略和观测指标。",
+    "summary": {
+      "root": "双方需要确认彼此序列空间与双向通信能力。",
+      "boundary": "状态资源、代理层和实现参数决定现实影响。",
+      "control": "连接资源治理 + 边界防护 + 容量设计。",
+      "evidence": "SYN/ACK、半连接、overflow、新建连接率。",
+      "verify": "连接压力测试与正常业务回归。"
+    }
+  },
+  "Q03": {
+    "model": [
+      "TCP 可靠性来自多个机制协作：序列号解决顺序和去重，ACK/重传解决丢失，窗口解决发送节奏。",
+      "流量控制保护接收端；拥塞控制保护网络路径，两者目标不同。",
+      "“可靠字节流”不等于消息边界、身份认证或业务幂等，这些需要应用层负责。"
+    ],
+    "boundary": [
+      "TCP 成功交付只表示字节到达对端协议栈，不代表业务事务成功。",
+      "重传会造成延迟尾部放大；应用重试若没有幂等设计还可能产生重复业务操作。",
+      "网络中断、连接复用和代理超时会让应用看到与 TCP 不同的失败语义。"
+    ],
+    "design": [
+      "应用协议明确 request ID、幂等键和超时预算。",
+      "区分 connect timeout、read timeout、overall deadline 与 retry policy。",
+      "监控丢包、RTT、retransmission 与应用错误率的关联。",
+      "不要用“TCP 已可靠”替代端到端数据完整性与事务语义设计。"
+    ],
+    "evidence": [
+      "RTT、retransmission、duplicate ACK、zero window 等传输层指标。",
+      "应用侧 timeout、retry、duplicate request、partial response。",
+      "代理/LB 的 reset、upstream timeout 与 connection reuse 数据。"
+    ],
+    "validation": [
+      "使用受控网络故障测试丢包、延迟、断连对业务语义的影响。",
+      "验证重试不会造成重复扣款/重复写入等副作用。",
+      "验证不同 timeout 层级之间不会形成重试风暴。"
+    ],
+    "deep_questions": [
+      "TCP 可靠为什么仍需要应用层重试？",
+      "流量控制和拥塞控制分别解决什么问题？",
+      "长连接出现 reset 时，如何判断请求是否已经被上游处理？"
+    ],
+    "deliverable": "一份端到端超时与重试策略表，把 TCP、代理、RPC 和业务幂等放在同一张表里。",
+    "summary": {
+      "root": "序列、确认、重传、窗口和拥塞控制共同提供可靠字节流。",
+      "boundary": "不保证业务成功、消息边界或幂等。",
+      "control": "端到端 timeout/retry/idempotency 设计。",
+      "evidence": "RTT/重传 + 应用 timeout/retry。",
+      "verify": "故障注入与幂等回归。"
+    }
+  },
+  "Q04": {
+    "model": [
+      "TCP/UDP 的核心差异是传输语义而不是简单“快慢”：TCP 提供连接状态和可靠字节流，UDP 提供独立数据报。",
+      "DNS 常见查询强调低开销和简单请求响应；QUIC 则在 UDP 之上自行实现可靠性、拥塞控制和加密。",
+      "协议选择本质是在内核/用户态、连接迁移、队头阻塞、部署兼容性之间做权衡。"
+    ],
+    "boundary": [
+      "DNS 并非永远只用 UDP；响应大小、截断、区域传送等场景会涉及其他传输方式。",
+      "UDP 无连接不代表无状态：应用和中间件仍可能维护会话/限流状态。",
+      "QUIC 使用 UDP 不等于“没有握手/可靠性”，这些能力被搬到 QUIC 层。"
+    ],
+    "design": [
+      "根据业务需求选择可靠性、时延、消息边界和连接迁移能力。",
+      "安全设备和监控系统应验证对 UDP/QUIC 的可见性与策略覆盖。",
+      "对 UDP 服务设置反射/放大风险、速率、请求大小和源验证相关控制。",
+      "协议迁移时重新评估 NAT、LB、Firewall、observability 兼容性。"
+    ],
+    "evidence": [
+      "TCP：连接状态、重传、RTT；UDP：数据报速率、丢包/应用重试。",
+      "QUIC：握手失败、connection ID、版本协商、应用层 HTTP/3 指标。",
+      "DNS：响应码、延迟、截断、异常查询类型与源分布。"
+    ],
+    "validation": [
+      "在丢包和高延迟环境比较真实业务而不是只跑带宽测试。",
+      "验证网络设备对 QUIC/HTTP3 的策略和日志是否完整。",
+      "验证 UDP 公开服务的容量和滥用防护。"
+    ],
+    "deep_questions": [
+      "DNS 为什么有时会转向 TCP？",
+      "HTTP/3 解决的是 TCP 哪类队头阻塞问题？",
+      "UDP 服务为什么可能成为反射放大风险？"
+    ],
+    "deliverable": "协议选型说明：列出可靠性、延迟、移动性、可观测性、安全控制与基础设施兼容性。",
+    "summary": {
+      "root": "TCP 与 UDP 提供不同传输语义；QUIC 在 UDP 上重建高级传输能力。",
+      "boundary": "具体应用可能跨多种传输；无连接不等于无状态。",
+      "control": "按业务语义选型并补齐协议级滥用防护。",
+      "evidence": "连接/数据报/QUIC/DNS 指标。",
+      "verify": "真实网络故障与设备兼容性测试。"
+    }
+  },
+  "Q05": {
+    "model": [
+      "DNS 是分布式命名系统；终端通常把递归工作交给 recursive resolver，而权威服务器回答自己负责区域的数据。",
+      "安全问题可分为完整性、可用性、隐蔽通道和资产生命周期四类，而不应只背“DNS 劫持”。",
+      "DNS 记录本身也是资产控制面，错误的 CNAME/NS 生命周期可形成 dangling record 与接管风险。"
+    ],
+    "boundary": [
+      "缓存和 TTL 会让配置变更不是瞬时生效；排障必须考虑缓存层。",
+      "DNSSEC 主要解决 DNS 数据来源真实性/完整性，并不自动保证目标服务本身可信。",
+      "DoH/DoT 会改变企业网络对 DNS 的可见性和治理方式。"
+    ],
+    "design": [
+      "对关键域名启用变更审批、最小权限和 registrar/registry 账户强保护。",
+      "建立 DNS 资产盘点，持续发现 dangling records、异常 NS/MX/TXT 变化。",
+      "递归解析器做日志、威胁情报和异常查询检测，同时考虑隐私。",
+      "关键域根据业务需求评估 DNSSEC 与高可用权威架构。"
+    ],
+    "evidence": [
+      "resolver query logs：qname、qtype、rcode、latency、client。",
+      "authoritative/registrar audit：记录变更、NS/DS 变更、账号活动。",
+      "被动 DNS、证书透明度和资产系统用于发现未知/遗留子域。"
+    ],
+    "validation": [
+      "模拟关键记录变更，验证监控与审批链路。",
+      "检查失效子域/第三方 SaaS 解绑后的 DNS 清理流程。",
+      "验证故障切换、TTL 策略和多权威服务器可用性。"
+    ],
+    "deep_questions": [
+      "递归查询和迭代查询有什么区别？",
+      "DNSSEC 能不能防止所有 DNS 攻击？",
+      "为什么 dangling CNAME 会演变成资产接管风险？"
+    ],
+    "deliverable": "企业 DNS 治理清单：域名资产、权威链、DNSSEC 状态、变更审计、第三方依赖与过期清理。",
+    "summary": {
+      "root": "DNS 通过递归解析、缓存和权威委派完成名称到数据的解析。",
+      "boundary": "缓存、加密 DNS、第三方托管会改变治理与可见性。",
+      "control": "身份/变更保护 + 资产生命周期 + DNS telemetry。",
+      "evidence": "resolver/authoritative/registrar 日志。",
+      "verify": "记录变更、故障切换和 dangling record 回归。"
+    }
+  },
+  "Q06": {
+    "model": [
+      "HTTP/1.1、2、3 主要区别在 framing、multiplexing 和底层传输；业务语义如 method/status/header 大体延续。",
+      "HTTP/2 把消息拆成 binary frames 和 streams；HTTP/3 将 HTTP 语义映射到 QUIC。",
+      "安全核心不是版本越新越安全，而是链路上多个 parser、proxy 和资源调度实现必须对协议语义保持一致。"
+    ],
+    "boundary": [
+      "应用漏洞如越权、注入不会因 HTTP 版本升级消失。",
+      "H2/H3 可能让只理解 H1 的监控、WAF 或日志出现可见性缺口。",
+      "协议降级、代理转换（H2→H1）会引入额外 parser differential 边界。"
+    ],
+    "design": [
+      "明确 CDN/LB/WAF/reverse proxy/backend 各段支持的协议版本和转换关系。",
+      "对每个协议版本保持等价的认证、授权、限流和日志策略。",
+      "资源限制不仅看连接数，还要看 stream 数、header 大小、并发和请求体。",
+      "升级 H2/H3 前做安全设备兼容与 parser 一致性测试。"
+    ],
+    "evidence": [
+      "ALPN/协议版本、stream reset、GOAWAY、connection error。",
+      "edge 与 origin request count/status/headers 对齐情况。",
+      "资源耗尽场景下的 stream concurrency、CPU、memory、queue。"
+    ],
+    "validation": [
+      "同一业务请求分别通过 H1/H2/H3，核对授权、WAF、日志与限流行为一致。",
+      "验证边界代理到源站的协议转换没有请求边界差异。",
+      "压测 header、stream 和并发资源上限，确认异常条件不会失控。"
+    ],
+    "deep_questions": [
+      "HTTP/2 multiplexing 为什么仍可能出现队头阻塞？",
+      "H2 到 H1 转换为什么是安全敏感边界？",
+      "HTTP/3 上线后传统五元组会发生哪些观测变化？"
+    ],
+    "deliverable": "协议兼容矩阵：客户端→CDN→LB/WAF→源站每一跳的 H1/H2/H3 支持、转换、控制与日志。",
+    "summary": {
+      "root": "三代 HTTP 在 framing/传输上演进，应用安全语义仍需显式实现。",
+      "boundary": "代理转换和新协议可造成 parser/visibility 差异。",
+      "control": "协议等价控制 + 资源治理 + parser 一致性。",
+      "evidence": "协议/stream/edge-origin 对齐数据。",
+      "verify": "跨版本一致性与资源压力测试。"
+    }
+  },
+  "Q07": {
+    "model": [
+      "这是端到端系统题：URL 解析、DNS、路由、传输、TLS、HTTP、边缘、应用、数据层、浏览器渲染构成完整链路。",
+      "每一个跨系统点都是潜在信任边界：DNS、证书、CDN、代理、服务身份、数据库权限、浏览器 origin。",
+      "高分回答不是无限细节，而是能把安全控制精确挂到链路上的正确位置。"
+    ],
+    "boundary": [
+      "实际浏览器可能命中缓存、Service Worker、HTTP/3 或已有连接，不一定每次都完整执行 DNS/TCP/TLS。",
+      "CDN/TLS termination 会让“客户端连接的服务器”和最终业务服务不是同一实体。",
+      "前端 JS 还会触发后续 API、第三方脚本和跨域请求，页面出现并不是安全链路终点。"
+    ],
+    "design": [
+      "画端到端数据流并标识 trust boundaries、identity propagation 和 data stores。",
+      "在 DNS/PKI、edge、application、database 和 browser 分别放置适合的控制。",
+      "统一 correlation ID 贯穿 CDN、gateway、service 与 database，便于调查。",
+      "第三方资源使用最小信任、CSP/SRI 等适当控制并保持依赖治理。"
+    ],
+    "evidence": [
+      "客户端：DNS/TLS/HTTP timing、浏览器 DevTools。",
+      "服务链：CDN/WAF/LB/access/application tracing。",
+      "数据层：cache/db query、audit、error 与 dependency telemetry。"
+    ],
+    "validation": [
+      "用 distributed tracing 验证一个请求能端到端追踪。",
+      "分别模拟 DNS、证书、上游超时和后端错误，确认故障域清晰。",
+      "验证用户身份/权限上下文在代理链和微服务间不会丢失或被信任转移。"
+    ],
+    "deep_questions": [
+      "DNS 完成后为什么还需要 ARP/NDP？",
+      "TLS 在 CDN 终止后，CDN 到源站还应如何建立信任？",
+      "浏览器拿到 HTML 后，哪些安全机制决定脚本是否能执行和访问数据？"
+    ],
+    "deliverable": "一张“输入 URL 到业务完成”的 sequence/data-flow diagram，标出控制、证据和故障域。",
+    "summary": {
+      "root": "端到端请求跨越多层协议与多个信任边界。",
+      "boundary": "缓存、连接复用、CDN、前端后续请求会改变标准流程。",
+      "control": "按每个边界放置身份、加密、授权、隔离与观测。",
+      "evidence": "browser + edge + trace + app + data telemetry。",
+      "verify": "端到端 tracing 与故障注入。"
+    }
+  },
+  "Q08": {
+    "model": [
+      "HTTPS 是 HTTP 语义运行在 TLS 保护通道上；核心增加机密性、完整性和服务器身份认证。",
+      "TLS 保护的是传输中的数据，不替应用做授权、输入验证或业务逻辑。",
+      "正确理解 HTTPS 要区分“链路被加密”和“对端是谁、是否有权做某件事”。"
+    ],
+    "boundary": [
+      "HTTPS 无法阻止恶意/被攻陷服务器读取明文业务数据。",
+      "TLS termination 之后如果还有内部明文链路，保护边界应按实际架构评估。",
+      "证书有效只证明特定身份绑定关系，不代表站点内容/业务一定安全。"
+    ],
+    "design": [
+      "默认 HTTPS，安全 TLS 配置和证书自动化生命周期。",
+      "内部服务按风险采用 TLS/mTLS 或受控网络，避免默认信任“内网”。",
+      "敏感 Cookie 设置 Secure/HttpOnly/SameSite 等合适属性。",
+      "应用层继续执行认证、授权、输出编码和数据最小化。"
+    ],
+    "evidence": [
+      "TLS version/cipher/certificate/handshake errors。",
+      "HTTP redirect/HSTS 与 mixed content 状态。",
+      "edge 到 origin 的 TLS 状态及证书监控。"
+    ],
+    "validation": [
+      "外部扫描验证协议版本、证书链和主机名。",
+      "检查所有入口、备用域名、API、静态资源是否统一 HTTPS。",
+      "验证 TLS termination 后的内部链路和日志是否暴露敏感数据。"
+    ],
+    "deep_questions": [
+      "HTTPS 为什么不能解决 SQL 注入？",
+      "HSTS 解决什么问题，它不解决什么？",
+      "证书有效但 DNS 被错误配置时，信任链如何理解？"
+    ],
+    "deliverable": "TLS/HTTPS posture 清单：域名、证书、终止点、内部链路、HSTS、Cookie、监控与轮换。",
+    "summary": {
+      "root": "TLS 为 HTTP 提供传输机密性、完整性与身份认证。",
+      "boundary": "不提供业务授权，也不保护被攻陷的端点。",
+      "control": "安全 TLS + 证书生命周期 + 应用层安全。",
+      "evidence": "握手/证书/redirect/HSTS/edge-origin。",
+      "verify": "全入口 TLS 配置与内部链路检查。"
+    }
+  },
+  "Q09": {
+    "model": [
+      "CDN、反向代理、LB、WAF 是不同职责：缓存/边缘、代理/路由、流量分配、应用请求检测控制。",
+      "它们经常集成在一个产品里，但逻辑职责仍应分开，否则排障和安全边界会混乱。",
+      "最重要的架构问题是：谁终止 TLS、谁识别真实客户端、谁做认证、谁做最终授权。"
+    ],
+    "boundary": [
+      "WAF 不能理解所有业务对象权限，因此不能替服务端 authorization。",
+      "X-Forwarded-For 等客户端标识只有在受信代理链中重写和验证才可信。",
+      "CDN 绕过/源站直连会让边界控制失效，因此 origin exposure 是关键检查点。"
+    ],
+    "design": [
+      "明确 trusted proxy chain，清理和重建来源身份 header。",
+      "源站只允许受控入口访问，减少边界绕过。",
+      "把 L7 限流、bot 管理、WAF 与应用授权区分为纵深控制。",
+      "记录 edge request ID 并传递到源站，建立可关联日志。"
+    ],
+    "evidence": [
+      "CDN/WAF access logs、rule decision、cache status。",
+      "LB target health、backend connection/status。",
+      "origin logs 与 edge logs 的 request ID 对齐和来源差异。"
+    ],
+    "validation": [
+      "尝试从预期外路径访问 origin，验证网络限制。",
+      "验证伪造 forwarding headers 不会影响身份/安全决策。",
+      "绕过缓存、不同协议版本和异常请求下检查控制一致性。"
+    ],
+    "deep_questions": [
+      "反向代理和负载均衡为什么经常是同一设备但概念不同？",
+      "如何安全地确定真实客户端 IP？",
+      "WAF 已拦 SQLi，为什么代码仍必须参数化？"
+    ],
+    "deliverable": "Edge architecture trust model：TLS、客户端身份、代理链、origin ACL、WAF/LB/CDN 责任和日志关联。",
+    "summary": {
+      "root": "四类组件职责不同，关键在代理链与责任边界。",
+      "boundary": "源站绕过和不可信转发头会破坏边界假设。",
+      "control": "受信入口、header 重建、纵深控制、可关联日志。",
+      "evidence": "edge/WAF/LB/origin 全链日志。",
+      "verify": "origin bypass 与 header spoofing 防护回归。"
+    }
+  },
+  "Q10": {
+    "model": [
+      "ARP 在同一二层广播域内建立 IPv4 到链路层地址的邻居映射。",
+      "ARP 缺乏强身份认证，因此“谁声称拥有某 IP”主要依赖局域网信任和交换网络控制。",
+      "安全风险本质是二层邻居信任被篡改，而不是互联网范围的任意主机都可直接影响。"
+    ],
+    "boundary": [
+      "ARP 只适用于 IPv4 邻居解析；IPv6 使用 Neighbor Discovery，安全模型不同。",
+      "交换机、VLAN、无线隔离会限制攻击/错误广播的作用域。",
+      "即使二层路径被操纵，TLS 等端到端认证加密仍能降低内容被直接篡改的风险。"
+    ],
+    "design": [
+      "通过 VLAN/网络分段缩小广播域和故障域。",
+      "企业交换网络按场景启用 DHCP snooping、动态 ARP 检查、端口安全等控制。",
+      "关键协议坚持端到端加密和身份验证，不把二层可信当应用可信。",
+      "监控网关 MAC 变化、重复 IP 和异常邻居事件。"
+    ],
+    "evidence": [
+      "ARP/neighbor table 变化、重复 IP 报警。",
+      "交换机端口/MAC 学习、DHCP binding。",
+      "终端 EDR/网络监控中的网关变化和 TLS 证书异常。"
+    ],
+    "validation": [
+      "在实验网络验证交换机防护对合法 DHCP/静态设备兼容。",
+      "检查 VLAN 间边界是否按预期阻断二层传播。",
+      "验证关键业务即使路径异常仍依赖 TLS 身份验证。"
+    ],
+    "deep_questions": [
+      "ARP 为什么只在本地广播域内有意义？",
+      "VLAN 如何改变 ARP 风险的作用域？",
+      "为什么 HTTPS 可以降低中间路径被操纵后的风险但不能解决所有问题？"
+    ],
+    "deliverable": "LAN 安全基线：VLAN、DHCP/ARP 控制、关键网关监控、端到端加密与异常响应。",
+    "summary": {
+      "root": "ARP 是缺乏强认证的本地邻居解析机制。",
+      "boundary": "受二层广播域限制；IPv6 机制不同。",
+      "control": "分段 + 交换机防护 + 端到端加密。",
+      "evidence": "ARP/MAC/DHCP/网关变化。",
+      "verify": "实验网兼容性和分段有效性测试。"
+    }
+  }
+}

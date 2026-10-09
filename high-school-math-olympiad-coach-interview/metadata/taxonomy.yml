@@ -1,0 +1,38 @@
+version: 2
+modules:
+  - name: "竞赛体系与教练认知"
+    slug: 01-foundations
+    question_count: 10
+  - name: "代数"
+    slug: 02-algebra
+    question_count: 15
+  - name: "平面几何"
+    slug: 03-geometry
+    question_count: 15
+  - name: "数论"
+    slug: 04-number-theory
+    question_count: 15
+  - name: "组合数学"
+    slug: 05-combinatorics
+    question_count: 15
+  - name: "综合解题与证明"
+    slug: 06-problem-solving-proof
+    question_count: 8
+  - name: "试讲与教学能力"
+    slug: 07-demo-teaching
+    question_count: 10
+  - name: "课程研发与训练体系"
+    slug: 08-curriculum-research
+    question_count: 7
+  - name: "学生培养与职业素养"
+    slug: 09-student-development
+    question_count: 5
+
+content_layers:
+  - source_pdf
+  - repository_expansion
+  - professional_v2
+quality_requirements:
+  professional_v2: true
+  math_condition_check: true
+  source_boundary_explicit: true

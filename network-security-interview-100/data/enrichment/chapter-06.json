@@ -1,0 +1,412 @@
+{
+  "Q51": {
+    "model": [
+      "SAST 看代码/字节码数据流，DAST 看运行中的外部行为，IAST 利用运行时 instrumentation，SCA 聚焦第三方组件/依赖。",
+      "四者不是替代关系，而是覆盖不同问题与 SDLC 阶段。",
+      "专业回答应讨论 signal quality、coverage、feedback latency 和 owner workflow。"
+    ],
+    "boundary": [
+      "SAST 对业务逻辑/运行配置有限；DAST 对隐藏代码路径/授权状态覆盖有限。",
+      "SCA 发现 CVE 不等于当前应用可利用。",
+      "工具若没有 triage/owner/SLA，扫描量越大可能只制造 backlog。"
+    ],
+    "design": [
+      "按 repo/build/deploy/runtime 集成不同工具。",
+      "统一 finding schema、去重、owner 和 suppression 到期机制。",
+      "高风险 sink/关键 repo 更严格 gate，普通告警分层处理。",
+      "用修复率、MTTR、真实缺陷漏报/误报衡量效果。"
+    ],
+    "evidence": [
+      "tool finding + code location/request + dependency graph。",
+      "build artifact/version/deploy context。",
+      "triage disposition 与 remediation history。"
+    ],
+    "validation": [
+      "用 benchmark/seeded flaws 验证工具实际检出能力。",
+      "定期抽样 false negative/false positive。",
+      "升级规则/引擎后做结果漂移分析。"
+    ],
+    "deep_questions": [
+      "为什么 SCA 有 CVE 不等于要立刻阻断发布？",
+      "IAST 相比 SAST/DAST 的优势和部署成本是什么？",
+      "如何防止 AppSec 工具把开发团队淹没？"
+    ],
+    "deliverable": "AppSec tooling architecture + finding normalization/triage workflow + quality metrics。",
+    "summary": {
+      "root": "不同测试技术观察不同证据面。",
+      "boundary": "覆盖与误报、业务逻辑、部署上下文。",
+      "control": "组合工具 + 风险分层 + owner workflow。",
+      "evidence": "code/runtime/dependency/deploy context。",
+      "verify": "seeded flaw 与质量指标。"
+    }
+  },
+  "Q52": {
+    "model": [
+      "Taint Analysis 抽象为 Source→Propagation→Sanitizer→Sink，用于判断不可信数据是否抵达危险操作。",
+      "关键难点是 interprocedural/data-structure/alias/framework modeling，而不是画四个框。",
+      "Sanitizer 必须与 sink context 匹配，错误建模会产生 false negative。"
+    ],
+    "boundary": [
+      "同一函数在 SQL、HTML、shell context 下需要不同 sanitizer 语义。",
+      "数据可经数据库/队列产生跨请求“二阶”传播。",
+      "动态语言、reflection、framework magic 会降低静态可见性。"
+    ],
+    "design": [
+      "为关键 framework 建模 source/sink/sanitizer。",
+      "高影响 sink 优先精确，避免规则泛滥。",
+      "结合 runtime/IAST 验证静态模型盲区。",
+      "规则与真实缺陷/误报反馈闭环。"
+    ],
+    "evidence": [
+      "code path/call graph/data-flow trace。",
+      "framework binding/config 和 sanitizer implementation。",
+      "runtime trace 用于确认真实路径。"
+    ],
+    "validation": [
+      "构造 positive/negative test corpus。",
+      "确保 sanitizer 只在对应 context 被认为安全。",
+      "代码框架升级后回归规则模型。"
+    ],
+    "deep_questions": [
+      "为什么 escaping 函数不能当通用 sanitizer？",
+      "二阶注入如何进入 taint model？",
+      "静态分析怎么处理 framework 自动绑定？"
+    ],
+    "deliverable": "Taint rule pack + framework model + positive/negative regression corpus。",
+    "summary": {
+      "root": "追踪不可信数据到危险 sink 的可达性。",
+      "boundary": "context、跨请求、动态框架。",
+      "control": "精确 source/sink/sanitizer modeling。",
+      "evidence": "data-flow/call graph/runtime trace。",
+      "verify": "正负样例与框架升级回归。"
+    }
+  },
+  "Q53": {
+    "model": [
+      "SQLi 代码审计不是 grep SELECT，而是从 HTTP/message/file source 追到 query builder/execute sink。",
+      "重点识别字符串拼接、raw query、动态 identifier 和“安全 helper 被错误使用”。",
+      "还需评估 DB account privilege 与事务上下文，形成影响判断。"
+    ],
+    "boundary": [
+      "ORM/raw native query、stored procedure、reporting DSL 都可能隐藏 SQL 构造。",
+      "跨层 wrapper 会让 sink 不在业务代码中。",
+      "二阶数据流可能来自数据库中已存内容。"
+    ],
+    "design": [
+      "建立 SQL sink inventory 和 data-access approved API。",
+      "SAST taint + code review 针对动态 query hotspot。",
+      "动态字段固定映射，DB 最小权限。",
+      "修复必须配安全 regression test。"
+    ],
+    "evidence": [
+      "code path/source-sink trace。",
+      "ORM/query builder generated SQL template。",
+      "DB audit 与 service account privilege。"
+    ],
+    "validation": [
+      "review 修复 commit 是否真正删除结构拼接。",
+      "正负测试覆盖动态排序/搜索/报表。",
+      "检查 sibling endpoints/相同 helper 是否同类缺陷。"
+    ],
+    "deep_questions": [
+      "如何审计被多层 wrapper 包装的数据库 sink？",
+      "为什么修一个 endpoint 后还要横向搜索同类模式？",
+      "DB privilege 如何进入漏洞风险评级？"
+    ],
+    "deliverable": "SQLi code-review checklist + sink map + SAST query + regression tests + privilege review。",
+    "summary": {
+      "root": "不可信数据可达 SQL 结构构造。",
+      "boundary": "ORM/raw/procedure/二阶。",
+      "control": "安全 data-access API + taint review + DB least privilege。",
+      "evidence": "source-sink/code/query/DB audit。",
+      "verify": "横向同类搜索与 regression。"
+    }
+  },
+  "Q54": {
+    "model": [
+      "Java 反序列化审计首先确认入口格式、信任来源、实际 serializer 和可允许类型。",
+      "再分析 classpath 中的副作用类型/回调可达性，而不是直接假设“存在某库=可利用”。",
+      "最后评估运行权限和网络/文件能力决定影响。"
+    ],
+    "boundary": [
+      "签名消息也需验证 producer 信任和 key custody。",
+      "多态 JSON/object mapper 也可能形成类似风险。",
+      "不同依赖版本和配置决定 gadget reachability。"
+    ],
+    "design": [
+      "外部边界禁用任意对象反序列化。",
+      "类型 allowlist/显式 schema，关闭危险 auto-type。",
+      "移除不必要依赖、最小 runtime 权限。",
+      "为 serializer config 建自动化测试。"
+    ],
+    "evidence": [
+      "deserialize call sites、object mapper config、classpath/SBOM。",
+      "producer/channel/authentication。",
+      "runtime process/network/file side effects。"
+    ],
+    "validation": [
+      "非允许 type 应稳定拒绝。",
+      "dependency upgrade 后回归。",
+      "内部 queue/session/cache 等入口同样检查。"
+    ],
+    "deep_questions": [
+      "如何证明 gadget 真正 reachable？",
+      "为什么“内网消息”仍不应默认可信？",
+      "签名能解决哪些问题，不能解决哪些？"
+    ],
+    "deliverable": "Serialization review worksheet：entry→producer→serializer→types→classpath→runtime privilege→tests。",
+    "summary": {
+      "root": "对象恢复能力被不可信数据驱动。",
+      "boundary": "类型/配置/classpath/producer。",
+      "control": "schema/allowlist + minimal classpath/privilege。",
+      "evidence": "callsite/config/SBOM/runtime。",
+      "verify": "非允许类型与升级回归。"
+    }
+  },
+  "Q55": {
+    "model": [
+      "供应链安全覆盖 source、developer、dependency、build、CI/CD、artifact、registry、deployment、update 全链。",
+      "风险不仅是“依赖有漏洞”，还包括来源篡改、构建身份、artifact provenance、发布权限和更新信任。",
+      "OWASP 2025 把 Software Supply Chain Failures 单列，体现风险从组件扩展到生产链。"
+    ],
+    "boundary": [
+      "SBOM 提供 visibility 但不能证明构建未被篡改。",
+      "签名证明某身份签了 artifact，但前提是 signing identity/key 可信。",
+      "依赖 pinning 解决可重复性部分问题，不能自动解决恶意 upstream。"
+    ],
+    "design": [
+      "依赖来源/版本 policy、lockfile 和 review。",
+      "CI runner 最小权限、隔离 untrusted PR、secret 最小化。",
+      "生成 provenance/attestation，artifact signing 与 registry policy。",
+      "部署 admission 验证来源与签名，建立快速 revoke。"
+    ],
+    "evidence": [
+      "repo/CI/build/registry/deploy audit。",
+      "SBOM/provenance/signature/attestation。",
+      "dependency update/maintainer/source changes。"
+    ],
+    "validation": [
+      "从 commit 到 production 做 provenance trace。",
+      "轮换 signing key/撤销 artifact 演练。",
+      "模拟依赖或 registry policy failure 验证 gate。"
+    ],
+    "deep_questions": [
+      "SBOM 为什么不是供应链安全的终点？",
+      "artifact signing 的 trust root 在哪里？",
+      "如何隔离来自 fork PR 的 CI 执行？"
+    ],
+    "deliverable": "Software supply-chain control map + provenance/signing/admission + CI permissions + dependency governance。",
+    "summary": {
+      "root": "软件生产链任一环节失信可把风险传播到发布物。",
+      "boundary": "SBOM/签名依赖各自 trust root。",
+      "control": "least-privilege CI + provenance + signed artifact + admission。",
+      "evidence": "repo→build→registry→deploy lineage。",
+      "verify": "端到端 provenance 与 revoke 演练。"
+    }
+  },
+  "Q56": {
+    "model": [
+      "SBOM 是组件清单和关系可见性工具，回答“里面有什么”，不直接回答“是否安全/是否可利用”。",
+      "真正风险判断需要把 SBOM 与 vulnerability、reachability、exposure、asset criticality、provenance 结合。",
+      "SBOM 质量取决于生成时点和粒度：source/build/container/runtime 结果可能不同。"
+    ],
+    "boundary": [
+      "transitive dependency、vendored code、动态下载组件可能漏入。",
+      "组件名称/version 解析错误会导致 CVE mapping 偏差。",
+      "同一 CVE 在未调用代码路径可能风险显著不同。"
+    ],
+    "design": [
+      "在 build 生成与 artifact 绑定的 SBOM。",
+      "保存 package identifiers、version、hash、dependency relation。",
+      "与 vulnerability intelligence 和 asset/deploy inventory 联动。",
+      "SBOM 变更进入 release diff 与 review。"
+    ],
+    "evidence": [
+      "SBOM artifact、build provenance、package lock。",
+      "CVE/VEX/reachability 和 deployment context。",
+      "component lifecycle/change history。"
+    ],
+    "validation": [
+      "抽样从 artifact 反向验证 SBOM 完整性。",
+      "依赖升级检查 SBOM diff。",
+      "组件下线后确认所有 deployed artifact 更新。"
+    ],
+    "deep_questions": [
+      "source SBOM 和 binary/container SBOM 为什么可能不同？",
+      "VEX/Reachability 在漏洞优先级里有什么价值？",
+      "SBOM 如何与资产管理系统连接？"
+    ],
+    "deliverable": "Artifact-bound SBOM pipeline + quality checks + vulnerability/reachability enrichment。",
+    "summary": {
+      "root": "缺乏组件可见性导致供应链风险无法定位。",
+      "boundary": "完整性、版本识别、可达性。",
+      "control": "build-time SBOM + provenance + vuln enrichment。",
+      "evidence": "SBOM/lock/provenance/deployment。",
+      "verify": "artifact 抽样与 diff。"
+    }
+  },
+  "Q57": {
+    "model": [
+      "Git secret 泄露是凭据事件，不是代码清理事件；第一优先级是 revoke/rotate 和调查使用情况。",
+      "Git history、fork、CI log、package/cache 等会形成多副本传播。",
+      "删掉最新 commit 只解决未来可见性的一小部分。"
+    ],
+    "boundary": [
+      "即使历史重写，也无法保证外部 clone/fork 的副本消失。",
+      "某些 secret 可直接 revoke，某些证书/共享 key 需要协调大量消费者。",
+      "secret 是否被使用需靠认证/云 audit，而不是仅凭暴露时长推测。"
+    ],
+    "design": [
+      "pre-commit/server-side/CI secret scanning。",
+      "工作负载改用短期 identity，减少静态 secret。",
+      "incident playbook 明确 revoke→scope→rotate→clean→prevent。",
+      "历史清理仅作为降低持续暴露的一部分。"
+    ],
+    "evidence": [
+      "Git commit/history/fork/CI artifacts。",
+      "credential usage/auth/cloud audit。",
+      "secret manager rotation/revoke logs。"
+    ],
+    "validation": [
+      "泄露演练测量 revoke SLO。",
+      "轮换后确认所有旧 credential 都失败。",
+      "扫描 repo history 与构建产物，验证清理范围。"
+    ],
+    "deep_questions": [
+      "为什么重写 Git 历史仍不能“收回”秘密？",
+      "先 rotate 还是先删除代码，为什么？",
+      "如何判断 secret 是否已经被滥用？"
+    ],
+    "deliverable": "Secret leak IR playbook + scanning gates + rotation/revoke automation + usage investigation checklist。",
+    "summary": {
+      "root": "secret 被复制到不可控代码历史并可能被滥用。",
+      "boundary": "多副本与无法保证删除。",
+      "control": "revoke/rotate 优先 + preventive scanning + short-lived identity。",
+      "evidence": "repo + credential usage + rotation logs。",
+      "verify": "旧凭据失败与历史/产物扫描。"
+    }
+  },
+  "Q58": {
+    "model": [
+      "CI/CD 是“自动执行 + 高权限 + 软件发布”的组合控制面，因此 compromise 影响可跨源码、secret、artifact 到 production。",
+      "核心风险维度：trigger trust、runner isolation、token permissions、dependency/action trust、artifact integrity、deploy approval。",
+      "Pipeline YAML 本身是安全策略的一部分，应 code review。"
+    ],
+    "boundary": [
+      "fork PR/untrusted code 与 internal trusted branch 的执行权限必须不同。",
+      "self-hosted runner 可能保留状态/secret，需隔离与清理。",
+      "第三方 action/plugin 更新会引入供应链信任。"
+    ],
+    "design": [
+      "最小默认 token 权限，按 job 提升。",
+      "untrusted PR 不接触 production secrets/privileged runner。",
+      "ephemeral runner/隔离执行环境。",
+      "artifact signing/provenance + deploy admission/approval。"
+    ],
+    "evidence": [
+      "CI trigger/actor/job/runner/token scope logs。",
+      "secret access、artifact hash/provenance。",
+      "deployment audit 和 environment approval。"
+    ],
+    "validation": [
+      "用测试 PR 验证拿不到高权 secret。",
+      "runner lifecycle/cleanup 检查。",
+      "从 commit 到 deployment 做完整 lineage trace。"
+    ],
+    "deep_questions": [
+      "为什么 self-hosted runner 风险更高？",
+      "GitHub/GitLab token 默认权限为什么重要？",
+      "如何防止 build artifact 在 CI 后被替换？"
+    ],
+    "deliverable": "CI/CD threat model + trust zones + token matrix + runner isolation + artifact provenance/deploy gates。",
+    "summary": {
+      "root": "自动化高权限流水线若失信可污染软件发布链。",
+      "boundary": "untrusted trigger、runner state、第三方 action。",
+      "control": "least privilege + isolated runner + provenance/admission。",
+      "evidence": "pipeline/runner/secret/artifact/deploy audit。",
+      "verify": "untrusted PR 与 lineage 测试。"
+    }
+  },
+  "Q59": {
+    "model": [
+      "Patch diff 将 vulnerable behavior 与 fixed invariant 并置，是理解 root cause、影响面和 regression 条件的高信息源。",
+      "专业分析不是“从补丁反推武器化步骤”，而是抽象安全不变量和寻找同类代码。",
+      "修复常揭示边界检查、权限检查、长度/状态验证等缺失。"
+    ],
+    "boundary": [
+      "补丁可能是部分修复/重构，diff 不一定完整表达根因。",
+      "vendor backport 与 upstream patch 可能不同。",
+      "只在 patched function 搜索会漏掉 sibling pattern。"
+    ],
+    "design": [
+      "从 diff 提取 invariant，创建 SAST/query 搜索同类模式。",
+      "补充 regression test 和负向测试。",
+      "评估受影响版本/配置/feature flag。",
+      "验证 vendor advisory 与实际 deployed build。"
+    ],
+    "evidence": [
+      "commit diff、issue/advisory、test changes。",
+      "dependency/version/SBOM/deployment inventory。",
+      "同类代码 search results。"
+    ],
+    "validation": [
+      "测试 patch 前后行为差异。",
+      "对 sibling callsites 做横向审计。",
+      "确认生产 artifact 真正包含修复。"
+    ],
+    "deep_questions": [
+      "如何从一个 if 条件补丁抽象出安全不变量？",
+      "为什么 patch diff 可能低估影响范围？",
+      "如何把一次漏洞修复变成组织级规则？"
+    ],
+    "deliverable": "Patch root-cause note + invariant + sibling search + regression test + deployment verification。",
+    "summary": {
+      "root": "补丁揭示被破坏的安全不变量。",
+      "boundary": "部分修复/backport/同类代码。",
+      "control": "root-cause abstraction + sibling audit + regression。",
+      "evidence": "diff/advisory/version/deployment。",
+      "verify": "patch behavior 与生产 artifact 核验。"
+    }
+  },
+  "Q60": {
+    "model": [
+      "Buffer Overflow 是程序违反内存边界，导致相邻状态或控制数据被破坏；风险根因是 memory safety violation。",
+      "现代 exploitability 受 ASLR、NX、canary、CFI 等影响，但这些是降低利用难度而不是消除越界。",
+      "更根本的趋势是采用 memory-safe language、bounds-safe API 和编译器/硬件保护。"
+    ],
+    "boundary": [
+      "堆、栈、整数溢出导致的长度计算错误等表现不同。",
+      "防护是否启用/有效取决于编译、链接、平台和部署。",
+      "即使不能控制执行流，内存破坏也可能造成数据完整性/可用性问题。"
+    ],
+    "design": [
+      "新组件优先 memory-safe language。",
+      "C/C++ 使用安全 API、sanitizer、fuzzing、编译 hardening。",
+      "解析不可信格式的 native 组件隔离与最小权限。",
+      "维护 crash triage 和 root-cause fix，不只加防护开关。"
+    ],
+    "evidence": [
+      "crash dump、stack trace、sanitizer report。",
+      "build flags/binary hardening metadata。",
+      "fuzzer corpus/repro input（仅受控测试）。"
+    ],
+    "validation": [
+      "ASan/UBSan 等在测试环境运行。",
+      "coverage-guided fuzzing 针对 parser/length boundary。",
+      "验证 release binary 的 hardening flags。"
+    ],
+    "deep_questions": [
+      "为什么 ASLR/NX 不能算根治？",
+      "整数溢出如何间接造成 buffer overflow？",
+      "memory-safe language 仍需哪些安全设计？"
+    ],
+    "deliverable": "Memory safety program：language policy + compiler hardening + sanitizer/fuzzing + native parser isolation。",
+    "summary": {
+      "root": "越界读写破坏内存安全。",
+      "boundary": "不同内存区域/计算错误/防护配置。",
+      "control": "memory-safe language + bounds + hardening + fuzzing。",
+      "evidence": "crash/sanitizer/build/fuzz。",
+      "verify": "sanitizer/fuzz/release hardening。"
+    }
+  }
+}

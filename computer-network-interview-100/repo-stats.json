@@ -1,0 +1,11 @@
+{
+  "question_files": 100,
+  "markdown_files": 125,
+  "pdf_size_bytes": 2924759,
+  "followups_with_reference_answers": 300,
+  "edition": "2.0-deep",
+  "updated": "2026-09-02",
+  "avg_question_chars": 4245,
+  "min_question_chars": 3586,
+  "max_question_chars": 5004
+}

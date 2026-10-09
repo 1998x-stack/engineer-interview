@@ -1,0 +1,19 @@
+name: 内容勘误
+description: 报告数学、教学或来源表述问题
+title: "[Errata] "
+body:
+  - type: input
+    id: question
+    attributes:
+      label: 题号
+      placeholder: Q045
+  - type: textarea
+    id: issue
+    attributes:
+      label: 问题描述
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: 建议修正/证明

@@ -1,0 +1,8 @@
+# Q90 pyproject.toml 在现代 Python 项目中的角色？
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "myapp"
+version = "0.1.0"

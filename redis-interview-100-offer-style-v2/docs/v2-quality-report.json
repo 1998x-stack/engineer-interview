@@ -1,0 +1,510 @@
+{
+  "questions": 100,
+  "all_have_v2": true,
+  "total_chars": 530986,
+  "avg_chars": 5309,
+  "min_chars": 4879,
+  "max_chars": 6298,
+  "files": [
+    {
+      "file": "chapters/01-data-modeling/q001.md",
+      "chars": 5567,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/01-data-modeling/q002.md",
+      "chars": 5163,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/01-data-modeling/q003.md",
+      "chars": 5698,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/01-data-modeling/q004.md",
+      "chars": 5472,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/01-data-modeling/q005.md",
+      "chars": 5810,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/01-data-modeling/q006.md",
+      "chars": 5248,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/01-data-modeling/q007.md",
+      "chars": 5168,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/01-data-modeling/q008.md",
+      "chars": 5482,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/01-data-modeling/q009.md",
+      "chars": 5435,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/01-data-modeling/q010.md",
+      "chars": 5285,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q011.md",
+      "chars": 5023,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q012.md",
+      "chars": 5328,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q013.md",
+      "chars": 5039,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q014.md",
+      "chars": 5048,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q015.md",
+      "chars": 5100,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q016.md",
+      "chars": 5428,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q017.md",
+      "chars": 5172,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q018.md",
+      "chars": 5213,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q019.md",
+      "chars": 5010,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/02-internals-memory/q020.md",
+      "chars": 5604,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q021.md",
+      "chars": 5304,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q022.md",
+      "chars": 5089,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q023.md",
+      "chars": 5125,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q024.md",
+      "chars": 5429,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q025.md",
+      "chars": 5026,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q026.md",
+      "chars": 5334,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q027.md",
+      "chars": 5314,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q028.md",
+      "chars": 4988,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q029.md",
+      "chars": 5549,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/03-cache-ttl-eviction/q030.md",
+      "chars": 5338,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q031.md",
+      "chars": 5070,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q032.md",
+      "chars": 4984,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q033.md",
+      "chars": 5171,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q034.md",
+      "chars": 5227,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q035.md",
+      "chars": 4993,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q036.md",
+      "chars": 5325,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q037.md",
+      "chars": 4930,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q038.md",
+      "chars": 4879,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q039.md",
+      "chars": 5033,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/04-persistence/q040.md",
+      "chars": 5626,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q041.md",
+      "chars": 5332,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q042.md",
+      "chars": 5263,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q043.md",
+      "chars": 5283,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q044.md",
+      "chars": 5208,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q045.md",
+      "chars": 5398,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q046.md",
+      "chars": 5452,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q047.md",
+      "chars": 5327,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q048.md",
+      "chars": 5364,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q049.md",
+      "chars": 5009,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/05-replication-sentinel/q050.md",
+      "chars": 5073,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q051.md",
+      "chars": 5329,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q052.md",
+      "chars": 5169,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q053.md",
+      "chars": 5388,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q054.md",
+      "chars": 5567,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q055.md",
+      "chars": 5596,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q056.md",
+      "chars": 5158,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q057.md",
+      "chars": 5503,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q058.md",
+      "chars": 5261,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q059.md",
+      "chars": 5410,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/06-cluster/q060.md",
+      "chars": 5181,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q061.md",
+      "chars": 5297,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q062.md",
+      "chars": 5234,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q063.md",
+      "chars": 5026,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q064.md",
+      "chars": 5445,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q065.md",
+      "chars": 5513,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q066.md",
+      "chars": 5268,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q067.md",
+      "chars": 5057,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q068.md",
+      "chars": 5168,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q069.md",
+      "chars": 5604,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/07-transactions-locks/q070.md",
+      "chars": 5416,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q071.md",
+      "chars": 5071,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q072.md",
+      "chars": 5246,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q073.md",
+      "chars": 5182,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q074.md",
+      "chars": 5178,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q075.md",
+      "chars": 5323,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q076.md",
+      "chars": 5294,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q077.md",
+      "chars": 5277,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q078.md",
+      "chars": 5369,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q079.md",
+      "chars": 5334,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/08-messaging-streams/q080.md",
+      "chars": 5173,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q081.md",
+      "chars": 5324,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q082.md",
+      "chars": 5055,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q083.md",
+      "chars": 5765,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q084.md",
+      "chars": 5137,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q085.md",
+      "chars": 5480,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q086.md",
+      "chars": 5462,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q087.md",
+      "chars": 5668,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q088.md",
+      "chars": 5064,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q089.md",
+      "chars": 5289,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/09-operations-performance/q090.md",
+      "chars": 5518,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q091.md",
+      "chars": 5549,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q092.md",
+      "chars": 5505,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q093.md",
+      "chars": 5488,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q094.md",
+      "chars": 5204,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q095.md",
+      "chars": 5075,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q096.md",
+      "chars": 5556,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q097.md",
+      "chars": 5533,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q098.md",
+      "chars": 5479,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q099.md",
+      "chars": 5764,
+      "has_v2": true
+    },
+    {
+      "file": "chapters/10-redis8-system-design/q100.md",
+      "chars": 6298,
+      "has_v2": true
+    }
+  ]
+}

@@ -1,0 +1,412 @@
+{
+  "Q91": {
+    "model": [
+      "只有登录页仍包含丰富攻击面：authentication、account recovery、session、SSO/OAuth、rate limit、enumeration、API、前端依赖。",
+      "评估应从身份生命周期而不是页面元素出发。",
+      "关键问题是“未经授权者能否获得/维持/扩大身份能力”。"
+    ],
+    "boundary": [
+      "隐藏 API/移动端/旧版本可能比网页表面更大。",
+      "强密码不能替代 credential stuffing 防护/MFA。",
+      "登录成功后的 session 管理同样属于认证面。"
+    ],
+    "design": [
+      "枚举所有 identity endpoints/flows。",
+      "rate limit/abuse detection 与 MFA/risk-based auth。",
+      "secure session/cookie/rotation。",
+      "recovery 与 SSO redirect/token validation。"
+    ],
+    "evidence": [
+      "login/MFA/reset/session/IdP audit。",
+      "API gateway/browser traffic。",
+      "account lock/rate-limit/abuse signals。"
+    ],
+    "validation": [
+      "正负登录、枚举、rate-limit、session fixation、recovery tests。",
+      "不同 SSO client/redirect 测试。",
+      "高风险账号额外 policy。"
+    ],
+    "deep_questions": [
+      "为什么“只有一个登录页”并不代表攻击面小？",
+      "credential stuffing 与 brute force 的防护有何不同？",
+      "登录成功后还要测试什么？"
+    ],
+    "deliverable": "Authentication surface map + flow threat model + auth/session/recovery test matrix。",
+    "summary": {
+      "root": "身份生命周期的多入口决定真实认证攻击面。",
+      "boundary": "隐藏 API/SSO/recovery/session。",
+      "control": "MFA/abuse controls + secure session + recovery。",
+      "evidence": "IdP/login/reset/session/API。",
+      "verify": "全 flow 负向测试。"
+    }
+  },
+  "Q92": {
+    "model": [
+      "密码重置本质是替代认证流程，安全强度不应显著低于正常登录。",
+      "reset token 需高熵、短时、单次、绑定账户/用途，并在服务端安全验证。",
+      "流程还需抵抗账户枚举、滥用通知和 session persistence。"
+    ],
+    "boundary": [
+      "邮件/短信渠道本身可能被攻陷，关键账号需要更强恢复策略。",
+      "返回统一提示可降低枚举，但后台仍需准确处理不存在账号。",
+      "重置后是否注销所有 session 要结合风险/UX，但至少应有明确策略。"
+    ],
+    "design": [
+      "统一响应避免明显枚举。",
+      "安全随机 token，存 hash，TTL/one-time/use binding。",
+      "rate limit/abuse monitoring。",
+      "成功重置通知用户并撤销高风险 session/refresh token。"
+    ],
+    "evidence": [
+      "reset request/issue/use/failure audit。",
+      "IP/device/account abuse pattern。",
+      "session revoke/password change events。"
+    ],
+    "validation": [
+      "token reuse/expired/wrong account 应拒绝。",
+      "高频 reset abuse 与 enumeration tests。",
+      "成功重置后旧凭据/session 行为验证。"
+    ],
+    "deep_questions": [
+      "为什么 reset token 最好服务端存 hash？",
+      "统一错误提示会不会影响用户体验？",
+      "高价值账号的 recovery 应如何更强？"
+    ],
+    "deliverable": "Account recovery design + token lifecycle + abuse controls + session invalidation + audit。",
+    "summary": {
+      "root": "恢复流程可绕过正常认证，因此必须同等级保护。",
+      "boundary": "恢复渠道、枚举、session 生命周期。",
+      "control": "高熵单次短期 token + rate limit + revoke。",
+      "evidence": "reset/session/abuse audit。",
+      "verify": "reuse/expiry/enumeration/session tests。"
+    }
+  },
+  "Q93": {
+    "model": [
+      "API Gateway 是共享入口控制面，适合统一 TLS/authn/rate/schema/routing/observability，但无法替代服务内部业务授权。",
+      "安全设计应区分 edge policy、service identity、object authorization 和 abuse control。",
+      "Gateway compromise/错误配置影响面巨大，需要最小管理权限和变更治理。"
+    ],
+    "boundary": [
+      "BOLA 等对象级授权必须依赖后端资源上下文。",
+      "内部服务若允许绕过 gateway，边界控制会失效。",
+      "GraphQL/gRPC/WebSocket 等协议需不同资源与 schema 控制。"
+    ],
+    "design": [
+      "强 TLS、token validation、client/service identity。",
+      "rate/quota/body/schema limits。",
+      "后端独立 authz，gateway 传递经过验证的身份上下文。",
+      "配置 as-code、审计、灰度、origin/private service exposure control。"
+    ],
+    "evidence": [
+      "gateway request/auth/rate/routing logs。",
+      "backend authz decision、service identity。",
+      "config/deploy audit。"
+    ],
+    "validation": [
+      "绕过 gateway 的 direct access deny test。",
+      "错误 token/audience/schema/oversize/rate tests。",
+      "gateway 与 backend identity context 一致性。"
+    ],
+    "deep_questions": [
+      "为什么 Gateway 认证成功仍不能代表对象授权成功？",
+      "如何安全传递用户 identity 到 backend？",
+      "Gateway 成为单点故障/单点失信如何治理？"
+    ],
+    "deliverable": "API gateway threat model + edge/backend responsibility + identity propagation + policy/tests。",
+    "summary": {
+      "root": "共享 API 边界需统一控制但业务授权仍在资源层。",
+      "boundary": "gateway bypass、协议差异、配置集中风险。",
+      "control": "authn/rate/schema + backend authz + private origin。",
+      "evidence": "gateway/backend/config。",
+      "verify": "bypass/token/schema/rate tests。"
+    }
+  },
+  "Q94": {
+    "model": [
+      "安全上传系统是一条不可信内容处理流水线，目标是让文件永远不直接跨越执行/解析/授权边界。",
+      "设计需分 ingress、quarantine、inspection/transformation、trusted storage、serving。",
+      "最安全的思路是能力隔离：上传服务不具执行权，解析器不具多余网络/文件权，下载层不具写入权。"
+    ],
+    "boundary": [
+      "scanner 可能漏报；parser 本身也可能有漏洞。",
+      "合法超大/复杂文件与资源耗尽风险冲突。",
+      "文件分享/预览功能会引入额外浏览器和权限边界。"
+    ],
+    "design": [
+      "随机 object ID、size/type allowlist、quarantine。",
+      "isolated parser + resource limits + optional re-encode。",
+      "object storage private，下载服务 authz。",
+      "独立内容域、正确 Content-Type/Disposition。"
+    ],
+    "evidence": [
+      "upload identity/hash/type/scan/transform。",
+      "storage/download access audit。",
+      "parser crash/resource telemetry。"
+    ],
+    "validation": [
+      "malformed/oversize/archive/type mismatch corpus。",
+      "cross-user download deny test。",
+      "scanner/parser failure 时 fail-safe behavior。"
+    ],
+    "deep_questions": [
+      "杀毒扫描通过后为什么仍不能直接放到主站域名？",
+      "quarantine 与最终 storage 为什么应分开？",
+      "如何处理压缩包解压膨胀？"
+    ],
+    "deliverable": "Secure upload architecture + file policy + isolation/resource limits + authz serving + corpus tests。",
+    "summary": {
+      "root": "不可信文件跨越解析、存储和浏览器边界。",
+      "boundary": "scanner/parser/资源/分享。",
+      "control": "quarantine + isolation + private storage + authorized serving。",
+      "evidence": "upload/process/storage/download。",
+      "verify": "malformed/oversize/cross-user tests。"
+    }
+  },
+  "Q95": {
+    "model": [
+      "Secure SDLC 的目标是把安全要求和验证嵌入需求、设计、开发、构建、测试、发布和运营，而不是发布前一次渗透。",
+      "NIST SSDF 强调组织准备、软件保护、安全生产、漏洞响应等实践。",
+      "高分回答要把工具与工程 ownership/feedback loop 连接。"
+    ],
+    "boundary": [
+      "“shift left”不代表所有安全工作都移到开发阶段，runtime feedback 仍重要。",
+      "过多 gate 会诱导绕过；应按风险与信号质量设计。",
+      "第三方/开源/CI/CD 同样属于软件生产范围。"
+    ],
+    "design": [
+      "security requirements + threat modeling。",
+      "secure coding/review + SAST/SCA/secret scan。",
+      "build provenance/signing + test/DAST。",
+      "runtime findings/incident 回流 root cause 和 standards。"
+    ],
+    "evidence": [
+      "repo/build/test/deploy artifacts。",
+      "finding→owner→fix→regression history。",
+      "SDLC coverage/MTTR/escape rate。"
+    ],
+    "validation": [
+      "seeded defect 检查 gates。",
+      "post-release defect 追踪为何未在早期发现。",
+      "exception/waiver 定期 review。"
+    ],
+    "deep_questions": [
+      "Shift Left 为什么不等于“把责任甩给开发”？",
+      "如何衡量 Secure SDLC 是否有效？",
+      "哪些安全检查适合 blocking gate？"
+    ],
+    "deliverable": "Secure SDLC control map + risk-tier gates + metrics + exception/root-cause feedback loop。",
+    "summary": {
+      "root": "安全若不进入软件生命周期，会在发布末端高成本发现。",
+      "boundary": "gate friction、runtime feedback、供应链。",
+      "control": "requirements→build→runtime 全链安全。",
+      "evidence": "pipeline/finding/fix/escape metrics。",
+      "verify": "seeded flaw 与 escaped-defect review。"
+    }
+  },
+  "Q96": {
+    "model": [
+      "漏洞管理平台应把 finding 与真实资产、暴露、业务、威胁和 remediation owner 关联，核心不是存 CVE 列表。",
+      "生命周期是 discover→normalize/dedupe→enrich→prioritize→assign→remediate→verify→exception。",
+      "风险排序需可解释，避免黑盒分数导致 owner 不信任。"
+    ],
+    "boundary": [
+      "不同 scanner 对同一漏洞命名/实例不同，需要 entity resolution。",
+      "资产变动会让 finding stale。",
+      "“修复”可能是 patch、配置、隔离、功能禁用或风险接受。"
+    ],
+    "design": [
+      "统一 asset/vuln canonical model。",
+      "CVSS/KEV/exposure/criticality/reachability/compensating control enrichment。",
+      "SLA/owner/workflow 与 ticket integration。",
+      "re-scan/verification 与 exception expiry。"
+    ],
+    "evidence": [
+      "finding source/confidence/first-last seen。",
+      "asset owner/exposure/criticality。",
+      "remediation/verification/exception history。"
+    ],
+    "validation": [
+      "抽样核对 dedupe/asset mapping。",
+      "统计 overdue/high-risk aging。",
+      "验证 closed finding 会被 re-open if resurfaced。"
+    ],
+    "deep_questions": [
+      "如何合并多个扫描器的同一漏洞？",
+      "风险分数如何做到可解释？",
+      "补偿控制应如何影响 SLA？"
+    ],
+    "deliverable": "Vulnerability data model + risk engine + workflow/SLA + verification/exception dashboards。",
+    "summary": {
+      "root": "finding 缺上下文无法转化为真实风险和行动。",
+      "boundary": "多源去重、资产漂移、修复形式多样。",
+      "control": "normalize+enrich+prioritize+owner+verify。",
+      "evidence": "finding/asset/remediation lineage。",
+      "verify": "mapping 抽样与 resurfacing tests。"
+    }
+  },
+  "Q97": {
+    "model": [
+      "日志分析脚本主要考数据工程基本功：流式读取、稳健解析、时间窗口、聚合、内存复杂度和错误处理。",
+      "安全语义常是 entity→event→window→feature，而不是复杂算法。",
+      "好答案会说明如何处理坏行、时区、重复、乱序和超大文件。"
+    ],
+    "boundary": [
+      "一次性 pandas/read_all 可能对大日志 OOM。",
+      "日志格式/schema 可能变化。",
+      "IP/user 等字段可能缺失或代理化，不能简单当真实主体。"
+    ],
+    "design": [
+      "iterator/streaming parser。",
+      "typed normalization + counters/maps/window。",
+      "明确 malformed policy 与 metrics。",
+      "输出可测试、确定性、可扩展。"
+    ],
+    "evidence": [
+      "processed/error/skipped counts。",
+      "input schema/version。",
+      "sampled output verification。"
+    ],
+    "validation": [
+      "unit tests 覆盖空行/坏时间/重复/乱序。",
+      "大文件 memory benchmark。",
+      "与小样本 ground truth 对比。"
+    ],
+    "deep_questions": [
+      "如何做滑动时间窗口而不保存所有事件？",
+      "日志乱序怎么办？",
+      "什么时候应该用数据库/Spark 而不是单机脚本？"
+    ],
+    "deliverable": "可测试的 streaming log analyzer + fixtures + complexity/assumption notes。",
+    "summary": {
+      "root": "安全数据需在不可靠输入和大规模条件下稳定聚合。",
+      "boundary": "坏行、乱序、schema、内存。",
+      "control": "streaming + normalization + explicit error policy。",
+      "evidence": "processing metrics/output samples。",
+      "verify": "edge-case tests + memory benchmark。"
+    }
+  },
+  "Q98": {
+    "model": [
+      "Postmortem 目标是理解系统如何允许事件发生/扩大/迟迟未发现，并推动可验证改进，而不是找个人背锅。",
+      "结构应区分 root cause、contributing factors、detection/response gaps 和 organizational/system conditions。",
+      "action item 必须有 owner、deadline、success criteria，否则复盘只是文档。"
+    ],
+    "boundary": [
+      "“用户误操作”通常不是足够 root cause，还需问为什么单次错误能产生该影响。",
+      "不是所有问题都值得技术修复，可能是流程/权限/监控权衡。",
+      "法律/隐私事件复盘还需限制敏感内容传播。"
+    ],
+    "design": [
+      "blameless 但 accountable：关注系统，同时明确 owner。",
+      "时间线基于证据，标注不确定性。",
+      "动作按 prevent/detect/respond/recover 分类。",
+      "定期验证 action closure 与效果。"
+    ],
+    "evidence": [
+      "incident timeline/decision/action。",
+      "control telemetry 与 missed detection。",
+      "change/history/context。"
+    ],
+    "validation": [
+      "90/180 天回看 action 是否完成且有效。",
+      "类似事件/near miss 是否下降。",
+      "把复盘结论加入 threat model/playbook/tests。"
+    ],
+    "deep_questions": [
+      "Root cause 和 contributing factor 有何区别？",
+      "“培训员工”为什么常不是最强 action item？",
+      "如何验证复盘改进真的有效？"
+    ],
+    "deliverable": "Postmortem template + action tracker + effectiveness review cadence + learning feedback。",
+    "summary": {
+      "root": "事件来自系统性条件组合，不应止于个体错误。",
+      "boundary": "隐私、权衡、多个贡献因素。",
+      "control": "evidence-based RCA + owned measurable actions。",
+      "evidence": "timeline/control gaps/decisions。",
+      "verify": "action effectiveness review。"
+    }
+  },
+  "Q99": {
+    "model": [
+      "技术行为题考察的不只是“发现多严重漏洞”，而是你如何定义问题、建立证据、沟通风险、修复并验证。",
+      "STAR 可加入 Security Reasoning：trust boundary→root cause→impact→control→verification。",
+      "成熟候选人会说明不确定性、合作与 trade-off，而不是夸大影响。"
+    ],
+    "boundary": [
+      "不得泄露前雇主/客户机密、真实敏感细节。",
+      "成功故事也应谈误判/调整和学到什么。",
+      "漏洞影响应基于证据而非想象最坏情况。"
+    ],
+    "design": [
+      "选择能体现 ownership 和工程闭环的案例。",
+      "量化影响/改进但不虚构数字。",
+      "解释与开发/运维/业务如何合作。",
+      "结尾说明如何防止同类问题系统性复发。"
+    ],
+    "evidence": [
+      "测试/日志/代码 root cause。",
+      "risk assessment 与 remediation record。",
+      "regression/monitoring results。"
+    ],
+    "validation": [
+      "提前准备 2-3 个不同类型案例。",
+      "每个案例控制 3-5 分钟并可应对追问。",
+      "去除敏感标识/内部数据。"
+    ],
+    "deep_questions": [
+      "如果开发不同意你的风险评级怎么办？",
+      "修复导致性能回退你怎么处理？",
+      "你在这个事件里判断错过什么？"
+    ],
+    "deliverable": "3 个 STAR+Security Reasoning 面试案例卡：技术、协作、反思各一。",
+    "summary": {
+      "root": "面试考察从问题识别到工程闭环的真实能力。",
+      "boundary": "保密、证据、夸大风险。",
+      "control": "结构化案例 + root cause + collaboration + verification。",
+      "evidence": "事实/日志/代码/修复结果。",
+      "verify": "模拟追问与时间控制。"
+    }
+  },
+  "Q100": {
+    "model": [
+      "前 30 天的目标不是“修完漏洞”，而是建立业务/资产/身份/暴露/检测/响应的可靠事实底座并降低最危险路径。",
+      "CSF 2.0 可作为结构：Govern 明确风险/责任，Identify 资产，Protect/Detect 建关键控制，Respond/Recover 验证韧性。",
+      "优先级应围绕 crown jewels、internet exposure、privileged identity、backup/control plane。"
+    ],
+    "boundary": [
+      "3000 人公司的现状、行业/合规/技术栈不同，计划必须先发现再决定。",
+      "过早推大规模工具/重构会造成组织阻力。",
+      "指标若没有可靠资产分母会产生虚假安全感。"
+    ],
+    "design": [
+      "Week1：stakeholder/business/crown jewels + major risk。",
+      "Week2：asset/identity/exposure/telemetry/backup baseline。",
+      "Week3：quick wins：MFA/privileged/critical exposure/EDR/logging/backup。",
+      "Week4：top risks、90-day roadmap、owners、metrics、governance cadence。"
+    ],
+    "evidence": [
+      "asset/identity/control coverage。",
+      "internet-facing/KEV/high privilege risks。",
+      "IR/backup/tabletop readiness。"
+    ],
+    "validation": [
+      "用少量高价值场景验证：admin compromise、internet RCE-like exposure、ransomware/backup。",
+      "指标确认 denominator 来源。",
+      "90 天 roadmap 每项有 owner/outcome/verification。"
+    ],
+    "deep_questions": [
+      "前 30 天你最不应该做什么？",
+      "如何向 CEO/CTO 用业务语言表达 top 5 risks？",
+      "怎样区分 quick win 和长期架构债？"
+    ],
+    "deliverable": "30-day security posture report + top-risk register + quick wins + 90-day roadmap + metric definitions。",
+    "summary": {
+      "root": "缺乏事实底座和风险排序会导致安全投入失焦。",
+      "boundary": "组织成熟度/行业/工具现状。",
+      "control": "business-first discovery + critical-path quick wins + governed roadmap。",
+      "evidence": "asset/identity/exposure/control/readiness metrics。",
+      "verify": "高价值 scenario tests + metric denominator review。"
+    }
+  }
+}

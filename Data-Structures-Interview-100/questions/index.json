@@ -1,0 +1,802 @@
+[
+  {
+    "id": "Q001",
+    "title": "Two Sum：两数之和",
+    "difficulty": "E",
+    "core": "数组 / HashMap",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q001-Two-Sum-两数之和.md"
+  },
+  {
+    "id": "Q002",
+    "title": "3Sum：三数之和",
+    "difficulty": "M",
+    "core": "数组 / 排序",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q002-3Sum-三数之和.md"
+  },
+  {
+    "id": "Q003",
+    "title": "最长无重复字符子串",
+    "difficulty": "M",
+    "core": "字符串 / 滑动窗口",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q003-最长无重复字符子串.md"
+  },
+  {
+    "id": "Q004",
+    "title": "最小覆盖子串",
+    "difficulty": "H",
+    "core": "字符串 / 滑动窗口",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q004-最小覆盖子串.md"
+  },
+  {
+    "id": "Q005",
+    "title": "除自身以外数组乘积",
+    "difficulty": "M",
+    "core": "数组 / 前缀/后缀",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q005-除自身以外数组乘积.md"
+  },
+  {
+    "id": "Q006",
+    "title": "最大连续子数组和",
+    "difficulty": "M",
+    "core": "数组 / 动态规划",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q006-最大连续子数组和.md"
+  },
+  {
+    "id": "Q007",
+    "title": "和为 K 的子数组数量",
+    "difficulty": "M",
+    "core": "数组 / 前缀和",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q007-和为-K-的子数组数量.md"
+  },
+  {
+    "id": "Q008",
+    "title": "滑动窗口最大值",
+    "difficulty": "H",
+    "core": "Deque / 单调队列",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q008-滑动窗口最大值.md"
+  },
+  {
+    "id": "Q009",
+    "title": "接雨水",
+    "difficulty": "H",
+    "core": "数组 / 双指针",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q009-接雨水.md"
+  },
+  {
+    "id": "Q010",
+    "title": "旋转有序数组查找",
+    "difficulty": "M",
+    "core": "数组 / 二分查找",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q010-旋转有序数组查找.md"
+  },
+  {
+    "id": "Q011",
+    "title": "合并重叠区间",
+    "difficulty": "M",
+    "core": "区间 / 排序",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q011-合并重叠区间.md"
+  },
+  {
+    "id": "Q012",
+    "title": "员工 Shift 时间线：输出每段时间的在岗人员",
+    "difficulty": "H",
+    "core": "Sweep Line / 有序集合",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q012-员工-Shift-时间线-输出每段时间的在岗人员.md"
+  },
+  {
+    "id": "Q013",
+    "title": "矩阵螺旋遍历",
+    "difficulty": "M",
+    "core": "矩阵 / 模拟",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q013-矩阵螺旋遍历.md"
+  },
+  {
+    "id": "Q014",
+    "title": "第一个缺失的正整数",
+    "difficulty": "H",
+    "core": "数组 / 原地哈希",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q014-第一个缺失的正整数.md"
+  },
+  {
+    "id": "Q015",
+    "title": "两个有序数组的中位数",
+    "difficulty": "H+",
+    "core": "二分查找 / 分割",
+    "category": "数组、字符串、矩阵与区间",
+    "path": "questions/01-arrays-strings-matrix-intervals/Q015-两个有序数组的中位数.md"
+  },
+  {
+    "id": "Q016",
+    "title": "有效字母异位词",
+    "difficulty": "E",
+    "core": "Hash / 计数",
+    "category": "HashMap / HashSet",
+    "path": "questions/02-hashmap-hashset/Q016-有效字母异位词.md"
+  },
+  {
+    "id": "Q017",
+    "title": "按字母异位词分组",
+    "difficulty": "M",
+    "core": "Hash / 字符串签名",
+    "category": "HashMap / HashSet",
+    "path": "questions/02-hashmap-hashset/Q017-按字母异位词分组.md"
+  },
+  {
+    "id": "Q018",
+    "title": "最长连续整数序列",
+    "difficulty": "M",
+    "core": "HashSet / 集合",
+    "category": "HashMap / HashSet",
+    "path": "questions/02-hashmap-hashset/Q018-最长连续整数序列.md"
+  },
+  {
+    "id": "Q019",
+    "title": "K 距离内是否存在重复值",
+    "difficulty": "E/M",
+    "core": "HashMap / 滑动集合",
+    "category": "HashMap / HashSet",
+    "path": "questions/02-hashmap-hashset/Q019-K-距离内是否存在重复值.md"
+  },
+  {
+    "id": "Q020",
+    "title": "O(1) Insert/Delete/GetRandom 集合",
+    "difficulty": "M",
+    "core": "设计 / HashMap",
+    "category": "HashMap / HashSet",
+    "path": "questions/02-hashmap-hashset/Q020-O-1-Insert-Delete-GetRandom-集合.md"
+  },
+  {
+    "id": "Q021",
+    "title": "从零实现 HashMap",
+    "difficulty": "M",
+    "core": "HashMap / 底层实现",
+    "category": "HashMap / HashSet",
+    "path": "questions/02-hashmap-hashset/Q021-从零实现-HashMap.md"
+  },
+  {
+    "id": "Q022",
+    "title": "Hash Collision、负载因子与复杂度退化",
+    "difficulty": "M",
+    "core": "HashMap / 理论",
+    "category": "HashMap / HashSet",
+    "path": "questions/02-hashmap-hashset/Q022-Hash-Collision、负载因子与复杂度退化.md"
+  },
+  {
+    "id": "Q023",
+    "title": "稀疏向量点积",
+    "difficulty": "M",
+    "core": "HashMap / 双指针",
+    "category": "HashMap / HashSet",
+    "path": "questions/02-hashmap-hashset/Q023-稀疏向量点积.md"
+  },
+  {
+    "id": "Q024",
+    "title": "反转单链表",
+    "difficulty": "E",
+    "core": "链表 / 指针",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q024-反转单链表.md"
+  },
+  {
+    "id": "Q025",
+    "title": "判断链表是否有环",
+    "difficulty": "E/M",
+    "core": "链表 / Floyd",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q025-判断链表是否有环.md"
+  },
+  {
+    "id": "Q026",
+    "title": "寻找链表环入口",
+    "difficulty": "M",
+    "core": "链表 / Floyd",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q026-寻找链表环入口.md"
+  },
+  {
+    "id": "Q027",
+    "title": "合并两个有序链表",
+    "difficulty": "E",
+    "core": "链表 / 归并",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q027-合并两个有序链表.md"
+  },
+  {
+    "id": "Q028",
+    "title": "合并 K 个有序链表",
+    "difficulty": "H",
+    "core": "链表 / Heap",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q028-合并-K-个有序链表.md"
+  },
+  {
+    "id": "Q029",
+    "title": "删除倒数第 N 个节点",
+    "difficulty": "M",
+    "core": "链表 / 双指针",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q029-删除倒数第-N-个节点.md"
+  },
+  {
+    "id": "Q030",
+    "title": "重排链表 L0→Ln→L1→Ln-1…",
+    "difficulty": "M",
+    "core": "链表 / 快慢指针",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q030-重排链表-L0→Ln→L1→Ln-1….md"
+  },
+  {
+    "id": "Q031",
+    "title": "两个单链表的交点",
+    "difficulty": "E/M",
+    "core": "链表 / 双指针",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q031-两个单链表的交点.md"
+  },
+  {
+    "id": "Q032",
+    "title": "复制带 Random Pointer 的链表",
+    "difficulty": "M/H",
+    "core": "链表 / HashMap",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q032-复制带-Random-Pointer-的链表.md"
+  },
+  {
+    "id": "Q033",
+    "title": "回文链表",
+    "difficulty": "M",
+    "core": "链表 / 快慢指针",
+    "category": "链表",
+    "path": "questions/03-linked-list/Q033-回文链表.md"
+  },
+  {
+    "id": "Q034",
+    "title": "有效括号",
+    "difficulty": "E",
+    "core": "Stack / 字符串",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q034-有效括号.md"
+  },
+  {
+    "id": "Q035",
+    "title": "Min Stack",
+    "difficulty": "M",
+    "core": "Stack / 设计",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q035-Min-Stack.md"
+  },
+  {
+    "id": "Q036",
+    "title": "两个栈实现队列",
+    "difficulty": "E/M",
+    "core": "Stack / Queue",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q036-两个栈实现队列.md"
+  },
+  {
+    "id": "Q037",
+    "title": "一个/两个队列实现栈",
+    "difficulty": "E",
+    "core": "Queue / Stack",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q037-一个-两个队列实现栈.md"
+  },
+  {
+    "id": "Q038",
+    "title": "每日温度：下一个更高温度",
+    "difficulty": "M",
+    "core": "单调栈 / 数组",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q038-每日温度-下一个更高温度.md"
+  },
+  {
+    "id": "Q039",
+    "title": "Next Greater Element 通用模板",
+    "difficulty": "M",
+    "core": "单调栈",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q039-Next-Greater-Element-通用模板.md"
+  },
+  {
+    "id": "Q040",
+    "title": "柱状图最大矩形",
+    "difficulty": "H",
+    "core": "单调栈 / 数组",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q040-柱状图最大矩形.md"
+  },
+  {
+    "id": "Q041",
+    "title": "Decode String：解码嵌套重复串",
+    "difficulty": "M",
+    "core": "Stack / 递归下降",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q041-Decode-String-解码嵌套重复串.md"
+  },
+  {
+    "id": "Q042",
+    "title": "碰撞模拟：Asteroid Collision",
+    "difficulty": "M",
+    "core": "Stack / 模拟",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q042-碰撞模拟-Asteroid-Collision.md"
+  },
+  {
+    "id": "Q043",
+    "title": "Basic Calculator：表达式求值",
+    "difficulty": "H",
+    "core": "Stack / Parser",
+    "category": "Stack / Queue / Deque",
+    "path": "questions/04-stack-queue-deque/Q043-Basic-Calculator-表达式求值.md"
+  },
+  {
+    "id": "Q044",
+    "title": "二叉树最大深度",
+    "difficulty": "E",
+    "core": "Tree / DFS",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q044-二叉树最大深度.md"
+  },
+  {
+    "id": "Q045",
+    "title": "翻转二叉树",
+    "difficulty": "E",
+    "core": "Tree / 递归",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q045-翻转二叉树.md"
+  },
+  {
+    "id": "Q046",
+    "title": "二叉树层序遍历",
+    "difficulty": "M",
+    "core": "Tree / BFS",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q046-二叉树层序遍历.md"
+  },
+  {
+    "id": "Q047",
+    "title": "二叉树右视图",
+    "difficulty": "M",
+    "core": "Tree / BFS",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q047-二叉树右视图.md"
+  },
+  {
+    "id": "Q048",
+    "title": "二叉树直径",
+    "difficulty": "M",
+    "core": "Tree / Postorder",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q048-二叉树直径.md"
+  },
+  {
+    "id": "Q049",
+    "title": "判断平衡二叉树",
+    "difficulty": "E/M",
+    "core": "Tree / Postorder",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q049-判断平衡二叉树.md"
+  },
+  {
+    "id": "Q050",
+    "title": "验证二叉搜索树",
+    "difficulty": "M",
+    "core": "BST / 递归边界",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q050-验证二叉搜索树.md"
+  },
+  {
+    "id": "Q051",
+    "title": "BST 第 K 小元素",
+    "difficulty": "M",
+    "core": "BST / Inorder",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q051-BST-第-K-小元素.md"
+  },
+  {
+    "id": "Q052",
+    "title": "BST 最近公共祖先",
+    "difficulty": "M",
+    "core": "BST / LCA",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q052-BST-最近公共祖先.md"
+  },
+  {
+    "id": "Q053",
+    "title": "普通二叉树最近公共祖先",
+    "difficulty": "M",
+    "core": "Tree / 递归",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q053-普通二叉树最近公共祖先.md"
+  },
+  {
+    "id": "Q054",
+    "title": "Preorder + Inorder 重建二叉树",
+    "difficulty": "M",
+    "core": "Tree / 递归",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q054-Preorder-+-Inorder-重建二叉树.md"
+  },
+  {
+    "id": "Q055",
+    "title": "二叉树序列化与反序列化",
+    "difficulty": "H",
+    "core": "Tree / 编码",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q055-二叉树序列化与反序列化.md"
+  },
+  {
+    "id": "Q056",
+    "title": "二叉树最大路径和",
+    "difficulty": "H",
+    "core": "Tree DP / Postorder",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q056-二叉树最大路径和.md"
+  },
+  {
+    "id": "Q057",
+    "title": "判断子树",
+    "difficulty": "M",
+    "core": "Tree / 匹配",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q057-判断子树.md"
+  },
+  {
+    "id": "Q058",
+    "title": "二叉树原地展开为链表",
+    "difficulty": "M",
+    "core": "Tree / 指针重连",
+    "category": "Binary Tree / BST",
+    "path": "questions/05-binary-tree-bst/Q058-二叉树原地展开为链表.md"
+  },
+  {
+    "id": "Q059",
+    "title": "数组第 K 大元素",
+    "difficulty": "M",
+    "core": "Heap / Quickselect",
+    "category": "Heap / Priority Queue",
+    "path": "questions/06-heap-priority-queue/Q059-数组第-K-大元素.md"
+  },
+  {
+    "id": "Q060",
+    "title": "距离原点最近的 K 个点",
+    "difficulty": "M",
+    "core": "Heap / Quickselect",
+    "category": "Heap / Priority Queue",
+    "path": "questions/06-heap-priority-queue/Q060-距离原点最近的-K-个点.md"
+  },
+  {
+    "id": "Q061",
+    "title": "日志 Top-K 活跃用户，并保留阈值并列者",
+    "difficulty": "M/H",
+    "core": "HashMap / Heap",
+    "category": "Heap / Priority Queue",
+    "path": "questions/06-heap-priority-queue/Q061-日志-Top-K-活跃用户-并保留阈值并列者.md"
+  },
+  {
+    "id": "Q062",
+    "title": "Meeting Rooms II：最少会议室",
+    "difficulty": "M",
+    "core": "Heap / 区间",
+    "category": "Heap / Priority Queue",
+    "path": "questions/06-heap-priority-queue/Q062-Meeting-Rooms-II-最少会议室.md"
+  },
+  {
+    "id": "Q063",
+    "title": "K 个有序数组的归并",
+    "difficulty": "M/H",
+    "core": "Heap / K-way Merge",
+    "category": "Heap / Priority Queue",
+    "path": "questions/06-heap-priority-queue/Q063-K-个有序数组的归并.md"
+  },
+  {
+    "id": "Q064",
+    "title": "数据流中位数",
+    "difficulty": "H",
+    "core": "Heap / Two Heaps",
+    "category": "Heap / Priority Queue",
+    "path": "questions/06-heap-priority-queue/Q064-数据流中位数.md"
+  },
+  {
+    "id": "Q065",
+    "title": "滑动窗口中位数",
+    "difficulty": "H+",
+    "core": "Two Heaps / Lazy Deletion",
+    "category": "Heap / Priority Queue",
+    "path": "questions/06-heap-priority-queue/Q065-滑动窗口中位数.md"
+  },
+  {
+    "id": "Q066",
+    "title": "多服务器任务调度",
+    "difficulty": "H",
+    "core": "Heap / 设计",
+    "category": "Heap / Priority Queue",
+    "path": "questions/06-heap-priority-queue/Q066-多服务器任务调度.md"
+  },
+  {
+    "id": "Q067",
+    "title": "实现 Trie：insert/search/startsWith",
+    "difficulty": "M",
+    "core": "Trie / 字符串",
+    "category": "Trie / Prefix Tree",
+    "path": "questions/07-trie-prefix-tree/Q067-实现-Trie-insert-search-startsWith.md"
+  },
+  {
+    "id": "Q068",
+    "title": "支持通配符 . 的词典",
+    "difficulty": "M",
+    "core": "Trie / DFS",
+    "category": "Trie / Prefix Tree",
+    "path": "questions/07-trie-prefix-tree/Q068-支持通配符-.-的词典.md"
+  },
+  {
+    "id": "Q069",
+    "title": "Autocomplete：前缀返回 Top-K 候选",
+    "difficulty": "H",
+    "core": "Trie / Heap",
+    "category": "Trie / Prefix Tree",
+    "path": "questions/07-trie-prefix-tree/Q069-Autocomplete-前缀返回-Top-K-候选.md"
+  },
+  {
+    "id": "Q070",
+    "title": "Word Search II：棋盘中查找多个单词",
+    "difficulty": "H",
+    "core": "Trie / DFS",
+    "category": "Trie / Prefix Tree",
+    "path": "questions/07-trie-prefix-tree/Q070-Word-Search-II-棋盘中查找多个单词.md"
+  },
+  {
+    "id": "Q071",
+    "title": "最短词根替换句子",
+    "difficulty": "M",
+    "core": "Trie / 字符串",
+    "category": "Trie / Prefix Tree",
+    "path": "questions/07-trie-prefix-tree/Q071-最短词根替换句子.md"
+  },
+  {
+    "id": "Q072",
+    "title": "层级路径/域名祖先值聚合",
+    "difficulty": "H",
+    "core": "Trie / Tree",
+    "category": "Trie / Prefix Tree",
+    "path": "questions/07-trie-prefix-tree/Q072-层级路径-域名祖先值聚合.md"
+  },
+  {
+    "id": "Q073",
+    "title": "岛屿数量",
+    "difficulty": "M",
+    "core": "Graph / Grid",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q073-岛屿数量.md"
+  },
+  {
+    "id": "Q074",
+    "title": "Clone Graph",
+    "difficulty": "M",
+    "core": "Graph / DFS/BFS",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q074-Clone-Graph.md"
+  },
+  {
+    "id": "Q075",
+    "title": "判断无向图是否为树",
+    "difficulty": "M",
+    "core": "Graph / DFS",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q075-判断无向图是否为树.md"
+  },
+  {
+    "id": "Q076",
+    "title": "无向图连通分量数量",
+    "difficulty": "M",
+    "core": "Graph / DFS",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q076-无向图连通分量数量.md"
+  },
+  {
+    "id": "Q077",
+    "title": "Course Schedule：课程依赖是否可完成",
+    "difficulty": "M",
+    "core": "Graph / Topological Sort",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q077-Course-Schedule-课程依赖是否可完成.md"
+  },
+  {
+    "id": "Q078",
+    "title": "Alien Dictionary：未知字母序",
+    "difficulty": "H",
+    "core": "Graph / Topological Sort",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q078-Alien-Dictionary-未知字母序.md"
+  },
+  {
+    "id": "Q079",
+    "title": "Word Ladder 最短转换路径",
+    "difficulty": "H",
+    "core": "Graph / BFS",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q079-Word-Ladder-最短转换路径.md"
+  },
+  {
+    "id": "Q080",
+    "title": "Pacific Atlantic Water Flow",
+    "difficulty": "M/H",
+    "core": "Graph / Reverse Search",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q080-Pacific-Atlantic-Water-Flow.md"
+  },
+  {
+    "id": "Q081",
+    "title": "Binary Matrix 最短路径",
+    "difficulty": "M",
+    "core": "BFS / Grid",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q081-Binary-Matrix-最短路径.md"
+  },
+  {
+    "id": "Q082",
+    "title": "Network Delay：Dijkstra 单源最短路",
+    "difficulty": "M",
+    "core": "Graph / Dijkstra",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q082-Network-Delay-Dijkstra-单源最短路.md"
+  },
+  {
+    "id": "Q083",
+    "title": "连接所有点的最小代价：MST",
+    "difficulty": "M/H",
+    "core": "Graph / MST",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q083-连接所有点的最小代价-MST.md"
+  },
+  {
+    "id": "Q084",
+    "title": "Accounts Merge",
+    "difficulty": "M",
+    "core": "DSU / HashMap",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q084-Accounts-Merge.md"
+  },
+  {
+    "id": "Q085",
+    "title": "Redundant Connection：找成环边",
+    "difficulty": "M",
+    "core": "DSU / Cycle Detection",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q085-Redundant-Connection-找成环边.md"
+  },
+  {
+    "id": "Q086",
+    "title": "无根度≤3 树重新选根，使其成为二叉树并满足层颜色模式",
+    "difficulty": "H+",
+    "core": "Tree / Rerooting",
+    "category": "Graph / BFS / DFS / Union-Find",
+    "path": "questions/08-graph-bfs-dfs-dsu/Q086-无根度≤3-树重新选根-使其成为二叉树并满足层颜色模式.md"
+  },
+  {
+    "id": "Q087",
+    "title": "Fenwick Tree：动态单点修改 + 区间和",
+    "difficulty": "M/H",
+    "core": "Fenwick Tree / 前缀和",
+    "category": "Fenwick / Segment Tree / Range Structure",
+    "path": "questions/09-range-data-structures/Q087-Fenwick-Tree-动态单点修改-+-区间和.md"
+  },
+  {
+    "id": "Q088",
+    "title": "Segment Tree：动态 Range Min/Max/Sum",
+    "difficulty": "H",
+    "core": "Segment Tree / 区间查询",
+    "category": "Fenwick / Segment Tree / Range Structure",
+    "path": "questions/09-range-data-structures/Q088-Segment-Tree-动态-Range-Min-Max-Sum.md"
+  },
+  {
+    "id": "Q089",
+    "title": "Range Module：动态添加/删除/查询区间",
+    "difficulty": "H+",
+    "core": "Interval Tree / Segment Tree",
+    "category": "Fenwick / Segment Tree / Range Structure",
+    "path": "questions/09-range-data-structures/Q089-Range-Module-动态添加-删除-查询区间.md"
+  },
+  {
+    "id": "Q090",
+    "title": "逆序对数量",
+    "difficulty": "H",
+    "core": "Fenwick Tree / Merge Sort",
+    "category": "Fenwick / Segment Tree / Range Structure",
+    "path": "questions/09-range-data-structures/Q090-逆序对数量.md"
+  },
+  {
+    "id": "Q091",
+    "title": "动态第 K 小：Order Statistic Tree",
+    "difficulty": "H+",
+    "core": "Segment Tree / Order Statistics",
+    "category": "Fenwick / Segment Tree / Range Structure",
+    "path": "questions/09-range-data-structures/Q091-动态第-K-小-Order-Statistic-Tree.md"
+  },
+  {
+    "id": "Q092",
+    "title": "SummaryRanges：数据流维护不相交区间",
+    "difficulty": "H",
+    "core": "Ordered Map / Interval",
+    "category": "Fenwick / Segment Tree / Range Structure",
+    "path": "questions/09-range-data-structures/Q092-SummaryRanges-数据流维护不相交区间.md"
+  },
+  {
+    "id": "Q093",
+    "title": "LRU Cache",
+    "difficulty": "M/H",
+    "core": "HashMap / Doubly Linked List",
+    "category": "复合数据结构设计",
+    "path": "questions/10-composite-design/Q093-LRU-Cache.md"
+  },
+  {
+    "id": "Q094",
+    "title": "LFU Cache",
+    "difficulty": "H",
+    "core": "HashMap / Frequency Buckets",
+    "category": "复合数据结构设计",
+    "path": "questions/10-composite-design/Q094-LFU-Cache.md"
+  },
+  {
+    "id": "Q095",
+    "title": "Time Based Key-Value Store",
+    "difficulty": "M",
+    "core": "HashMap / Binary Search",
+    "category": "复合数据结构设计",
+    "path": "questions/10-composite-design/Q095-Time-Based-Key-Value-Store.md"
+  },
+  {
+    "id": "Q096",
+    "title": "All O(1) Data Structure",
+    "difficulty": "H+",
+    "core": "HashMap / Bucket DLL",
+    "category": "复合数据结构设计",
+    "path": "questions/10-composite-design/Q096-All-O-1-Data-Structure.md"
+  },
+  {
+    "id": "Q097",
+    "title": "RandomizedCollection：允许重复的 O(1) 随机集合",
+    "difficulty": "H",
+    "core": "Array / HashMap",
+    "category": "复合数据结构设计",
+    "path": "questions/10-composite-design/Q097-RandomizedCollection-允许重复的-O-1-随机集合.md"
+  },
+  {
+    "id": "Q098",
+    "title": "简化 Twitter News Feed",
+    "difficulty": "H",
+    "core": "HashMap / Heap",
+    "category": "复合数据结构设计",
+    "path": "questions/10-composite-design/Q098-简化-Twitter-News-Feed.md"
+  },
+  {
+    "id": "Q099",
+    "title": "设计内存文件系统",
+    "difficulty": "H",
+    "core": "Trie / Tree",
+    "category": "复合数据结构设计",
+    "path": "questions/10-composite-design/Q099-设计内存文件系统.md"
+  },
+  {
+    "id": "Q100",
+    "title": "Hit Counter：最近 5 分钟请求计数",
+    "difficulty": "M/H",
+    "core": "Queue / Circular Buffer",
+    "category": "复合数据结构设计",
+    "path": "questions/10-composite-design/Q100-Hit-Counter-最近-5-分钟请求计数.md"
+  }
+]

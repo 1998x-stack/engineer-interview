@@ -1,0 +1,13 @@
+{
+  "questions": 100,
+  "chapters": 10,
+  "pdf_pages": 116,
+  "question_markdown_chars_total": 841097,
+  "question_markdown_chars_avg": 8410,
+  "question_markdown_chars_min": 7391,
+  "question_markdown_chars_max": 9218,
+  "core_30_count": 30,
+  "verified_date": "2026-09-02",
+  "enrichment_version": "v2-professional-deep-dive",
+  "professional_enrichment_sections_per_question": 12
+}

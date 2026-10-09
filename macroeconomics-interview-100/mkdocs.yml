@@ -1,0 +1,158 @@
+site_name: 宏观经济学面试 100 题
+site_description: Professional macroeconomics interview question bank
+repo_name: macroeconomics-interview-100
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+plugins:
+  - search
+markdown_extensions:
+  - tables
+  - attr_list
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+nav:
+  - Home: index.md
+  - 使用指南:
+      - Overview: 00-guide/README.md
+      - 6 层回答法: 00-guide/answer-framework.md
+      - Question Schema: 00-guide/question-schema.md
+  - 国民收入核算与宏观数据:
+      - Overview: 01-national-accounts/README.md
+      - Q001 什么是 GDP？为什么定义里必须强调“境内、一定时期、最终产品与服务”？: 01-national-accounts/q001-gdp-definition.md
+      - Q002 GDP 与 GNI/GNP 有什么区别？: 01-national-accounts/q002-gdp-vs-gni.md
+      - Q003 为什么支出法是 Y = C + I + G + NX？进口为什么要减掉？: 01-national-accounts/q003-expenditure-identity-imports.md
+      - Q004 产品生产出来但没卖掉，为什么仍然进入 GDP？: 01-national-accounts/q004-inventory-investment.md
+      - Q005 买新房、二手房、股票和土地，分别如何进入 GDP？: 01-national-accounts/q005-housing-stocks-land-gdp.md
+      - Q006 名义 GDP、实际 GDP 与 GDP 平减指数是什么关系？: 01-national-accounts/q006-nominal-real-gdp-deflator.md
+      - Q007 CPI 与 GDP 平减指数为什么会给出不同的通胀率？: 01-national-accounts/q007-cpi-vs-gdp-deflator.md
+      - Q008 为什么 GDP 增长不等于社会福利同比增长？: 01-national-accounts/q008-gdp-and-welfare.md
+      - Q009 为什么国民账户中储蓄恒等于投资？计划储蓄与计划投资又为什么可能不相等？: 01-national-accounts/q009-saving-investment-identity.md
+      - Q010 面对一组宏观数据，你如何判断经济“增长质量”，而不是只报 GDP 增速？: 01-national-accounts/q010-growth-quality-dashboard.md
+  - 凯恩斯交叉与乘数:
+      - Overview: 02-keynesian-cross/README.md
+      - Q011 什么叫均衡产出？为什么均衡产出不一定等于充分就业产出？: 02-keynesian-cross/q011-equilibrium-output.md
+      - Q012 如果计划支出小于产出，经济如何回到均衡？: 02-keynesian-cross/q012-planned-expenditure-below-output.md
+      - Q013 为什么政府购买乘数可能大于 1？: 02-keynesian-cross/q013-government-purchase-multiplier.md
+      - Q014 为什么税收乘数为负，且绝对值通常小于政府购买乘数？: 02-keynesian-cross/q014-tax-multiplier.md
+      - Q015 为什么政府转移支付不直接计入 G，却仍能影响 GDP？: 02-keynesian-cross/q015-transfers-and-gdp.md
+      - Q016 什么是节俭悖论？它为什么不是说“储蓄有害”？: 02-keynesian-cross/q016-paradox-of-thrift.md
+      - Q017 什么叫自动稳定器？它为什么能降低经济波动？: 02-keynesian-cross/q017-automatic-stabilizers.md
+      - Q018 现实中的财政乘数由哪些因素决定？: 02-keynesian-cross/q018-fiscal-multiplier-determinants.md
+      - Q019 经济接近充分就业时，财政扩张为什么更容易推高价格而非产出？: 02-keynesian-cross/q019-fiscal-expansion-at-full-employment.md
+      - Q020 “发钱促消费”和“增加公共投资”应该怎么比较？: 02-keynesian-cross/q020-cash-transfers-vs-public-investment.md
+  - IS-LM 与政策组合:
+      - Overview: 03-is-lm/README.md
+      - Q021 如何从产品市场均衡推导 IS 曲线？: 03-is-lm/q021-derive-is-curve.md
+      - Q022 哪些因素使 IS 曲线移动？为什么利率变化不算移动？: 03-is-lm/q022-is-curve-shifts.md
+      - Q023 为什么 LM 曲线通常向右上倾斜？: 03-is-lm/q023-lm-curve-slope.md
+      - Q024 扩张性财政政策在 IS-LM 中为什么会产生挤出效应？: 03-is-lm/q024-fiscal-crowding-out.md
+      - Q025 扩张性货币政策如何从央行工具传导到产出？: 03-is-lm/q025-monetary-transmission.md
+      - Q026 什么是流动性陷阱？为什么货币政策可能变弱？: 03-is-lm/q026-liquidity-trap.md
+      - Q027 财政政策与货币政策应该怎样搭配？: 03-is-lm/q027-policy-mix.md
+      - Q028 如果央行以政策利率为操作目标，传统 LM 曲线应如何改写？: 03-is-lm/q028-interest-rate-target-and-lm.md
+      - Q029 为什么央行降息不一定立即刺激投资？: 03-is-lm/q029-why-rate-cuts-may-not-boost-investment.md
+      - Q030 IS-LM 与 AD-AS 是什么关系？: 03-is-lm/q030-is-lm-to-ad-as.md
+  - AD-AS、通胀、失业与周期:
+      - Overview: 04-ad-as/README.md
+      - Q031 为什么宏观总需求 AD 曲线向右下倾斜？: 04-ad-as/q031-why-ad-slopes-down.md
+      - Q032 为什么短期总供给 SRAS 通常向右上倾斜？: 04-ad-as/q032-why-sras-slopes-up.md
+      - Q033 如何用 AD-AS 区分需求冲击与供给冲击？: 04-ad-as/q033-demand-vs-supply-shocks.md
+      - Q034 什么是滞胀？为什么它让政策制定更困难？: 04-ad-as/q034-stagflation.md
+      - Q035 短期与长期菲利普斯曲线有什么区别？: 04-ad-as/q035-short-vs-long-run-phillips.md
+      - Q036 适应性预期与理性预期有什么区别？: 04-ad-as/q036-adaptive-vs-rational-expectations.md
+      - Q037 什么是自然失业率？为什么它通常大于零？: 04-ad-as/q037-natural-rate-of-unemployment.md
+      - Q038 奥肯定律表达了什么？为什么系数不是固定常数？: 04-ad-as/q038-okuns-law.md
+      - Q039 为什么通缩可能形成宏观恶性循环？: 04-ad-as/q039-deflationary-spiral.md
+      - Q040 预期到的通胀和未预期通胀，经济成本有什么不同？: 04-ad-as/q040-anticipated-vs-unanticipated-inflation.md
+  - 开放经济与汇率:
+      - Overview: 05-open-economy/README.md
+      - Q041 名义汇率与实际汇率有什么区别？: 05-open-economy/q041-nominal-vs-real-exchange-rate.md
+      - Q042 本币贬值为什么可能改善净出口？: 05-open-economy/q042-depreciation-and-net-exports.md
+      - Q043 什么是马歇尔-勒纳条件与 J 曲线？: 05-open-economy/q043-marshall-lerner-and-j-curve.md
+      - Q044 浮动汇率下财政扩张为什么可能被汇率升值部分抵消？: 05-open-economy/q044-fiscal-policy-floating-fx.md
+      - Q045 浮动汇率下货币政策为什么通常更强？: 05-open-economy/q045-monetary-policy-floating-fx.md
+      - Q046 固定汇率下财政政策为什么通常更强？: 05-open-economy/q046-fiscal-policy-fixed-fx.md
+      - Q047 固定汇率下为什么难以保持独立货币政策？: 05-open-economy/q047-monetary-independence-fixed-fx.md
+      - Q048 什么是不可能三角？: 05-open-economy/q048-impossible-trinity.md
+      - Q049 美联储加息为什么会影响其他经济体？: 05-open-economy/q049-fed-hikes-spillovers.md
+      - Q050 人民币国际化应如何用宏观经济学语言分析？: 05-open-economy/q050-rmb-internationalization.md
+  - 长期增长:
+      - Overview: 06-growth/README.md
+      - Q051 长期经济增长的主要源泉是什么？: 06-growth/q051-sources-of-long-run-growth.md
+      - Q052 Solow 模型的核心动态方程是什么？: 06-growth/q052-solow-dynamics.md
+      - Q053 提高储蓄率会永久提高长期经济增长率吗？: 06-growth/q053-saving-rate-and-growth.md
+      - Q054 什么是资本黄金律？: 06-growth/q054-golden-rule-capital.md
+      - Q055 人口增长率提高会怎样影响 Solow 稳态？: 06-growth/q055-population-growth-solow.md
+      - Q056 为什么技术进步是 Solow 模型中的长期核心？: 06-growth/q056-technology-in-solow.md
+      - Q057 什么是绝对收敛与条件收敛？: 06-growth/q057-absolute-vs-conditional-convergence.md
+      - Q058 Solow 与内生增长模型最核心的区别是什么？: 06-growth/q058-solow-vs-endogenous-growth.md
+      - Q059 为什么人力资本可能产生正外部性？: 06-growth/q059-human-capital-externalities.md
+      - Q060 人口老龄化为什么可能降低潜在增长？: 06-growth/q060-aging-and-potential-growth.md
+  - 现代宏观与预期:
+      - Overview: 07-modern-macro/README.md
+      - Q061 凯恩斯消费函数与生命周期/永久收入理论有何不同？: 07-modern-macro/q061-consumption-theories.md
+      - Q062 什么是李嘉图等价？为什么现实中常不完全成立？: 07-modern-macro/q062-ricardian-equivalence.md
+      - Q063 Tobin q 如何解释企业投资？: 07-modern-macro/q063-tobins-q.md
+      - Q064 什么是加速数原理？: 07-modern-macro/q064-accelerator-principle.md
+      - Q065 RBC 理论如何解释经济周期？它有哪些争议？: 07-modern-macro/q065-rbc-theory.md
+      - Q066 新凯恩斯主义与传统凯恩斯主义最核心的升级是什么？: 07-modern-macro/q066-new-keynesian-upgrade.md
+      - Q067 什么是 Taylor Rule？: 07-modern-macro/q067-taylor-rule.md
+      - Q068 什么是货币政策的时间不一致性？: 07-modern-macro/q068-time-inconsistency.md
+      - Q069 为什么理性预期会改变政策效果？什么是 Lucas critique 的直觉？: 07-modern-macro/q069-rational-expectations-lucas-critique.md
+      - Q070 DSGE 模型是什么？优势和局限分别是什么？: 07-modern-macro/q070-dsge-models.md
+  - 财政、债务、货币与金融传导:
+      - Overview: 08-fiscal-monetary-finance/README.md
+      - Q071 政府债务是不是越低越好？: 08-fiscal-monetary-finance/q071-optimal-public-debt.md
+      - Q072 债务率动态为什么高度依赖 r-g？: 08-fiscal-monetary-finance/q072-debt-dynamics-r-minus-g.md
+      - Q073 什么是财政主导？: 08-fiscal-monetary-finance/q073-fiscal-dominance.md
+      - Q074 QE 与普通降息有什么区别？: 08-fiscal-monetary-finance/q074-qe-vs-rate-cuts.md
+      - Q075 为什么低通胀环境下名义利率不高也可能意味着实际政策偏紧？: 08-fiscal-monetary-finance/q075-low-inflation-real-tightness.md
+      - Q076 持续降息为什么可能压缩银行净息差？: 08-fiscal-monetary-finance/q076-bank-net-interest-margin.md
+      - Q077 什么是信贷渠道？它与传统利率渠道有什么不同？: 08-fiscal-monetary-finance/q077-credit-channel.md
+      - Q078 地方政府债务为什么会变成宏观问题？: 08-fiscal-monetary-finance/q078-local-government-debt.md
+      - Q079 房地产下行如何传导到宏观经济？: 08-fiscal-monetary-finance/q079-property-downturn-transmission.md
+      - Q080 Fisher 的债务-通缩机制是什么？: 08-fiscal-monetary-finance/q080-debt-deflation.md
+  - 2026 中国宏观热点:
+      - Overview: 09-china-2026/README.md
+      - Q081 2026 年 GDP 增长目标为什么采用 4.5%-5% 区间？: 09-china-2026/q081-china-2026-growth-target-range.md
+      - Q082 2026 上半年 GDP 增长 4.7%、CPI 上涨 1.0%，两者矛盾吗？: 09-china-2026/q082-china-2026-growth-and-cpi.md
+      - Q083 赤字率约 4% 是否足以判断 2026 财政政策比上一年更宽松？: 09-china-2026/q083-china-2026-fiscal-stance.md
+      - Q084 如何把“适度宽松货币政策”翻译成标准宏观模型语言？: 09-china-2026/q084-china-2026-monetary-stance.md
+      - Q085 为什么当前政策更强调扩大消费，而不仅是继续扩大投资？: 09-china-2026/q085-china-consumption-vs-investment.md
+      - Q086 房地产调整为什么可能使居民提高储蓄，而不是趁低价购房？: 09-china-2026/q086-property-and-precautionary-saving.md
+      - Q087 如果出口很强，为什么还要扩大内需？: 09-china-2026/q087-exports-and-domestic-demand.md
+      - Q088 为什么国内通胀低于贸易伙伴可能造成实际汇率贬值？: 09-china-2026/q088-inflation-differential-real-exchange-rate.md
+      - Q089 “新质生产力”如何翻译成标准增长理论语言？: 09-china-2026/q089-new-quality-productive-forces.md
+      - Q090 如果你负责 2026 年宏观政策，财政和货币政策怎样组合？: 09-china-2026/q090-china-2026-policy-mix.md
+  - 研究能力与压力面试:
+      - Overview: 10-research-interview/README.md
+      - Q091 不许说“IS-LM”，解释央行降息为什么可能提高 GDP。: 10-research-interview/q091-explain-rate-cuts-without-is-lm.md
+      - Q092 同一财政扩张，凯恩斯交叉、IS-LM 与 AD-AS 分别增加了什么？: 10-research-interview/q092-compare-keynesian-cross-is-lm-ad-as.md
+      - Q093 怎样实证估计政府支出乘数？: 10-research-interview/q093-estimate-government-spending-multiplier.md
+      - Q094 货币供应增长与 GDP 增长正相关，能证明货币导致 GDP 增长吗？: 10-research-interview/q094-money-growth-gdp-causality.md
+      - Q095 VAR 能不能直接识别货币政策的因果效应？: 10-research-interview/q095-var-and-monetary-identification.md
+      - Q096 如何检验菲利普斯曲线在中国是否成立？: 10-research-interview/q096-test-phillips-curve-in-china.md
+      - Q097 预测明年 GDP，你最先看哪五类变量？: 10-research-interview/q097-forecast-gdp-framework.md
+      - Q098 英文题：Why can real GDP grow while inflation remains weak?: 10-research-interview/q098-weak-inflation-with-real-growth.md
+      - Q099 “央行印钱肯定会立刻造成同比例通胀。”你同意吗？: 10-research-interview/q099-money-printing-and-inflation.md
+      - Q100 选择一个当前宏观现象：用一个模型解释，再说明模型哪里可能错。: 10-research-interview/q100-model-current-macro-phenomenon.md
+  - 附录:
+      - 高频公式表: appendices/formula-sheet.md
+      - 模型选择树: appendices/model-selection-tree.md
+      - 教授追问套路: appendices/professor-followups.md
+      - 30 天刷题路径: appendices/30-day-plan.md
+      - 2026 中国宏观数据卡: appendices/china-2026-data-card.md
+      - 参考资料: appendices/references.md

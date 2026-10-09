@@ -1,0 +1,412 @@
+{
+  "Q71": {
+    "model": [
+      "Shared Responsibility 表示云厂商与客户对不同层的安全职责分工，边界随 IaaS/PaaS/SaaS 改变。",
+      "迁移到更托管服务通常减少底层运维责任，但不会消除 identity、configuration、data 和 application security。",
+      "高分回答应举同一控制在不同服务模型下责任如何迁移。"
+    ],
+    "boundary": [
+      "“provider secure”不代表 customer configuration secure。",
+      "managed service 仍可能有 public exposure、weak IAM、data retention 等客户责任。",
+      "合规责任与技术运维责任也不是完全同一概念。"
+    ],
+    "design": [
+      "每个云服务建立 responsibility/RACI。",
+      "客户侧集中 IAM、logging、configuration policy 和 data classification。",
+      "vendor assurance 覆盖 provider 责任，CSPM/controls 覆盖 customer 责任。",
+      "新服务 onboarding 先明确边界。"
+    ],
+    "evidence": [
+      "cloud config/IAM/audit。",
+      "provider service assurance/status/advisory。",
+      "internal RACI/exception。"
+    ],
+    "validation": [
+      "针对关键服务逐项问“谁负责 patch、key、access、backup、logging”。",
+      "tabletop 云服务事故检查 escalation。",
+      "定期 review provider 功能变化是否改变责任。"
+    ],
+    "deep_questions": [
+      "SaaS 下客户还要做哪些安全？",
+      "Managed database 谁负责数据库引擎 patch？",
+      "Shared responsibility 与 shared fate 有什么理解差异？"
+    ],
+    "deliverable": "Cloud service responsibility matrix + customer control checklist + vendor escalation path。",
+    "summary": {
+      "root": "云安全责任按服务层分配而非全部转移。",
+      "boundary": "服务模型、配置、合规。",
+      "control": "RACI + IAM/config/log/data controls。",
+      "evidence": "cloud audit + provider assurance。",
+      "verify": "服务级责任 review/tabletop。"
+    }
+  },
+  "Q72": {
+    "model": [
+      "Cloud IAM 接近云控制平面：身份/角色可直接创建资源、读取数据、改变网络和密钥。",
+      "风险核心是 permission graph、trust relationship、credential lifetime 和 role assumption。",
+      "相比传统网络，“谁能调用哪个 API”往往比 IP 更能定义权限边界。"
+    ],
+    "boundary": [
+      "一个低权限角色可通过信任链/服务角色间接获得更高影响。",
+      "service account/workload identity 数量庞大且易被忽略。",
+      "MFA 主要保护人类交互，机器身份需不同机制。"
+    ],
+    "design": [
+      "默认最小权限与 permission boundaries/organization policy。",
+      "短期 role assumption/workload identity，避免长期 access key。",
+      "高权角色 JIT/审批，跨账号 trust 精确限定。",
+      "持续分析 unused permissions 和 risky trust。"
+    ],
+    "evidence": [
+      "cloud audit：actor、role、API、resource、source。",
+      "IAM policy/trust changes。",
+      "credential issuance/use、access analyzer。"
+    ],
+    "validation": [
+      "deny tests 验证角色不能越界。",
+      "定期 simulate/evaluate policy。",
+      "credential leak tabletop 验证 revoke 和 scope。"
+    ],
+    "deep_questions": [
+      "为什么 security group 不能替代 IAM？",
+      "role trust policy 与 permission policy 有什么区别？",
+      "如何减少长期 access key？"
+    ],
+    "deliverable": "Cloud IAM graph + high-risk role inventory + JIT/workload identity plan + policy tests。",
+    "summary": {
+      "root": "云 API 权限控制资源与控制平面。",
+      "boundary": "trust chain、machine identity、long-lived key。",
+      "control": "least privilege + short-lived role + org guardrails。",
+      "evidence": "cloud API/IAM change/credential logs。",
+      "verify": "policy simulation 与 deny tests。"
+    }
+  },
+  "Q73": {
+    "model": [
+      "对象存储公开访问要区分 anonymous/public、cross-account、signed URL、service principal 和 application-mediated access。",
+      "“bucket private”不代表对象不可被其他 policy/ACL/access point 暴露。",
+      "治理应把 data sensitivity 与 access path 一起建模。"
+    ],
+    "boundary": [
+      "静态网站托管可能合法需要 public read。",
+      "signed URL 是受控临时授权，不应被简单归类为“公开”。",
+      "legacy ACL 与 bucket policy/organization guardrail 可能叠加冲突。"
+    ],
+    "design": [
+      "默认阻止 public access，例外按数据分类审批。",
+      "组织级 guardrail 限制高风险配置。",
+      "敏感数据加密、access logging、lifecycle。",
+      "外部分享优先短期受限 URL/应用授权。"
+    ],
+    "evidence": [
+      "bucket/object policy/ACL/access point。",
+      "cloud audit data events/access logs。",
+      "CSPM public exposure finding 与 data classification。"
+    ],
+    "validation": [
+      "外部 anonymous test 确认敏感桶不可读。",
+      "signed URL 过期/权限范围测试。",
+      "配置变更触发持续检测。"
+    ],
+    "deep_questions": [
+      "private bucket 为什么仍可能被 cross-account 读取？",
+      "signed URL 与 public bucket 的信任差异是什么？",
+      "如何治理合法静态网站 bucket？"
+    ],
+    "deliverable": "Object storage access model + organization guardrails + exception/data classification + continuous exposure tests。",
+    "summary": {
+      "root": "多层 policy 可能使数据暴露超出预期。",
+      "boundary": "public/cross-account/signed URL/legacy ACL。",
+      "control": "default private + org guardrail + short-lived sharing。",
+      "evidence": "policy/ACL/data access audit。",
+      "verify": "anonymous/cross-account/expiry tests。"
+    }
+  },
+  "Q74": {
+    "model": [
+      "云 SSRF 高风险在于服务实例可能携带 workload identity，可通过 metadata/内部 API 获得短期凭据或访问控制面。",
+      "因此 SSRF impact = network reachability + attached identity privilege。",
+      "现代云防护应同时收紧 fetch 行为和 workload identity。"
+    ],
+    "boundary": [
+      "不同云 metadata 服务机制和保护选项不同。",
+      "即使 metadata 被保护，内部 SaaS/API 仍可能成为 SSRF 目标。",
+      "serverless/managed service 也可能有服务身份和内部网络能力。"
+    ],
+    "design": [
+      "SSRF URL/destination control 与 egress segmentation。",
+      "metadata 服务使用推荐防护并限制访问。",
+      "workload role 最小权限、短期 credential。",
+      "fetching workload 与核心业务身份分离。"
+    ],
+    "evidence": [
+      "metadata/STS/role credential issuance。",
+      "cloud API calls from workload identity。",
+      "DNS/egress proxy 与 application URL logs。"
+    ],
+    "validation": [
+      "验证 fetcher 无法访问 metadata/内部控制面。",
+      "role policy deny tests。",
+      "模拟 SSRF 防线失效时，最小身份仍限制影响。"
+    ],
+    "deep_questions": [
+      "为什么 workload identity 决定 SSRF 爆炸半径？",
+      "只保护 metadata 是否足够？",
+      "fetcher 为什么最好使用独立低权身份？"
+    ],
+    "deliverable": "Cloud SSRF defense model：fetch isolation + egress + metadata protection + workload IAM。",
+    "summary": {
+      "root": "服务器请求能力可继承云网络与身份权限。",
+      "boundary": "provider metadata/内部 API/服务类型。",
+      "control": "destination/egress + metadata + least-privilege workload identity。",
+      "evidence": "STS/API/egress/app。",
+      "verify": "metadata/internal deny tests。"
+    }
+  },
+  "Q75": {
+    "model": [
+      "VM 以 hypervisor/虚拟硬件为主要隔离边界，container 通常共享 host kernel，通过 namespaces/cgroups/capabilities 等隔离。",
+      "共享内核使容器逃逸/内核漏洞的影响模型不同，同时容器更适合细粒度不可变部署。",
+      "“容器=轻量 VM”会忽略最关键的内核共享差异。"
+    ],
+    "boundary": [
+      "rootless container、sandboxed runtime、microVM 会改变隔离强度。",
+      "container 内 root 不等于 host root，但危险 capability/host mount 会缩小边界。",
+      "镜像供应链与 runtime 隔离是不同问题。"
+    ],
+    "design": [
+      "non-root/rootless、drop capabilities、seccomp/LSM、read-only FS。",
+      "禁止 privileged/host namespace/不必要 hostPath。",
+      "节点最小化和及时内核 patch。",
+      "高风险不可信 workload 采用更强 sandbox/microVM。"
+    ],
+    "evidence": [
+      "runtime config、capabilities、mounts、namespace。",
+      "node/kernel/runtime version。",
+      "runtime/EDR/K8s audit。"
+    ],
+    "validation": [
+      "policy gate 拒绝 privileged/host mount。",
+      "runtime isolation benchmark/escape-focused regression（安全实验环境）。",
+      "节点升级与 workload compatibility。"
+    ],
+    "deep_questions": [
+      "容器内 root 为什么不一定等于宿主 root？",
+      "capabilities 与 privileged 的关系是什么？",
+      "什么时候应该选 microVM/sandbox runtime？"
+    ],
+    "deliverable": "Container runtime security baseline + admission policies + node hardening + workload isolation tiers。",
+    "summary": {
+      "root": "容器共享内核，隔离依赖内核与运行时策略。",
+      "boundary": "rootless/sandbox/capabilities/mounts。",
+      "control": "non-root + capability/seccomp/LSM + admission。",
+      "evidence": "runtime config + node/audit。",
+      "verify": "policy gate 与 isolation tests。"
+    }
+  },
+  "Q76": {
+    "model": [
+      "Kubernetes 安全应拆为 identity/RBAC、workload spec、network、secrets、supply chain、control plane、admission 和 observability。",
+      "最大误区是把 K8s 安全等同“扫描镜像 CVE”。",
+      "service account/RBAC 和 admission policy 是连接 deployment intent 与 runtime privilege 的关键控制。"
+    ],
+    "boundary": [
+      "NetworkPolicy 只在 CNI 正确支持且规则覆盖时有效。",
+      "Secrets 对象默认并非“绝对安全保险箱”，仍需 etcd/KMS/IAM/访问控制。",
+      "namespace 是组织边界但通常不是强多租户安全边界。"
+    ],
+    "design": [
+      "RBAC 最小权限、禁默认 token 滥用、workload identity。",
+      "Pod Security/自定义 admission 拒绝 privileged、hostPath、危险 capabilities。",
+      "default-deny network + 必要 egress。",
+      "镜像签名/provenance 和受信 registry。"
+    ],
+    "evidence": [
+      "K8s audit：actor、verb、resource、namespace。",
+      "admission deny/allow、RBAC changes。",
+      "runtime/network/registry evidence。"
+    ],
+    "validation": [
+      "RBAC can-i/deny tests + service account review。",
+      "policy tests 验证危险 workload manifest 被拒。",
+      "namespace/egress/secret access regression。"
+    ],
+    "deep_questions": [
+      "namespace 为什么不是天然强租户边界？",
+      "Admission Controller 与 RBAC 各自解决什么？",
+      "NetworkPolicy 为什么可能配置了却没有效果？"
+    ],
+    "deliverable": "K8s security baseline + RBAC/admission/network policy pack + audit/detection + supply-chain gates。",
+    "summary": {
+      "root": "编排控制面、身份和高能力 workload 配置共同决定集群风险。",
+      "boundary": "CNI、secret、namespace、多租户。",
+      "control": "least RBAC + admission + network + provenance。",
+      "evidence": "K8s audit/admission/runtime/network。",
+      "verify": "policy/RBAC/egress tests。"
+    }
+  },
+  "Q77": {
+    "model": [
+      "Image 安全是 source→build→package→SBOM→sign→registry→admission→runtime 的供应链问题。",
+      "CVE scanning 只回答已知组件风险，不证明镜像来源、构建完整性或 secret cleanliness。",
+      "digest 是内容地址，tag 是可变标签；安全部署更偏向不可变 digest/provenance。"
+    ],
+    "boundary": [
+      "无 CVE 镜像仍可能包含恶意代码或 secret。",
+      "签名只在 signing identity 和 key 可信时有意义。",
+      "base image 更新会改变大量 transitive packages。"
+    ],
+    "design": [
+      "最小受信 base、multi-stage build、non-root。",
+      "构建生成 SBOM/provenance、secret scan。",
+      "artifact signing 与 registry immutability。",
+      "admission 验证 signature/provenance/policy。"
+    ],
+    "evidence": [
+      "image digest、SBOM、build provenance/signature。",
+      "registry push/pull audit。",
+      "admission decision 与 runtime image ID。"
+    ],
+    "validation": [
+      "从 running pod 反向追踪到 commit/build。",
+      "拒绝 unsigned/untrusted image 测试。",
+      "base image update 自动 rebuild/regression。"
+    ],
+    "deep_questions": [
+      "为什么用 digest 比 tag 更适合不可变部署？",
+      "签名镜像仍可能有漏洞吗？",
+      "SBOM 和 provenance 分别回答什么？"
+    ],
+    "deliverable": "Container image trust pipeline + SBOM/signing/provenance + registry/admission policy。",
+    "summary": {
+      "root": "镜像风险来自组件、构建与来源完整性。",
+      "boundary": "扫描/签名各自不能覆盖全部风险。",
+      "control": "trusted build + SBOM/provenance/signing + admission。",
+      "evidence": "digest/SBOM/provenance/registry/admission。",
+      "verify": "commit→runtime trace 和 unsigned deny test。"
+    }
+  },
+  "Q78": {
+    "model": [
+      "IaC 把基础设施意图变成可版本、review、test 的代码，使安全控制可提前自动验证。",
+      "Policy as Code 将组织 guardrail 转为机器可执行规则，降低人工配置漂移。",
+      "IaC 并不天然安全；错误模板会把不安全配置大规模复制。"
+    ],
+    "boundary": [
+      "运行时手工改动会造成 drift。",
+      "静态 IaC 工具无法看到所有 provider runtime/default 行为。",
+      "例外/紧急变更若绕过 pipeline 会削弱治理。"
+    ],
+    "design": [
+      "PR 级 IaC scan + policy gate。",
+      "生产 apply 使用受控 pipeline 和最小权限。",
+      "drift detection 与 reconcile。",
+      "policy exception 有 owner/expiry/compensating control。"
+    ],
+    "evidence": [
+      "Git diff/review/plan/apply logs。",
+      "cloud config/state 与 drift results。",
+      "policy decision/exception history。"
+    ],
+    "validation": [
+      "用 intentionally bad module 验证 gate。",
+      "模拟 out-of-band change 验证 drift detection。",
+      "provider/version 升级后回归 policy。"
+    ],
+    "deep_questions": [
+      "IaC 为什么同时能提高安全也能放大错误？",
+      "plan-time policy 和 runtime CSPM 有何互补？",
+      "如何治理 break-glass 变更？"
+    ],
+    "deliverable": "IaC security pipeline + policy-as-code library + drift/exception governance。",
+    "summary": {
+      "root": "手工基础设施缺乏可重复/可审查安全状态。",
+      "boundary": "模板错误、runtime drift、emergency bypass。",
+      "control": "PR policy gate + controlled apply + drift。",
+      "evidence": "diff/plan/apply/runtime。",
+      "verify": "bad-config 与 drift tests。"
+    }
+  },
+  "Q79": {
+    "model": [
+      "Serverless 减少服务器 OS 运维责任，但应用、IAM、event validation、dependency、secret、data 和 logging 仍是客户安全责任。",
+      "函数的权限和事件源配置成为核心攻击/错误面。",
+      "短生命周期实例改变传统主机 EDR/取证模型，控制更依赖 cloud audit 和 application telemetry。"
+    ],
+    "boundary": [
+      "冷启动/并发和自动扩缩可导致资源/成本型 abuse。",
+      "managed runtime patch 由 provider 负责的程度随平台不同。",
+      "第三方 layer/dependency 仍需供应链治理。"
+    ],
+    "design": [
+      "函数/服务独立最小 IAM。",
+      "严格验证 event schema/source。",
+      "secret manager/workload identity。",
+      "并发/timeout/egress/observability controls。"
+    ],
+    "evidence": [
+      "cloud invocation/audit/role assumption。",
+      "application structured logs/traces。",
+      "event source/queue/API gateway logs。"
+    ],
+    "validation": [
+      "无权限 role 的 deny tests。",
+      "异常 event/schema 与 retry/dead-letter 测试。",
+      "高并发/失败场景验证成本和告警。"
+    ],
+    "deep_questions": [
+      "Serverless 没有“服务器管理”为什么仍有主机级风险边界？",
+      "event source 为什么等同输入信任边界？",
+      "如何做 Serverless IR？"
+    ],
+    "deliverable": "Serverless threat model + function IAM/event schema/egress/logging + cost/abuse controls。",
+    "summary": {
+      "root": "底层运维托管不等于应用与身份责任消失。",
+      "boundary": "event source、IAM、ephemeral runtime、cost abuse。",
+      "control": "least IAM + event validation + observability。",
+      "evidence": "cloud invocation/audit/trace。",
+      "verify": "deny/schema/concurrency tests。"
+    }
+  },
+  "Q80": {
+    "model": [
+      "Cloud IR 与传统主机 IR 最大差异在于控制平面/API/身份日志的重要性和资源的短生命周期。",
+      "证据往往存在云服务审计、对象日志、snapshot、configuration history，而不只主机磁盘。",
+      "containment 可以通过 role/session/network/resource policy 自动化，但错误自动化也可能扩大业务影响。"
+    ],
+    "boundary": [
+      "实例销毁会丢失易失证据，但 cloud audit 通常仍在。",
+      "跨账号/region/organization scope 容易遗漏。",
+      "SaaS/PaaS 取证能力受 provider API 和保留策略限制。"
+    ],
+    "design": [
+      "集中 immutable cloud audit，多账号/region 汇聚。",
+      "预置 snapshot/quarantine/revoke automation 与审批。",
+      "asset/identity inventory 支持快速 scope。",
+      "cloud-specific playbooks 覆盖 key/session/role/policy。"
+    ],
+    "evidence": [
+      "control-plane API audit、identity/session。",
+      "network flow/object data access/config history。",
+      "snapshot/forensic copy/managed service logs。"
+    ],
+    "validation": [
+      "tabletop ephemeral instance 已终止的场景。",
+      "测试跨账号日志汇聚和 revoke automation。",
+      "确认日志 retention 满足调查窗口。"
+    ],
+    "deep_questions": [
+      "实例被自动销毁后还能拿什么证据？",
+      "为什么 cloud control-plane log 比传统 syslog 更关键？",
+      "自动 quarantine 如何避免误伤？"
+    ],
+    "deliverable": "Cloud IR playbook + centralized audit + snapshot/revoke/quarantine automation + cross-account scope checklist。",
+    "summary": {
+      "root": "云资源短命且控制面 API/身份决定大量行为。",
+      "boundary": "跨账号/region、provider telemetry、自动化影响。",
+      "control": "central audit + automated containment + cloud playbooks。",
+      "evidence": "API/identity/flow/object/config/snapshot。",
+      "verify": "跨账号/ephemeral/tabletop。"
+    }
+  }
+}

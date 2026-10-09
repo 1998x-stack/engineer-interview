@@ -1,0 +1,154 @@
+site_name: 网络安全面试宝典 100 题
+docs_dir: .
+site_dir: ../network-security-interview-100-site
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+nav:
+  - 首页: README.md
+  - 总索引: docs/question-index.md
+  - 学习指南:
+      - PDF 资料口径: docs/00-pdf-basis.md
+      - 12 天复习路线: docs/01-study-roadmap.md
+      - 统一答题框架: docs/02-answer-framework.md
+      - 岗位路线: docs/03-role-roadmaps.md
+      - 标准映射: docs/04-standards-map.md
+      - 术语表: docs/05-glossary.md
+      - 面试评分: docs/06-interview-rubric.md
+      - 最后 30 分钟: docs/07-last-30-minutes.md
+      - 统一安全模型: docs/08-unified-model.md
+  - 题库:
+      - 第 1 章 · 计算机网络与协议安全:
+          - 章节导读: chapters/01-network-protocols/README.md
+          - "Q01 OSI 七层模型与 TCP/IP 模型分别是什么？安全设备工作在哪一层？": questions/01-network-protocols/q01-network-fundamentals.md
+          - "Q02 TCP 为什么三次握手，而不是两次？": questions/01-network-protocols/q02-tcp-ip.md
+          - "Q03 TCP 如何保证可靠传输？": questions/01-network-protocols/q03-tcp-ip.md
+          - "Q04 TCP 与 UDP 的区别？为什么 DNS、QUIC 等会使用 UDP？": questions/01-network-protocols/q04-tcp-udp-quic.md
+          - "Q05 DNS 完整解析过程是什么？DNS 有哪些安全问题？": questions/01-network-protocols/q05-dns.md
+          - "Q06 HTTP/1.1、HTTP/2、HTTP/3 的主要区别，以及安全影响是什么？": questions/01-network-protocols/q06-http.md
+          - "Q07 从输入 https：//example.com 到页面出现，中间发生了什么？": questions/01-network-protocols/q07-end-to-end-web-request.md
+          - "Q08 HTTP 与 HTTPS 的区别是什么？": questions/01-network-protocols/q08-tls.md
+          - "Q09 CDN、反向代理、Load Balancer、WAF 分别解决什么问题？": questions/01-network-protocols/q09-edge-architecture.md
+          - "Q10 ARP 的工作原理是什么？ARP 欺骗为什么成立？": questions/01-network-protocols/q10-lan-security.md
+      - 第 2 章 · Web 安全核心漏洞:
+          - 章节导读: chapters/02-web-security/README.md
+          - "Q11 给你一个 Web 系统，你的安全测试总体思路是什么？": questions/02-web-security/q11-owasp-wstg-asvs.md
+          - "Q12 SQL 注入的本质是什么？": questions/02-web-security/q12-owasp-a05-injection.md
+          - "Q13 使用 Prepared Statement 后是否绝对没有 SQL 注入？": questions/02-web-security/q13-owasp-a05-asvs.md
+          - "Q14 XSS 的本质与三种主要类型是什么？": questions/02-web-security/q14-owasp-injection-browser-security.md
+          - "Q15 CSP 能不能彻底解决 XSS？": questions/02-web-security/q15-csp-defense-in-depth.md
+          - "Q16 CSRF 的本质是什么？如何修复？": questions/02-web-security/q16-owasp-a01-browser-security.md
+          - "Q17 SSRF 的本质是什么？": questions/02-web-security/q17-owasp-a01-2025-api7-2023.md
+          - "Q18 SSRF 为什么不能只过滤 127.0.0.1？": questions/02-web-security/q18-ssrf-defense.md
+          - "Q19 XXE 是什么？为什么现代环境中出现得比以前少？": questions/02-web-security/q19-xml-parser-security.md
+          - "Q20 文件上传漏洞应该如何分析？": questions/02-web-security/q20-file-handling.md
+      - 第 3 章 · 高级 Web、API 与身份安全:
+          - 章节导读: chapters/03-api-identity/README.md
+          - "Q21 Path Traversal 与 File Inclusion 有什么区别？": questions/03-api-identity/q21-file-path-security.md
+          - "Q22 OS Command Injection 的本质是什么？": questions/03-api-identity/q22-owasp-injection-asvs.md
+          - "Q23 什么是反序列化漏洞？": questions/03-api-identity/q23-serialization-security.md
+          - "Q24 Request Smuggling / HTTP Desync 的本质是什么？": questions/03-api-identity/q24-http-parser-differential.md
+          - "Q25 什么是 IDOR / BOLA？为什么它如此常见？": questions/03-api-identity/q25-owasp-api1-bola-a01.md
+          - "Q26 水平越权、垂直越权、未授权访问分别是什么？": questions/03-api-identity/q26-access-control.md
+          - "Q27 JWT 是什么？最常见的设计错误有哪些？": questions/03-api-identity/q27-jwt-jose.md
+          - "Q28 Cookie、Session、JWT 的区别是什么？": questions/03-api-identity/q28-web-identity.md
+          - "Q29 OAuth 2.0 与 OpenID Connect 有什么区别？": questions/03-api-identity/q29-oauth2-oidc.md
+          - "Q30 CORS 与 Same-Origin Policy 的关系是什么？": questions/03-api-identity/q30-browser-security.md
+      - 第 4 章 · Linux、Windows、主机与中间件安全:
+          - 章节导读: chapters/04-host-middleware/README.md
+          - "Q31 Linux 主机疑似入侵，你第一时间看什么？": questions/04-host-middleware/q31-host-ir.md
+          - "Q32 Windows 主机应重点关注哪些日志？": questions/04-host-middleware/q32-windows-telemetry.md
+          - "Q33 如何判断一个异常进程是否值得调查？": questions/04-host-middleware/q33-process-analysis.md
+          - "Q34 什么是 Persistence？蓝队如何理解它？": questions/04-host-middleware/q34-mitre-att-and-ck-persistence.md
+          - "Q35 Linux/Windows 提权问题应该怎样回答才专业？": questions/04-host-middleware/q35-privilege-boundary.md
+          - "Q36 Java 中间件安全为什么长期是面试重点？": questions/04-host-middleware/q36-java-enterprise.md
+          - "Q37 Redis 未授权访问为什么危险？正确修复方式是什么？": questions/04-host-middleware/q37-service-exposure.md
+          - "Q38 WebShell 检测有哪些思路？": questions/04-host-middleware/q38-webshell-detection.md
+          - "Q39 IDS、IPS、EDR、NDR、WAF 有什么区别？": questions/04-host-middleware/q39-security-controls.md
+          - "Q40 主机安全基线应该包含什么？": questions/04-host-middleware/q40-hardening-baseline.md
+      - 第 5 章 · 内网、身份与 Active Directory:
+          - 章节导读: chapters/05-enterprise-identity/README.md
+          - "Q41 Kerberos 的基本认证流程是什么？": questions/05-enterprise-identity/q41-kerberos.md
+          - "Q42 NTLM 与 Kerberos 有什么区别？": questions/05-enterprise-identity/q42-windows-authentication.md
+          - "Q43 为什么 Credential Access 是企业攻击的重要阶段？": questions/05-enterprise-identity/q43-mitre-credential-access.md
+          - "Q44 什么是 Lateral Movement？": questions/05-enterprise-identity/q44-mitre-lateral-movement.md
+          - "Q45 网络分区和 Zero Trust 有什么区别？": questions/05-enterprise-identity/q45-nist-sp-800-207.md
+          - "Q46 什么是 Least Privilege？": questions/05-enterprise-identity/q46-authorization.md
+          - "Q47 如果域管理员账号疑似泄露，你怎么处理？": questions/05-enterprise-identity/q47-identity-incident.md
+          - "Q48 企业内部资产发现为什么重要？": questions/05-enterprise-identity/q48-asset-management.md
+          - "Q49 Secrets 应该如何管理？": questions/05-enterprise-identity/q49-secrets-management.md
+          - "Q50 为什么企业现在越来越需要关注证书身份安全？": questions/05-enterprise-identity/q50-machine-identity-pki.md
+      - 第 6 章 · 代码审计、漏洞研究与软件供应链:
+          - 章节导读: chapters/06-appsec-supply-chain/README.md
+          - "Q51 SAST、DAST、IAST、SCA 有什么区别？": questions/06-appsec-supply-chain/q51-appsec-tooling.md
+          - "Q52 什么是 Taint Analysis？": questions/06-appsec-supply-chain/q52-static-analysis.md
+          - "Q53 做 SQL 注入代码审计时，你会怎么看？": questions/06-appsec-supply-chain/q53-owasp-injection.md
+          - "Q54 Java 反序列化代码审计应该关注什么？": questions/06-appsec-supply-chain/q54-serialization-review.md
+          - "Q55 软件供应链攻击是什么？": questions/06-appsec-supply-chain/q55-owasp-a03-2025.md
+          - "Q56 什么是 SBOM？SBOM 能解决所有供应链问题吗？": questions/06-appsec-supply-chain/q56-sbom.md
+          - "Q57 Git 仓库泄露密钥为什么严重？": questions/06-appsec-supply-chain/q57-secrets-incident.md
+          - "Q58 CI/CD Pipeline 有哪些典型安全风险？": questions/06-appsec-supply-chain/q58-ci-cd-security.md
+          - "Q59 为什么安全研究员喜欢分析补丁 diff？": questions/06-appsec-supply-chain/q59-root-cause-analysis.md
+          - "Q60 Buffer Overflow 的本质和现代防护是什么？": questions/06-appsec-supply-chain/q60-memory-safety.md
+      - 第 7 章 · 蓝队、安全运营与应急响应:
+          - 章节导读: chapters/07-blue-team-ir/README.md
+          - "Q61 收到一个 SIEM 高危告警，你怎么处理？": questions/07-blue-team-ir/q61-soc-triage.md
+          - "Q62 IOC、IOA、TTP 有什么区别？": questions/07-blue-team-ir/q62-detection-concepts.md
+          - "Q63 SIEM 的基本数据链路是什么？": questions/07-blue-team-ir/q63-siem-architecture.md
+          - "Q64 Incident Response 的核心阶段是什么？": questions/07-blue-team-ir/q64-nist-sp-800-61r3-csf-2-0.md
+          - "Q65 公司遭遇勒索事件，第一小时你做什么？": questions/07-blue-team-ir/q65-ransomware-ir.md
+          - "Q66 Web 服务器疑似被入侵，你如何构建时间线？": questions/07-blue-team-ir/q66-timeline-analysis.md
+          - "Q67 钓鱼邮件告警如何分析？": questions/07-blue-team-ir/q67-phishing-triage.md
+          - "Q68 漏洞优先级应该只看 CVSS 吗？": questions/07-blue-team-ir/q68-cisa-kev-risk.md
+          - "Q69 什么日志最有价值？": questions/07-blue-team-ir/q69-telemetry-strategy.md
+          - "Q70 MITRE ATT&CK 在蓝队中怎么使用？": questions/07-blue-team-ir/q70-mitre-att-and-ck.md
+      - 第 8 章 · Cloud、Container、Kubernetes 与 DevSecOps:
+          - 章节导读: chapters/08-cloud-native/README.md
+          - "Q71 什么是 Cloud Shared Responsibility Model？": questions/08-cloud-native/q71-cloud-security.md
+          - "Q72 Cloud IAM 为什么是云安全最重要的领域之一？": questions/08-cloud-native/q72-cloud-iam.md
+          - "Q73 对象存储桶公开访问问题应该怎样治理？": questions/08-cloud-native/q73-object-storage.md
+          - "Q74 云环境 SSRF 为什么尤其值得关注？": questions/08-cloud-native/q74-ssrf-cloud-identity.md
+          - "Q75 Container 和 VM 的安全边界有什么不同？": questions/08-cloud-native/q75-container-security.md
+          - "Q76 Kubernetes 最常见的安全风险有哪些？": questions/08-cloud-native/q76-kubernetes.md
+          - "Q77 Container Image 安全怎么做？": questions/08-cloud-native/q77-image-supply-chain.md
+          - "Q78 IaC 为什么有利于安全？": questions/08-cloud-native/q78-iac-policy-as-code.md
+          - "Q79 Serverless 是否意味着“不需要做服务器安全”？": questions/08-cloud-native/q79-serverless-security.md
+          - "Q80 Cloud Incident Response 与传统机房 IR 最大差异是什么？": questions/08-cloud-native/q80-cloud-ir.md
+      - 第 9 章 · 密码学、安全架构与治理:
+          - 章节导读: chapters/09-crypto-architecture/README.md
+          - "Q81 对称加密和非对称加密有什么区别？": questions/09-crypto-architecture/q81-cryptography-basics.md
+          - "Q82 Hash、Encryption、Encoding 有什么区别？": questions/09-crypto-architecture/q82-crypto-basics.md
+          - "Q83 密码应该怎么存？": questions/09-crypto-architecture/q83-password-storage.md
+          - "Q84 TLS 1.3 握手过程中解决了什么问题？": questions/09-crypto-architecture/q84-tls-1-3.md
+          - "Q85 如何保证你拿到的公钥确实属于目标网站？": questions/09-crypto-architecture/q85-pki.md
+          - "Q86 mTLS 和普通 TLS 有什么区别？": questions/09-crypto-architecture/q86-mtls.md
+          - "Q87 IV、Nonce 为什么经常是密码学实现漏洞来源？": questions/09-crypto-architecture/q87-crypto-construction.md
+          - "Q88 Encryption at Rest 做了以后数据是不是安全了？": questions/09-crypto-architecture/q88-kms-data-security.md
+          - "Q89 什么是 Zero Trust？最常见的错误理解是什么？": questions/09-crypto-architecture/q89-nist-sp-800-207.md
+          - "Q90 NIST CSF 2.0 六大 Function 是什么？": questions/09-crypto-architecture/q90-nist-csf-2-0.md
+      - 第 10 章 · 高级场景、工程能力与终面题:
+          - 章节导读: chapters/10-system-design/README.md
+          - "Q91 如果目标只有一个登录页面，你会怎么评估安全性？": questions/10-system-design/q91-authentication-surface.md
+          - "Q92 让你设计“忘记密码”功能，如何确保安全？": questions/10-system-design/q92-account-recovery.md
+          - "Q93 设计一个 API Gateway 安全体系，你会考虑什么？": questions/10-system-design/q93-api-security.md
+          - "Q94 设计一个安全文件上传系统。": questions/10-system-design/q94-secure-upload-architecture.md
+          - "Q95 你如何把安全加入 SDLC？": questions/10-system-design/q95-nist-ssdf-secure-sdlc.md
+          - "Q96 如果让你设计企业漏洞管理平台，你怎么设计？": questions/10-system-design/q96-risk-based-vm.md
+          - "Q97 面试现场让你写一个日志分析脚本，重点考什么？": questions/10-system-design/q97-python-data-processing.md
+          - "Q98 安全事故复盘应该包含什么？": questions/10-system-design/q98-postmortem.md
+          - "Q99 “讲一个你发现过的漏洞/安全问题”应该怎么回答？": questions/10-system-design/q99-behavioral-technical.md
+          - "Q100 终极综合题：你入职一家 3000 人互联网公司负责安全，前 30 天做什么？": questions/10-system-design/q100-security-program-csf-2-0.md
+  - 参考资料: references/official-standards.md

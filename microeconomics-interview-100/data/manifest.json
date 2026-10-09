@@ -1,0 +1,13 @@
+{
+  "title": "Microeconomics Interview 100",
+  "version": "2.0.0",
+  "question_count": 100,
+  "chapter_count": 10,
+  "pdf_pages": 116,
+  "source_pdf_sha256": "f08a0b6469f4bd428b950be60845687ee14af670ff7f31e211cf398674fccc70",
+  "generated_from": "微观经济学面试100题_剑指Offer式训练手册.pdf + matching DOCX structured source",
+  "professional_deep_dive": true,
+  "advanced_sections_per_question": 10,
+  "generated_at": "2026-09-02",
+  "question_markdown_standard": "v2-professional"
+}

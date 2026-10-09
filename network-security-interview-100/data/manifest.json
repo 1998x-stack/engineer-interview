@@ -1,0 +1,737 @@
+[
+  {
+    "path": ".github/ISSUE_TEMPLATE/content.yml",
+    "bytes": 445,
+    "sha256": "8ccda68ccf6cdd4763f784373e31bc89e4887d9f68c5bcef2f577090ea77df9d"
+  },
+  {
+    "path": ".github/PULL_REQUEST_TEMPLATE.md",
+    "bytes": 319,
+    "sha256": "b7922389711054a6a3086e12516a46c9bec73640e01821e4c46d4c559acfaebd"
+  },
+  {
+    "path": ".github/workflows/verify.yml",
+    "bytes": 268,
+    "sha256": "93d8a3305a47c38da3c253c0ef90d73412a9abeead8aebc22360fca74faaac0d"
+  },
+  {
+    "path": "CHANGELOG.md",
+    "bytes": 1024,
+    "sha256": "ac5742655e35b37860411de1f8666be0b66a1e3937453bf8b838f57621dd647c"
+  },
+  {
+    "path": "CONTRIBUTING.md",
+    "bytes": 772,
+    "sha256": "9fa6c2ccf64e0d367354e72431849d15896d97b47eda99fa34df0ec7802d9e5e"
+  },
+  {
+    "path": "README.md",
+    "bytes": 4844,
+    "sha256": "217a05507b5be5a8c540d849d6e281e3804abf996dfebcb53146bfb5eceea9f1"
+  },
+  {
+    "path": "ROADMAP.md",
+    "bytes": 344,
+    "sha256": "dcc04c817deff0c0a6bfdea4c0acbd65b3ccb121780c0dbe2034a4a6db5a9d61"
+  },
+  {
+    "path": "SECURITY.md",
+    "bytes": 431,
+    "sha256": "add32a8c45829ac867ff15c5ce794ed877cf5d17267da0b0bdb409fa084b7032"
+  },
+  {
+    "path": "chapters/01-network-protocols/README.md",
+    "bytes": 5466,
+    "sha256": "7ebc2aa2d97b97eb302e992e7a3cbf3e0be51bfc37c946bf8eeb43da8883cfea"
+  },
+  {
+    "path": "chapters/02-web-security/README.md",
+    "bytes": 5371,
+    "sha256": "9178765a67c35e07beba4cb92720c9f004e31858124b0cf5ddba1618f7c93a77"
+  },
+  {
+    "path": "chapters/03-api-identity/README.md",
+    "bytes": 5211,
+    "sha256": "345968d771e5c2769417b357808131fafbdd63edd9b85ab2fa3f04995ff2f077"
+  },
+  {
+    "path": "chapters/04-host-middleware/README.md",
+    "bytes": 5154,
+    "sha256": "662ff37ba9f3adf04fbf5ba2c19bf7d70093e24e3383942f89b82f4b1fc76589"
+  },
+  {
+    "path": "chapters/05-enterprise-identity/README.md",
+    "bytes": 5110,
+    "sha256": "cf1494349a7a039a0376cba8d1396bb94905f13d624a5006d0f9fae376f77fab"
+  },
+  {
+    "path": "chapters/06-appsec-supply-chain/README.md",
+    "bytes": 5087,
+    "sha256": "b3cd7bb7979abbb30595eaa6aa11f36a0957b78fb33c55a4dcc9afec36c0ac11"
+  },
+  {
+    "path": "chapters/07-blue-team-ir/README.md",
+    "bytes": 5071,
+    "sha256": "ce815b8048567c97eaa1c57bd8b4bc67c97a7e7177eb034816ff52ad976c0b93"
+  },
+  {
+    "path": "chapters/08-cloud-native/README.md",
+    "bytes": 4973,
+    "sha256": "67b516fe5b25329c562ab269332755b0ba7ddcaa29bf1b6797b2502b33d20251"
+  },
+  {
+    "path": "chapters/09-crypto-architecture/README.md",
+    "bytes": 4926,
+    "sha256": "1e08a3b93e5d8a2a724a8dc8d806e2759cf72a15aa6b250b937641f7c7823539"
+  },
+  {
+    "path": "chapters/10-system-design/README.md",
+    "bytes": 5548,
+    "sha256": "52862f3ffb685756008f1f937de2c1ddacb0098b21bf8478175b0c7d8774b924"
+  },
+  {
+    "path": "data/build-info.json",
+    "bytes": 436,
+    "sha256": "8db51928bbaf3fe091fb458847c1356f138c88d9bfc8fdbfc29f9972d1375586"
+  },
+  {
+    "path": "data/enrichment/chapter-01.json",
+    "bytes": 23995,
+    "sha256": "db07020d3986ab250ad56a60e8ad14812cad538808637a09fefe6f2fbb99efe8"
+  },
+  {
+    "path": "data/enrichment/chapter-02.json",
+    "bytes": 24771,
+    "sha256": "2c904ffa8dbb5851f8c052316e446179b05ad22b70728acfa4220a596477cad4"
+  },
+  {
+    "path": "data/enrichment/chapter-03.json",
+    "bytes": 22914,
+    "sha256": "6b94ed045ac1ddae12075aa3528844adfac052d24a014f2beb7c79b455af8605"
+  },
+  {
+    "path": "data/enrichment/chapter-04.json",
+    "bytes": 22226,
+    "sha256": "4858c2374f7c738ff18a9ea09eefcc755fefc88b2587bdfa41bfb22d7907785e"
+  },
+  {
+    "path": "data/enrichment/chapter-05.json",
+    "bytes": 20322,
+    "sha256": "cc91d5fa9641fbaa24e47c16c0fb64aca4bd8291936e5da16f044b877ca260ad"
+  },
+  {
+    "path": "data/enrichment/chapter-06.json",
+    "bytes": 19696,
+    "sha256": "e2321de76958155878de690db650b8521b9dc23c144712b2c560fef559630086"
+  },
+  {
+    "path": "data/enrichment/chapter-07.json",
+    "bytes": 20471,
+    "sha256": "41653e6ad5a971de7377aff9fcbff37914a70aa41e3eb01713045147c8b38839"
+  },
+  {
+    "path": "data/enrichment/chapter-08.json",
+    "bytes": 19375,
+    "sha256": "7078079694f89fbc2c25cc2532b0b89663bbf867b1189f40d93c58a295a00e48"
+  },
+  {
+    "path": "data/enrichment/chapter-09.json",
+    "bytes": 19206,
+    "sha256": "ac50fb8974b556130d14ef7c8ef511d1ca7d151afb7f042f98f33a62f92e84c4"
+  },
+  {
+    "path": "data/enrichment/chapter-10.json",
+    "bytes": 19237,
+    "sha256": "e02a5c1eb72cc52af131b94b17e07ed24e0f30de5806e0ad2b9b90f0ca4cc06e"
+  },
+  {
+    "path": "data/question-index.json",
+    "bytes": 39566,
+    "sha256": "7bc21d5674810a925c2e34dacf62c5355e1e4528fe1afc82e644e9d1b175db69"
+  },
+  {
+    "path": "docs/00-pdf-basis.md",
+    "bytes": 2352,
+    "sha256": "0f67029658d8e3b4031619ca45814a0758337777b055cef6e54aec5f6f9d8732"
+  },
+  {
+    "path": "docs/01-study-roadmap.md",
+    "bytes": 817,
+    "sha256": "c64617b18b17263771360c36927395bc03205f842af73c0da62b709ebe4d2606"
+  },
+  {
+    "path": "docs/02-answer-framework.md",
+    "bytes": 1001,
+    "sha256": "9c7ed7f269dd90dcc1437e89aafd8021ae503d95702c6a9ea88940ae569e0082"
+  },
+  {
+    "path": "docs/03-role-roadmaps.md",
+    "bytes": 585,
+    "sha256": "572a16771b470180a7bb9c83a9f9a37894e6fcc7471cd7b624bd8ea27c7a9c38"
+  },
+  {
+    "path": "docs/04-standards-map.md",
+    "bytes": 1295,
+    "sha256": "cc771ac44abe14328962de81597968e25555789b2518c55b30c347bbc75eff5e"
+  },
+  {
+    "path": "docs/05-glossary.md",
+    "bytes": 1002,
+    "sha256": "2f02f3ee7477305b411a22e8d0d36b295c66360964c22087b4c8ece004a06865"
+  },
+  {
+    "path": "docs/06-interview-rubric.md",
+    "bytes": 524,
+    "sha256": "76a6c27695377fd3ef897edbd65ea8ac69cf4ca3fdfb5a880810bce86c94f853"
+  },
+  {
+    "path": "docs/07-last-30-minutes.md",
+    "bytes": 773,
+    "sha256": "5aa7d36034124ca7e76bafa1934af2b9c3fa39431bd45ca5231a7fc550be089d"
+  },
+  {
+    "path": "docs/08-unified-model.md",
+    "bytes": 905,
+    "sha256": "3691de8bed4d9901e33fce4aff28199aa373b12422bb200e48c114a316398ae2"
+  },
+  {
+    "path": "docs/question-index.md",
+    "bytes": 17919,
+    "sha256": "a0cf0cbee8cc936d0740c2eb7e9bb3be49bd81c2f213f7160c3a3fa2db107bdb"
+  },
+  {
+    "path": "mkdocs.yml",
+    "bytes": 14435,
+    "sha256": "28e90c426287437c309a80e106cb8e52bd4d3f8a6262287cd24643346ff31b30"
+  },
+  {
+    "path": "pdf/网络安全面试宝典_100题_2026.pdf",
+    "bytes": 2782468,
+    "sha256": "e778df5cfff56ec65412d82beac5777ef6cdc9987744e7b6be8498d7076f441e"
+  },
+  {
+    "path": "questions/01-network-protocols/q01-network-fundamentals.md",
+    "bytes": 12040,
+    "sha256": "002923bfc323b4d4616e3424f2fb7a0f363d5eff111221065b455a7df082f152"
+  },
+  {
+    "path": "questions/01-network-protocols/q02-tcp-ip.md",
+    "bytes": 11072,
+    "sha256": "6df23ceef6a035c9db2decf0d33bb0028e4f848efec74a871923bc2c7c6a6f45"
+  },
+  {
+    "path": "questions/01-network-protocols/q03-tcp-ip.md",
+    "bytes": 10921,
+    "sha256": "3554c962b3ba8cacfd57ce39d46f2cc38d8205a332b67bb3dff5a06ce1b4e546"
+  },
+  {
+    "path": "questions/01-network-protocols/q04-tcp-udp-quic.md",
+    "bytes": 11169,
+    "sha256": "ac3e5adb41b5070d4e0f52746763da6976533156cf4015fc1da7bf771faed911"
+  },
+  {
+    "path": "questions/01-network-protocols/q05-dns.md",
+    "bytes": 11240,
+    "sha256": "b3790b5edcf48f28e89643c39509a8b21ed450ab64fdcd20c2d5f42a08e3920c"
+  },
+  {
+    "path": "questions/01-network-protocols/q06-http.md",
+    "bytes": 11380,
+    "sha256": "fca5e6111630d5cd08575db498a55b88727da8519d59070c280266496a9ea215"
+  },
+  {
+    "path": "questions/01-network-protocols/q07-end-to-end-web-request.md",
+    "bytes": 11089,
+    "sha256": "3c2736df957f5e8cacd81f18920727083a79b8c323b3c2533933e9668b5faa91"
+  },
+  {
+    "path": "questions/01-network-protocols/q08-tls.md",
+    "bytes": 10924,
+    "sha256": "941990efa36c7ed54e82addf7c8ce8019551be725c4a46c1096c6e3d224653cf"
+  },
+  {
+    "path": "questions/01-network-protocols/q09-edge-architecture.md",
+    "bytes": 11097,
+    "sha256": "901d413c689e84aa6bbe5635e3f22677a3efdca4fe68649713ed26ce58fb76f7"
+  },
+  {
+    "path": "questions/01-network-protocols/q10-lan-security.md",
+    "bytes": 10843,
+    "sha256": "706b3e174eaa8bfb595dcdc1d6cfac9d30dd61ef0cee518e30cc5a48e316ccf9"
+  },
+  {
+    "path": "questions/02-web-security/q11-owasp-wstg-asvs.md",
+    "bytes": 12003,
+    "sha256": "9744bd28b2d40b5e97e2bde158d38649cf6225d4eaf1ed108b7f432e4230f724"
+  },
+  {
+    "path": "questions/02-web-security/q12-owasp-a05-injection.md",
+    "bytes": 11618,
+    "sha256": "7e9e4a77a016154bd449bc08ccb12dd014c8346cd18cd08272f15ae280b25140"
+  },
+  {
+    "path": "questions/02-web-security/q13-owasp-a05-asvs.md",
+    "bytes": 11833,
+    "sha256": "f4eea484c9b9abff8458dbbc68aca186be8b6ae3fa81496dfea5c032b0949d2d"
+  },
+  {
+    "path": "questions/02-web-security/q14-owasp-injection-browser-security.md",
+    "bytes": 11562,
+    "sha256": "20d5df45f3a78e8bef5296186061056965c3e14df94413996e03851be994367d"
+  },
+  {
+    "path": "questions/02-web-security/q15-csp-defense-in-depth.md",
+    "bytes": 11464,
+    "sha256": "729ea51c5154c988c35eac31d67be4b95e847c48c3679258df957e3ecec2b08c"
+  },
+  {
+    "path": "questions/02-web-security/q16-owasp-a01-browser-security.md",
+    "bytes": 11402,
+    "sha256": "2c184b21a733cf89adcff006f46b79969768ef88914f14090bdd956a9f96603d"
+  },
+  {
+    "path": "questions/02-web-security/q17-owasp-a01-2025-api7-2023.md",
+    "bytes": 12132,
+    "sha256": "b6ee46b180693e7b9c505ff75d921c3f847e3aaf1c258cafd378848fdfc11468"
+  },
+  {
+    "path": "questions/02-web-security/q18-ssrf-defense.md",
+    "bytes": 11864,
+    "sha256": "dbd2eeaffa740c7c9a396a10c4b03d9f2d98255506433969a10d0dbbb2659c25"
+  },
+  {
+    "path": "questions/02-web-security/q19-xml-parser-security.md",
+    "bytes": 11441,
+    "sha256": "b31c5d5e3d3764bbf22b619bc24a5684995be608b584de4398986df4bea345fa"
+  },
+  {
+    "path": "questions/02-web-security/q20-file-handling.md",
+    "bytes": 11954,
+    "sha256": "b2191d5bcc81610fe2a0466c4cf5eb57d9f053e43a47631a0f65c4501f9415e5"
+  },
+  {
+    "path": "questions/03-api-identity/q21-file-path-security.md",
+    "bytes": 11408,
+    "sha256": "56fa8db04f84031f54964010a45ecb6169ce5b326e3235f3c560e146f796187c"
+  },
+  {
+    "path": "questions/03-api-identity/q22-owasp-injection-asvs.md",
+    "bytes": 11334,
+    "sha256": "6964c40b8616e0dc13ec1ac137600ef785fbd25a67d30bad4997f317ce86becd"
+  },
+  {
+    "path": "questions/03-api-identity/q23-serialization-security.md",
+    "bytes": 11721,
+    "sha256": "398813fd003ec2d944e12270fe5889d2b9b27dc563adbbf6f28f03483a03720f"
+  },
+  {
+    "path": "questions/03-api-identity/q24-http-parser-differential.md",
+    "bytes": 11313,
+    "sha256": "691f6e564819fb5de386bf2b54f427c4a9c0181d6d661e05f58cd46e812a49c8"
+  },
+  {
+    "path": "questions/03-api-identity/q25-owasp-api1-bola-a01.md",
+    "bytes": 11383,
+    "sha256": "79a14c9d63cb90b88d0a21c0d9a4d1cb3c512384ce6ac87f8378c664e3c167f7"
+  },
+  {
+    "path": "questions/03-api-identity/q26-access-control.md",
+    "bytes": 10999,
+    "sha256": "fa521c371392dc072201143d77c7f39ec0c79e91a30b61574fd0ca37249c448e"
+  },
+  {
+    "path": "questions/03-api-identity/q27-jwt-jose.md",
+    "bytes": 11215,
+    "sha256": "e5cc7e8c5ce879d644922995a598dc91f28d71c32fc0272bb9c1d40bd9fa393c"
+  },
+  {
+    "path": "questions/03-api-identity/q28-web-identity.md",
+    "bytes": 11674,
+    "sha256": "479eb2bc99a9adf7bbd2d87f926964ef62d7ab61dfa3cad398f2e2ac9be9cef3"
+  },
+  {
+    "path": "questions/03-api-identity/q29-oauth2-oidc.md",
+    "bytes": 11345,
+    "sha256": "ea00fb14a4339061c38bad3a536a6aa1a8a094d84b70ef7641aa756f86fea621"
+  },
+  {
+    "path": "questions/03-api-identity/q30-browser-security.md",
+    "bytes": 11337,
+    "sha256": "8ddf25ae07d3cb6664238ba2ae3175558135d9ef0a3eb302fe4f9b86c1a8aa32"
+  },
+  {
+    "path": "questions/04-host-middleware/q31-host-ir.md",
+    "bytes": 11144,
+    "sha256": "84bf84edd0d21f96920ba472395e85f9efa0fbcdca62365348d383e876cc5789"
+  },
+  {
+    "path": "questions/04-host-middleware/q32-windows-telemetry.md",
+    "bytes": 10660,
+    "sha256": "fc702f769a399f4c94e55dd60a4f74d44c0922a6ad510a37288aaa8297339e6e"
+  },
+  {
+    "path": "questions/04-host-middleware/q33-process-analysis.md",
+    "bytes": 10936,
+    "sha256": "58584b53b8bd60617d3f53dfec30b7d669249b41ad82fd82ad4f5d97311229aa"
+  },
+  {
+    "path": "questions/04-host-middleware/q34-mitre-att-and-ck-persistence.md",
+    "bytes": 11040,
+    "sha256": "8c5ab42e60f5bb3a4001f786c2f4a9ad0355d09a92bd29dece4ba3914d1d2e7b"
+  },
+  {
+    "path": "questions/04-host-middleware/q35-privilege-boundary.md",
+    "bytes": 11075,
+    "sha256": "883c9a33f9e6dcf3791263fe43e4ac69ee34ea6471b4abba459612e3a4e17f92"
+  },
+  {
+    "path": "questions/04-host-middleware/q36-java-enterprise.md",
+    "bytes": 11314,
+    "sha256": "e11e89197fdb8823ef9356f27594b916ff3e8ed32ac8160e974c72419a3bdcc3"
+  },
+  {
+    "path": "questions/04-host-middleware/q37-service-exposure.md",
+    "bytes": 10914,
+    "sha256": "723f273da6053b337786e8e5a2a271b84016ccd23d5392c5b777b7bc5dbcfaf6"
+  },
+  {
+    "path": "questions/04-host-middleware/q38-webshell-detection.md",
+    "bytes": 11007,
+    "sha256": "ef165d255f295fed7c2c74a152989df15c42b5b7891435e4248d9d8b6603507d"
+  },
+  {
+    "path": "questions/04-host-middleware/q39-security-controls.md",
+    "bytes": 10739,
+    "sha256": "2801459b2bf7f686d18096a55e45673e54c0e266351ae72b2c1d1fc64674c61c"
+  },
+  {
+    "path": "questions/04-host-middleware/q40-hardening-baseline.md",
+    "bytes": 10818,
+    "sha256": "a8120622f2cc75d0f2c8e140e8f67d3fe690e15c6f7aeadbc5ed7150b7e5db11"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q41-kerberos.md",
+    "bytes": 10379,
+    "sha256": "b7115a6d8f6254d2c69d410dca0465def2845f9346b10803d1328b259aa7c9d8"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q42-windows-authentication.md",
+    "bytes": 10912,
+    "sha256": "d3669bf8d2decafaf53fba30f47e442de0783d4d5ca6ed35459f56006b46ea49"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q43-mitre-credential-access.md",
+    "bytes": 10755,
+    "sha256": "bf4d659658bada0f01e0afda8e791d66c15db6bea83a216327e9661e3dec62fb"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q44-mitre-lateral-movement.md",
+    "bytes": 10856,
+    "sha256": "401823c3571bc3c3e60d5b88448e7cb89f135ef6e1349f4341518daaa5315dba"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q45-nist-sp-800-207.md",
+    "bytes": 10851,
+    "sha256": "9207d24deccab0669f47f08a68cf305c220d14f4a25ba223971490f94f2e39d0"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q46-authorization.md",
+    "bytes": 10224,
+    "sha256": "06e98101265a69de18282d17a2ec4a2d1700746b6d1fbecf2436f045691661d4"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q47-identity-incident.md",
+    "bytes": 10779,
+    "sha256": "b6211ccb02a737286365f4347a682cf262f5214c275688a8a8dc9b8e992c83a4"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q48-asset-management.md",
+    "bytes": 10453,
+    "sha256": "2027d4538148d778d9175963241bc6c3bf043a33369e860a674c32bbed435bfb"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q49-secrets-management.md",
+    "bytes": 10390,
+    "sha256": "8fe7216e6df81ef055bfa66f6bc65ad2303ff08f952276448603b3c84642c36e"
+  },
+  {
+    "path": "questions/05-enterprise-identity/q50-machine-identity-pki.md",
+    "bytes": 10650,
+    "sha256": "35d0c2aab3387217d67f00df2ba648307a0a3a1b9fd72cc4f0f9b8491d0eab2e"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q51-appsec-tooling.md",
+    "bytes": 10767,
+    "sha256": "2aa67de1c6344cdcdc44f44eb5fb5b9fdd7c5467991b82a4f0d2e6f1ec3942b6"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q52-static-analysis.md",
+    "bytes": 10461,
+    "sha256": "563a0afcc17fd2657ecc907c8fca26812bed01d2b8556415982cf530e405de24"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q53-owasp-injection.md",
+    "bytes": 11039,
+    "sha256": "405c6b330c91569b0a4d27ebf74b164c8e45370c3011ab8a89ab558fecab56ad"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q54-serialization-review.md",
+    "bytes": 10701,
+    "sha256": "be2579176db526ac29a6e0d1333d5d532236c94a61263ca73875e8979349059a"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q55-owasp-a03-2025.md",
+    "bytes": 11399,
+    "sha256": "98aaa3e610a614fd259999b3625f260599c5b31ec9cfe8a6bc4252f7f6609494"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q56-sbom.md",
+    "bytes": 10423,
+    "sha256": "f8bbbd62c5a09cdd8027d27ef83ae10c52130b378263b6afb530f03c9b1bac63"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q57-secrets-incident.md",
+    "bytes": 10297,
+    "sha256": "cbd071b5b284b2a11a01022619a7b43bc6d163ff26d4a9613c4de5ce7dc274f8"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q58-ci-cd-security.md",
+    "bytes": 10960,
+    "sha256": "8a15c51d1f5384c1e10d807f61b454ce56cd115df245530005aea3829b2c092a"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q59-root-cause-analysis.md",
+    "bytes": 10342,
+    "sha256": "9047f5c7ab635344bdbcc53095e47369e65a230afeef044e24b09a1e1ee85b36"
+  },
+  {
+    "path": "questions/06-appsec-supply-chain/q60-memory-safety.md",
+    "bytes": 10798,
+    "sha256": "7f0587f301126f574c84dbf1c406e82b867f9dde56487fbb590fc871de8d6b85"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q61-soc-triage.md",
+    "bytes": 10641,
+    "sha256": "6b5e6dd66d4b5a52adf719232463ec23337a5af19c628cbc969eeb52be8b44c6"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q62-detection-concepts.md",
+    "bytes": 10595,
+    "sha256": "eee862f227c44b7bc469a7b13628cfea4892e2d2528eee7b840417fef578146e"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q63-siem-architecture.md",
+    "bytes": 10802,
+    "sha256": "a99c01fafff4241f9bc407e8264f699b4d329106fb4813f29fe4c63be616dd40"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q64-nist-sp-800-61r3-csf-2-0.md",
+    "bytes": 11120,
+    "sha256": "08b98b5a8be7e7ad9fc6e1aca7fa22996e00cf2dce31b2e54ade6e9933eb637a"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q65-ransomware-ir.md",
+    "bytes": 11070,
+    "sha256": "4b784417de65cacdb96fb97dd58c15ce0eb0a1d365939007c51a969063d3519d"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q66-timeline-analysis.md",
+    "bytes": 10781,
+    "sha256": "5fddf7e35f2f2215cd64602c1a85ed39f00b3112b63e7bb3adc6d8e48d80a041"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q67-phishing-triage.md",
+    "bytes": 10984,
+    "sha256": "3220e597cde45ceb6d93d0b517752978ba8657d141033f8270018834d6779f31"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q68-cisa-kev-risk.md",
+    "bytes": 10730,
+    "sha256": "9b3824f8586a5bec7fa93a724dd833513305887330278cf9a066e1c8623708e8"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q69-telemetry-strategy.md",
+    "bytes": 10419,
+    "sha256": "0a4b851a35baa5b7a8fdc7d7d8afe9fb7378c70a1d148486d7f7f88ca42a1550"
+  },
+  {
+    "path": "questions/07-blue-team-ir/q70-mitre-att-and-ck.md",
+    "bytes": 10601,
+    "sha256": "c8751545ab10d304eb189f4dfddcb2cdd18571a480bc9b1d8f370ca74456183f"
+  },
+  {
+    "path": "questions/08-cloud-native/q71-cloud-security.md",
+    "bytes": 10425,
+    "sha256": "2fc827995332bbc274155457b7fa017f2fe9e8d0f79b6107fbe05fd41b1c8f32"
+  },
+  {
+    "path": "questions/08-cloud-native/q72-cloud-iam.md",
+    "bytes": 10584,
+    "sha256": "9842cefb2f19a9d5f8d164b28766130251407ff1dfb36dbe2c44e627b129d83e"
+  },
+  {
+    "path": "questions/08-cloud-native/q73-object-storage.md",
+    "bytes": 10522,
+    "sha256": "1cead5c61d47fcaeea3c3872e99f0aa42336baa20583bbbbf8feff68d88b9809"
+  },
+  {
+    "path": "questions/08-cloud-native/q74-ssrf-cloud-identity.md",
+    "bytes": 10716,
+    "sha256": "4fa7b38e81bfc1ba5f539c5f98d097bf2e6f08cc0d949a47b9e3bd040fb69c8c"
+  },
+  {
+    "path": "questions/08-cloud-native/q75-container-security.md",
+    "bytes": 10470,
+    "sha256": "ac4ecced3dbaa6795444ba0be56bde36e26ee75c85a5a5ea1ba7805c11a342fb"
+  },
+  {
+    "path": "questions/08-cloud-native/q76-kubernetes.md",
+    "bytes": 10890,
+    "sha256": "bd899c373150a61c04332f8993ced7f51db2053bb77abbc911a81ca506b172b5"
+  },
+  {
+    "path": "questions/08-cloud-native/q77-image-supply-chain.md",
+    "bytes": 10337,
+    "sha256": "9a31b706805756f375ab56eba972c4086f83ccb6ac2ae0ef76fbf935d9264dbe"
+  },
+  {
+    "path": "questions/08-cloud-native/q78-iac-policy-as-code.md",
+    "bytes": 10272,
+    "sha256": "adef49d5309c2c629140afd3781519e38b16826fb34fc58abcd4a0af23f87420"
+  },
+  {
+    "path": "questions/08-cloud-native/q79-serverless-security.md",
+    "bytes": 10544,
+    "sha256": "a0a8c3c10e8505f44ed39b81db5b9a1540bcf0c5275dd6addf7613f774fae846"
+  },
+  {
+    "path": "questions/08-cloud-native/q80-cloud-ir.md",
+    "bytes": 10974,
+    "sha256": "7354a8141e503af670c63e270416774d7ea6015c370578c2f608176052397aaf"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q81-cryptography-basics.md",
+    "bytes": 10534,
+    "sha256": "14c8f546e08adeb656ed30d65803592337ac31453b93db0cd902c563c63cacd5"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q82-crypto-basics.md",
+    "bytes": 10358,
+    "sha256": "58dd070560f96e2378a98115f5a0e97a087031bf8a2aaecfb46010f730c26c45"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q83-password-storage.md",
+    "bytes": 10227,
+    "sha256": "6eba20e4e90dd30a75fb46edf2b7310422bf32bc48bdecea4de318bff458fb5a"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q84-tls-1-3.md",
+    "bytes": 10167,
+    "sha256": "4a8dbaeaf6ccac50333b3d7d85066c7d230d69ffd90bef653d161f21505600a9"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q85-pki.md",
+    "bytes": 9966,
+    "sha256": "eff9d6a32f28c1e47fbe82a2a0002425c5fb38f487fea4a83081c4654bfebebb"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q86-mtls.md",
+    "bytes": 10127,
+    "sha256": "ad0e902d0633de9e327061e53a725ab3df246aba7c834451ba8e861a0b46bc58"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q87-crypto-construction.md",
+    "bytes": 10388,
+    "sha256": "3ec52f66c530c06c4c1682eeb82005f2e3ae426fdb0024c2083109233dc8ca96"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q88-kms-data-security.md",
+    "bytes": 10534,
+    "sha256": "869c0a6be9df9acf8712d058bde6d25a7c2aff953a80fb3ed65e656837d0883e"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q89-nist-sp-800-207.md",
+    "bytes": 10566,
+    "sha256": "16294246e29d32b3f7f586379df09a24d6bd8ccc4488963a8859cc216a027668"
+  },
+  {
+    "path": "questions/09-crypto-architecture/q90-nist-csf-2-0.md",
+    "bytes": 10435,
+    "sha256": "48eda90ec46466e737a62d33494b09bd4dcd81e7c785d7dcc6bbce86ddb14784"
+  },
+  {
+    "path": "questions/10-system-design/q100-security-program-csf-2-0.md",
+    "bytes": 11608,
+    "sha256": "c6809ecaee36a9128f01ab2d97c9a4fec37bc1abcb7f9aa5c7bc38b7095e4348"
+  },
+  {
+    "path": "questions/10-system-design/q91-authentication-surface.md",
+    "bytes": 10790,
+    "sha256": "f31a9b7a9b2a033cfaa635976c1d8f4c70f58e62d1ca2e7b5eec51ecfa4679d8"
+  },
+  {
+    "path": "questions/10-system-design/q92-account-recovery.md",
+    "bytes": 10635,
+    "sha256": "b4e15e8628f27d250ae4585e9e17d85772405e0d9dab064be55f11933e248a13"
+  },
+  {
+    "path": "questions/10-system-design/q93-api-security.md",
+    "bytes": 11074,
+    "sha256": "6e5b234594eb3e2da2374d73611bee62616855c38e5aa8b754f62a885cbcd153"
+  },
+  {
+    "path": "questions/10-system-design/q94-secure-upload-architecture.md",
+    "bytes": 11018,
+    "sha256": "ecd0819f0f041bddf604c16f2fd9b744989896a99d73547144018998c370b3ce"
+  },
+  {
+    "path": "questions/10-system-design/q95-nist-ssdf-secure-sdlc.md",
+    "bytes": 10755,
+    "sha256": "b585f5dea4f2cfd5ec315eec1f34b4ec6e706e2b80864a80c84b7846783bbf78"
+  },
+  {
+    "path": "questions/10-system-design/q96-risk-based-vm.md",
+    "bytes": 10695,
+    "sha256": "049fdaec72878630a7da6f6bb56a54a0992a1b6a289888d5d19dade8ccfd8a39"
+  },
+  {
+    "path": "questions/10-system-design/q97-python-data-processing.md",
+    "bytes": 10410,
+    "sha256": "ec794df325f9ba29deaaeef31a8344b5de799d4fdd1005599b7fb9b2c3811752"
+  },
+  {
+    "path": "questions/10-system-design/q98-postmortem.md",
+    "bytes": 10654,
+    "sha256": "b7169306581a943b11b3d9788e6a483256886509c4d948c876dc7f0366021427"
+  },
+  {
+    "path": "questions/10-system-design/q99-behavioral-technical.md",
+    "bytes": 10509,
+    "sha256": "e71b269adf94aa91df3f3854957aa30e7f5230b0e2c23827d71364c88b916be4"
+  },
+  {
+    "path": "references/official-standards.md",
+    "bytes": 2144,
+    "sha256": "00441eb58f8eb1f7b928a5edb811a230a5ead0466b297972d65a2e6610ebc2de"
+  },
+  {
+    "path": "requirements-docs.txt",
+    "bytes": 23,
+    "sha256": "968aea3f4765290926a2bcae19575a0dfead0afb322162a7560f18db237d5a78"
+  },
+  {
+    "path": "scripts/__pycache__/apply_professional_v2.cpython-313.pyc",
+    "bytes": 5031,
+    "sha256": "1713be49c2cabc83c9f38e70a1c8746df9acb1724f904d31eaa9611c12bf8e71"
+  },
+  {
+    "path": "scripts/apply_professional_v2.py",
+    "bytes": 2949,
+    "sha256": "07836bdc1a9dc3c7bc70f01fd3f9beff46fc3d208b210803328b88f96567fa6b"
+  },
+  {
+    "path": "scripts/verify_repo.py",
+    "bytes": 1196,
+    "sha256": "65f996aa3d7a08fe9afbfde713dd767df62cd7c0967a288d05b18428e90f9149"
+  }
+]

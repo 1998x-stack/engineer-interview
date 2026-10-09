@@ -1,0 +1,23 @@
+{
+  "question_count": 100,
+  "module_counts": {
+    "竞赛体系与教练认知": 10,
+    "代数": 15,
+    "平面几何": 15,
+    "数论": 15,
+    "组合数学": 15,
+    "综合解题与证明": 8,
+    "试讲与教学能力": 10,
+    "课程研发与训练体系": 7,
+    "学生培养与职业素养": 5
+  },
+  "pdf_pages": 124,
+  "generated_on": "2026-09-02",
+  "source_tex_lines": 3546,
+  "version": "1.1.0",
+  "professional_v2_question_count": 100,
+  "question_markdown_lines": 15915,
+  "question_markdown_chars": 282096,
+  "module_readme_count": 9,
+  "last_content_upgrade": "2026-09-02"
+}

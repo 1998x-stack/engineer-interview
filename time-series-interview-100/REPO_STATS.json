@@ -1,0 +1,11 @@
+{
+  "questions": 100,
+  "chapters": 10,
+  "markdown_files": 119,
+  "question_markdown_chars": 441410,
+  "total_markdown_chars": 527468,
+  "python_source_files": 5,
+  "examples": 3,
+  "tests": 2,
+  "edition": "2026.09-v2-deep"
+}

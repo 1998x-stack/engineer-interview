@@ -1,0 +1,21 @@
+name: Question improvement
+description: Improve one interview question
+title: "[Qxxx] "
+body:
+  - type: input
+    id: qid
+    attributes:
+      label: Question ID
+      placeholder: Q001
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What should be improved?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / reference

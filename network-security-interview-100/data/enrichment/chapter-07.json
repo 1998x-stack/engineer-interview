@@ -1,0 +1,412 @@
+{
+  "Q61": {
+    "model": [
+      "SOC triage 的目标是把“告警”转成可行动的 incident hypothesis：是真是假、影响谁、范围多大、是否仍在继续。",
+      "优先级应结合 signal confidence、asset criticality、identity privilege、activity recency 和 business impact。",
+      "高分回答会显式区分 alert severity 与 incident severity。"
+    ],
+    "boundary": [
+      "单个 detector 的 high severity 不代表事件已被证实。",
+      "自动隔离/封禁可能影响业务，需定义哪些场景允许 auto-response。",
+      "缺失 telemetry 会降低结论置信度，应被记录而非凭空补齐。"
+    ],
+    "design": [
+      "标准 triage checklist：validate→enrich→scope→timeline→severity→containment。",
+      "自动 enrichment 资产、身份、威胁情报和历史行为。",
+      "case management 记录 evidence、decision、owner 和 SLA。",
+      "重复误报要回流 detection tuning，而不是每次人工关闭。"
+    ],
+    "evidence": [
+      "原始 event、rule logic、asset/identity context。",
+      "EDR/IdP/cloud/network/application 关联证据。",
+      "历史同类事件与 prevalence。"
+    ],
+    "validation": [
+      "抽样复核 closed alerts 的质量。",
+      "purple/tabletop 测试告警能否到达正确 owner。",
+      "衡量 MTTT/MTTC、false positive 与 missed case。"
+    ],
+    "deep_questions": [
+      "高危告警是否应该自动隔离？",
+      "如何定义“证据足够”升级为 incident？",
+      "缺一类日志时如何表达置信度？"
+    ],
+    "deliverable": "SOC triage playbook + severity matrix + enrichment pipeline + case/evidence template。",
+    "summary": {
+      "root": "告警只是信号，需要上下文验证和范围判断。",
+      "boundary": "误报、业务影响、缺失 telemetry。",
+      "control": "标准 triage + enrichment + case governance。",
+      "evidence": "raw alert + identity/asset/multi-source context。",
+      "verify": "抽样、演练与质量指标。"
+    }
+  },
+  "Q62": {
+    "model": [
+      "IOC 是具体可观察 artifact，IOA 更强调行为迹象，TTP 是更高层的对手行为模式/方法。",
+      "检测从 brittle indicator 向 behavior model 演进，通常获得更长寿命但也带来更高语义/误报挑战。",
+      "三者不是替代关系：IOC 可快速阻断，行为/TTP 适合长期覆盖。"
+    ],
+    "boundary": [
+      "hash/domain 可快速变化；behavior 也可能与合法管理重叠。",
+      "ATT&CK technique 是知识分类，不等于一条可部署检测。",
+      "威胁情报质量、时效和上下文决定 IOC 价值。"
+    ],
+    "design": [
+      "IOC 做 enrichment/短期阻断并设置 TTL。",
+      "行为检测明确数据源、前置条件和正常基线。",
+      "TTP 用于 coverage/gap 分析与 threat-informed prioritization。",
+      "检测内容保持 version/owner/test corpus。"
+    ],
+    "evidence": [
+      "IOC match + first/last seen + prevalence。",
+      "process/auth/network behavior sequence。",
+      "ATT&CK mapping 与 underlying telemetry。"
+    ],
+    "validation": [
+      "过期 IOC 自动 review/expire。",
+      "behavior rule 用 benign/adversary simulation 测试。",
+      "Technique coverage 要验证“有可用检测”，不是只打标签。"
+    ],
+    "deep_questions": [
+      "为什么 IOC 适合快速响应但不适合长期唯一策略？",
+      "IOA 和 TTP 的边界如何理解？",
+      "ATT&CK coverage 100% 为什么可能是虚假的好指标？"
+    ],
+    "deliverable": "Detection content catalog：IOC TTL、behavior logic、ATT&CK mapping、tests、owner、quality metrics。",
+    "summary": {
+      "root": "从具体 artifact 到行为模式有不同抽象层。",
+      "boundary": "易变指标与合法行为重叠。",
+      "control": "IOC 快速处置 + behavior/TTP 长期检测。",
+      "evidence": "match/prevalence + behavior sequence。",
+      "verify": "TTL 与仿真测试。"
+    }
+  },
+  "Q63": {
+    "model": [
+      "SIEM 是数据工程 + 检测工程 + 调查工作流，不只是集中存日志。",
+      "链路包括 collect→parse→normalize→enrich→store→detect→case；任一前置数据质量问题都会污染后续。",
+      "成熟架构要同时管理 schema、latency、retention、cost、health 和 detection content。"
+    ],
+    "boundary": [
+      "全量采集并不等于高可见性；字段缺失、时间错乱、解析失败都可能让数据不可用。",
+      "热/冷存储与 retention 需按 use case/合规而非统一无限期。",
+      "Vendor schema 变化会悄然破坏规则。"
+    ],
+    "design": [
+      "定义 canonical event schema 和 source ownership。",
+      "采集健康、解析失败率、延迟、字段完整度本身进入监控。",
+      "enrichment 资产/身份/geo/threat context。",
+      "高成本日志按检测价值和调查需求分层。"
+    ],
+    "evidence": [
+      "ingest metrics、parser errors、event latency。",
+      "schema field completeness、source heartbeat。",
+      "detection query performance 和 case linkage。"
+    ],
+    "validation": [
+      "模拟 source offline/parser schema change。",
+      "golden events 验证从 ingest 到 alert 全链路。",
+      "定期检查 retention 是否覆盖调查窗口。"
+    ],
+    "deep_questions": [
+      "为什么 SIEM 规则正确但仍可能永远不触发？",
+      "日志规范化和原始日志各自价值是什么？",
+      "如何控制 SIEM 成本而不盲删日志？"
+    ],
+    "deliverable": "SIEM data contract + source health dashboard + golden-event pipeline tests + retention/cost matrix。",
+    "summary": {
+      "root": "检测质量受数据链路完整性直接约束。",
+      "boundary": "schema drift、latency、成本、retention。",
+      "control": "data contracts + health + enrichment + tiering。",
+      "evidence": "ingest/parser/schema/detection metrics。",
+      "verify": "golden event 与 failure tests。"
+    }
+  },
+  "Q64": {
+    "model": [
+      "NIST SP 800-61r3 将 incident response 作为 CSF 2.0 风险管理的一部分，强调事件前准备和事件后反馈。",
+      "IR readiness 来自 Govern/Identify/Protect/Detect 的基础；Respond/Recover 只是事件期间显性部分。",
+      "专业回答应从组织能力、技术能力、沟通/决策和恢复验证四个维度展开。"
+    ],
+    "boundary": [
+      "旧“四/六阶段”仍可作为操作记忆，但不应被误认为 Rev.3 的唯一结构。",
+      "重大事件与低影响事件需要不同 escalation/communication。",
+      "恢复并非“系统开机”，还需确认 trust、数据完整性和控制恢复。"
+    ],
+    "design": [
+      "定义 incident taxonomy、severity、roles、decision authority 和 communications。",
+      "预置 asset/identity/telemetry/forensics/backup 能力。",
+      "高频场景有 playbook，但保留 analyst judgment。",
+      "post-incident actions 进入风险 register、owner 和验证闭环。"
+    ],
+    "evidence": [
+      "readiness：coverage、backup restore、tabletop、contact/role。",
+      "事件中：case timeline、containment actions、decision records。",
+      "恢复后：control validation 和 residual risk。"
+    ],
+    "validation": [
+      "tabletop + technical exercise。",
+      "backup restore 和 isolation/revoke 真实演练。",
+      "对 postmortem action 跟踪到验证完成。"
+    ],
+    "deep_questions": [
+      "Rev.3 与传统 incident handling 阶段记忆最大的思想变化是什么？",
+      "IR readiness 可以用哪些领先指标衡量？",
+      "如何判断“恢复完成”而不只是业务恢复？"
+    ],
+    "deliverable": "IR program pack：severity/roles/playbooks/evidence/communication/tabletop/restore/postmortem governance。",
+    "summary": {
+      "root": "IR 是贯穿风险管理生命周期的组织能力。",
+      "boundary": "阶段模型、事件严重度、恢复信任。",
+      "control": "governance + telemetry + playbooks + recovery validation。",
+      "evidence": "readiness/case/decision/recovery。",
+      "verify": "tabletop/technical exercise/action closure。"
+    }
+  },
+  "Q65": {
+    "model": [
+      "勒索第一小时优先保护人/关键业务、阻止继续扩散、保护身份与备份、建立可信沟通和证据链。",
+      "现代勒索事件应同时考虑加密破坏与数据外泄，不把“文件被加密”当唯一 impact。",
+      "containment 决策应围绕 blast radius 和 control plane，而不是逐台机器手工处理。"
+    ],
+    "boundary": [
+      "立即全网断电可能破坏恢复/取证和关键业务；是否断开取决于活动与影响。",
+      "攻击者可能已获取域/云高权身份，单纯隔离终端不足。",
+      "备份“存在”不等于可恢复，且在线备份也可能被影响。"
+    ],
+    "design": [
+      "启动重大事件 command structure 与 out-of-band communication。",
+      "优先保护/隔离 privileged identity、domain/cloud control plane、backup。",
+      "按 segment/identity/session 实施 containment。",
+      "并行 legal/privacy/comms/business continuity 流程。"
+    ],
+    "evidence": [
+      "EDR ransomware behavior、process/file changes。",
+      "IdP/DC privileged activity、remote access。",
+      "backup console/cloud audit、egress/data access。"
+    ],
+    "validation": [
+      "常态恢复演练和 offline/immutable backup test。",
+      "ransomware tabletop 验证角色与决策。",
+      "事件后确认旧 credentials/persistence/remote paths 失效。"
+    ],
+    "deep_questions": [
+      "为什么勒索事件要优先看身份系统和备份控制面？",
+      "什么时候网络隔离可能弊大于利？",
+      "如何判断是否存在数据外泄？"
+    ],
+    "deliverable": "Ransomware first-hour checklist + decision tree + privileged identity/backup protection + BCP/communications plan。",
+    "summary": {
+      "root": "高影响破坏常伴随身份滥用与横向扩散。",
+      "boundary": "业务连续性、证据、可能外泄。",
+      "control": "control-plane protection + segmented containment + trusted recovery。",
+      "evidence": "EDR/identity/backup/egress。",
+      "verify": "restore + credential/persistence validation。"
+    }
+  },
+  "Q66": {
+    "model": [
+      "时间线分析的关键是统一时间、实体和 correlation，把 HTTP→应用→进程/文件→网络/身份变化连接成因果假设。",
+      "不同数据源时间粒度/时区/clock drift 不同，不能直接按字符串时间排序就当真相。",
+      "timeline 同时包含 observed facts 与 analyst inference，二者应分栏。"
+    ],
+    "boundary": [
+      "日志可能缺失、延迟、被篡改；外部不可变日志更可信但也可能不完整。",
+      "同一 NAT/proxy IP 不代表同一用户。",
+      "应用日志 request ID 若未贯穿主机/服务，需要用时间/实体近似关联。"
+    ],
+    "design": [
+      "全链路统一 UTC/时间同步与 request/correlation ID。",
+      "关键日志集中、不可由应用账号修改。",
+      "调查工具保留 source、timestamp quality 和 confidence。",
+      "对关键步骤记录“最早已知/最晚可能”时间窗口。"
+    ],
+    "evidence": [
+      "reverse proxy/WAF/access/app。",
+      "EDR process/file/network。",
+      "auth/IdP/cloud/database audit。"
+    ],
+    "validation": [
+      "golden request 验证 correlation ID 贯穿。",
+      "检查 clock drift 和 log ingestion delay。",
+      "tabletop 用缺一类日志的情况训练不确定性表达。"
+    ],
+    "deep_questions": [
+      "怎样处理两个日志源时间相差几十秒？",
+      "为什么 request ID 对 Web IR 特别重要？",
+      "如果应用日志被删了还能怎样重建？"
+    ],
+    "deliverable": "Incident timeline worksheet + timestamp normalization + evidence/source/confidence columns + correlation map。",
+    "summary": {
+      "root": "多源事件需按时间与实体关联形成因果链。",
+      "boundary": "clock drift、缺失/篡改日志、身份映射。",
+      "control": "UTC/time sync + correlation ID + centralized logs。",
+      "evidence": "edge/app/EDR/identity/data。",
+      "verify": "golden request 与时钟/延迟检查。"
+    }
+  },
+  "Q67": {
+    "model": [
+      "钓鱼 triage 要回答“邮件是否恶意、用户是否交互、凭据/设备是否受影响、影响是否扩展”。",
+      "只分析附件/URL 内容不够，关键是把 mail telemetry 与 identity/endpoint session 关联。",
+      "邮件身份检查要综合 header、sender/domain、认证结果和上下文，避免单一字段。"
+    ],
+    "boundary": [
+      "合法 SaaS/被接管账户可能发送真实 DKIM/SPF 通过的恶意邮件。",
+      "用户点击不等于 compromise；未点击也不等于无风险（预览/自动处理）。",
+      "URL reputation 是时效信号，首次出现域名可能无评分。"
+    ],
+    "design": [
+      "邮件网关/云邮件 audit 与 IdP/EDR 联动。",
+      "点击/凭据提交高风险场景触发 session revoke、credential reset 等 playbook。",
+      "mailbox rule/forwarding changes 进入 account takeover 检查。",
+      "用户报告渠道与自动 enrichment。"
+    ],
+    "evidence": [
+      "headers/auth results/message trace。",
+      "URL click/proxy/DNS。",
+      "IdP/MFA/session、mailbox rules、EDR。"
+    ],
+    "validation": [
+      "phishing simulation 验证 report→triage→containment。",
+      "测试 compromised-account 场景不依赖 SPF/DKIM 失败。",
+      "测量从用户报告到身份处置时延。"
+    ],
+    "deep_questions": [
+      "SPF/DKIM/DMARC 通过为什么邮件仍可能恶意？",
+      "用户点击后你最先查哪些身份信号？",
+      "为什么 mailbox forwarding rule 很重要？"
+    ],
+    "deliverable": "Phishing triage playbook + mail/identity/endpoint correlation + account-takeover checklist。",
+    "summary": {
+      "root": "恶意邮件可能诱导身份或终端被滥用。",
+      "boundary": "认证通过不等于内容安全，点击不等于 compromise。",
+      "control": "mail→IdP→EDR 联动处置。",
+      "evidence": "headers/click/session/rules/endpoint。",
+      "verify": "simulation 与响应时延。"
+    }
+  },
+  "Q68": {
+    "model": [
+      "CVSS 描述技术严重度的标准化维度，但漏洞优先级还需 exposure、asset criticality、exploit activity、reachability 和 compensating controls。",
+      "CISA KEV 提供“已知被利用”信号，应成为风险排序的重要输入之一。",
+      "成熟 VM 目标是减少可利用风险，而不是追求扫描发现数清零。"
+    ],
+    "boundary": [
+      "KEV 未收录不等于未被利用。",
+      "高 CVSS 在不可达/禁用功能环境可能优先级下降。",
+      "低 CVSS 在身份控制平面/互联网关键资产上也可能业务风险高。"
+    ],
+    "design": [
+      "统一 risk score/decision explanation，保留 CVSS 与业务因素。",
+      "互联网暴露 + KEV + 高价值资产设置更短 SLA。",
+      "结合 SBOM/reachability/EPSS/威胁情报等适当信号。",
+      "例外必须 owner、补偿控制、到期。"
+    ],
+    "evidence": [
+      "scanner finding + asset exposure/owner/criticality。",
+      "KEV/threat intelligence/exploit telemetry。",
+      "deployment/version/reachability/context。"
+    ],
+    "validation": [
+      "抽样比较高风险排序与实际事故/红队路径。",
+      "检查 SLA 是否真正按风险分层。",
+      "验证 exception 到期自动复审。"
+    ],
+    "deep_questions": [
+      "CVSS 与漏洞优先级为什么不是一回事？",
+      "KEV 的优势与局限是什么？",
+      "reachability 如何改变 SCA 漏洞优先级？"
+    ],
+    "deliverable": "Risk-based vulnerability scoring model + SLA matrix + explainable factors + exception governance。",
+    "summary": {
+      "root": "单一技术分数不能代表组织真实风险。",
+      "boundary": "情报不完备、可达性、资产差异。",
+      "control": "CVSS+exposure+KEV+business context。",
+      "evidence": "finding/asset/threat/deploy context。",
+      "verify": "排序质量与 SLA/exception review。"
+    }
+  },
+  "Q69": {
+    "model": [
+      "“最有价值日志”取决于检测/调查问题；日志价值≈回答关键安全问题的能力，而非体积。",
+      "要从 use case 反推 required events/fields/retention，而不是先采所有数据再找用途。",
+      "Identity、endpoint、cloud control plane、application audit 常对现代事件尤为关键。"
+    ],
+    "boundary": [
+      "高量网络日志可能缺身份，应用日志可能缺进程；单源很难完成归因。",
+      "敏感日志本身含隐私/secret，采集需数据最小化和访问控制。",
+      "日志缺字段比“没采某个产品日志”更常成为规则失败原因。"
+    ],
+    "design": [
+      "为每个 detection hypothesis 定义 evidence requirements。",
+      "关键字段建立 data contract 与 completeness metric。",
+      "按 hot/warm/cold retention 与事件窗口分层。",
+      "优先采不可替代的控制面/身份审计。"
+    ],
+    "evidence": [
+      "source health、field completeness、latency、retention。",
+      "use-case mapping 到 query/detection/case。",
+      "调查复盘记录“缺哪类日志导致什么不确定性”。"
+    ],
+    "validation": [
+      "golden event 检查关键字段。",
+      "事件复盘做 telemetry gap review。",
+      "定期删除无用途高成本日志或优化采样。"
+    ],
+    "deep_questions": [
+      "为什么“全流量”仍可能无法判断谁做了操作？",
+      "如何决定日志保留 30 天还是 1 年？",
+      "哪些日志应该不可由应用管理员删除？"
+    ],
+    "deliverable": "Telemetry strategy matrix：use case→source→fields→retention→cost→owner→health。",
+    "summary": {
+      "root": "日志价值取决于能否回答具体安全问题。",
+      "boundary": "身份缺失、隐私、字段质量、成本。",
+      "control": "use-case driven data contracts + health/retention。",
+      "evidence": "field completeness 与 investigation gap。",
+      "verify": "golden event 和事件复盘。"
+    }
+  },
+  "Q70": {
+    "model": [
+      "ATT&CK 是对手行为知识库，可用于 threat modeling、detection coverage、purple team 和 incident mapping。",
+      "Technique mapping 不是检测本身；真正 coverage 需要 telemetry、logic、test、owner 和 quality。",
+      "应从组织 threat model 选择优先 technique，而不是追求全部覆盖。"
+    ],
+    "boundary": [
+      "ATT&CK 版本持续变化，ID/子技术可能调整。",
+      "同一 technique 可有多种实现，单个规则不等于完整覆盖。",
+      "合法管理员行为与 technique 高度重叠时需要上下文。"
+    ],
+    "design": [
+      "建立 threat-informed priority list。",
+      "每个 technique 记录 data sources、detections、tests、gaps。",
+      "purple team 以行为假设验证控制而非照抄具体工具。",
+      "incident 后把 observed behavior 反馈 coverage map。"
+    ],
+    "evidence": [
+      "coverage evidence：rule、data source、last test、result。",
+      "incident behavior mapping。",
+      "sensor/data health。"
+    ],
+    "validation": [
+      "定期 purple exercise。",
+      "对“已覆盖”要求可复现 test evidence。",
+      "ATT&CK version upgrade 做 mapping review。"
+    ],
+    "deep_questions": [
+      "为什么 ATT&CK 不是 kill chain 的简单替代？",
+      "如何定义一个 technique 真正被“覆盖”？",
+      "覆盖率 KPI 为什么可能被游戏化？"
+    ],
+    "deliverable": "ATT&CK coverage matrix + threat priority + detection/test evidence + gap backlog。",
+    "summary": {
+      "root": "ATT&CK 提供行为分类，不直接提供组织控制。",
+      "boundary": "版本、实现多样性、合法行为。",
+      "control": "threat-informed mapping + tested detections。",
+      "evidence": "data/rule/test/incident mapping。",
+      "verify": "purple tests 与 version review。"
+    }
+  }
+}

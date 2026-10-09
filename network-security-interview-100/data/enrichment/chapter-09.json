@@ -1,0 +1,412 @@
+{
+  "Q81": {
+    "model": [
+      "对称加密使用共享秘密，适合高吞吐数据保护；非对称密码使用公私钥关系，常用于签名、密钥建立和身份绑定。",
+      "现代协议通常混合使用：非对称/密钥交换建立会话密钥，再用对称 AEAD 保护大量数据。",
+      "面试应区分 encryption、signature、key agreement 三种目的，避免把“公钥加密”当所有非对称用途。"
+    ],
+    "boundary": [
+      "算法名称安全不代表使用方式安全，mode、padding、key size、随机数和协议组合都重要。",
+      "RSA/ECC 家族不同操作能力与安全假设不同。",
+      "密钥管理通常比算法选择更容易成为工程弱点。"
+    ],
+    "design": [
+      "优先使用成熟协议/库而非自行组合原语。",
+      "数据面使用现代 AEAD；密钥建立/签名按标准协议。",
+      "KMS/HSM 管理 key generation/storage/rotation。",
+      "crypto agility 明确算法/密钥版本但避免任意降级。"
+    ],
+    "evidence": [
+      "KMS/HSM key lifecycle/use logs。",
+      "协议配置、certificate/key version。",
+      "代码 dependency/crypto API usage。"
+    ],
+    "validation": [
+      "配置扫描确认禁用 legacy protocol/algorithm。",
+      "key rotation/recovery 演练。",
+      "测试错误 key/version/签名必须 fail closed。"
+    ],
+    "deep_questions": [
+      "为什么 HTTPS 不直接用公钥加密所有数据？",
+      "数字签名和非对称加密的目的有何不同？",
+      "为什么密钥管理通常比算法名更重要？"
+    ],
+    "deliverable": "Cryptographic architecture：use case→primitive/protocol→key owner/storage/rotation→validation。",
+    "summary": {
+      "root": "不同密码原语解决不同安全属性，现代系统组合使用。",
+      "boundary": "协议/mode/key management 决定实际安全。",
+      "control": "标准协议 + AEAD + KMS/HSM + rotation。",
+      "evidence": "key lifecycle/config/API usage。",
+      "verify": "legacy禁用、轮换、fail-closed tests。"
+    }
+  },
+  "Q82": {
+    "model": [
+      "Encoding 改变表示形式，Encryption 用密钥实现可逆保密，Hash 产生固定长度摘要并面向单向/完整性用途。",
+      "Password hashing 又是 hash 的特殊工程场景：需要 salt 和故意昂贵的 KDF，而不是普通快速哈希。",
+      "MAC/数字签名进一步提供有密钥的完整性/来源验证，不能与普通 hash 混为一谈。"
+    ],
+    "boundary": [
+      "Base64、hex、URL encoding 不提供保密性。",
+      "普通 hash 不能证明消息来自谁；任何人都可重新计算。",
+      "encrypted data 若没有完整性保护也可能遭篡改，因此现代设计倾向 AEAD。"
+    ],
+    "design": [
+      "数据传输/存储保密用标准加密协议。",
+      "密码使用专用 password hashing/KDF。",
+      "完整性/认证按场景使用 MAC/signature。",
+      "明确数据字段是“需要保密、完整性、可查找还是表示转换”。"
+    ],
+    "evidence": [
+      "crypto API/config 与 key usage。",
+      "password hash scheme/version 参数。",
+      "data format/version metadata。"
+    ],
+    "validation": [
+      "检查不存在把 Base64 当 encryption 的设计。",
+      "password migration 能识别旧 hash 并升级。",
+      "加密数据篡改后必须被检测。"
+    ],
+    "deep_questions": [
+      "Hash 为什么不能替代数字签名？",
+      "为什么密码不用 SHA-256 直接 hash？",
+      "Encryption 与 Encoding 在可逆性上都可能“能还原”，关键差别是什么？"
+    ],
+    "deliverable": "Data protection decision table：encoding/encryption/hash/KDF/MAC/signature 的用途、key、属性和 tests。",
+    "summary": {
+      "root": "不同变换提供完全不同安全属性。",
+      "boundary": "普通 hash 无来源认证，encoding 无保密。",
+      "control": "按属性选标准 primitive。",
+      "evidence": "API/config/hash scheme。",
+      "verify": "篡改/旧格式/错误 primitive tests。"
+    }
+  },
+  "Q83": {
+    "model": [
+      "密码存储目标是让数据库泄露后离线猜测昂贵，因此使用专用 memory-hard/slow KDF + unique salt。",
+      "salt 防止预计算和相同密码 hash 相同；work factor/memory cost 提高每次猜测成本。",
+      "pepper 可作为额外服务器侧秘密，但不能替代 KDF/salt。"
+    ],
+    "boundary": [
+      "参数太低会随硬件进步变弱；太高会造成登录 DoS/性能问题。",
+      "旧 hash scheme 需要渐进迁移。",
+      "密码 hash 安全不等于账号安全，还需 MFA、rate limit、breach detection。"
+    ],
+    "design": [
+      "优先 Argon2id 等适合平台的专用方案，参数按性能基准设定。",
+      "每用户随机 salt，必要时 pepper 放 KMS/HSM/secret manager。",
+      "登录成功时 opportunistic rehash 升级旧参数。",
+      "限制在线猜测并保护 reset/recovery。"
+    ],
+    "evidence": [
+      "存储的 hash scheme/version/cost metadata。",
+      "authentication failure/rate-limit/MFA logs。",
+      "KMS pepper access（若使用）。"
+    ],
+    "validation": [
+      "benchmark 验证目标硬件 latency 和并发。",
+      "测试旧 hash 登录后自动升级。",
+      "确认数据库中没有 plaintext/reversible password。"
+    ],
+    "deep_questions": [
+      "salt 为什么不需要保密？",
+      "pepper 与 salt 有什么不同？",
+      "如何升级已有数百万用户的旧 password hash？"
+    ],
+    "deliverable": "Password hashing standard + parameter benchmark + migration strategy + auth abuse controls。",
+    "summary": {
+      "root": "数据库泄露后需提高离线猜测成本。",
+      "boundary": "参数性能、旧 hash、在线攻击。",
+      "control": "专用 KDF + salt + 可选 pepper + MFA/rate limit。",
+      "evidence": "hash metadata/auth/KMS。",
+      "verify": "benchmark、迁移、明文检查。"
+    }
+  },
+  "Q84": {
+    "model": [
+      "TLS 1.3 握手完成版本/参数协商、密钥交换、服务器身份认证和 traffic key 派生。",
+      "现代握手强调 ephemeral key exchange 与 AEAD，提供前向保密等属性。",
+      "面试不必死背 packet 序列，但要能解释每一步解决的安全问题。"
+    ],
+    "boundary": [
+      "0-RTT 具有重放语义限制，应用需决定哪些请求可接受。",
+      "TLS termination 位置决定保护边界。",
+      "证书验证正确仍需应用层 authorization。"
+    ],
+    "design": [
+      "使用成熟 TLS stack 和现代默认配置。",
+      "证书自动化与 key protection。",
+      "对 0-RTT 明确幂等/风险策略。",
+      "内部服务按身份需求使用 TLS/mTLS。"
+    ],
+    "evidence": [
+      "handshake version/cipher/ALPN/certificate errors。",
+      "certificate/key lifecycle。",
+      "edge-origin TLS telemetry。"
+    ],
+    "validation": [
+      "协议/证书扫描和 downgrade/legacy 禁用检查。",
+      "key/cert rotation 演练。",
+      "0-RTT 业务行为测试（若启用）。"
+    ],
+    "deep_questions": [
+      "TLS 1.3 为什么强调 ephemeral key exchange？",
+      "0-RTT 为什么有重放考虑？",
+      "TLS termination 后内部链路还需要加密吗？"
+    ],
+    "deliverable": "TLS profile：versions/ciphers/cert/key/termination/0-RTT/monitoring + tests。",
+    "summary": {
+      "root": "握手建立认证的共享 traffic keys。",
+      "boundary": "0-RTT、termination、应用授权。",
+      "control": "modern TLS + cert automation + safe early-data policy。",
+      "evidence": "handshake/cert/key/edge-origin。",
+      "verify": "扫描/轮换/0-RTT tests。"
+    }
+  },
+  "Q85": {
+    "model": [
+      "PKI 通过 trust anchor→intermediate→leaf certificate 建立“身份与公钥”绑定，并由客户端验证链、主机名和有效期等。",
+      "核心不是“CA 说安全”，而是 CA 对证书绑定做签名，客户端基于 trust store 接受该 issuer。",
+      "证书透明度、吊销/短期证书等补充生命周期可见性。"
+    ],
+    "boundary": [
+      "有效证书不代表网站业务可信，只代表相应身份的密钥绑定。",
+      "trust store 中任何受信根的失误都可能影响广泛域名。",
+      "私钥泄露后证书链仍可能看起来有效。"
+    ],
+    "design": [
+      "自动化 ACME/企业 PKI issuance 和 rotation。",
+      "私钥最小暴露，优先 HSM/KMS。",
+      "最小化内部 trust anchors，明确 EKU/SAN。",
+      "监控异常 issuance/expiry。"
+    ],
+    "evidence": [
+      "certificate chain/SAN/issuer/serial。",
+      "CA issuance/revocation、CT（公网）。",
+      "key usage/KMS。"
+    ],
+    "validation": [
+      "hostname/chain/expiry/usage negative tests。",
+      "cert rotation 与 key rollover。",
+      "内部 trust store audit。"
+    ],
+    "deep_questions": [
+      "浏览器为什么不能只比较网站发来的公钥？",
+      "证书透明度解决什么问题？",
+      "私钥泄露时为什么“证书还没过期”仍不安全？"
+    ],
+    "deliverable": "PKI trust map + issuance/key custody/rotation + certificate monitoring。",
+    "summary": {
+      "root": "受信 CA 把身份绑定到公钥。",
+      "boundary": "trust anchors、私钥、生命周期。",
+      "control": "PKI + hostname validation + protected keys + monitoring。",
+      "evidence": "chain/CA/CT/KMS。",
+      "verify": "chain/hostname/rotation tests。"
+    }
+  },
+  "Q86": {
+    "model": [
+      "普通 TLS 常只认证服务器；mTLS 让双方都使用证书完成传输层身份认证。",
+      "mTLS 解决“连接对端是谁”，但不自动回答该身份能访问哪个业务资源。",
+      "证书 identity mapping、issuance 和 rotation 是 mTLS 工程核心。"
+    ],
+    "boundary": [
+      "共享 client cert 会破坏主体可区分性。",
+      "证书 Subject/CN 不应被随意字符串解析为授权角色。",
+      "service mesh 自动 mTLS 不等于应用授权策略已完成。"
+    ],
+    "design": [
+      "每 workload/device 独立 machine identity。",
+      "短期证书自动 issuance/rotation。",
+      "mTLS identity 映射到明确 authorization policy。",
+      "trust domain/CA 边界最小化。"
+    ],
+    "evidence": [
+      "TLS client certificate identity/serial/issuer。",
+      "CA issuance 与 workload mapping。",
+      "authorization decision logs。"
+    ],
+    "validation": [
+      "错误/过期/其他 trust domain cert 必须拒绝。",
+      "rotation 不断链。",
+      "认证成功但无业务权限时授权仍拒绝。"
+    ],
+    "deep_questions": [
+      "mTLS 与 API authorization 为什么是两层控制？",
+      "service mesh 开启 strict mTLS 后还缺什么？",
+      "证书 identity 应如何映射到 service account？"
+    ],
+    "deliverable": "mTLS identity architecture + CA/trust domain + workload cert lifecycle + authz mapping。",
+    "summary": {
+      "root": "双方证书提供传输层双向身份认证。",
+      "boundary": "身份映射、共享 cert、授权分离。",
+      "control": "unique short-lived cert + explicit authz。",
+      "evidence": "client cert/CA/authz logs。",
+      "verify": "wrong-cert/rotation/authz deny tests。"
+    }
+  },
+  "Q87": {
+    "model": [
+      "IV/Nonce 是密码构造中与 key 配合的参数；不同算法/模式对 uniqueness、randomness 的要求不同。",
+      "错误复用可能破坏机密性、完整性或泄露消息关系，不能把 nonce 当可随意常量。",
+      "高分回答应强调“遵循具体 algorithm construction”，而不是泛化一句“必须随机”。"
+    ],
+    "boundary": [
+      "有的 nonce 只要求唯一，不要求不可预测；有的 IV 要求随机/不可预测。",
+      "分布式系统生成唯一 nonce 需考虑并发、重启和多节点。",
+      "随机数发生器/计数器状态管理也是系统工程问题。"
+    ],
+    "design": [
+      "直接使用高层 AEAD API，由库管理 nonce 时优先使用安全默认。",
+      "自行管理时按算法规范设计唯一性/随机性策略。",
+      "key rotation 与 nonce namespace 协同，防止跨重启重复。",
+      "不要自行设计 encryption format。"
+    ],
+    "evidence": [
+      "代码 crypto API 与 nonce generation path。",
+      "key/version/message metadata。",
+      "RNG health/implementation review。"
+    ],
+    "validation": [
+      "并发/重启测试检查 nonce collision。",
+      "known-answer/interoperability tests。",
+      "静态检查禁止 constant IV/nonce。"
+    ],
+    "deep_questions": [
+      "为什么“nonce 必须随机”不是对所有模式都准确？",
+      "分布式服务如何保证唯一 nonce？",
+      "key rotation 与 nonce 重用有什么关系？"
+    ],
+    "deliverable": "Crypto construction spec + nonce/IV generation strategy + key/version format + collision tests。",
+    "summary": {
+      "root": "密码模式依赖 nonce/IV 满足特定安全前提。",
+      "boundary": "算法需求不同、并发/重启状态。",
+      "control": "高层 AEAD + 规范化 nonce 管理。",
+      "evidence": "API/generation/key metadata。",
+      "verify": "并发重启 collision 与 KAT。"
+    }
+  },
+  "Q88": {
+    "model": [
+      "Encryption at Rest 主要保护存储介质/快照/备份被脱离正常访问路径读取，不等于保护已授权应用运行时的数据。",
+      "真正安全边界是 data key 与 key-encryption key 的分离、访问权限、审计和 rotation。",
+      "若同一被攻陷身份可同时读取数据和解密 key，at-rest encryption 对该场景帮助有限。"
+    ],
+    "boundary": [
+      "磁盘加密、数据库 TDE、应用字段加密保护层级不同。",
+      "备份/replica/export 也需纳入 key 和数据生命周期。",
+      "密钥删除可影响数据可恢复性，需严格治理。"
+    ],
+    "design": [
+      "KMS/HSM 与 envelope encryption。",
+      "key access 与 data access 权限分离。",
+      "敏感字段按威胁模型考虑 application-level encryption/tokenization。",
+      "rotation、backup key、recovery 和 audit。"
+    ],
+    "evidence": [
+      "KMS decrypt/key-use logs。",
+      "data store access、snapshot/export logs。",
+      "key policy/change/rotation。"
+    ],
+    "validation": [
+      "用无 KMS 权限身份验证仅拿存储副本无法解密。",
+      "rotation 与 disaster recovery 演练。",
+      "检查 backup/export 同样加密。"
+    ],
+    "deep_questions": [
+      "TDE 与字段级加密分别防什么？",
+      "为什么 key 和 ciphertext 放同一权限域会削弱价值？",
+      "envelope encryption 有什么工程优势？"
+    ],
+    "deliverable": "Data-at-rest threat model + key hierarchy/IAM + storage/backup/export coverage + rotation/recovery。",
+    "summary": {
+      "root": "静态介质保护依赖密钥与数据访问分离。",
+      "boundary": "不同加密层、运行时访问、备份。",
+      "control": "KMS/HSM + envelope + separated IAM。",
+      "evidence": "KMS/data/snapshot/key audit。",
+      "verify": "权限分离与 DR/rotation。"
+    }
+  },
+  "Q89": {
+    "model": [
+      "Zero Trust 的核心不是“永远不信任”，而是取消基于位置的隐式信任，对资源访问持续做明确身份/设备/上下文决策。",
+      "NIST SP 800-207 把保护对象从网络段转向资源与访问关系。",
+      "least privilege、continuous evaluation、segmentation 和 strong identity 是互补组件。"
+    ],
+    "boundary": [
+      "“已登录”也不是永久信任，session 风险会变化。",
+      "Zero Trust 不要求所有流量都经过同一厂商产品。",
+      "legacy 系统可能只能通过代理/网络补偿控制接入。"
+    ],
+    "design": [
+      "inventory resources/subjects/access paths。",
+      "central identity/device signals 与 distributed enforcement。",
+      "short session/JIT privilege/risk-based reevaluation。",
+      "network segmentation 保留为 blast radius 控制。"
+    ],
+    "evidence": [
+      "policy decisions、device posture、session risk。",
+      "resource access logs、network paths。",
+      "exceptions/legacy access。"
+    ],
+    "validation": [
+      "网络位置可信但 identity/device 不满足时应拒绝。",
+      "session risk 变化后的 access reevaluation。",
+      "legacy exception 定期复审。"
+    ],
+    "deep_questions": [
+      "Zero Trust 与 VPN 替代有什么区别？",
+      "Continuous verification 是否意味着每个请求都重新 MFA？",
+      "网络 ACL 在 Zero Trust 中是否过时？"
+    ],
+    "deliverable": "Zero Trust target architecture + current/target access profiles + enforcement/telemetry + migration roadmap。",
+    "summary": {
+      "root": "位置不是充分信任依据，资源访问需显式最小权限。",
+      "boundary": "session变化、legacy、产品误解。",
+      "control": "identity/device/resource policy + segmentation/JIT。",
+      "evidence": "policy/posture/session/access。",
+      "verify": "位置×身份×设备交叉测试。"
+    }
+  },
+  "Q90": {
+    "model": [
+      "CSF 2.0 六大 Function 是 Govern、Identify、Protect、Detect、Respond、Recover；它们是并发持续的风险管理结果视图。",
+      "新增 Govern 强调治理、角色、风险策略、供应链和组织上下文贯穿其他功能。",
+      "CSF 是 outcomes framework，不规定唯一实现技术。"
+    ],
+    "boundary": [
+      "Functions 不是按时间顺序执行的“六步流程”。",
+      "CSF profile/tier 不是简单成熟度分数排名。",
+      "采用 CSF 不代表自动满足某个合规标准。"
+    ],
+    "design": [
+      "用 current/target profile 表达差距。",
+      "Govern 定义风险偏好、角色、供应链/政策。",
+      "各 Function 映射 owner、metrics、initiatives。",
+      "优先级基于业务风险，不追求每个 subcategory 同时满分。"
+    ],
+    "evidence": [
+      "current/target profile、risk register。",
+      "control/coverage metrics 与 owner。",
+      "governance decisions/exceptions。"
+    ],
+    "validation": [
+      "季度/年度 profile review。",
+      "重大技术/业务变化重新评估 target。",
+      "tabletop 验证 Respond/Recover 与其他 Function 联动。"
+    ],
+    "deep_questions": [
+      "Govern 为什么是 CSF 2.0 的关键变化？",
+      "Functions 为什么不是线性流程？",
+      "如何把 CSF 从 PPT 变成可执行 roadmap？"
+    ],
+    "deliverable": "CSF 2.0 current/target profile + risk-prioritized roadmap + metrics/owners。",
+    "summary": {
+      "root": "CSF 用六类 outcome 组织全生命周期网络安全风险管理。",
+      "boundary": "非线性、非技术清单、非自动合规。",
+      "control": "profiles + governance + risk-prioritized initiatives。",
+      "evidence": "profile/risk/metrics/owner。",
+      "verify": "周期 review 与演练。"
+    }
+  }
+}

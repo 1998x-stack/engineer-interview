@@ -1,0 +1,19 @@
+site_name: 数据结构面试100题
+docs_dir: .
+site_dir: ../_site
+site_description: 100 道数据结构面试真题 / 高频原型，按 Pattern、复杂度、不变量与 Follow-up 深化。
+theme:
+  name: material
+  language: zh
+nav:
+  - 首页: README.md
+  - 面试方法: docs/INTERVIEW_METHOD.md
+  - 学习路线: docs/STUDY_ROADMAP.md
+  - 深度复盘指南: docs/DEEP_REVIEW_GUIDE.md
+  - Pattern 地图: docs/PATTERN_MAP.md
+  - 难度索引: docs/INDEX_BY_DIFFICULTY.md
+  - 核心结构索引: docs/INDEX_BY_CORE.md
+  - Follow-up 索引: docs/FOLLOWUP_INDEX.md
+  - 公开面经变体: docs/PUBLIC_INTERVIEW_VARIANTS.md
+  - 复杂度速查: docs/COMPLEXITY_CHEATSHEET.md
+  - 来源与血缘: docs/PROVENANCE.md

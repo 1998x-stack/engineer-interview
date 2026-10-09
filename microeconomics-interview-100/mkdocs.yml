@@ -1,0 +1,144 @@
+site_name: Microeconomics Interview 100
+docs_dir: docs
+theme:
+  name: readthedocs
+nav:
+  - Home: index.md
+  - Guide:
+      - How to use: guide/how-to-use.md
+      - Knowledge map: guide/knowledge-map.md
+      - Interview rubric: guide/interview-rubric.md
+      - Editorial standard: guide/editorial-standard.md
+      - Publishing: guide/publishing.md
+  - Questions:
+      - '01 供给、需求与弹性':
+          - Overview: questions/01-supply-demand-elasticity/index.md
+          - 'Q001 商品价格突然上涨，你如何系统判断原因？': questions/01-supply-demand-elasticity/Q001.md
+          - 'Q002 手机价格可能受到哪些供给和需求因素影响？': questions/01-supply-demand-elasticity/Q002.md
+          - 'Q003 为什么需求曲线通常向下倾斜？': questions/01-supply-demand-elasticity/Q003.md
+          - 'Q004 需求量变化和需求变化有什么区别？': questions/01-supply-demand-elasticity/Q004.md
+          - 'Q005 为什么弹性比需求曲线斜率更有用？': questions/01-supply-demand-elasticity/Q005.md
+          - 'Q006 需求缺乏弹性时，价格上涨为什么使总收入增加？': questions/01-supply-demand-elasticity/Q006.md
+          - 'Q007 汽油税究竟由消费者承担还是企业承担？': questions/01-supply-demand-elasticity/Q007.md
+          - 'Q008 完全无弹性的需求遇到单位税会发生什么？': questions/01-supply-demand-elasticity/Q008.md
+          - 'Q009 最低工资提高一定减少就业吗？': questions/01-supply-demand-elasticity/Q009.md
+          - 'Q010 为什么价格管制会产生短缺？短缺为什么不一定表现为排队？': questions/01-supply-demand-elasticity/Q010.md
+      - '02 消费者理论':
+          - Overview: questions/02-consumer-theory/index.md
+          - 'Q011 什么是边际替代率 MRS？': questions/02-consumer-theory/Q011.md
+          - 'Q012 为什么效用函数的数字通常没有直接经济意义？': questions/02-consumer-theory/Q012.md
+          - 'Q013 为什么无差异曲线通常凸向原点？': questions/02-consumer-theory/Q013.md
+          - 'Q014 Cobb-Douglas 消费者如何求最优需求？': questions/02-consumer-theory/Q014.md
+          - 'Q015 正常品、劣等品、Giffen 品分别是什么？': questions/02-consumer-theory/Q015.md
+          - 'Q016 把价格效应拆成收入效应和替代效应。': questions/02-consumer-theory/Q016.md
+          - 'Q017 补偿需求和 Marshallian demand 有什么区别？': questions/02-consumer-theory/Q017.md
+          - 'Q018 价格下降后消费者一定更好吗？': questions/02-consumer-theory/Q018.md
+          - 'Q019 什么是消费者剩余？什么时候它不是严格的福利指标？': questions/02-consumer-theory/Q019.md
+          - 'Q020 一张会员卡售价100元，让之后所有商品打八折。消费者会买吗？': questions/02-consumer-theory/Q020.md
+      - '03 生产、成本与竞争厂商':
+          - Overview: questions/03-production-costs-competition/index.md
+          - 'Q021 为什么企业利润最大化条件通常是 MR=MC？': questions/03-production-costs-competition/Q021.md
+          - 'Q022 完全竞争企业为什么满足 P=MC？': questions/03-production-costs-competition/Q022.md
+          - 'Q023 企业亏损为什么可能仍然继续生产？': questions/03-production-costs-competition/Q023.md
+          - 'Q024 sunk cost 为什么不应该影响当前决策？': questions/03-production-costs-competition/Q024.md
+          - 'Q025 固定成本提高会不会改变竞争厂商短期供给？': questions/03-production-costs-competition/Q025.md
+          - 'Q026 为什么长期完全竞争企业经济利润为零？': questions/03-production-costs-competition/Q026.md
+          - 'Q027 规模经济与边际报酬递减矛盾吗？': questions/03-production-costs-competition/Q027.md
+          - 'Q028 为什么 MC 穿过 AVC 和 AC 的最低点？': questions/03-production-costs-competition/Q028.md
+          - 'Q029 一个行业技术进步，长期价格和企业数量如何变化？': questions/03-production-costs-competition/Q029.md
+          - 'Q030 单位成本下降一定说明存在自然垄断吗？': questions/03-production-costs-competition/Q030.md
+      - '04 垄断与定价':
+          - Overview: questions/04-monopoly-pricing/index.md
+          - 'Q031 为什么垄断企业通常满足 P>MC？': questions/04-monopoly-pricing/Q031.md
+          - 'Q032 推导 Lerner Index。': questions/04-monopoly-pricing/Q032.md
+          - 'Q033 垄断者为什么不会选择需求曲线无弹性区域？': questions/04-monopoly-pricing/Q033.md
+          - 'Q034 垄断一定赚钱吗？': questions/04-monopoly-pricing/Q034.md
+          - 'Q035 什么是一、二、三级价格歧视？': questions/04-monopoly-pricing/Q035.md
+          - 'Q036 为什么学生票通常比成人票便宜？': questions/04-monopoly-pricing/Q036.md
+          - 'Q037 两部收费制为什么可能优于单一价格？': questions/04-monopoly-pricing/Q037.md
+          - 'Q038 为什么电影院可能高价卖爆米花？': questions/04-monopoly-pricing/Q038.md
+          - 'Q039 免费软件仍然可能是垄断产品吗？': questions/04-monopoly-pricing/Q039.md
+          - 'Q040 专利为什么同时产生效率收益和效率损失？': questions/04-monopoly-pricing/Q040.md
+      - '05 寡头与博弈论':
+          - Overview: questions/05-oligopoly-game-theory/index.md
+          - 'Q041 什么是 Nash equilibrium？': questions/05-oligopoly-game-theory/Q041.md
+          - 'Q042 Nash equilibrium 和 dominant strategy equilibrium 有什么区别？': questions/05-oligopoly-game-theory/Q042.md
+          - 'Q043 为什么囚徒困境中个人理性导致集体低效？': questions/05-oligopoly-game-theory/Q043.md
+          - 'Q044 Cournot 模型中企业竞争什么？': questions/05-oligopoly-game-theory/Q044.md
+          - 'Q045 推导线性 Cournot 双寡头均衡。': questions/05-oligopoly-game-theory/Q045.md
+          - 'Q046 Bertrand competition 是什么？': questions/05-oligopoly-game-theory/Q046.md
+          - 'Q047 为什么两个企业就可能产生完全竞争价格？': questions/05-oligopoly-game-theory/Q047.md
+          - 'Q048 现实中为什么往往没有出现 Bertrand paradox？': questions/05-oligopoly-game-theory/Q048.md
+          - 'Q049 Stackelberg leader 为什么通常生产更多？': questions/05-oligopoly-game-theory/Q049.md
+          - 'Q050 重复博弈为什么可能维持合作？': questions/05-oligopoly-game-theory/Q050.md
+          - 'Q051 企业数量增加一定让竞争增强吗？': questions/05-oligopoly-game-theory/Q051.md
+          - 'Q052 混合策略 Nash equilibrium 的经济意义是什么？': questions/05-oligopoly-game-theory/Q052.md
+      - '06 福利、一般均衡与政府干预':
+          - Overview: questions/06-welfare-general-equilibrium-policy/index.md
+          - 'Q053 什么是 Pareto efficiency？': questions/06-welfare-general-equilibrium-policy/Q053.md
+          - 'Q054 福利经济学第一定理是什么？': questions/06-welfare-general-equilibrium-policy/Q054.md
+          - 'Q055 第二福利定理比第一福利定理多告诉我们什么？': questions/06-welfare-general-equilibrium-policy/Q055.md
+          - 'Q056 Edgeworth Box 中 contract curve 是什么？': questions/06-welfare-general-equilibrium-policy/Q056.md
+          - 'Q057 为什么竞争均衡中消费者和企业的边际条件会同时对齐？': questions/06-welfare-general-equilibrium-policy/Q057.md
+          - 'Q058 什么是 deadweight loss？': questions/06-welfare-general-equilibrium-policy/Q058.md
+          - 'Q059 关税为什么产生无谓损失？': questions/06-welfare-general-equilibrium-policy/Q059.md
+          - 'Q060 补贴一定提高社会福利吗？': questions/06-welfare-general-equilibrium-policy/Q060.md
+          - 'Q061 公共品为什么会出现 free-rider problem？': questions/06-welfare-general-equilibrium-policy/Q061.md
+          - 'Q062 为什么 Coase theorem 不是“政府什么都不用管”？': questions/06-welfare-general-equilibrium-policy/Q062.md
+      - '07 风险、信息不对称与契约':
+          - Overview: questions/07-risk-information-contracts/index.md
+          - 'Q063 什么是 expected utility？': questions/07-risk-information-contracts/Q063.md
+          - 'Q064 为什么风险厌恶者愿意买保险？': questions/07-risk-information-contracts/Q064.md
+          - 'Q065 什么是 certainty equivalent 与 risk premium？': questions/07-risk-information-contracts/Q065.md
+          - 'Q066 adverse selection 与 moral hazard 有什么区别？': questions/07-risk-information-contracts/Q066.md
+          - 'Q067 为什么二手车市场可能出现 lemons problem？': questions/07-risk-information-contracts/Q067.md
+          - 'Q068 保险为什么可能产生 moral hazard？': questions/07-risk-information-contracts/Q068.md
+          - 'Q069 为什么教育可能成为 signal？': questions/07-risk-information-contracts/Q069.md
+          - 'Q070 signaling 与 screening 有什么区别？': questions/07-risk-information-contracts/Q070.md
+          - 'Q071 principal-agent problem 的核心冲突是什么？': questions/07-risk-information-contracts/Q071.md
+          - 'Q072 “按能力贡献、按需要分配”会遇到什么信息与激励问题？': questions/07-risk-information-contracts/Q072.md
+      - '08 产业组织、反垄断与经济咨询':
+          - Overview: questions/08-io-antitrust-consulting/index.md
+          - 'Q073 什么是 relevant market？': questions/08-io-antitrust-consulting/Q073.md
+          - 'Q074 什么是 SSNIP / hypothetical monopolist test？': questions/08-io-antitrust-consulting/Q074.md
+          - 'Q075 什么是 HHI？': questions/08-io-antitrust-consulting/Q075.md
+          - 'Q076 为什么 merger 后 HHI 上升不能自动证明消费者受损？': questions/08-io-antitrust-consulting/Q076.md
+          - 'Q077 两家电动车相关企业合并，你首先研究什么？': questions/08-io-antitrust-consulting/Q077.md
+          - 'Q078 什么是 diversion ratio？': questions/08-io-antitrust-consulting/Q078.md
+          - 'Q079 为什么 diversion ratio 对 merger 很重要？': questions/08-io-antitrust-consulting/Q079.md
+          - 'Q080 GUPPI 的直觉是什么？': questions/08-io-antitrust-consulting/Q080.md
+          - 'Q081 你如何判断一个 cartel 是否存在？': questions/08-io-antitrust-consulting/Q081.md
+          - 'Q082 cartel 时期价格上涨20%，能否直接说损害是20%？': questions/08-io-antitrust-consulting/Q082.md
+          - 'Q083 某时期价格明显上涨，但同时发生自然灾害，你怎么分析？': questions/08-io-antitrust-consulting/Q083.md
+          - 'Q084 上游企业价格上涨，下游消费者一定受损吗？': questions/08-io-antitrust-consulting/Q084.md
+      - '09 劳动、平台、行为与现代微观':
+          - Overview: questions/09-labor-platform-behavioral/index.md
+          - 'Q085 为什么劳动供给曲线可能向后弯曲？': questions/09-labor-platform-behavioral/Q085.md
+          - 'Q086 monopsony 为什么会导致工资低于劳动边际产值？': questions/09-labor-platform-behavioral/Q086.md
+          - 'Q087 为什么最低工资在 monopsony 中可能提高就业？': questions/09-labor-platform-behavioral/Q087.md
+          - 'Q088 什么是 network effect？': questions/09-labor-platform-behavioral/Q088.md
+          - 'Q089 双边市场为什么不能单独看某一侧价格？': questions/09-labor-platform-behavioral/Q089.md
+          - 'Q090 为什么“免费”并不意味着消费者福利最大？': questions/09-labor-platform-behavioral/Q090.md
+          - 'Q091 什么是 present bias？': questions/09-labor-platform-behavioral/Q091.md
+          - 'Q092 一个人明知明天应该学习，却今天一直拖延，经济学如何建模？': questions/09-labor-platform-behavioral/Q092.md
+      - '10 综合 Case 与因果识别':
+          - Overview: questions/10-integrated-cases-identification/index.md
+          - 'Q093 出租车牌照原本免费发放但数量固定，为什么牌照仍可能价值很高？': questions/10-integrated-cases-identification/Q093.md
+          - 'Q094 政府突然增加20%出租车牌照，旧牌照价格会怎样？': questions/10-integrated-cases-identification/Q094.md
+          - 'Q095 两家超市准备合并，你只有30分钟判断是否可能损害消费者，怎么做？': questions/10-integrated-cases-identification/Q095.md
+          - 'Q096 一家咖啡店价格上涨后销量反而增加，是否违反需求定律？': questions/10-integrated-cases-identification/Q096.md
+          - 'Q097 企业降价10%，销量增加20%，可以直接说需求弹性是-2吗？': questions/10-integrated-cases-identification/Q097.md
+          - 'Q098 “需求量对价格做回归”有什么问题？': questions/10-integrated-cases-identification/Q098.md
+          - 'Q099 企业利润下降30%，竞争对手曾侵犯专利，30%都是损害吗？': questions/10-integrated-cases-identification/Q099.md
+          - 'Q100 给你一个完全陌生的行业，你如何开始微观经济分析？': questions/10-integrated-cases-identification/Q100.md
+  - Reference:
+      - Formula sheet: reference/formula-sheet.md
+      - Glossary: reference/glossary.md
+      - Sources: reference/sources-and-methodology.md
+      - Advanced methods: reference/advanced-methods.md
+      - Econometrics for micro interviews: reference/econometrics-for-micro-interviews.md
+      - Diagram playbook: reference/diagram-playbook.md
+  - Training:
+      - 7-day sprint: training/7-day-sprint.md
+      - Mastery roadmap: training/mastery-roadmap.md
+

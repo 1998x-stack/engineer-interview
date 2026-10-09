@@ -1,0 +1,3546 @@
+
+\documentclass[11pt,openany]{ctexbook}
+\usepackage[a4paper,top=20mm,bottom=20mm,left=21mm,right=19mm,headheight=14pt]{geometry}
+\usepackage{fontspec}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,tabularx,longtable,array,multicol}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{xurl}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{needspace}
+\usepackage{etoolbox}
+\definecolor{navy}{HTML}{18324A}
+\definecolor{blue}{HTML}{2F5D7E}
+\definecolor{lightblue}{HTML}{EDF4F8}
+\definecolor{gold}{HTML}{B88A2A}
+\definecolor{lightgold}{HTML}{F8F2E5}
+\definecolor{ink}{HTML}{1F252B}
+\definecolor{muted}{HTML}{5F6B73}
+\definecolor{green}{HTML}{3F6B55}
+\definecolor{lightgreen}{HTML}{EEF5F1}
+\setmainfont{Noto Serif CJK SC}
+\setsansfont{Noto Sans CJK SC}
+\setCJKmainfont{Noto Serif CJK SC}
+\setCJKsansfont{Noto Sans CJK SC}
+\hypersetup{colorlinks=true,linkcolor=navy,urlcolor=blue,citecolor=blue,pdfauthor={OpenAI},pdftitle={高中数学竞赛教练面试100题}}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0.25em}
+\linespread{1.18}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\color{muted}\leftmark}
+\fancyhead[RO]{\small\color{muted}高中数学竞赛教练面试100题}
+\fancyfoot[C]{\small\color{muted}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\titleformat{\chapter}[display]{\sffamily\bfseries\color{navy}}{\filleft\Large 第\thechapter 篇}{0.4em}{\Huge}[
+\vspace{0.4em}\titlerule]
+\titleformat{\section}{\sffamily\bfseries\Large\color{navy}}{}{0pt}{}
+\setlist[itemize]{leftmargin=2em,itemsep=0.25em,topsep=0.25em}
+\setlist[enumerate]{leftmargin=2.2em,itemsep=0.25em,topsep=0.25em}
+\newtcolorbox{qbox}{enhanced,breakable,colback=lightblue,colframe=blue,boxrule=0.8pt,arc=2mm,left=3mm,right=3mm,top=2.2mm,bottom=2.2mm}
+\newtcolorbox{whybox}{enhanced,breakable,colback=lightgold,colframe=gold,boxrule=0.7pt,arc=2mm,title=面试官为什么问,fonttitle=\bfseries\sffamily,coltitle=ink}
+\newtcolorbox{ansbox}{enhanced,breakable,colback=white,colframe=navy,boxrule=0.8pt,arc=2mm,title=高分答题框架,fonttitle=\bfseries\sffamily}
+\newtcolorbox{teachbox}{enhanced,breakable,colback=lightgreen,colframe=green,boxrule=0.7pt,arc=2mm,title=教练视角：如何教,fonttitle=\bfseries\sffamily}
+\newtcolorbox{warnbox}{enhanced,breakable,colback=red!2,colframe=red!45!black,boxrule=0.6pt,arc=2mm,title=常见失分,fonttitle=\bfseries\sffamily}
+\newtcolorbox{followbox}{enhanced,breakable,colback=gray!4,colframe=gray!45,boxrule=0.6pt,arc=2mm,title=面试追问,fonttitle=\bfseries\sffamily}
+\newtcolorbox{rubricbox}{enhanced,breakable,colback=white,colframe=gray!60,boxrule=0.6pt,arc=2mm,title=10分评分Rubric,fonttitle=\bfseries\sffamily}
+\newcommand{\tagpill}[1]{\tikz[baseline=(X.base)]\node[draw=blue!55,fill=lightblue,rounded corners=2pt,inner xsep=4pt,inner ysep=1.5pt,font=\sffamily\scriptsize] (X) {#1};}
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+\fill[navy] (current page.north west) rectangle ([yshift=-88mm]current page.north east);
+\draw[gold,line width=1.1pt] ([xshift=18mm,yshift=-96mm]current page.north west) -- ([xshift=-18mm,yshift=-96mm]current page.north east);
+\foreach \x in {0,1,...,8}{\draw[white,opacity=.08,line width=.5pt] ([xshift=\x*25mm,yshift=-6mm]current page.north west) -- ([xshift=\x*25mm-35mm,yshift=-88mm]current page.north west);}
+\end{tikzpicture}
+\vspace*{20mm}
+{\sffamily\bfseries\fontsize{30}{36}\selectfont\color{white} 高中数学竞赛教练\\[2mm]面试 100 题}\par
+\vspace{7mm}
+{\sffamily\Large\color{white!90} 从联赛 / CMO / IMO 数学能力到试讲、教研与长期带队}\par
+\vspace{32mm}
+{\Large\bfseries\color{navy}问题驱动 · 逐题拆解 · 面试官视角 · 教练视角}\par
+\vspace{8mm}
+{\large\color{ink}参考《剑指 Offer》的“问题驱动、逐题复盘”组织思想，\\不复制其文字、题目或版式。}\par
+\vfill
+\begin{tcolorbox}[colback=gray!4,colframe=gray!35,boxrule=.5pt,arc=1.5mm]
+\small\textbf{适用岗位：}重点高中数学竞赛教练、竞赛机构高中数学教练、拔尖创新/强基数学教师。\\
+\textbf{版本：}2026.09 · Professional Interview Handbook\\
+\textbf{使用建议：}不要背标准答案。先独立回答/试讲，再用“追问 + Rubric”自评。
+\end{tcolorbox}
+\end{titlepage}
+
+\frontmatter
+\chapter*{出版说明与内容边界}
+\addcontentsline{toc}{chapter}{出版说明与内容边界}
+本书把公开竞赛体系、公开招聘岗位要求与高中数学竞赛的核心知识结构结合，构造一套可直接用于招聘与备考的100题题库。公开招聘通常披露岗位职责、任职要求与试讲/面谈流程，而不会公开完整面试原题。因此，本书把问题标记为“真题型”或“现场数学/试讲型”，含义是\textbf{高度贴合公开可核验的考察维度}，不声称来自某校内部泄题。
+
+本书的组织方式借鉴《剑指 Offer》所代表的“问题驱动、逐题拆解、面试追问、复盘总结”学习理念，但所有文字、题目组织和版式均为重新设计，没有复制原书内容。
+
+\chapter*{为什么这100题这样组织}
+\addcontentsline{toc}{chapter}{为什么这100题这样组织}
+中国数学会公开资料显示，全国高中数学联赛分一试与二试，二试包含平面几何、代数、数论、组合四个方面。IMO官方将竞赛问题概括为代数、组合、几何、数论，并强调数学洞察、创造性以及完整证明。与此同时，2026年仍在发布的竞赛教练岗位公开信息反复出现：课程体系研发、讲义/资料编写、授课、作业批阅讲解、学情反馈、家长沟通，以及试讲/面谈等要求。
+
+因此本书采用“双主线能力模型”：
+\begin{center}
+\begin{tikzpicture}[node distance=18mm]
+\node[draw=navy,fill=lightblue,rounded corners,minimum width=45mm,minimum height=10mm] (m) {数学竞赛能力};
+\node[draw=green,fill=lightgreen,rounded corners,minimum width=45mm,minimum height=10mm,right=35mm of m] (c) {教练专业能力};
+\node[draw=gold,fill=lightgold,rounded corners,minimum width=50mm,minimum height=11mm,below=17mm of $(m)!0.5!(c)$] (o) {最终岗位胜任力};
+\draw[->,thick] (m) -- (o);
+\draw[->,thick] (c) -- (o);
+\end{tikzpicture}
+\end{center}
+
+\begin{tabularx}{\textwidth}{>{\bfseries}p{30mm}X X}
+\toprule
+维度 & 数学竞赛能力 & 教练专业能力\\
+\midrule
+核心 & 结构识别、证明、综合、陌生题探索 & 解释、诊断、分层、课程设计、反馈\\
+证据 & 现场解题、证明审查、多解比较 & 试讲、讲义、测评、题库、学情案例\\
+高阶 & CMO/IMO级创造性与完整证明 & 长期培养、研究型训练、教研资产建设\\
+\bottomrule
+\end{tabularx}
+
+\chapter*{如何使用本书：四轮法}
+\addcontentsline{toc}{chapter}{如何使用本书：四轮法}
+\begin{enumerate}
+\item \textbf{第一轮 - 闭卷回答：}每题限制3-8分钟，先说结论和框架，不追求完美。
+\item \textbf{第二轮 - 对照拆解：}检查“面试官为什么问、常见失分、Rubric”。
+\item \textbf{第三轮 - 追问压力测试：}只看“面试追问”，再回答一次，避免背稿。
+\item \textbf{第四轮 - 试讲/作品化：}把79-95题做成真实板书、讲义、测评表或题库条目。
+\end{enumerate}
+
+\chapter*{面试评分总表（建议100分）}
+\addcontentsline{toc}{chapter}{面试评分总表（建议100分）}
+\begin{tabularx}{\textwidth}{l r X}
+\toprule
+环节 & 分值 & 观察指标\\
+\midrule
+竞赛笔试 & 30 & 四大模块基础、综合、证明完整性\\
+陌生题现场思考 & 15 & 探索路径、信息增量、换路能力\\
+Proof critique & 10 & 能否定位最小漏洞与边界条件\\
+20分钟试讲 & 20 & 动机、结构、互动、板书、认知负荷\\
+教研设计 & 10 & 专题、讲义、变式、测评与题库设计\\
+学情诊断 & 5 & 证据化诊断与个性化训练\\
+综合面试 & 10 & 沟通、职业判断、长期培养观\\
+\midrule
+\textbf{总计} & \textbf{100} & \\
+\bottomrule
+\end{tabularx}
+
+\tableofcontents
+\mainmatter
+\chapter{竞赛体系与教练认知}
+\begin{center}\large\color{muted}从“会做题”到“会培养人”\end{center}
+\vspace{1mm}
+\clearpage
+\section*{Q001 \quad 高中数学竞赛和普通高中数学教学，最大的三个区别是什么？}
+\addcontentsline{toc}{section}{Q001 高中数学竞赛和普通高中数学教学，最大的三个区别是什么？}
+\tagpill{岗位认知} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{竞赛观、课程观、培养观}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 高中数学竞赛和普通高中数学教学，最大的三个区别是什么？
+\end{qbox}
+\begin{whybox}
+用来区分“本人竞赛强”与“理解竞赛教育岗位”的候选人。高分回答必须能把竞赛结构转译成课程、训练和评价决策。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 知识边界不是核心差异，方法深度和证明责任才是。
+\item 普通教学更强调稳定掌握；竞赛更强调陌生问题中的结构发现。
+\item 竞赛训练必须显式训练探索、猜想、反例、证明与复盘。
+\end{itemize}
+\textbf{展开：} 一个成熟回答不应停留在“竞赛更难”。可以把差异拆成三个层次。第一，\textbf{任务结构不同}：普通课程大量任务是对已知模型的识别与调用，而竞赛常要求先决定“这到底是什么问题”。第二，\textbf{证明标准不同}：直觉、图形或数值实验只能产生猜想，最终必须形成可审查的论证链。第三，\textbf{学习机制不同}：高水平竞赛训练不是题量竞争，而是通过少量高质量题目形成方法网络，并在变式中检验迁移。因而教练的职责不是把题做给学生看，而是设计一条让学生逐步接管思考权的路径。
+\end{ansbox}
+\begin{followbox}
+如果学生说“竞赛就是多刷难题”，你会如何用一节课让他改变这个认识？
+\end{followbox}
+\begin{warnbox}
+只说“题更难、知识更多”；把竞赛神秘化成天赋筛选；忽视证明与复盘。
+\end{warnbox}
+\begin{teachbox}
+可用同一道题设计“直接模仿—改条件—去掉提示—开放推广”四层任务，让学生亲自感受到“会做原题”和“掌握结构”的差别。
+\end{teachbox}
+\begin{rubricbox}
+10分：能从任务、证明、学习机制三层展开，并落到教学设计；6分：能说出两层但较抽象；3分：只说难度、题量或天赋。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q002 \quad 请解释全国高中数学联赛一试和二试在能力结构上的本质区别。}
+\addcontentsline{toc}{section}{Q002 请解释全国高中数学联赛一试和二试在能力结构上的本质区别。}
+\tagpill{岗位认知} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{竞赛体系、能力分层、备赛设计}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 请解释全国高中数学联赛一试和二试在能力结构上的本质区别。
+\end{qbox}
+\begin{whybox}
+用来区分“本人竞赛强”与“理解竞赛教育岗位”的候选人。高分回答必须能把竞赛结构转译成课程、训练和评价决策。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 一试看速度、稳定性、知识熟练度和技巧选择。
+\item 二试看长链证明、结构发现、创造性与抗卡题能力。
+\item 训练计划必须因此分成“自动化基础”和“长题探索”两种节奏。
+\end{itemize}
+\textbf{展开：} 中国数学会公开资料显示，联赛分一试与二试；二试覆盖平面几何、代数、数论、组合四个方向。面试中更重要的是解释其\textbf{能力含义}：一试常把大量基础与中等难度技能压进有限时间，要求选择快、计算稳、失误少；二试则把时间集中在少数解答题上，评价的是是否能形成完整方案。训练上不能用同一种作业模式：一试需要限时、错因统计与自动化；二试需要长时间独立探索、书写、讲评和二次重做。
+\end{ansbox}
+\begin{followbox}
+如果一名学生一试很强、二试很弱，你会优先诊断哪三件事？
+\end{followbox}
+\begin{warnbox}
+只背考试时长和分值；把一试简单等同“简单题”、二试等同“难题”。
+\end{warnbox}
+\begin{teachbox}
+建立“两张成绩单”：一试记录速度/正确率/失误类型，二试记录突破口质量/证明完整度/卡点位置。
+\end{teachbox}
+\begin{rubricbox}
+10分：体系事实准确且能推导训练方案；6分：会描述差异但不会落地；3分：只报题型和分数。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q003 \quad 一个高一学生说：“我高考数学能考145，所以应该很适合竞赛。”你怎么判断？}
+\addcontentsline{toc}{section}{Q003 一个高一学生说：“我高考数学能考145，所以应该很适合竞赛。”你怎么判断？}
+\tagpill{学情诊断} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{诊断设计、潜力识别、成长性评估}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 一个高一学生说：“我高考数学能考145，所以应该很适合竞赛。”你怎么判断？
+\end{qbox}
+\begin{whybox}
+考察能否用任务和行为证据诊断学生，而不是用标签、一次分数或主观印象。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 不要用校内分数直接外推竞赛潜力。
+\item 安排陌生证明题、组合构造题和一题长时间探索题。
+\item 观察失败后的行为：能否持续提出猜想、检查条件、修正方案。
+\end{itemize}
+\textbf{展开：} 校内高分说明基础学习能力较强，但并不能直接证明其适合竞赛。诊断要刻意选择\textbf{低先验、低模板}的任务：例如一道不依赖高级知识的组合存在性问题、一题需要自造辅助线的几何题，以及一道允许40分钟探索的整数题。除了正确率，还要记录“遇到不会时做了什么”：是否会做小例子、是否主动改变表示、是否能在提示后继续推进、是否愿意写完整证明。竞赛潜力更接近\textbf{基础 + 探索耐力 + 反馈吸收速度 + 数学兴趣}的联合指标。
+\end{ansbox}
+\begin{followbox}
+如果他三道题都没做出，但探索记录非常好，你会如何判断？
+\end{followbox}
+\begin{warnbox}
+把一次测试当最终结论；只看做出几道；用“聪明/不聪明”给学生贴标签。
+\end{warnbox}
+\begin{teachbox}
+采用2到4周动态诊断：同类方法二次出现时看迁移速度，比一次考试更可靠。
+\end{teachbox}
+\begin{rubricbox}
+10分：有任务设计、过程指标和动态观察；6分：知道不能只看校内成绩；3分：用获奖史或一次考试直接判断。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q004 \quad 省一水平、CMO水平和国家集训队水平，训练方法有什么不同？}
+\addcontentsline{toc}{section}{Q004 省一水平、CMO水平和国家集训队水平，训练方法有什么不同？}
+\tagpill{培养体系} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{分层训练、目标管理、难度控制}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 省一水平、CMO水平和国家集训队水平，训练方法有什么不同？
+\end{qbox}
+\begin{whybox}
+考察是否具备长期、分层、可反馈的培养观，而不是只有题单和个人经验。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 省一阶段优先完整覆盖基础工具和联赛稳定性。
+\item CMO阶段强化证明完整性、综合长题、多解与跨模块迁移。
+\item 更高层次需要高质量陌生题、自主研究和极少模板依赖。
+\end{itemize}
+\textbf{展开：} 三个阶段不是“同一套题越来越难”。省一阶段最怕知识断层与一试失误，因此要先让核心方法形成可靠调用；CMO层级开始强调长证明、细节责任和模块之间的组合；再向上则要减少“老师告诉方法”的比例，增加对Shortlist级陌生题的持续探索、方法比较和自我选题。难度控制也不同：省一训练允许较多70\\%可完成任务；高阶训练则需要保留一定比例的长期卡题，因为真正要训练的是\textbf{未知状态下的研究能力}。
+\end{ansbox}
+\begin{followbox}
+如何避免高阶学生陷入“只做变态难题、基础反而不稳”？
+\end{followbox}
+\begin{warnbox}
+只按题目难度分层；忽略一试稳定性；认为高水平就不需要基础复习。
+\end{warnbox}
+\begin{teachbox}
+每个层级都保留“基础自动化 + 主攻难题 + 复盘迁移”三条线，只调整比例。
+\end{teachbox}
+\begin{rubricbox}
+10分：分层逻辑清晰且有训练比例思想；6分：知道不同层次内容不同；3分：只说“多做更难的题”。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q005 \quad 为什么竞赛教练本人会做题，不等于能带出竞赛学生？}
+\addcontentsline{toc}{section}{Q005 为什么竞赛教练本人会做题，不等于能带出竞赛学生？}
+\tagpill{岗位认知} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{教学转化、诊断、教练角色}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么竞赛教练本人会做题，不等于能带出竞赛学生？
+\end{qbox}
+\begin{whybox}
+用来区分“本人竞赛强”与“理解竞赛教育岗位”的候选人。高分回答必须能把竞赛结构转译成课程、训练和评价决策。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 个人解题是结果能力；教学要求重建可学习的过程。
+\item 教练必须知道何时提示、提示多少、如何识别假会。
+\item 优秀教练能把隐性直觉转成任务序列与反馈机制。
+\end{itemize}
+\textbf{展开：} 个人解题往往依靠已经高度压缩的经验，专家会跳过大量中间判断；学生恰恰缺少这些“被跳过的节点”。因此教练需要做三次转换：把\textbf{答案}转换为\textbf{关键决策点}，把关键决策点转换为\textbf{可练习任务}，再把学生表现转换为\textbf{下一步训练方案}。如果只能展示漂亮解法，学生可能在课堂上觉得“听懂了”，但独立面对变式仍然失效。
+\end{ansbox}
+\begin{followbox}
+你如何判断一个学生是真的理解，而不是刚刚记住你的解法？
+\end{followbox}
+\begin{warnbox}
+把讲得快、解法多当教学能力；只在学生做错时告诉正确步骤。
+\end{warnbox}
+\begin{teachbox}
+讲完后立刻给“结构相同、表面不同”的微变式，并要求学生解释为什么同一方法仍适用。
+\end{teachbox}
+\begin{rubricbox}
+10分：能区分解题、解释、诊断、课程设计；6分：能说出“会做不等于会教”；3分：只说沟通能力重要。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q006 \quad 你认为数学竞赛中最重要的能力是什么？}
+\addcontentsline{toc}{section}{Q006 你认为数学竞赛中最重要的能力是什么？}
+\tagpill{开放问答} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{数学观、结构识别、探索策略}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 你认为数学竞赛中最重要的能力是什么？
+\end{qbox}
+\begin{whybox}
+没有唯一标准答案，面试官重点观察观点是否可定义、可论证、可落地。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 避免单词式答案如“天赋”“计算”。
+\item 给出一个核心能力并说明其由哪些可训练子能力组成。
+\item 用真实题型说明该能力如何决定突破口。
+\end{itemize}
+\textbf{展开：} 一个可辩护的答案是“\textbf{结构识别与有效探索}”。结构识别指从条件中发现对称性、单调性、不变量、极值对象、可因式分解形式、可共圆结构等；有效探索指在尚未证明时，能通过小例子、特殊化、反向推理和失败分析迅速过滤错误方向。它不是玄学直觉，而是长期积累的“模式库 + 验证习惯”。高水平选手的优势往往不是一次猜对，而是能更快淘汰无效路径。
+\end{ansbox}
+\begin{followbox}
+你如何设计训练，让“数学直觉”变成可观察、可反馈的能力？
+\end{followbox}
+\begin{warnbox}
+只说“逻辑思维”“天赋”；没有定义可训练行为。
+\end{warnbox}
+\begin{teachbox}
+要求学生提交探索草稿：记录最初三个猜想、淘汰理由与最终突破口，教练据此反馈思考质量。
+\end{teachbox}
+\begin{rubricbox}
+10分：观点明确、可操作、有行为指标；6分：观点合理但抽象；3分：口号化。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q007 \quad 竞赛是否应该尽早学习大学数学？}
+\addcontentsline{toc}{section}{Q007 竞赛是否应该尽早学习大学数学？}
+\tagpill{教育判断} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{知识边界、工具观、初等证明}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 竞赛是否应该尽早学习大学数学？
+\end{qbox}
+\begin{whybox}
+测试工具边界、机会成本与教育责任。极端、口号化回答通常得分不高。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 大学数学可作为视角，不应成为逃避初等结构的拐杖。
+\item 区分“启发工具”和“正式解答工具”。
+\item 按学生阶段决定何时引入。
+\end{itemize}
+\textbf{展开：} 高级工具能拓宽视野，例如线性代数帮助理解变换、群论帮助理解对称、复数提供几何表示。但竞赛训练的核心价值之一，是在有限知识下完成高强度推理。如果过早把每个问题都翻译成高等理论，学生可能获得一个强大黑箱，却失去构造初等证明的能力。更合理的做法是：先让学生完成初等解，再用高观点解释“为什么这些技巧会反复出现”，形成上下两层理解。
+\end{ansbox}
+\begin{followbox}
+如果学生用大学知识给出正确但极长的解法，你会如何评价？
+\end{followbox}
+\begin{warnbox}
+把大学数学绝对禁止；或相反，把“高级”误当“更好”。
+\end{warnbox}
+\begin{teachbox}
+采用“双解法制度”：竞赛规范解法用于训练，大学视角用于拓展与统一。
+\end{teachbox}
+\begin{rubricbox}
+10分：能谈工具边界和学习阶段；6分：知道不应滥用；3分：简单站队。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q008 \quad 请评价“背结论、背模型、背套路”的竞赛训练。}
+\addcontentsline{toc}{section}{Q008 请评价“背结论、背模型、背套路”的竞赛训练。}
+\tagpill{教学方法} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{记忆与迁移、方法抽象}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 请评价“背结论、背模型、背套路”的竞赛训练。
+\end{qbox}
+\begin{whybox}
+重点观察你能否解释学习机制，并给出课堂上真正可执行的干预。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 基础自动化是必要的。
+\item 真正目标是从例题抽象适用条件、失效条件和变式。
+\item 模板训练必须进入“识别-选择-解释”层。
+\end{itemize}
+\textbf{展开：} 竞赛训练并不排斥记忆。常用恒等式、典型构造和基础定理如果不能自动调用，会浪费工作记忆；问题在于把记忆当终点。成熟训练应形成链条：\textbf{例题 → 方法 → 触发信号 → 适用条件 → 反例/失效条件 → 变式迁移}。例如学习Ceva不应停在公式，而要知道“共点目标 + 三角形三边分点”是结构信号，同时知道有向线段和退化位置会怎样影响书写。
+\end{ansbox}
+\begin{followbox}
+如何测试学生是在“识别结构”还是“只认题面”？
+\end{followbox}
+\begin{warnbox}
+把记忆一概贬低；或只追求题型库数量。
+\end{warnbox}
+\begin{teachbox}
+把同一核心方法换到完全不同表面背景中，要求学生先口头说明“为什么想到它”。
+\end{teachbox}
+\begin{rubricbox}
+10分：能平衡自动化与迁移；6分：知道不能死记；3分：极端化观点。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q009 \quad 如何判断一道竞赛题是不是“好题”？}
+\addcontentsline{toc}{section}{Q009 如何判断一道竞赛题是不是“好题”？}
+\tagpill{教研能力} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{题目评价、选题、迁移价值}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何判断一道竞赛题是不是“好题”？
+\end{qbox}
+\begin{whybox}
+考察题目、解法、课程材料的评价能力，是从“教师”到“教练/教研”的分水岭。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 看核心结构是否清晰而非只看难度。
+\item 看是否能产生可迁移方法、变式或多解。
+\item 看条件与结论是否经济，解法是否有必然感。
+\end{itemize}
+\textbf{展开：} “难”不是好题的充分条件。一道适合教学的好题通常具有较高的\textbf{单位时间学习密度}：条件不冗余、关键转折有解释价值、做完后能抽象出方法，并且可通过轻微改变条件产生新的思考。面试时可以进一步区分“竞赛选拔好题”和“课堂教学好题”：前者允许更强的偶然性和综合度，后者更需要突出单一主线并可设计梯度。
+\end{ansbox}
+\begin{followbox}
+给你一道很漂亮但学生完成率只有5\\%的题，你会不会放进基础班讲义？
+\end{followbox}
+\begin{warnbox}
+把“新奇”“偏难”“技巧多”直接等同高质量。
+\end{warnbox}
+\begin{teachbox}
+建立题目评审表：目标方法、前置、预计用时、错误类型、可变式性、复盘价值。
+\end{teachbox}
+\begin{rubricbox}
+10分：有多维评价且区分选拔题/教学题；6分：能说出结构和迁移；3分：只谈难度。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q010 \quad 如果让你用一年培养一批高一学生冲击省一，你总体怎么设计？}
+\addcontentsline{toc}{section}{Q010 如果让你用一年培养一批高一学生冲击省一，你总体怎么设计？}
+\tagpill{课程设计} \quad \tagpill{难度 ★★★★★} \quad \tagpill{年度规划、分层、测评闭环}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如果让你用一年培养一批高一学生冲击省一，你总体怎么设计？
+\end{qbox}
+\begin{whybox}
+公开岗位经常要求课程体系设计和讲义研发，本题直接测试系统化能力。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先做基线诊断和分层。
+\item 四大模块第一轮建立工具库，再进入专题方法与综合迁移。
+\item 后期联赛真题、限时模拟、弱点专项形成闭环。
+\end{itemize}
+\textbf{展开：} 一年计划最好不是按月份机械切成“代数三个月、几何三个月”。更有效的是三层并行：\textbf{知识线}覆盖四大模块；\textbf{能力线}训练证明、探索和速度；\textbf{评测线}每4到6周做一次诊断并调整权重。前期以基础工具和规范书写为主，中期用专题串联方法，后期增加综合题和联赛模拟。每次测评后必须给学生生成技能矩阵，而不是只给总分。
+\end{ansbox}
+\begin{followbox}
+如果班级中前20\\%进度明显快于其余学生，你会如何分层而不拆班？
+\end{followbox}
+\begin{warnbox}
+给出单线性课程表；忽略反馈调整；最后两个月才开始限时。
+\end{warnbox}
+\begin{teachbox}
+同一课堂采用核心题 + 进阶追问 + 开放推广三级任务，作业用A/B/C三档形成弹性分层。
+\end{teachbox}
+\begin{rubricbox}
+10分：年度框架、测评闭环、分层机制完整；6分：有阶段规划；3分：只有章节时间表。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\chapter{代数}
+\begin{center}\large\color{muted}不等式、函数方程、多项式与数列的结构化思维\end{center}
+\vspace{1mm}
+\clearpage
+\section*{Q011 \quad 为什么 AM-GM 不是一个“看到乘积就用”的公式？}
+\addcontentsline{toc}{section}{Q011 为什么 AM-GM 不是一个“看到乘积就用”的公式？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{不等式、结构识别、等号条件}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么 AM-GM 不是一个“看到乘积就用”的公式？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先识别要控制的是和还是积。
+\item 检查正数条件与等号位置。
+\item 把AM-GM理解为“固定一类量时另一类量的极值结构”。
+\end{itemize}
+\textbf{展开：} AM-GM 的价值不在公式本身，而在它提供了“和—积”的极值关系。处理不等式时，应先问：目标中是否存在可以构造成固定和或固定积的结构？等号希望在哪里发生？例如若等号在 $a=b=c$，对称的AM-GM往往自然；若等号比例不同，则需加权或先代换。机械套用常导致常数不够锐，因为使用的分组没有尊重等号结构。
+\end{ansbox}
+\begin{followbox}
+如何根据等号条件反推AM-GM的分组或权重？
+\end{followbox}
+\begin{warnbox}
+忽略正数条件；只会二元形式；不检查等号能否同时成立。
+\end{warnbox}
+\begin{teachbox}
+让学生先“猜等号”，再设计分组；把每次使用AM-GM的等号条件写在旁边。
+\end{teachbox}
+\begin{rubricbox}
+10分：结构、条件、等号三者齐全；6分：会讲公式和常见用法；3分：只背结论。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q012 \quad 怎样系统教授柯西不等式，而不是让学生背十几个形式？}
+\addcontentsline{toc}{section}{Q012 怎样系统教授柯西不等式，而不是让学生背十几个形式？}
+\tagpill{数学+教学} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{Cauchy、统一视角、变形能力}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 怎样系统教授柯西不等式，而不是让学生背十几个形式？
+\end{qbox}
+\begin{whybox}
+同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 以向量内积型为母式：$(\sum a_i^2)(\sum b_i^2)\ge(\sum a_ib_i)^2$。
+\item 从母式推出Engel/Titu形式，解释何时做分母配平方。
+\item 强调等号条件决定变量比例。
+\end{itemize}
+\textbf{展开：} 教学上应把柯西看成一个“压缩多项之和”的统一工具。母式与向量夹角/内积直觉相连；分式型 $\sum x_i^2/a_i\ge (\sum x_i)^2/\sum a_i$ 只是代换后的结果。学生真正需要学的是：当目标出现“多个分式求和”或“线性和的平方”时，如何选择 $a_i,b_i$。每道例题都应要求写出等号条件，因为这能直接检验变形是否锐。
+\end{ansbox}
+\begin{followbox}
+给出一个你会用“逆向配对”来设计Cauchy变量的例子。
+\end{followbox}
+\begin{warnbox}
+把Titu、Schwarz、Engel当互不相关的公式；不会检查等号。
+\end{warnbox}
+\begin{teachbox}
+做“同题三写”：要求学生把同一个证明分别写成向量型、分式型和配平方型。
+\end{teachbox}
+\begin{rubricbox}
+10分：能统一形式并讲方法选择；6分：会多个形式但联系不深；3分：公式清单式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q013 \quad 如何判断三元对称不等式是否值得尝试 $uvw$？}
+\addcontentsline{toc}{section}{Q013 如何判断三元对称不等式是否值得尝试 $uvw$？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{对称不等式、降维、严谨性}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何判断三元对称不等式是否值得尝试 $uvw$？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 确认对称而非仅循环对称。
+\item 检查齐次性与能否用 $u=a+b+c,v^2=ab+bc+ca,w^3=abc$ 表达。
+\item 说明“令两变量相等”需要理论支撑，不能凭经验。
+\end{itemize}
+\textbf{展开：} $uvw$ 的本质是把三元对称多项式压缩到基本对称量，并利用固定部分对称量后问题对第三个量的低次性。面试中最容易暴露的问题，是候选人把“对称题令 $b=c$”当成规则。严谨回答应指出：只有在满足相应的 $uvw$ 降维条件或能证明极值在边界/两根重合处取得时，这一步才合法。教学上还要强调 $uvw$ 是统一理论，不应成为初学者绕过基础因式分解的黑箱。
+\end{ansbox}
+\begin{followbox}
+循环对称不等式为什么一般不能直接套 $uvw$？
+\end{followbox}
+\begin{warnbox}
+对称和轮换对称混淆；把$b=c$当无条件操作。
+\end{warnbox}
+\begin{teachbox}
+先让学生用基本对称多项式重写，再讨论降维发生的原因。
+\end{teachbox}
+\begin{rubricbox}
+10分：能说明适用条件与严谨边界；6分：知道基本变量；3分：只会“令两变量相等”。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q014 \quad 什么情况下应该齐次化？什么时候齐次化反而让问题更复杂？}
+\addcontentsline{toc}{section}{Q014 什么情况下应该齐次化？什么时候齐次化反而让问题更复杂？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{齐次、不等式、归一化}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么情况下应该齐次化？什么时候齐次化反而让问题更复杂？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 齐次化用于获得尺度不变性并允许归一化。
+\item 优先选与题目结构和等号匹配的归一化，如$a+b+c=1$或$abc=1$。
+\item 如果引入额外变量或高次幂使结构恶化，应谨慎。
+\end{itemize}
+\textbf{展开：} 若不等式两边次数不一致但存在约束，齐次化能把约束吸收到表达式中，使缩放 $(a,b,c)\mapsto(\lambda a,\lambda b,\lambda c)$ 不改变真假。这时可以选择最有利的归一化。真正的技术点是\textbf{归一化选择}：不是固定令和为1，而是观察目标更适合消掉和、积还是平方和。齐次化如果引入大量分式或把简单凸性变成高次多项式，则可能得不偿失。
+\end{ansbox}
+\begin{followbox}
+同一道齐次不等式，为什么不同归一化会导致难度差很多？
+\end{followbox}
+\begin{warnbox}
+“见约束就令和为1”；忽略变量为零或正数的边界。
+\end{warnbox}
+\begin{teachbox}
+让学生对同一道题尝试两种归一化，比较代数复杂度和等号可见性。
+\end{teachbox}
+\begin{rubricbox}
+10分：理解尺度、选择和边界；6分：会齐次化；3分：机械归一化。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q015 \quad 现场证明一个 Schur 不等式版本，并给出两种证明。}
+\addcontentsline{toc}{section}{Q015 现场证明一个 Schur 不等式版本，并给出两种证明。}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{对称不等式、多解、证明表达}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 现场证明一个 Schur 不等式版本，并给出两种证明。
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先给出清晰版本，例如$r=1$：$\sum a(a-b)(a-c)\ge0$。
+\item 一种证明用排序后因式分解；另一种用对称量或配方。
+\item 比较两解法揭示的信息。
+\end{itemize}
+\textbf{展开：} 以 $a\ge b\ge c\ge0$ 为例，Schur 的 $r=1$ 形式可化为 $a(a-b)(a-c)+b(b-c)(b-a)+c(c-a)(c-b)\ge0$，再通过合并前两项把表达式写成非负因子之和。另一条路线可从 $\sum a(a-b)(a-c)=\sum a^3+3abc-\sum_{sym}a^2b$ 出发，与基本对称量联系。面试时重点不是“记住Schur”，而是能否在板书中明确排序的合法性、每一步等价变形以及等号情形。
+\end{ansbox}
+\begin{followbox}
+哪一种证明更适合第一次给学生讲？为什么？
+\end{followbox}
+\begin{warnbox}
+只给最终恒等式；排序后不说明为何可设；忘记非负条件。
+\end{warnbox}
+\begin{teachbox}
+要求学生做“证明翻译”：把因式分解证明改写成一句结构性解释。
+\end{teachbox}
+\begin{rubricbox}
+10分：两种正确证明+比较；6分：一解完整；3分：只会引用结论。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q016 \quad 怎样向学生解释 Jensen 不等式背后的“为什么”？}
+\addcontentsline{toc}{section}{Q016 怎样向学生解释 Jensen 不等式背后的“为什么”？}
+\tagpill{数学+教学} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{凸性、几何直觉、条件}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 怎样向学生解释 Jensen 不等式背后的“为什么”？
+\end{qbox}
+\begin{whybox}
+同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先讲二点割线，再到凸组合。
+\item 区分凸/凹方向。
+\item 强调定义域、权重非负且和为1。
+\end{itemize}
+\textbf{展开：} 最自然的教学入口是图像：凸函数的图像位于任意两点连线的下方，因此对 $\lambda\in[0,1]$ 有 $f(\lambda x+(1-\lambda)y)\le \lambda f(x)+(1-\lambda)f(y)$。多点Jensen只是反复应用或凸组合的推广。这样学生看到的是“平均输入后再算函数”与“先算函数再平均”的比较，而不是一个需要背方向的公式。随后再用二阶导数作为判凸工具。
+\end{ansbox}
+\begin{followbox}
+如果函数只在某个区间凸，使用Jensen时要额外检查什么？
+\end{followbox}
+\begin{warnbox}
+只用$f$背结论；忘记权重、定义域和凸凹方向。
+\end{warnbox}
+\begin{teachbox}
+让学生画图预测不等号方向，再用公式验证，建立几何与代数双表征。
+\end{teachbox}
+\begin{rubricbox}
+10分：几何解释+条件完整；6分：会公式并懂凸性；3分：纯记忆。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q017 \quad 含参数多项式问题中，怎样选择韦达、判别式还是根的定位？}
+\addcontentsline{toc}{section}{Q017 含参数多项式问题中，怎样选择韦达、判别式还是根的定位？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{多项式、策略选择、根结构}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 含参数多项式问题中，怎样选择韦达、判别式还是根的定位？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 问题问和积/对称式优先韦达。
+\item 问实根存在或重根优先判别式/连续性。
+\item 问根区间与个数结合符号、单调和介值。
+\end{itemize}
+\textbf{展开：} 方法不是互斥的。若题目要求根的对称表达，先用韦达把根的信息变成系数；若要求参数使两根均为正，还需同时处理判别式、根和、根积以及边界；若要证明某区间恰有一根，则“端点异号 + 单调性”往往比求根公式更简洁。面试中应体现一种\textbf{目标驱动}的选择，而不是把所有工具都列出来。
+\end{ansbox}
+\begin{followbox}
+参数二次方程“两根都在$(0,1)$”通常需要哪些条件？
+\end{followbox}
+\begin{warnbox}
+只看判别式；认为韦达可解决所有根位置问题。
+\end{warnbox}
+\begin{teachbox}
+给学生做“题干关键词→信息需求→工具”的方法选择表。
+\end{teachbox}
+\begin{rubricbox}
+10分：能建立选择树并处理组合条件；6分：知道各工具用途；3分：只会求根公式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q018 \quad 为什么竞赛里经常构造辅助多项式？}
+\addcontentsline{toc}{section}{Q018 为什么竞赛里经常构造辅助多项式？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{多项式、信息编码、构造}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么竞赛里经常构造辅助多项式？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 把多个变量/根的关系编码到一个对象。
+\item 利用系数、根、导数、插值之间的联系。
+\item 构造的核心是让题目条件变成“多项式的已知信息”。
+\end{itemize}
+\textbf{展开：} 辅助多项式是一种信息压缩。例如给定若干数 $x_i$ 的对称关系，可令 $P(t)=\prod(t-x_i)$，把所有根同时编码在系数中；若已知函数在多个点取值，则可考虑插值多项式；若出现“一个表达式对很多整数都整除/为零”，则根的个数与次数会立刻形成矛盾。真正的难点是选择多项式的根或系数，使条件自然进入。
+\end{ansbox}
+\begin{followbox}
+什么题型会让你想到“构造一个有很多根但次数很低的多项式”？
+\end{followbox}
+\begin{warnbox}
+构造后只做计算，解释不出为何这样构造。
+\end{warnbox}
+\begin{teachbox}
+训练时先隐藏标准构造，让学生列出“希望多项式满足的三个性质”，再反推形式。
+\end{teachbox}
+\begin{rubricbox}
+10分：能讲编码思想并举类型；6分：会典型构造；3分：只说“方便计算”。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q019 \quad 请解释 Vieta Jumping 的核心思想。}
+\addcontentsline{toc}{section}{Q019 请解释 Vieta Jumping 的核心思想。}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{整数方程、韦达跳跃、无限下降}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 请解释 Vieta Jumping 的核心思想。
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 把关于一个变量的整式关系视作二次方程。
+\item 由一个整数根得到另一个根，并证明仍满足正整数条件。
+\item 构造更小正整数解，与极小性矛盾。
+\end{itemize}
+\textbf{展开：} Vieta Jumping 的逻辑骨架是“\textbf{二次根变换 + 可行性保持 + 下降}”。假设存在正整数解并取某个量最小，把方程视为关于 $x$ 的二次方程；一个根是已知的 $x$，由韦达得到另一个根 $x'$。接下来必须验证 $x'$ 仍为整数、为正、仍满足原方程，最后证明 $0<x'<x$（或使所选极小量变小）。任何一步缺失都不是完整的跳跃证明。
+\end{ansbox}
+\begin{followbox}
+为什么“另一个根也是整数”通常来自系数整除，而不能一句话带过？
+\end{followbox}
+\begin{warnbox}
+只写出另一个根就宣布矛盾；没证明正性或下降。
+\end{warnbox}
+\begin{teachbox}
+让学生把Vieta Jumping写成固定四栏：构造、整数性、正性、下降性。
+\end{teachbox}
+\begin{rubricbox}
+10分：四环完整；6分：理解下降但细节不足；3分：只会套公式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q020 \quad 函数方程中，怎样判断先代 $0$、$1$，还是先交换变量？}
+\addcontentsline{toc}{section}{Q020 函数方程中，怎样判断先代 $0$、$1$，还是先交换变量？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{函数方程、信息提取、策略}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 函数方程中，怎样判断先代 $0$、$1$，还是先交换变量？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 代特殊值是为了制造信息，不是仪式。
+\item 优先寻找能消元、制造同值、得到$f(0)$或固定点的代入。
+\item 交换变量常用于比较两个等式并消去复杂项。
+\end{itemize}
+\textbf{展开：} 函数方程的第一步应该由“想得到什么”驱动。若表达式含 $xy$，令一个变量为0可能把两变量耦合解除；若有 $f(x+y)$，令 $y=0$常得到基准关系；若左右不对称但变量角色可交换，写出 $(x,y)$ 与 $(y,x)$ 两式并相减可能直接得到单射或奇偶性。高水平回答会说：特殊代入只是\textbf{实验设计}，目标是最大化一次代入带来的约束。
+\end{ansbox}
+\begin{followbox}
+如果所有常见特殊值都没有信息，你下一步会做什么？
+\end{followbox}
+\begin{warnbox}
+机械依次代0、1、-1；不说明每次代入的目的。
+\end{warnbox}
+\begin{teachbox}
+要求学生在每次代入前先写一句“我希望得到……”，训练有目的探索。
+\end{teachbox}
+\begin{rubricbox}
+10分：目标驱动且方法多样；6分：会常见技巧；3分：模板化。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q021 \quad 如何教函数方程中的“单射/满射”？}
+\addcontentsline{toc}{section}{Q021 如何教函数方程中的“单射/满射”？}
+\tagpill{数学+教学} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{函数方程、单射满射、工具化}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何教函数方程中的“单射/满射”？
+\end{qbox}
+\begin{whybox}
+同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 把单射解释成“相同函数值可消掉$f$”。
+\item 把满射解释成“可以制造任意目标值作为$f(t)$”。
+\item 讲清证明单射/满射的常见构造。
+\end{itemize}
+\textbf{展开：} 在竞赛函数方程中，单射和满射不是抽象定义题，而是消元工具。若已证单射，则 $f(A)=f(B)$ 立即变成 $A=B$；若已证满射，可以选择某个 $t$ 使 $f(t)$ 等于希望的值，从而控制方程中的参数。教学时应让学生看到“获得这个性质之后，哪一坨复杂结构会被消掉”，否则定义容易成为孤立知识。
+\end{ansbox}
+\begin{followbox}
+有哪些函数方程信号会让你优先尝试证明满射？
+\end{followbox}
+\begin{warnbox}
+只背定义；证明了单射后不会继续利用。
+\end{warnbox}
+\begin{teachbox}
+设计一题同样可以先证单射或先证满射，比较两条路线的长度。
+\end{teachbox}
+\begin{rubricbox}
+10分：性质与消元价值连接清楚；6分：能证明并使用；3分：只会定义。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q022 \quad 什么叫“切线法证明不等式”？}
+\addcontentsline{toc}{section}{Q022 什么叫“切线法证明不等式”？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{凸函数、切线、最佳常数}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么叫“切线法证明不等式”？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 切线给出凸函数的全局线性下界（凹函数相反）。
+\item 切点通常由等号条件决定。
+\item 最佳常数问题常可转成找相切。
+\end{itemize}
+\textbf{展开：} 若 $f$ 在区间上凸，则任一切点 $x_0$ 给出 $f(x)\ge f(x_0)+f'(x_0)(x-x_0)$。因此复杂函数可以被一个线性表达式控制，再与约束求和。竞赛中选择切点通常不是随意的：等号希望发生在哪个 $x_0$，切点就优先选在哪里。进一步，当题目要求最大/最小常数时，“恰好相切”往往对应最优边界。
+\end{ansbox}
+\begin{followbox}
+如何用等号点反推出切线法中的切点和线性系数？
+\end{followbox}
+\begin{warnbox}
+只会背切线公式；不检查凸性区间。
+\end{warnbox}
+\begin{teachbox}
+先让学生根据图像画出“应该用上界还是下界”，再写解析式。
+\end{teachbox}
+\begin{rubricbox}
+10分：凸性、切点、最优性都能解释；6分：会应用；3分：只有公式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q023 \quad 怎样系统处理递推数列？}
+\addcontentsline{toc}{section}{Q023 怎样系统处理递推数列？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{递推、代换、单调有界、周期}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 怎样系统处理递推数列？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先分类：线性/非线性、实数/整数、求显式/求极限/求周期。
+\item 线性常用特征方程；分式非线性尝试不动点平移或倒数代换。
+\item 只求极限时优先证明单调有界，不必强求通项。
+\end{itemize}
+\textbf{展开：} 递推题最常见的误区是“一上来求通项”。应先读任务。如果只问极限，研究不动点并证明单调有界常最经济；若递推是Möbius分式，寻找不动点后做分式代换可能线性化；若是整数状态且模某个数只有有限状态，周期性和抽屉原理会自然出现。策略的核心是\textbf{选择表示，使迭代变简单}。
+\end{ansbox}
+\begin{followbox}
+对于 $x_{n+1}=f(x_n)$，为什么不动点分析通常值得先做？
+\end{followbox}
+\begin{warnbox}
+默认求通项；忽略初值和定义域。
+\end{warnbox}
+\begin{teachbox}
+给学生一组同形式递推，但问题分别问通项、极限、整数性，训练“任务决定方法”。
+\end{teachbox}
+\begin{rubricbox}
+10分：有分类与选择逻辑；6分：会多个套路；3分：只会特征方程。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q024 \quad 请设计一道让学生真正理解“配方”的竞赛题，而不是普通二次函数题。}
+\addcontentsline{toc}{section}{Q024 请设计一道让学生真正理解“配方”的竞赛题，而不是普通二次函数题。}
+\tagpill{教研设计} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{配方、构造、题目设计}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 请设计一道让学生真正理解“配方”的竞赛题，而不是普通二次函数题。
+\end{qbox}
+\begin{whybox}
+用于考察岗位所需的核心能力与可解释思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 题目应迫使学生主动制造平方而非直接识别。
+\item 等号点或最值点要能反向解释为什么这样配。
+\item 设置变式让学生从二次配方迁移到多项式/分式。
+\end{itemize}
+\textbf{展开：} 好的设计可以把配方隐藏在一个最值或不等式里，例如要求证明某表达式有下界，但直接展开杂乱；通过添加并减去同一项，出现 $(x-a)^2$ 后结构瞬间清晰。第二层变式可以让系数含参数，要求学生根据等号位置反推应配成哪个平方。这样“配方”从计算技巧升级为\textbf{主动创造非负结构}。
+\end{ansbox}
+\begin{followbox}
+你会如何判断这道自编题是在训练配方，而不是训练繁琐计算？
+\end{followbox}
+\begin{warnbox}
+题面只是普通求顶点；难度来自数字复杂。
+\end{warnbox}
+\begin{teachbox}
+设计后做“方法纯度检查”：核心突破是否唯一指向目标方法，计算是否服务于结构。
+\end{teachbox}
+\begin{rubricbox}
+10分：有设计原则和变式；6分：能给出合理题型；3分：只是换数字。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q025 \quad 学生做不等式永远第一反应“暴力展开”，你怎么纠正？}
+\addcontentsline{toc}{section}{Q025 学生做不等式永远第一反应“暴力展开”，你怎么纠正？}
+\tagpill{教学诊断} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{不等式、元认知、策略训练}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 学生做不等式永远第一反应“暴力展开”，你怎么纠正？
+\end{qbox}
+\begin{whybox}
+高频真实教学场景，考察能否针对根因而不是针对表面错误处理。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 建立展开前检查清单：齐次、对称、等号、次数、可因式分解、凸性。
+\item 限制一段时间内禁止无目的展开，要求先写结构判断。
+\item 用反例说明展开会丢失哪些信息。
+\end{itemize}
+\textbf{展开：} “暴力展开”本身不是错误，问题是它发生在结构识别之前。可以规定训练期内每道不等式先写六行诊断：是否齐次、是否对称、等号在哪里、各项次数、可能的标准不等式、是否存在固定和/积。只有给出展开目的（例如为了因式分解成非负项）才允许展开。几周后学生会形成“先看结构、再算”的默认顺序。
+\end{ansbox}
+\begin{followbox}
+什么时候暴力展开反而是正确策略？
+\end{followbox}
+\begin{warnbox}
+只批评“不要展开”却不给替代流程；让学生背更多不等式名称。
+\end{warnbox}
+\begin{teachbox}
+统计学生每次展开后的产出：是否出现可因式分解、是否减少变量、是否更接近等号结构。
+\end{teachbox}
+\begin{rubricbox}
+10分：有诊断、干预和例外；6分：能给检查清单；3分：只说多看结构。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\chapter{平面几何}
+\begin{center}\large\color{muted}从图形直觉到可验证的结构\end{center}
+\vspace{1mm}
+\clearpage
+\section*{Q026 \quad 如何教学生判断一道几何题该不该作辅助线？}
+\addcontentsline{toc}{section}{Q026 如何教学生判断一道几何题该不该作辅助线？}
+\tagpill{数学+教学} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{几何构造、目标驱动、图形结构}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何教学生判断一道几何题该不该作辅助线？
+\end{qbox}
+\begin{whybox}
+同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 辅助线必须服务目标结构：相似、共圆、平行、等角、比例等。
+\item 先逆推结论需要什么中间关系，再决定线。
+\item 避免“多画几条碰碰运气”。
+\end{itemize}
+\textbf{展开：} 辅助线的真正来源通常是\textbf{缺失结构}。若目标要证长度比，先想相似/正弦定理需要哪些角；若目标是共点，想Ceva需要哪些边比；若目标含乘积，想圆幂或相似。于是“作哪条线”变成“怎样补出一个标准结构”。教学时应把标准解法中的“作……”改写成完整句子：因为希望得到X，所以连接/延长Y。
+\end{ansbox}
+\begin{followbox}
+请举一个“从结论逆推需要共圆，再反推辅助线”的教学示例。
+\end{followbox}
+\begin{warnbox}
+把辅助线神秘化为经验；画线后才解释。
+\end{warnbox}
+\begin{teachbox}
+要求学生在图旁写“这条辅助线的任务”，不允许无目的线段留在图上。
+\end{teachbox}
+\begin{rubricbox}
+10分：目标驱动并能形成决策树；6分：会说常见结构；3分：只说多做题。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q027 \quad 怎么系统讲“追角”？}
+\addcontentsline{toc}{section}{Q027 怎么系统讲“追角”？}
+\tagpill{数学+教学} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{角关系、共圆、相似}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 怎么系统讲“追角”？
+\end{qbox}
+\begin{whybox}
+同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 追角不是把所有角都算出来，而是追目标角。
+\item 优先识别同弧角、外角、平行角和相似链。
+\item 形成“角相等→共圆/相似→新关系”的闭环。
+\end{itemize}
+\textbf{展开：} 追角的教学目标应从“角度计算”升级为“用角关系创建结构”。例如发现 $\angle ABC=\angle ADC$ 后，不必继续算角，而应立即识别四点共圆；一旦共圆，又能产生新的等角与圆幂关系。高水平几何常是这种结构反复自增殖。因此板书最好用颜色或编号标出“关键角对”，而非把每个小角都写数值。
+\end{ansbox}
+\begin{followbox}
+什么时候追角会进入死胡同？怎样判断该换方法？
+\end{followbox}
+\begin{warnbox}
+把追角等同计算角度；不标有向角导致跨180度问题。
+\end{warnbox}
+\begin{teachbox}
+训练“每得到一次角相等必须回答：它能触发什么结构？”
+\end{teachbox}
+\begin{rubricbox}
+10分：能讲闭环和目标；6分：会常见追角；3分：只会机械角度计算。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q028 \quad 判断四点共圆有哪些互相联系的判据？}
+\addcontentsline{toc}{section}{Q028 判断四点共圆有哪些互相联系的判据？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{圆、共圆判据、转换}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 判断四点共圆有哪些互相联系的判据？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 等角判据。
+\item 对角互补。
+\item 圆幂/长度乘积判据。
+\item 必要时用坐标或复数统一验证。
+\end{itemize}
+\textbf{展开：} 共圆判据不是孤立清单，而是不同信息形态的入口：角信息自然用同弧等角或对角互补；长度乘积信息自然用圆幂逆定理；若题目已给垂直，可用“两个直角对同一直径”快速建圆。面试中如果能进一步说明“选择判据取决于题目给你的数据类型”，就体现了方法选择意识。
+\end{ansbox}
+\begin{followbox}
+已知 $PA\cdot PB=PC\cdot PD$ 时，使用共圆逆命题需检查哪些位置关系？
+\end{followbox}
+\begin{warnbox}
+只背一个判据；忽略有向角/点在线段外的情形。
+\end{warnbox}
+\begin{teachbox}
+让学生把同一个共圆结论分别用角、圆幂两种语言证明。
+\end{teachbox}
+\begin{rubricbox}
+10分：多判据且能按信息选用；6分：列出三种；3分：只会等角。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q029 \quad 为什么圆幂是竞赛几何中的统一工具？}
+\addcontentsline{toc}{section}{Q029 为什么圆幂是竞赛几何中的统一工具？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{圆幂、切割线、根轴}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么圆幂是竞赛几何中的统一工具？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 同一点对同一圆的割线乘积恒定。
+\item 统一割线-割线、切线-割线结构。
+\item 圆幂相等直接导向根轴。
+\end{itemize}
+\textbf{展开：} 圆幂把几何中的“长度乘积”转成一个点相对于圆的标量。对圆外点 $P$，若直线交圆于 $A,B$，则 $PA\cdot PB$ 与割线方向无关；切线时变成 $PT^2$。因此很多看似不同的乘积恒等式其实是在说两个点/两个圆的幂相等。进一步，两圆幂相等的点形成根轴，使“多个圆的交错关系”获得线性结构。
+\end{ansbox}
+\begin{followbox}
+当题目出现两个长度乘积相等时，你如何判断它是不是在暗示圆幂？
+\end{followbox}
+\begin{warnbox}
+只会套公式；不理解有向长度和点的位置。
+\end{warnbox}
+\begin{teachbox}
+用“同一乘积的多条割线”动态演示，让学生看到不变量。
+\end{teachbox}
+\begin{rubricbox}
+10分：能从不变量讲到根轴；6分：会常见应用；3分：只背切割线定理。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q030 \quad 请解释根轴定理，并说明什么时候会主动寻找根轴。}
+\addcontentsline{toc}{section}{Q030 请解释根轴定理，并说明什么时候会主动寻找根轴。}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{根轴、三圆共点、幂}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 请解释根轴定理，并说明什么时候会主动寻找根轴。
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 定义为两圆幂相等点的轨迹。
+\item 若两圆相交，根轴就是公共弦所在直线。
+\item 三圆问题中，两两根轴共点（或平行）。
+\end{itemize}
+\textbf{展开：} 根轴的优势是把圆问题线性化。面对三圆、多圆、公共弦、切线长度或大量“乘积相等”时，应主动尝试计算幂差。因为 $\operatorname{Pow}_{\omega_1}(P)-\operatorname{Pow}_{\omega_2}(P)$ 是一次关系，等于0得到直线。三圆根轴定理则常把一个难证的共点问题转成“两个点分别在两条根轴上”。
+\end{ansbox}
+\begin{followbox}
+如果三个圆两两不相交，根轴定理还成立吗？如何定义根轴？
+\end{followbox}
+\begin{warnbox}
+认为根轴必须经过圆的交点；不会处理相离圆。
+\end{warnbox}
+\begin{teachbox}
+先从坐标计算两圆幂差得到直线，再回到纯几何理解，可消除“必须相交”的误解。
+\end{teachbox}
+\begin{rubricbox}
+10分：定义、线性化、触发场景完整；6分：会定理；3分：只记三根轴共点。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q031 \quad 什么时候用 Menelaus，什么时候用 Ceva？}
+\addcontentsline{toc}{section}{Q031 什么时候用 Menelaus，什么时候用 Ceva？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{共线、共点、比例}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么时候用 Menelaus，什么时候用 Ceva？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item Ceva服务三线共点。
+\item Menelaus服务三点共线/截线。
+\item 用有向线段统一外分情况。
+\end{itemize}
+\textbf{展开：} 最简单的选择法是先看结论类型：共点通常向Ceva组织三组边比，共线通常向Menelaus组织一条截线的三组比。但高水平题中两者经常串联：先用Menelaus得到某个难算比例，再把它送入Ceva。教学上应该让学生看到二者都是“三角形边上比例乘积”的结构，只是几何事件不同。
+\end{ansbox}
+\begin{followbox}
+一道共点题完全看不到边比时，你怎样制造Ceva需要的比例？
+\end{followbox}
+\begin{warnbox}
+符号方向错误；只会内分正比例版本。
+\end{warnbox}
+\begin{teachbox}
+做一页“共点↔Ceva、共线↔Menelaus”的翻译练习，要求先写目标再列比。
+\end{teachbox}
+\begin{rubricbox}
+10分：会选、会串联、会有向；6分：会两个定理；3分：公式混淆。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q032 \quad 你如何让学生理解正弦 Ceva，而不是背公式？}
+\addcontentsline{toc}{section}{Q032 你如何让学生理解正弦 Ceva，而不是背公式？}
+\tagpill{数学+教学} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{正弦Ceva、角度到比例、正弦定理}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 你如何让学生理解正弦 Ceva，而不是背公式？
+\end{qbox}
+\begin{whybox}
+同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 从普通Ceva出发。
+\item 用各小三角形的正弦定理把边比换成正弦比。
+\item 强调它适用于“角信息丰富、长度信息贫乏”的共点题。
+\end{itemize}
+\textbf{展开：} 正弦Ceva的教学最好是“推出来”而不是直接给。普通Ceva需要三组边比；当图中给的是角而非长度，就在相邻三角形里用正弦定理，把每一组边比表示成两个角的正弦比，乘起来后公共长度抵消。学生因此会理解：正弦Ceva本质是\textbf{把角度信息翻译成Ceva可消费的边比信息}。
+\end{ansbox}
+\begin{followbox}
+什么情形下正弦Ceva比普通Ceva明显更自然？
+\end{followbox}
+\begin{warnbox}
+公式中角位置背错；不理解角的有向性。
+\end{warnbox}
+\begin{teachbox}
+让学生从普通Ceva独立推导一次正弦版，之后只记“转换逻辑”。
+\end{teachbox}
+\begin{rubricbox}
+10分：能从普通Ceva推导并讲选择；6分：会使用；3分：背乘积公式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q033 \quad 哪些几何题适合坐标法？}
+\addcontentsline{toc}{section}{Q033 哪些几何题适合坐标法？}
+\tagpill{方法选择} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{解析几何、建系、复杂度控制}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 哪些几何题适合坐标法？
+\end{qbox}
+\begin{whybox}
+真正高手不是工具更多，而是更早判断哪种表示能降低问题复杂度。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 平行、垂直、中点、固定圆、强对称是好信号。
+\item 坐标系要让最多条件自动成立。
+\item 预估代数复杂度，避免把一页几何变成三页计算。
+\end{itemize}
+\textbf{展开：} 坐标法不是“万能兜底”，而是一种把几何关系标准化的方式。选择坐标系时应最大化免费条件：若有垂直，设为坐标轴；若有中点或对称，原点放在中心；若有圆，可把圆心置原点或使用单位圆。决定是否坐标化时要做复杂度预估：未知点是否太多？交点坐标是否会产生高次分式？如果代数复杂度明显超过几何结构，通常不是好选择。
+\end{ansbox}
+\begin{followbox}
+同一题选择不同坐标系，为什么计算量可能相差一个数量级？
+\end{followbox}
+\begin{warnbox}
+任意选三个点设坐标；参数过多。
+\end{warnbox}
+\begin{teachbox}
+训练“建系前预算”：要求学生先写每个关键对象的预计坐标形式，再开始计算。
+\end{teachbox}
+\begin{rubricbox}
+10分：会判题、会选系、会预算；6分：会用坐标；3分：坐标暴力。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q034 \quad 哪些几何题适合复数法？}
+\addcontentsline{toc}{section}{Q034 哪些几何题适合复数法？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{复数几何、单位圆、代数化}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 哪些几何题适合复数法？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 大量点在同一圆，尤其可归一为单位圆。
+\item 角度、垂直、共线可通过复数商与共轭表达。
+\item 明确复数法的学习成本与教学边界。
+\end{itemize}
+\textbf{展开：} 当核心图形围绕一个圆展开时，把它标准化为单位圆可获得 $|z|=1$，从而 $\bar z=1/z$，许多共线、垂直与圆上关系大幅简化。复数法特别适合处理多圆周点和旋转结构。但若题目只是简单相似或一条Ceva，复数化会掩盖核心几何。教练还应注意：高级工具要用于\textbf{统一结构}，而不是用于展示技巧。
+\end{ansbox}
+\begin{followbox}
+复数几何中，怎样表达三点共线或两向量垂直？
+\end{followbox}
+\begin{warnbox}
+不会处理共轭；把任何圆题都单位圆化。
+\end{warnbox}
+\begin{teachbox}
+要求学生先给纯几何解，再用复数解复盘哪些几何关系被统一成同一种代数关系。
+\end{teachbox}
+\begin{rubricbox}
+10分：适用场景、基本表达、边界清楚；6分：会单位圆技巧；3分：工具崇拜。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q035 \quad 什么时候向量法比坐标法更自然？}
+\addcontentsline{toc}{section}{Q035 什么时候向量法比坐标法更自然？}
+\tagpill{方法选择} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{向量、仿射、内积}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么时候向量法比坐标法更自然？
+\end{qbox}
+\begin{whybox}
+真正高手不是工具更多，而是更早判断哪种表示能降低问题复杂度。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 平行、共线、中点、重心等仿射关系优先向量。
+\item 垂直/角度可用内积。
+\item 向量可保持坐标无关，减少参数。
+\end{itemize}
+\textbf{展开：} 若题目主要是点的线性组合，例如中点 $M=(A+B)/2$、重心、平行四边形或三线共点，向量往往直接保留几何本质；坐标法则会额外引入坐标轴选择。只有当需要具体求交点或利用圆的方程时，坐标可能更自然。面试中能说出“向量解决仿射结构、内积处理度量结构”是加分点。
+\end{ansbox}
+\begin{followbox}
+为什么仅靠向量线性组合无法直接表达所有圆性质？
+\end{followbox}
+\begin{warnbox}
+把向量法和坐标法当完全相同；无目的设基。
+\end{warnbox}
+\begin{teachbox}
+用同一道重心题比较向量解和坐标解，让学生观察“自由度”差异。
+\end{teachbox}
+\begin{rubricbox}
+10分：能从仿射/度量区分；6分：会说常见场景；3分：只说计算方便。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q036 \quad 如何解释反演的核心思想？}
+\addcontentsline{toc}{section}{Q036 如何解释反演的核心思想？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{反演、多圆结构、变换观}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何解释反演的核心思想？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 定义：关于中心$O$、半径$R$，$OP\cdot OP'=R^2$。
+\item 核心不是公式，而是把过中心的圆与不过中心的直线互换。
+\item 选择反演中心是最大化结构简化。
+\end{itemize}
+\textbf{展开：} 反演是一种“把近处和远处互换”的非线性变换。最重要的结构事实是：过反演中心的圆通常变成不经过中心的直线，反之亦然；角度在适当意义下保持。因此面对许多都经过同一点的圆，反演可能把它们一次性变成多条直线，使切线、相交关系大幅简化。真正的技巧是选中心和半径，而不是记大量像点公式。
+\end{ansbox}
+\begin{followbox}
+为什么“很多圆经过同一点”是反演的重要信号？
+\end{followbox}
+\begin{warnbox}
+只会写$OP\cdot OP'=R^2$；选中心没有理由。
+\end{warnbox}
+\begin{teachbox}
+先做“目标图预测”：反演前先问希望哪些圆变直线，再选中心。
+\end{teachbox}
+\begin{rubricbox}
+10分：变换目的、圆线互换、选中心清楚；6分：会基础反演；3分：公式层面。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q037 \quad 怎样判断一道题适合反演？}
+\addcontentsline{toc}{section}{Q037 怎样判断一道题适合反演？}
+\tagpill{方法选择} \quad \tagpill{难度 ★★★★★} \quad \tagpill{反演触发信号、复杂度}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 怎样判断一道题适合反演？
+\end{qbox}
+\begin{whybox}
+真正高手不是工具更多，而是更早判断哪种表示能降低问题复杂度。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 多圆、共点圆、切线、长度乘积是强信号。
+\item 有一个自然中心能让多个对象同时简化。
+\item 反演后应预计得到直线/相似/共线等更简单目标。
+\end{itemize}
+\textbf{展开：} 反演不是因为题目“难”而使用。判断标准是\textbf{结构压缩比}：选某点为中心后，有多少复杂圆对象会变成直线？有多少乘积条件会变成像点关系？如果反演后仍有大量一般圆和复杂像点，那么并没有降低问题复杂度。面试时最好先描述预期的像图，再决定是否反演。
+\end{ansbox}
+\begin{followbox}
+如果有两个看起来都合适的反演中心，你如何比较？
+\end{followbox}
+\begin{warnbox}
+看到圆就反演；不做像图复杂度预估。
+\end{warnbox}
+\begin{teachbox}
+给学生两种中心的半成品，让其比较“反演后的对象数/类型”，训练策略判断。
+\end{teachbox}
+\begin{rubricbox}
+10分：有信号、有预估、有比较；6分：能列典型信号；3分：工具套用。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q038 \quad 请讲一个“看起来应该解析几何，但纯几何更漂亮”的例子，并比较方法。}
+\addcontentsline{toc}{section}{Q038 请讲一个“看起来应该解析几何，但纯几何更漂亮”的例子，并比较方法。}
+\tagpill{开放数学} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{多解比较、审美与教学}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 请讲一个“看起来应该解析几何，但纯几何更漂亮”的例子，并比较方法。
+\end{qbox}
+\begin{whybox}
+用于考察岗位所需的核心能力与可解释思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 选题要能真实体现两种方法的差异。
+\item 比较不是看篇幅，而看哪种方法揭示不变量/结构。
+\item 说明不同学生阶段可能选择不同主解。
+\end{itemize}
+\textbf{展开：} 例如某些“动点在圆上、证明某角恒定”的题，坐标法可以通过参数化计算消掉变量，但纯几何若能发现固定弧或旋转，就能直接解释“为什么恒定”。面试回答要把“漂亮”具体化：纯几何可能让不变量可见、推广自然；坐标法则可能更稳、更易机械验证。教学上可以先用解析法保证可达性，再用纯几何做结构提升，或反过来视班级基础而定。
+\end{ansbox}
+\begin{followbox}
+什么时候你会故意选择不那么漂亮但更稳的解析解给学生？
+\end{followbox}
+\begin{warnbox}
+只用“短”“高级”评价解法；不给具体比较维度。
+\end{warnbox}
+\begin{teachbox}
+建立多解比较表：可发现性、计算量、推广性、先修门槛、课堂可讲性。
+\end{teachbox}
+\begin{rubricbox}
+10分：具体例子+多维比较；6分：能谈两法优缺点；3分：主观审美。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q039 \quad 学生几何很弱，你会让他先学高级工具还是先做基础几何？}
+\addcontentsline{toc}{section}{Q039 学生几何很弱，你会让他先学高级工具还是先做基础几何？}
+\tagpill{培养体系} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{几何课程、先修依赖、分层}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 学生几何很弱，你会让他先学高级工具还是先做基础几何？
+\end{qbox}
+\begin{whybox}
+考察是否具备长期、分层、可反馈的培养观，而不是只有题单和个人经验。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先建立角、相似、共圆、比例、圆幂等基础网络。
+\item 高级工具放在基础结构可识别之后。
+\item 弱项诊断要区分“知识不会”和“图感不足”。
+\end{itemize}
+\textbf{展开：} 几何弱的学生如果直接上反演/复数，短期可能能解少数题，但通常无法判断什么时候使用。更稳的次序是让基础结构高度自动化：角关系、相似、共圆、Ceva/Menelaus、圆幂、位似等；之后再引入反演和复数，用来统一已有经验。与此同时，训练必须包含画图、猜想和口头解释，否则只补定理也不能建立图感。
+\end{ansbox}
+\begin{followbox}
+如何判断学生已经具备学习反演的前置能力？
+\end{followbox}
+\begin{warnbox}
+用高级工具“救弱项”；或长期只做基础题不升级。
+\end{warnbox}
+\begin{teachbox}
+设一个晋级任务：基础工具可独立解决若干综合题，并能解释为何选工具，再进入高级变换。
+\end{teachbox}
+\begin{rubricbox}
+10分：先修逻辑和晋级标准明确；6分：知道先基础后高级；3分：只按教材顺序。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q040 \quad 你如何训练学生的“几何直觉”？}
+\addcontentsline{toc}{section}{Q040 你如何训练学生的“几何直觉”？}
+\tagpill{教学方法} \quad \tagpill{难度 ★★★★★} \quad \tagpill{猜想、动态观察、严谨证明}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 你如何训练学生的“几何直觉”？
+\end{qbox}
+\begin{whybox}
+重点观察你能否解释学习机制，并给出课堂上真正可执行的干预。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 特殊化：等腰、直角、极端位置。
+\item 动态变化中寻找不变量。
+\item 数值/作图只负责猜想，证明负责确认。
+\end{itemize}
+\textbf{展开：} 几何直觉不是“看一眼就知道”，而是把图形变成实验室。可以让学生拖动点观察哪些角、比值、圆始终不变；把一般三角形特殊化成等腰或直角，寻找更明显的结构；用测量产生“可能共圆/共点”的猜想。关键是明确两阶段：\textbf{实验产生猜想，证明承担真值责任}。这样既鼓励探索，也防止依赖图形。
+\end{ansbox}
+\begin{followbox}
+如何避免动态几何软件让学生形成“看起来对就是对”的习惯？
+\end{followbox}
+\begin{warnbox}
+把直觉神秘化；或完全禁止测量和实验。
+\end{warnbox}
+\begin{teachbox}
+每个实验猜想必须附“可能失败的退化情形”，再进入证明。
+\end{teachbox}
+\begin{rubricbox}
+10分：实验、猜想、反例、证明闭环；6分：会用特殊化；3分：只说多画图。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\chapter{数论}
+\begin{center}\large\color{muted}同余、整除、估值与下降法\end{center}
+\vspace{1mm}
+\clearpage
+\section*{Q041 \quad 为什么同余是初等数论最基本的语言之一？}
+\addcontentsline{toc}{section}{Q041 为什么同余是初等数论最基本的语言之一？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{同余、有限化、结构}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么同余是初等数论最基本的语言之一？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 把无限整数按模$m$压缩成有限剩余类。
+\item 整除、奇偶、幂周期、平方剩余都能统一表达。
+\item 同余往往先用于排除，再与大小/gcd结合完成证明。
+\end{itemize}
+\textbf{展开：} 同余的本质是忽略“相差$m$的倍数”这一不相关信息，把无限问题降成有限状态。比如平方模4只能是0或1，立刻可排除大量方程；幂模$p$的周期性把指数问题降成有限循环。高水平使用不是“试很多模数”，而是选择一个能放大题目特殊结构的模数。
+\end{ansbox}
+\begin{followbox}
+什么时候模一个合数会比模素数更有效？
+\end{followbox}
+\begin{warnbox}
+随机试模数；得到必要条件后误当充分条件。
+\end{warnbox}
+\begin{teachbox}
+每次取模前先写“我希望这个模数让哪一项变简单/消失”。
+\end{teachbox}
+\begin{rubricbox}
+10分：有限化思想+选择意识；6分：会常见应用；3分：只会定义。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q042 \quad 看到整数方程，第一轮你会检查什么？}
+\addcontentsline{toc}{section}{Q042 看到整数方程，第一轮你会检查什么？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{整数方程、诊断清单}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 看到整数方程，第一轮你会检查什么？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 奇偶与小模数。
+\item gcd与因式分解。
+\item 大小界、符号、极值素因子。
+\item 必要时估值$v_p$。
+\end{itemize}
+\textbf{展开：} 整数方程的第一轮不是立即求解，而是低成本筛查结构：奇偶性、模3/4/8/9等典型剩余；左右是否可因式分解；两变量是否有公共因子；某个素数的最高幂是否能比较；表达式增长速度是否给出界。好的教练会把这些做成“排查清单”，但同时强调清单不是机械顺序，题目结构决定优先级。
+\end{ansbox}
+\begin{followbox}
+哪些形式会让你优先看模4、模8或模9？
+\end{followbox}
+\begin{warnbox}
+把清单变成无脑试模；忽略大小估计。
+\end{warnbox}
+\begin{teachbox}
+训练“30秒诊断”：只允许写可能工具和理由，不允许开始长计算。
+\end{teachbox}
+\begin{rubricbox}
+10分：覆盖广且有选择理由；6分：能列常用检查；3分：只会同余。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q043 \quad 为什么平方数模4只能是0或1？你会怎么给初学者讲？}
+\addcontentsline{toc}{section}{Q043 为什么平方数模4只能是0或1？你会怎么给初学者讲？}
+\tagpill{基础证明} \quad \tagpill{难度 ★★☆☆☆} \quad \tagpill{奇偶、同余、教学表达}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么平方数模4只能是0或1？你会怎么给初学者讲？
+\end{qbox}
+\begin{whybox}
+用基础命题检测证明责任、表达精度和“简单内容能否讲清楚”。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 按整数奇偶分类。
+\item 偶数平方含4因子；奇数平方展开为$4k(k+1)+1$或$(2k+1)^2$。
+\item 连接到“证明方程无解”的用途。
+\end{itemize}
+\textbf{展开：} 这道题看似简单，但很适合面试试讲。令 $n=2k$，则 $n^2=4k^2\equiv0\pmod4$；令 $n=2k+1$，则 $n^2=4k(k+1)+1\equiv1\pmod4$。讲完不要停在结论，应马上让学生用它排除例如 $x^2+y^2\equiv3\pmod4$ 的可能性，体验一个局部事实怎样变成数论工具。
+\end{ansbox}
+\begin{followbox}
+平方模8有哪些可能？证明方法有什么变化？
+\end{followbox}
+\begin{warnbox}
+只报结论；证明中“奇数平方显然为1”不展开。
+\end{warnbox}
+\begin{teachbox}
+基础定理后立即配一个“为什么有用”的微应用，增强工具感。
+\end{teachbox}
+\begin{rubricbox}
+10分：证明清晰+应用连接；6分：证明正确；3分：只会背。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q044 \quad 怎样系统选择模数？}
+\addcontentsline{toc}{section}{Q044 怎样系统选择模数？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{模数设计、剩余类、策略}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 怎样系统选择模数？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 根据幂次选择能产生稀疏剩余的模数。
+\item 让某些系数或项消失。
+\item 结合目标素因子或表达式周期。
+\end{itemize}
+\textbf{展开：} 选择模数可以从三类目标出发：\textbf{压缩取值}，如平方看模4/8、立方看适当模数；\textbf{消项}，选择整除某些系数的模数；\textbf{匹配素因子}，若题目关注某个$p$的整除，就直接模$p$或$p^k$。一个好模数让“允许的剩余集合很小”，从而形成矛盾。面试中应反对无目的地从2试到20。
+\end{ansbox}
+\begin{followbox}
+请举一个“模素数不够，必须模$p^2$或更高幂”才看见矛盾的类型。
+\end{followbox}
+\begin{warnbox}
+把模数选择当经验表；不说明为什么有效。
+\end{warnbox}
+\begin{teachbox}
+建立“表达式→候选模数→剩余集合大小”的表，让学生比较信息增益。
+\end{teachbox}
+\begin{rubricbox}
+10分：有设计原则和高阶模意识；6分：会常用模；3分：试错型。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q045 \quad 证明 Euclid 引理：若素数 $p\mid ab$，则 $p\mid a$ 或 $p\mid b$。}
+\addcontentsline{toc}{section}{Q045 证明 Euclid 引理：若素数 $p\mid ab$，则 $p\mid a$ 或 $p\mid b$。}
+\tagpill{基础证明} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{素数、Bézout、整除}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 证明 Euclid 引理：若素数 $p\mid ab$，则 $p\mid a$ 或 $p\mid b$。
+\end{qbox}
+\begin{whybox}
+用基础命题检测证明责任、表达精度和“简单内容能否讲清楚”。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 若$p\nmid a$，则$\gcd(p,a)=1$。
+\item 由Bézout得$up+va=1$。
+\item 乘$b$并利用$p\mid ab$推出$p\mid b$。
+\end{itemize}
+\textbf{展开：} 这个证明适合展示“为什么素数条件重要”。若 $p$ 为素数且不整除 $a$，则 $\gcd(p,a)=1$，存在整数 $u,v$ 使 $up+va=1$。乘以 $b$ 得 $ubp+vab=b$，右侧前两项均被 $p$ 整除，所以 $p\mid b$。若把$p$换成合数，结论可失败，例如 $6\mid2\cdot3$ 但6既不整除2也不整除3。
+\end{ansbox}
+\begin{followbox}
+这条引理怎样推出素数分解唯一性的关键一步？
+\end{followbox}
+\begin{warnbox}
+循环使用“素数所以互质”但不说明；没有合数反例。
+\end{warnbox}
+\begin{teachbox}
+把定理、证明、反例三件套放在一起，训练条件意识。
+\end{teachbox}
+\begin{rubricbox}
+10分：证明+素数条件解释+反例；6分：证明正确；3分：只会引用。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q046 \quad 如何向学生解释 $v_p(n)$？}
+\addcontentsline{toc}{section}{Q046 如何向学生解释 $v_p(n)$？}
+\tagpill{数学+教学} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{p进估值、乘法转加法}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何向学生解释 $v_p(n)$？
+\end{qbox}
+\begin{whybox}
+同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 定义为$p$在$n$的素因子分解中的指数。
+\item 核心性质$v_p(ab)=v_p(a)+v_p(b)$。
+\item 整除关系转成估值大小比较。
+\end{itemize}
+\textbf{展开：} $v_p$ 最值得强调的直觉是“把乘法计数变成加法”。例如判断 $p^k\mid N$，等价于 $v_p(N)\ge k$；处理乘积时，估值直接相加。这样阶乘、组合数、指数差等复杂整除问题可以拆成一个素数一个素数地比较。教学时先从“数里面有几个$p$”讲起，再引入记号，不要先给抽象定义。
+\end{ansbox}
+\begin{followbox}
+为什么$v_p(a+b)$一般不能简单等于$v_p(a)+v_p(b)$？
+\end{followbox}
+\begin{warnbox}
+把估值当普通对数；忽略$n=0$等边界定义。
+\end{warnbox}
+\begin{teachbox}
+先用质因数颜色标记法演示乘积，再压缩为估值记号。
+\end{teachbox}
+\begin{rubricbox}
+10分：直觉、性质、用途完整；6分：会定义和运算；3分：只会公式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q047 \quad LTE 为什么重要？什么时候不能乱用？}
+\addcontentsline{toc}{section}{Q047 LTE 为什么重要？什么时候不能乱用？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{LTE、估值、条件检查}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad LTE 为什么重要？什么时候不能乱用？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 它计算$x^n-y^n$类表达式的$p$进估值。
+\item 使用前逐条检查$p\mid x-y$、$p\nmid xy$等条件。
+\item $p=2$和加号版本有额外条件。
+\end{itemize}
+\textbf{展开：} LTE 的价值是把指数增长结构精确地转成估值加法，例如在适当条件下 $v_p(x^n-y^n)=v_p(x-y)+v_p(n)$。竞赛中最常见失分不是不会公式，而是把不同版本混用。面试时应明确：先确认$p$的奇偶、$x,y$与$p$的互素性、是差还是和、$n$的奇偶，然后再写公式。
+\end{ansbox}
+\begin{followbox}
+给出一个条件不满足导致LTE结论错误的简单反例。
+\end{followbox}
+\begin{warnbox}
+背“万能LTE”；不区分$p=2$。
+\end{warnbox}
+\begin{teachbox}
+把每次LTE书写固定成“条件核对行 + 套用行”，培养证明规范。
+\end{teachbox}
+\begin{rubricbox}
+10分：能讲适用条件和失败例；6分：会标准版本；3分：条件不清。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q048 \quad 如何证明 $\gcd(a,b)=\gcd(a,b-ka)$？}
+\addcontentsline{toc}{section}{Q048 如何证明 $\gcd(a,b)=\gcd(a,b-ka)$？}
+\tagpill{基础证明} \quad \tagpill{难度 ★★☆☆☆} \quad \tagpill{gcd、欧几里得算法、不变量}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何证明 $\gcd(a,b)=\gcd(a,b-ka)$？
+\end{qbox}
+\begin{whybox}
+用基础命题检测证明责任、表达精度和“简单内容能否讲清楚”。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 证明两个公因数集合相同。
+\item 任一同时整除$a,b$的数也整除$b-ka$；反向同理。
+\item 说明这就是欧几里得算法保持gcd的不变量。
+\end{itemize}
+\textbf{展开：} 证明可以不依赖复杂定理。若 $d\mid a$ 且 $d\mid b$，则 $d\mid b-ka$；反之若 $d\mid a$ 且 $d\mid b-ka$，则 $d\mid (b-ka)+ka=b$。因此两对数的公因数集合完全相同，最大公因数相同。这个等式解释了为什么Euclidean algorithm可以不断用余数替换较大数而不改变答案。
+\end{ansbox}
+\begin{followbox}
+从这个恒等式如何推出$\gcd(a,b)=\gcd(b,a\bmod b)$？
+\end{followbox}
+\begin{warnbox}
+只说“显然”；只证明一个方向。
+\end{warnbox}
+\begin{teachbox}
+用“保持不变量的算法”视角讲欧几里得算法，比背步骤更有迁移性。
+\end{teachbox}
+\begin{rubricbox}
+10分：双向整除+算法联系；6分：证明正确；3分：只会算gcd。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q049 \quad 如何处理线性丢番图方程 $ax+by=c$？}
+\addcontentsline{toc}{section}{Q049 如何处理线性丢番图方程 $ax+by=c$？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{Bézout、整数解、参数化}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何处理线性丢番图方程 $ax+by=c$？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 存在整数解当且仅当$\gcd(a,b)\mid c$。
+\item 用扩展欧几里得求一个特解。
+\item 写出全体解并处理正整数/范围条件。
+\end{itemize}
+\textbf{展开：} 设 $d=\gcd(a,b)$。必要性来自 $ax+by$ 必被$d$整除；充分性由Bézout：存在 $u,v$ 使 $au+bv=d$，乘 $c/d$ 得特解。若 $(x_0,y_0)$ 是一组解，则全体整数解为 $x=x_0+(b/d)t,\ y=y_0-(a/d)t$。竞赛题往往真正难在最后一步：利用正性、大小或最值约束筛选参数$t$。
+\end{ansbox}
+\begin{followbox}
+如果要求正整数解个数，如何把问题转成参数区间计数？
+\end{followbox}
+\begin{warnbox}
+只给存在条件；全解参数步长写错。
+\end{warnbox}
+\begin{teachbox}
+先把“存在—构造—全解—附加约束”四阶段固定化。
+\end{teachbox}
+\begin{rubricbox}
+10分：四阶段完整；6分：会求全解；3分：只会特解。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q050 \quad Pell 方程为什么在竞赛里特殊？}
+\addcontentsline{toc}{section}{Q050 Pell 方程为什么在竞赛里特殊？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{Pell、递推、最小解}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad Pell 方程为什么在竞赛里特殊？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 二次形式却常有无限整数解。
+\item 最小正解可生成更大解，体现乘法/递推结构。
+\item 竞赛中常只需利用结构，不必完整讲连分数理论。
+\end{itemize}
+\textbf{展开：} $x^2-Dy^2=1$ 表面像普通二次方程，但当$D$非平方时常出现无限多解。核心现象是解可通过 $(x+y\sqrt D)$ 的乘法组合：若两个范数为1的数相乘，仍保持范数1。这解释了为什么最小正解可以递推出无穷解。高中竞赛中可以把连分数作为背景知识，而把主线放在最小解、递推和整除性质。
+\end{ansbox}
+\begin{followbox}
+为什么“大学理论知道得更多”不意味着Pell题一定用连分数最好？
+\end{followbox}
+\begin{warnbox}
+把Pell当一个固定公式；超出需要引入大量高等理论。
+\end{warnbox}
+\begin{teachbox}
+用几个实际解观察乘法规律，再抽象出递推，符合发现式教学。
+\end{teachbox}
+\begin{rubricbox}
+10分：结构解释+竞赛边界；6分：知道递推/最小解；3分：只认方程名字。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q051 \quad 什么叫无限下降法？}
+\addcontentsline{toc}{section}{Q051 什么叫无限下降法？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{极小反例、下降、反证}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么叫无限下降法？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 假设存在反例并选取某个正整数度量最小者。
+\item 从最小反例构造严格更小的同类反例。
+\item 利用正整数良序性产生矛盾。
+\end{itemize}
+\textbf{展开：} 无限下降是一种“最小反例不可能存在”的证明。关键不是“构造另一个解”，而是构造一个\textbf{同性质且严格更小}的对象。因为正整数中不存在无限严格下降链，假设就被否定。教练讲解时必须明确下降的度量是什么：变量和、最大变量、分母或其他正整数复杂度。若没有严格下降，就没有完成证明。
+\end{ansbox}
+\begin{followbox}
+如何选择下降度量，避免构造的新对象某些变量变小、另一些反而变大？
+\end{followbox}
+\begin{warnbox}
+说“无限下降”却没定义最小量；只得到不增而非严格减小。
+\end{warnbox}
+\begin{teachbox}
+每道下降题让学生先单独写“最小化对象”一句，再做构造。
+\end{teachbox}
+\begin{rubricbox}
+10分：良序性、度量、严格下降完整；6分：懂思想；3分：口号式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q052 \quad 从数论视角解释 Vieta Jumping 与无限下降的关系。}
+\addcontentsline{toc}{section}{Q052 从数论视角解释 Vieta Jumping 与无限下降的关系。}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{方法统一、Vieta jumping、下降}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 从数论视角解释 Vieta Jumping 与无限下降的关系。
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item Vieta Jumping提供“从一个解到另一个解”的代数变换。
+\item 无限下降提供矛盾框架。
+\item 两者结合时必须证明变换保持可行性且严格减小。
+\end{itemize}
+\textbf{展开：} Vieta Jumping 可以看成下降法的一种专门构造器。整数方程恰好对某变量二次时，韦达关系自动给出另一个根；若它仍是正整数解且更小，就完成下降。这样学生会理解它不是一套孤立套路，而是“用二次方程的根结构实现下降”。这类统一视角有助于迁移到非典型跳跃题。
+\end{ansbox}
+\begin{followbox}
+有没有Vieta Jumping但不采用最小反例语言的证明？它和下降逻辑是否等价？
+\end{followbox}
+\begin{warnbox}
+把两个名词并列但说不清因果。
+\end{warnbox}
+\begin{teachbox}
+讲完标准题后，让学生把证明重写成“下降法模板”，抽象共同骨架。
+\end{teachbox}
+\begin{rubricbox}
+10分：能统一方法且指出必要环节；6分：知道关系；3分：只会分别定义。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q053 \quad 如何处理阶乘中的素因子次数？}
+\addcontentsline{toc}{section}{Q053 如何处理阶乘中的素因子次数？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{Legendre、计数、估值}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何处理阶乘中的素因子次数？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item Legendre公式：$v_p(n!)=\sum_{k\ge1}\lfloor n/p^k\rfloor$。
+\item 解释每一项分别计数至少含一个、两个……$p$的倍数。
+\item 用于末尾零、整除和组合数估值。
+\end{itemize}
+\textbf{展开：} 公式的证明本身就是一次优秀的双重计数：$1,2,\ldots,n$中每个$p$的倍数贡献至少一个$p$，每个$p^2$的倍数再额外贡献一个，以此类推，所以总指数是这些层次计数之和。学生若只背公式，在遇到变式时容易失灵；理解“按$p$的层数重复计数”后，很多乘积估值都能类比处理。
+\end{ansbox}
+\begin{followbox}
+如何用Legendre快速求$n!$末尾0的个数？为什么只看$v_5$？
+\end{followbox}
+\begin{warnbox}
+把$\lfloor n/p\rfloor$当全部答案；漏掉高次幂。
+\end{warnbox}
+\begin{teachbox}
+用实际$n=25$逐个标记5和25的贡献，直观看到“25要多算一次”。
+\end{teachbox}
+\begin{rubricbox}
+10分：公式、证明、应用完整；6分：会用；3分：只背。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q054 \quad 如何求组合数 $\binom nk$ 中的素因子次数？}
+\addcontentsline{toc}{section}{Q054 如何求组合数 $\binom nk$ 中的素因子次数？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{组合数、估值、进位}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何求组合数 $\binom nk$ 中的素因子次数？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 直接用Legendre差：$v_p(n!)-v_p(k!)-v_p((n-k)!)$。
+\item 可进一步联系Kummer定理：与$p$进制加法进位数相关。
+\item 根据题目需要选择计算式或结构式。
+\end{itemize}
+\textbf{展开：} 最直接方法是估值相减。若题目反复询问“何时被$p$整除/整除到几次”，Kummer视角更有洞察：$v_p\binom nk$ 等于把 $k$ 与 $n-k$ 用$p$进制相加得到$n$时的进位次数。这样一个整除问题被翻译成数字表示问题。高中面试中不一定要求完整证明Kummer，但能指出这种连接是加分项。
+\end{ansbox}
+\begin{followbox}
+怎样用二进制进位判断某个组合数是奇数还是偶数？
+\end{followbox}
+\begin{warnbox}
+只会代阶乘导致计算巨大；高级定理只报名字不解释。
+\end{warnbox}
+\begin{teachbox}
+先用小例子画二进制进位，再引入结论，强调表示转换。
+\end{teachbox}
+\begin{rubricbox}
+10分：估值法熟练+能谈进位联系；6分：会Legendre差；3分：展开阶乘硬算。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q055 \quad 数论题试了十几个模数都没进展，下一步做什么？}
+\addcontentsline{toc}{section}{Q055 数论题试了十几个模数都没进展，下一步做什么？}
+\tagpill{解题策略} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{卡题重启、数论方法选择}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 数论题试了十几个模数都没进展，下一步做什么？
+\end{qbox}
+\begin{whybox}
+考察面对卡题和未知时是否有稳定的研究行为，而非纯靠灵感。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 停止随机试模，重新读结构。
+\item 检查因式分解、gcd、极值素因子、估值、大小、最小反例。
+\item 尝试从目标反推需要哪种整除信息。
+\end{itemize}
+\textbf{展开：} 持续换模数通常说明缺乏问题模型。重启时可以问：题目真正要求的是“排除剩余类”还是“精确控制素因子次数”？若是后者，同余天然信息不足，应转向估值；若有两个变量乘积/和，可能先做gcd分解；若涉及正整数解的存在性，可尝试最小反例与下降。优秀解题者的能力之一，是知道\textbf{什么时候停止当前方法}。
+\end{ansbox}
+\begin{followbox}
+你如何教学生识别“当前方法已经低收益”？
+\end{followbox}
+\begin{warnbox}
+坚持“再试一个模数”；或卡住就直接看答案。
+\end{warnbox}
+\begin{teachbox}
+设置10分钟方法预算：每种方向必须记录新获得的信息，没有信息则强制换表示。
+\end{teachbox}
+\begin{rubricbox}
+10分：会重构问题而非换参数；6分：能列替代方法；3分：继续试错。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\chapter{组合数学}
+\begin{center}\large\color{muted}构造、计数、不变量与图结构\end{center}
+\vspace{1mm}
+\clearpage
+\section*{Q056 \quad 如何讲抽屉原理，让学生不把它理解成一句废话？}
+\addcontentsline{toc}{section}{Q056 如何讲抽屉原理，让学生不把它理解成一句废话？}
+\tagpill{数学+教学} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{抽屉、建模、存在性}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何讲抽屉原理，让学生不把它理解成一句废话？
+\end{qbox}
+\begin{whybox}
+同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 难点不在原理，而在定义对象与盒子。
+\item 寻找“如果两个对象落同盒，就得到所需关系”的分类。
+\item 必要时用广义抽屉给出数量下界。
+\end{itemize}
+\textbf{展开：} 抽屉原理真正的创造性在于分类设计。给定一堆整数，若希望找到两个差可被$m$整除，就把“余数”作为抽屉；若希望两点距离受控，可以把空间划成小区域。也就是说，盒子要由\textbf{目标关系}反向设计：同盒意味着什么？学生理解这一点后，就不会把它当成“$n+1$放$n$盒”的空话。
+\end{ansbox}
+\begin{followbox}
+如何从“想要两个数差为某种性质”反推抽屉？
+\end{followbox}
+\begin{warnbox}
+只会数对象和盒子；不会设计分类。
+\end{warnbox}
+\begin{teachbox}
+给同一对象集合提出三个不同目标，让学生分别设计三套抽屉。
+\end{teachbox}
+\begin{rubricbox}
+10分：强调建模并能反推分类；6分：会典型余数抽屉；3分：只背原理。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q057 \quad 什么时候应该考虑极值原理？}
+\addcontentsline{toc}{section}{Q057 什么时候应该考虑极值原理？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{极值、存在性、局部到全局}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么时候应该考虑极值原理？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 有限对象+局部关系复杂，是强信号。
+\item 选择最大/最小对象后，其邻域受到额外约束。
+\item 极值对象的选择必须让题目条件变得单向。
+\end{itemize}
+\textbf{展开：} 极值原理的核心不是“找最大值”，而是利用最大/最小对象无法再向某方向改善，从而制造强约束。例如在有限点集里选距离最近的一对，任何新点与它们的距离都不能更小；在图中选最大度顶点，其邻接结构有数量下界。优秀回答应说明如何选择\textbf{最有信息量的极值量}。
+\end{ansbox}
+\begin{followbox}
+为什么有时选最小对象比选最大对象自然？如何判断？
+\end{followbox}
+\begin{warnbox}
+随便选一个最大元素但用不上；不说明有限性/极值存在。
+\end{warnbox}
+\begin{teachbox}
+做“极值量候选表”：同一题列三种可最小化量，比较哪一个能直接触发条件。
+\end{teachbox}
+\begin{rubricbox}
+10分：触发信号、选择原则和应用完整；6分：懂极值法；3分：只说“取最小”。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q058 \quad 什么是不变量？}
+\addcontentsline{toc}{section}{Q058 什么是不变量？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{不变量、状态过程、不可达性}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么是不变量？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 定义状态变化下保持不变的量。
+\item 常见不变量：奇偶、模类、染色和、置换奇偶性。
+\item 目标状态若不变量不同，则不可达。
+\end{itemize}
+\textbf{展开：} 不变量把“很多步操作”压缩成一个永不改变的证据。面对操作游戏，逐步模拟常指数爆炸；如果找到 $I(S_{t+1})=I(S_t)$，那么整个过程只需比较初态和终态。关键难点是构造 $I$：观察一次操作改变了什么，再寻找某种组合使变化抵消或只差某个模数。
+\end{ansbox}
+\begin{followbox}
+一个量每次改变2，它是不是不变量？怎样改造成模2不变量？
+\end{followbox}
+\begin{warnbox}
+把“几乎不变”当不变；只验证几个步骤。
+\end{warnbox}
+\begin{teachbox}
+让学生从单步变化量$\Delta$出发设计不变量，而不是凭空猜。
+\end{teachbox}
+\begin{rubricbox}
+10分：能从单步变化构造；6分：会常见例子；3分：只会定义。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q059 \quad 什么是单调量？它与不变量有什么区别？}
+\addcontentsline{toc}{section}{Q059 什么是单调量？它与不变量有什么区别？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{单调量、终止性、算法证明}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么是单调量？它与不变量有什么区别？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 不变量保持相等；单调量每步严格增/减。
+\item 单调量常配合下界/上界证明过程终止。
+\item 需要防止“非严格单调+无限状态”无法终止。
+\end{itemize}
+\textbf{展开：} 如果操作过程不是不可达问题，而是要证明“无论怎样操作最终都会停”，单调量比不变量更自然。构造一个非负整数势能 $M$，每一步严格下降至少1，则过程最多进行 $M_0$ 步。它与算法中的potential function完全同源。教学上应强调“单调 + 有界 + 离散/步长”三者如何共同保证终止。
+\end{ansbox}
+\begin{followbox}
+连续实数势能严格下降就一定有限步终止吗？为什么未必？
+\end{followbox}
+\begin{warnbox}
+把不增当严格减；忘记下界或离散性。
+\end{warnbox}
+\begin{teachbox}
+用一个会无限趋近0的反例，帮助学生理解为什么还要检查步长/状态有限性。
+\end{teachbox}
+\begin{rubricbox}
+10分：区分清楚并懂终止条件；6分：概念正确；3分：混淆。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q060 \quad 染色法本质是什么？}
+\addcontentsline{toc}{section}{Q060 染色法本质是什么？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{染色、不变量、空间分类}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 染色法本质是什么？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 染色是人为构造离散标签函数。
+\item 希望合法操作或覆盖对颜色计数有固定影响。
+\item 颜色数/权重可按目标设计，不限黑白。
+\end{itemize}
+\textbf{展开：} 棋盘染色的本质是选择一个函数 $c:S\to G$，把空间位置压缩成有限标签，使每个合法块对标签的贡献可控。最经典黑白染色只是最简单情况；更复杂题会用三色、模$m$权重甚至赋值和。好的染色不是图好看，而是让“每一步/每个覆盖块的贡献”与目标状态不兼容。
+\end{ansbox}
+\begin{followbox}
+什么时候二染色失败而需要三染色或带权染色？
+\end{followbox}
+\begin{warnbox}
+看到棋盘就黑白染；没有分析每个操作的颜色贡献。
+\end{warnbox}
+\begin{teachbox}
+先列出一个操作覆盖的坐标模式，再设计颜色函数，而非先染色后碰运气。
+\end{teachbox}
+\begin{rubricbox}
+10分：函数/贡献视角清楚；6分：会多色；3分：只会棋盘黑白。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q061 \quad 请解释双计数。}
+\addcontentsline{toc}{section}{Q061 请解释双计数。}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{组合恒等式、计数对象设计}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 请解释双计数。
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先定义同一个集合/关系$X$。
+\item 用两种互补方式数$|X|$。
+\item 关键是对象要能同时被两种方法自然描述。
+\end{itemize}
+\textbf{展开：} 双计数不是“两个公式相等”，而是先有同一个具体对象。例如数$n$人中“一个委员会加一个主席”的方案：先选委员会大小再选主席，与先选主席再选其余成员会得到不同表达式，从而产生恒等式。训练重点应放在\textbf{计数对象设计}，而非代数化简。
+\end{ansbox}
+\begin{followbox}
+怎样把一个代数恒等式反向寻找组合解释？
+\end{followbox}
+\begin{warnbox}
+两边数的其实不是同一个对象；重复/漏计。
+\end{warnbox}
+\begin{teachbox}
+要求学生每次双计数先写一句“我们要数的是……”。
+\end{teachbox}
+\begin{rubricbox}
+10分：对象定义清楚+两种计法；6分：会典型恒等式；3分：只会代数验证。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q062 \quad 不用代数展开解释 $\sum_{k=0}^n\binom nk=2^n$。}
+\addcontentsline{toc}{section}{Q062 不用代数展开解释 $\sum_{k=0}^n\binom nk=2^n$。}
+\tagpill{基础证明} \quad \tagpill{难度 ★★☆☆☆} \quad \tagpill{组合解释、子集计数}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 不用代数展开解释 $\sum_{k=0}^n\binom nk=2^n$。
+\end{qbox}
+\begin{whybox}
+用基础命题检测证明责任、表达精度和“简单内容能否讲清楚”。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 对象是$n$元集合的全部子集。
+\item 按子集大小$k$分类得到左边。
+\item 每个元素选/不选两种得到右边。
+\end{itemize}
+\textbf{展开：} 令$[n]$为$n$元集合。按子集大小分类：大小为$k$的子集有 $\binom nk$ 个，累加得到左边；另一方面，每个元素独立选择“进入/不进入”，共有 $2^n$ 个子集。两者数的是同一集合，因此相等。面试中最好补一句：这个证明比二项式定理展开更能解释“为什么系数和是$2^n$”。
+\end{ansbox}
+\begin{followbox}
+怎样用同样思想解释 $\sum k\binom nk=n2^{n-1}$？
+\end{followbox}
+\begin{warnbox}
+直接说“令$x=1$代二项式定理”而忽略题目要求。
+\end{warnbox}
+\begin{teachbox}
+把一个恒等式同时做代数证明和组合证明，比较各自提供的信息。
+\end{teachbox}
+\begin{rubricbox}
+10分：对象和两种计数完整；6分：正确组合解释；3分：仍用代数。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q063 \quad 为什么递推是组合问题的重要方法？}
+\addcontentsline{toc}{section}{Q063 为什么递推是组合问题的重要方法？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{递推、状态定义、最后一步分类}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么递推是组合问题的重要方法？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 按最后一步/特殊元素分类，把$n$规模转成更小规模。
+\item 真正难点是状态要包含足够信息又不能过多。
+\item 递推建立后再决定是否需要显式公式。
+\end{itemize}
+\textbf{展开：} 组合递推的典型思维是“删掉一个特殊位置后，剩下是什么同类问题”。若只记录总数不够闭合，就增加状态，例如末位类型、是否已使用某资源等。状态设计就是在\textbf{信息充分}与\textbf{复杂度可控}之间取平衡。竞赛中很多动态规划思想都可以用递推语言提前培养。
+\end{ansbox}
+\begin{followbox}
+怎么判断一个递推状态“信息不够”，需要加维？
+\end{followbox}
+\begin{warnbox}
+递推式猜出来但不解释分类；重复计数。
+\end{warnbox}
+\begin{teachbox}
+让学生对错误递推找两个“同一状态但未来不同”的反例，理解为什么要扩状态。
+\end{teachbox}
+\begin{rubricbox}
+10分：状态思想+分类严谨；6分：会写常见递推；3分：只猜公式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q064 \quad 什么情况下使用容斥原理？}
+\addcontentsline{toc}{section}{Q064 什么情况下使用容斥原理？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{容斥、重叠限制、计数}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么情况下使用容斥原理？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 多个“坏事件”相互重叠且直接排除会重复扣除。
+\item 从总数减单坏，加双坏，交替修正。
+\item 先定义事件集合再写公式。
+\end{itemize}
+\textbf{展开：} 容斥适合“避免若干条件”的问题。直接把每个坏条件数量相减会把同时违反多个条件的对象扣多次，因此需要交替补回交集。真正的技巧是选择事件：若事件定义得过细，交集计算爆炸；若定义得合理，交集往往具有统一形式。竞赛面试中应强调“公式容易，事件设计难”。
+\end{ansbox}
+\begin{followbox}
+错排问题中，为什么令$A_i=$“第$i$人坐回原位”是自然事件？
+\end{followbox}
+\begin{warnbox}
+符号正负错；忘记全集；事件定义导致交集无法计算。
+\end{warnbox}
+\begin{teachbox}
+先画Venn图解释三集合，再推广到一般形式，减少纯记忆。
+\end{teachbox}
+\begin{rubricbox}
+10分：适用场景、事件设计和原理清楚；6分：会公式；3分：机械容斥。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q065 \quad 请解释 Hall 婚姻定理的直觉。}
+\addcontentsline{toc}{section}{Q065 请解释 Hall 婚姻定理的直觉。}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{匹配、Hall、局部条件}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 请解释 Hall 婚姻定理的直觉。
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 任意左侧集合$S$的可选邻居必须至少有$|S|$个。
+\item 这是完美匹配存在的必要且充分条件。
+\item 直觉是任何子群都不能争抢太少的资源。
+\end{itemize}
+\textbf{展开：} Hall条件 $|N(S)|\ge|S|$ 的直觉非常朴素：若某$k$个人总共只能选择少于$k$个对象，无论如何都无法一一匹配。令人深刻的是，这个显然必要的条件也充分。竞赛中使用时，难点往往不是引用定理，而是证明对\textbf{所有子集}$S$都满足邻居下界，通常需要双计数、度数或反证。
+\end{ansbox}
+\begin{followbox}
+如果题目是正则二分图，如何快速验证Hall条件？
+\end{followbox}
+\begin{warnbox}
+只会背条件；不理解“任意子集”而只检查单点。
+\end{warnbox}
+\begin{teachbox}
+先用真实分配场景画二分图，再把资源拥堵翻译成Hall不等式。
+\end{teachbox}
+\begin{rubricbox}
+10分：必要性直觉+充分性用途+验证方法；6分：会定理；3分：条件模糊。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q066 \quad 为什么图论能解决看起来没有“图”的题？}
+\addcontentsline{toc}{section}{Q066 为什么图论能解决看起来没有“图”的题？}
+\tagpill{数学建模} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{图论建模、关系抽象}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么图论能解决看起来没有“图”的题？
+\end{qbox}
+\begin{whybox}
+观察是否能把具体故事压缩成数学结构，并把结论再翻译回原问题。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 图抽象的是对象和二元关系。
+\item 点代表对象，边代表“认识/互质/冲突/可转移”等。
+\item 建图后可调用度、路径、匹配、连通性等结构。
+\end{itemize}
+\textbf{展开：} 很多组合题表面谈人、数、比赛或集合，本质只关心“任意两对象之间有没有某种关系”。一旦把对象作为顶点、关系作为边，题目就从具体故事变成图结构。例如“每两人是否认识”是简单图，“任务与机器可否匹配”是二分图。优秀建模不仅要会画图，还要说明题目的目标在图里对应什么：团、独立集、匹配、路径还是着色。
+\end{ansbox}
+\begin{followbox}
+如何判断应该建普通图、二分图还是有向图？
+\end{followbox}
+\begin{warnbox}
+建图后没有把结论翻译回来；边的定义含糊。
+\end{warnbox}
+\begin{teachbox}
+每次建图固定写三行：顶点是什么、边是什么、目标变成什么。
+\end{teachbox}
+\begin{rubricbox}
+10分：抽象和目标翻译完整；6分：会常见建图；3分：只说“转成图论”。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q067 \quad 如何处理 Ramsey 型问题？}
+\addcontentsline{toc}{section}{Q067 如何处理 Ramsey 型问题？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{Ramsey、递归、存在性}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何处理 Ramsey 型问题？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 有限着色在足够大结构中强迫单色子结构。
+\item 常从一个顶点按边颜色分组，再用抽屉递归。
+\item 区分存在性上界与精确Ramsey数。
+\end{itemize}
+\textbf{展开：} Ramsey型证明通常体现“局部自由不可能无限维持”。选一个顶点，它到其余顶点的边只有有限颜色，因此某种颜色至少占一大组；在该组内部继续分析，就能强迫一个单色结构。面试中不必追求复杂精确值，但应能解释递归上界和抽屉原理如何结合。
+\end{ansbox}
+\begin{followbox}
+为什么Ramsey定理是存在性结论，但找到最小阈值往往难很多？
+\end{followbox}
+\begin{warnbox}
+把Ramsey等同一个固定$R(3,3)=6$；只背数值。
+\end{warnbox}
+\begin{teachbox}
+从六人派对问题出发，让学生自己发现“选一点—按颜色分组”的递归策略。
+\end{teachbox}
+\begin{rubricbox}
+10分：递归思想、存在性与精确值区别清楚；6分：会经典证明；3分：背例子。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q068 \quad 怎样给学生解释概率法？}
+\addcontentsline{toc}{section}{Q068 怎样给学生解释概率法？}
+\tagpill{数学+教学} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{概率法、存在性、期望}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 怎样给学生解释概率法？
+\end{qbox}
+\begin{whybox}
+同一个数学概念既要讲对，也要讲得可学习；面试官会观察你是否能暴露隐性思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 随机选择只是证明工具，不一定给构造算法。
+\item 若好事件概率$>0$，则好对象存在。
+\item 常用期望：若坏结构期望数$<1$，存在零坏结构或可经删改得到。
+\end{itemize}
+\textbf{展开：} 概率法最反直觉之处是“用随机性证明确定对象存在”。如果从有限对象中随机选一个，某性质发生概率严格大于0，那么至少有一个对象具有该性质。更强时可计算坏事件数量的期望，再用平均值论证存在一个实例不超过期望。教学上先用非常小的例子，让学生区分“证明存在”与“实际找到”。
+\end{ansbox}
+\begin{followbox}
+概率法证明存在但不给构造，竞赛答案是否可以接受？何时需要构造化？
+\end{followbox}
+\begin{warnbox}
+把概率大当成一定发生；概率等于0/1边界混乱。
+\end{warnbox}
+\begin{teachbox}
+让学生先数样本空间中的好对象比例，再抽象“>0即存在”。
+\end{teachbox}
+\begin{rubricbox}
+10分：存在性逻辑和期望法都有；6分：懂基本概率法；3分：把随机当算法。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q069 \quad 什么是生成函数？高中竞赛中什么时候值得使用？}
+\addcontentsline{toc}{section}{Q069 什么是生成函数？高中竞赛中什么时候值得使用？}
+\tagpill{数学专业} \quad \tagpill{难度 ★★★★★} \quad \tagpill{生成函数、递推、卷积}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么是生成函数？高中竞赛中什么时候值得使用？
+\end{qbox}
+\begin{whybox}
+考察的不只是结论是否正确，还包括条件、等号/边界、方法选择和可解释性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 把数列编码成形式幂级数$A(x)=\sum a_nx^n$。
+\item 乘法对应卷积，代数操作对应递推关系。
+\item 工具成本较高，只有结构明显时使用。
+\end{itemize}
+\textbf{展开：} 生成函数的核心是“把离散序列变成一个代数对象”。例如两个计数序列的卷积正好是生成函数乘法的系数，因此分拆、选取和递推问题常被代数化。高中竞赛使用时应强调形式幂级数思想，不必引入过多分析收敛理论。若一个问题用简单递推或双计数就能完成，不应为了高级而高级。
+\end{ansbox}
+\begin{followbox}
+为什么生成函数乘法的$x^n$系数正是卷积$\sum a_kb_{n-k}$？
+\end{followbox}
+\begin{warnbox}
+把生成函数当计算器；不解释系数意义。
+\end{warnbox}
+\begin{teachbox}
+先做一个“硬币凑数”的系数选择例子，再引入一般符号。
+\end{teachbox}
+\begin{rubricbox}
+10分：编码、卷积、使用边界清楚；6分：会基本操作；3分：只报定义。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q070 \quad 如何判断组合题应该“构造”还是“反证存在”？}
+\addcontentsline{toc}{section}{Q070 如何判断组合题应该“构造”还是“反证存在”？}
+\tagpill{解题策略} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{构造、存在性、极值/概率}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何判断组合题应该“构造”还是“反证存在”？
+\end{qbox}
+\begin{whybox}
+考察面对卡题和未知时是否有稳定的研究行为，而非纯靠灵感。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 题目若要求具体方案或算法，优先构造。
+\item 只需证明存在且空间巨大时，可考虑反证、极值、概率或平均。
+\item 尝试构造失败时分析失败原因，可能反而提供存在性证据。
+\end{itemize}
+\textbf{展开：} “存在”不等于“必须构造”。如果目标只要求至少一个对象，概率法、平均值或极值法可能用非常少的信息完成；若题目还问如何找到、最小步数或明确配置，则需要构造。优秀候选人还会区分\textbf{非构造存在证明}和\textbf{构造性证明}在教学价值上的不同：前者展示全局思想，后者提供算法。
+\end{ansbox}
+\begin{followbox}
+一道存在性题同时有概率法和贪心构造，你会课堂主讲哪一个？
+\end{followbox}
+\begin{warnbox}
+见“存在”就反证；见“求一个”就蛮力构造。
+\end{warnbox}
+\begin{teachbox}
+在讲义中标注“目标类型：存在/计数/构造/优化”，帮助学生先识别任务。
+\end{teachbox}
+\begin{rubricbox}
+10分：目标驱动并能比较方法；6分：知道多种路线；3分：单一习惯。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\chapter{综合解题与证明}
+\begin{center}\large\color{muted}陌生题探索、证明完整性与迁移\end{center}
+\vspace{1mm}
+\clearpage
+\section*{Q071 \quad 面试官给你一道完全没见过的题，前10分钟你做什么？}
+\addcontentsline{toc}{section}{Q071 面试官给你一道完全没见过的题，前10分钟你做什么？}
+\tagpill{现场解题} \quad \tagpill{难度 ★★★★★} \quad \tagpill{陌生题、探索流程、表达}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 面试官给你一道完全没见过的题，前10分钟你做什么？
+\end{qbox}
+\begin{whybox}
+这是最能区分“刷过题”与“真正会思考”的环节，过程质量与最终答案同样重要。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 复述条件与目标，确认无误读。
+\item 做小例子/特殊化，寻找不变量、对称、极端。
+\item 从结论逆推需要的中间结构，记录可检验猜想。
+\end{itemize}
+\textbf{展开：} 现场解题时，面试官常比最终答案更关注你如何管理未知。最好的表现不是沉默计算，而是有选择地外化思路：先说明已知/所求，再测试一个最小例子；如果是几何，考虑退化/对称位置；如果是数论，先看奇偶与gcd；如果是组合，先数小$n$。每个尝试都要产出信息，即便失败，也说明排除了什么。
+\end{ansbox}
+\begin{followbox}
+如果10分钟没有突破，你会如何向面试官汇报当前进度而不显得“没思路”？
+\end{followbox}
+\begin{warnbox}
+不断口述无价值碎片；或完全沉默直到做出。
+\end{warnbox}
+\begin{teachbox}
+训练“3分钟研究报告”：现有事实、已排除方向、下一步计划。
+\end{teachbox}
+\begin{rubricbox}
+10分：探索有序且信息增量明确；6分：有基本策略；3分：随机试法。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q072 \quad 卡题30分钟后，怎样重新启动？}
+\addcontentsline{toc}{section}{Q072 卡题30分钟后，怎样重新启动？}
+\tagpill{解题策略} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{卡点管理、换表示、元认知}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 卡题30分钟后，怎样重新启动？
+\end{qbox}
+\begin{whybox}
+考察面对卡题和未知时是否有稳定的研究行为，而非纯靠灵感。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 更换表示：几何↔代数、整数↔估值、集合↔图。
+\item 特殊化/推广结论，寻找中间命题。
+\item 分析失败路径到底缺什么，而不是从头重来。
+\end{itemize}
+\textbf{展开：} 有效重启不是“再想一遍”。先写下当前路线需要但无法得到的关键事实，再问是否能换表示让它自然出现。例如长度乘积卡住可转圆幂；整数幂卡住可转估值；组合关系卡住可建图。另一个技巧是暂时强化或弱化目标：若强命题反而容易归纳，可能找到结构；若原命题太硬，先证明弱版本建立中间工具。
+\end{ansbox}
+\begin{followbox}
+你如何判断是“再坚持5分钟”还是“必须换路”？
+\end{followbox}
+\begin{warnbox}
+每次卡住就看答案；换方法但重复同样信息。
+\end{warnbox}
+\begin{teachbox}
+复盘时把每次换路原因写出，形成个人“卡点触发器”库。
+\end{teachbox}
+\begin{rubricbox}
+10分：能诊断卡点并有多种重启机制；6分：会换表示；3分：靠灵感。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q073 \quad 什么叫“证明完整”？}
+\addcontentsline{toc}{section}{Q073 什么叫“证明完整”？}
+\tagpill{证明能力} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{严谨性、边界、书写}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么叫“证明完整”？
+\end{qbox}
+\begin{whybox}
+竞赛评分对完整证明高度敏感；教练还必须能审查、诊断并教会严谨性。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 每个非显然推断都有依据。
+\item 定理条件、定义域、除零、符号、边界均检查。
+\item 等号/退化情形按题目要求处理。
+\end{itemize}
+\textbf{展开：} 完整证明不是把思路写长，而是让一个不知道你脑内补充信息的审阅者也能验证每一步。尤其竞赛中常见漏洞包括：把必要条件当充分、除以可能为0的量、对称地“设$a\ge b$”却题目并不对称、几何图上默认点序、整数性没验证。IMO官方也明确要求solutions include complete proofs and justifications。
+\end{ansbox}
+\begin{followbox}
+你会如何教学生区分“显然”与“需要证明”？
+\end{followbox}
+\begin{warnbox}
+把大量计算写全却关键逻辑跳步；或每一行都过度解释。
+\end{warnbox}
+\begin{teachbox}
+用“Proof audit”表：条件、存在性、等价性、边界、结论五项自查。
+\end{teachbox}
+\begin{rubricbox}
+10分：能列关键漏洞并讲审阅视角；6分：强调严谨；3分：只说步骤完整。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q074 \quad 学生给出漂亮但有漏洞的证明，你怎么处理？}
+\addcontentsline{toc}{section}{Q074 学生给出漂亮但有漏洞的证明，你怎么处理？}
+\tagpill{教学诊断} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{错误反馈、引导、证明修复}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 学生给出漂亮但有漏洞的证明，你怎么处理？
+\end{qbox}
+\begin{whybox}
+高频真实教学场景，考察能否针对根因而不是针对表面错误处理。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先定位最小漏洞，不立刻重讲整题。
+\item 用反例或追问让学生自己发现。
+\item 修复后要求重新提交完整证明。
+\end{itemize}
+\textbf{展开：} 最有效的反馈常不是“这一步错了”，而是问一个让漏洞暴露的问题，例如“这里为什么能除以它？如果它等于0呢？”、“你证明的是必要还是充分？” 若学生自己修复，证明规范才真正内化。对于高水平学生，还可以要求做peer review，让他们按照竞赛评分标准批改同伴证明。
+\end{ansbox}
+\begin{followbox}
+如果漏洞修不动，但整体idea非常好，你如何评分和反馈？
+\end{followbox}
+\begin{warnbox}
+直接给标准答案；只判对错不保留好想法。
+\end{warnbox}
+\begin{teachbox}
+采用两层评分：idea分与rigor分，帮助学生知道“突破口好但证明责任未完成”。
+\end{teachbox}
+\begin{rubricbox}
+10分：能保留探索价值又坚持严谨；6分：会引导修改；3分：直接纠错。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q075 \quad 一道题有初等解法和高等解法，课堂怎么选？}
+\addcontentsline{toc}{section}{Q075 一道题有初等解法和高等解法，课堂怎么选？}
+\tagpill{教学判断} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{多解、认知负荷、课程目标}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 一道题有初等解法和高等解法，课堂怎么选？
+\end{qbox}
+\begin{whybox}
+用于考察岗位所需的核心能力与可解释思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 主解服务本节能力目标，不按“高级程度”选择。
+\item 第二解用于比较、统一或拓展。
+\item 考虑学生先修、可发现性和可迁移性。
+\end{itemize}
+\textbf{展开：} 如果课程目标是训练相似构造，即便复数法三行结束，也不应抢走主解位置；反之，对已经熟练基础工具的高阶班，复数或反演可能提供统一视角。一个实用原则是：\textbf{主解负责培养，副解负责拓展}。面试时若能说明“不同层级同题主解可不同”，通常体现真正教学经验。
+\end{ansbox}
+\begin{followbox}
+你会不会讲一个学生几乎不可能自己发现的极漂亮解法？为什么？
+\end{followbox}
+\begin{warnbox}
+以最短解为主；或完全排斥高级解。
+\end{warnbox}
+\begin{teachbox}
+给每个解法标注“可发现性”“先修”“迁移价值”，再选课堂位置。
+\end{teachbox}
+\begin{rubricbox}
+10分：目标、学生、方法三者匹配；6分：会比较解法；3分：审美单一。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q076 \quad 你如何评价一个解法的质量？}
+\addcontentsline{toc}{section}{Q076 你如何评价一个解法的质量？}
+\tagpill{教研能力} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{解法评价、正确性、推广性}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 你如何评价一个解法的质量？
+\end{qbox}
+\begin{whybox}
+考察题目、解法、课程材料的评价能力，是从“教师”到“教练/教研”的分水岭。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 第一优先正确与完整。
+\item 再看结构透明度、可发现性、简洁度、推广性。
+\item 课堂解法还要看认知负荷和教学价值。
+\end{itemize}
+\textbf{展开：} 可以把解法质量拆成五项：Correctness、Clarity、Structural insight、Generality、Teachability。竞赛赛场可能更重视在有限时间得到完整证明；教研讲义则更重视结构与迁移。一个“神来之笔”的三行解如果无法解释来源，未必是最佳教学解；一个略长但自然暴露核心不变量的解法可能更有长期价值。
+\end{ansbox}
+\begin{followbox}
+为什么“短”既可能是高级，也可能只是省略了关键论证？
+\end{followbox}
+\begin{warnbox}
+只以行数评价；把多用高级定理当高质量。
+\end{warnbox}
+\begin{teachbox}
+做解法评审表，让学生在多解之后自己打分并写理由。
+\end{teachbox}
+\begin{rubricbox}
+10分：多维评价并能区分赛场/课堂；6分：会说正确简洁；3分：只谈长度。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q077 \quad 学生解出一道题后，为什么还要复盘？}
+\addcontentsline{toc}{section}{Q077 学生解出一道题后，为什么还要复盘？}
+\tagpill{教学方法} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{复盘、迁移、元认知}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 学生解出一道题后，为什么还要复盘？
+\end{qbox}
+\begin{whybox}
+重点观察你能否解释学习机制，并给出课堂上真正可执行的干预。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item “做出”不等于方法可迁移。
+\item 复盘突破口、失败路线、关键定理、等号/极端。
+\item 必须配一道变式验证是否真正掌握。
+\end{itemize}
+\textbf{展开：} 解题当下的成功可能来自偶然猜中。复盘的目标是把一次性经验压缩成可调用知识：第一个有效观察是什么？哪条失败路线为什么失败？如果改一个条件，核心方法还成立吗？最有效的复盘最后要有\textbf{迁移测试}，否则学生很容易产生“看懂答案=学会”的错觉。
+\end{ansbox}
+\begin{followbox}
+错题本应记录完整答案，还是记录关键转折？
+\end{followbox}
+\begin{warnbox}
+复盘变成抄答案；只写“粗心”。
+\end{warnbox}
+\begin{teachbox}
+使用四栏错题卡：触发信号、关键idea、我的错误、变式验证。
+\end{teachbox}
+\begin{rubricbox}
+10分：复盘目标和迁移测试完整；6分：能说关键步骤；3分：抄题抄解。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q078 \quad 请设计一道题的三层变式。}
+\addcontentsline{toc}{section}{Q078 请设计一道题的三层变式。}
+\tagpill{教研设计} \quad \tagpill{难度 ★★★★★} \quad \tagpill{变式、难度梯度、迁移}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 请设计一道题的三层变式。
+\end{qbox}
+\begin{whybox}
+用于考察岗位所需的核心能力与可解释思维。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item Level 1直接显露目标方法。
+\item Level 2去掉显性信号，需要学生主动构造。
+\item Level 3改变表面或加入第二模块，检验迁移。
+\end{itemize}
+\textbf{展开：} 高质量变式不是把数字改大。比如训练Ceva：第一层直接给三边分点比，要求证共点；第二层把比隐藏在相似三角形中，需要先求比；第三层改成角条件，需要用正弦定理把角翻译成比再Ceva。三层保持同一核心结构，但逐步减少提示、增加表示转换。这样才能测出学生是否掌握“方法触发器”。
+\end{ansbox}
+\begin{followbox}
+如何控制变式难度只增加一个维度，避免突然跳成另一道题？
+\end{followbox}
+\begin{warnbox}
+只换数值；每层同时增加多个新知识点。
+\end{warnbox}
+\begin{teachbox}
+设计时标注“本层新增负荷”只能一项：隐藏信号/增加步骤/跨表示/跨模块。
+\end{teachbox}
+\begin{rubricbox}
+10分：有清晰层级与负荷控制；6分：能给三个相关题；3分：换皮。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\chapter{试讲与教学能力}
+\begin{center}\large\color{muted}把“自己会”转化为“学生会”\end{center}
+\vspace{1mm}
+\clearpage
+\section*{Q079 \quad 试讲10分钟：均值不等式。}
+\addcontentsline{toc}{section}{Q079 试讲10分钟：均值不等式。}
+\tagpill{试讲} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{课堂结构、动机、例题、互动}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 试讲10分钟：均值不等式。
+\end{qbox}
+\begin{whybox}
+公开招聘常出现试讲/面谈。短时试讲重点看结构、互动、板书和认知负荷控制。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 1分钟问题动机；2分钟从二元几何/代数推导；3分钟讲等号与结构；3分钟例题；1分钟总结。
+\item 不要罗列十种均值。
+\item 至少设计一次学生预测。
+\end{itemize}
+\textbf{展开：} 10分钟试讲最怕“知识过载”。一个可执行结构是从固定和时积何时最大的问题出发，让学生猜 $a=b$；再证明二元AM-GM，随后说明等号条件就是刚才的猜想；最后用一道需要主动配成和/积的题展示应用。结束时总结成一句方法：\textbf{先找要固定的量，再看等号点决定怎样使用均值不等式}。
+\end{ansbox}
+\begin{followbox}
+面试官突然要求你把难度提高到省一班，你怎么改后5分钟？
+\end{followbox}
+\begin{warnbox}
+开场直接写一页公式；没有互动；例题只代数值。
+\end{warnbox}
+\begin{teachbox}
+试讲稿必须含“学生可能回答”和“如果答错我怎么追问”，而不只写教师台词。
+\end{teachbox}
+\begin{rubricbox}
+10分：时间结构清楚、互动真实、方法抽象到位；6分：讲清内容；3分：公式灌输。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q080 \quad 试讲15分钟：Ceva定理。}
+\addcontentsline{toc}{section}{Q080 试讲15分钟：Ceva定理。}
+\tagpill{试讲} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{几何试讲、定理证明、应用}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 试讲15分钟：Ceva定理。
+\end{qbox}
+\begin{whybox}
+公开招聘常出现试讲/面谈。短时试讲重点看结构、互动、板书和认知负荷控制。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 从三线共点的判定需求引入。
+\item 给出定理并至少解释一种证明。
+\item 用一个直接应用，再用一个隐藏比例的追问。
+\end{itemize}
+\textbf{展开：} 好的Ceva试讲不应从公式开始，而应先问：“三角形里三条线什么时候会交于一点？” 让学生意识到需要一个可计算判据。证明可以选面积法，利用同高三角形面积比等于底边比，直观且初学友好。随后给一个直接比值题建立成功感，再给一个需要相似求比的变式，完成从定理到结构识别。
+\end{ansbox}
+\begin{followbox}
+如果学生问为什么乘积等于1，你如何不用背公式解释？
+\end{followbox}
+\begin{warnbox}
+图画不清；只证明充分或必要一半；忽略外分。
+\end{warnbox}
+\begin{teachbox}
+板书把三组比例沿三角形一圈排列，让“相消”可视化。
+\end{teachbox}
+\begin{rubricbox}
+10分：动机-证明-应用-变式完整；6分：定理讲清；3分：只背公式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q081 \quad 试讲：Vieta Jumping。}
+\addcontentsline{toc}{section}{Q081 试讲：Vieta Jumping。}
+\tagpill{试讲} \quad \tagpill{难度 ★★★★★} \quad \tagpill{高阶试讲、发现过程、下降}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 试讲：Vieta Jumping。
+\end{qbox}
+\begin{whybox}
+公开招聘常出现试讲/面谈。短时试讲重点看结构、互动、板书和认知负荷控制。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先展示“为什么把方程看成二次方程”。
+\item 明确另一个根的整数性、正性、下降性。
+\item 用最小反例组织证明而不是炫技巧。
+\end{itemize}
+\textbf{展开：} Vieta Jumping最适合检验教师是否能重建发现过程。开场不要直接说“把它看成关于$x$的二次方程”，而要问：题中变量对称/近对称，固定$y$后$x$满足什么？一旦看见二次结构，再引导学生问“既然有一个整数根，另一个根是什么？” 最后把这个根变成更小解，连接无限下降。每一步都要让学生知道“为什么下一步值得试”。
+\end{ansbox}
+\begin{followbox}
+如果学生接受另一个根但不明白为什么要取最小解，你怎么解释？
+\end{followbox}
+\begin{warnbox}
+演示神奇公式却不讲下降逻辑；漏证明整数性。
+\end{warnbox}
+\begin{teachbox}
+把证明拆成四个checkpoint，让学生每到一关自己验证。
+\end{teachbox}
+\begin{rubricbox}
+10分：能呈现发现链和严格证明；6分：讲清标准解；3分：炫技式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q082 \quad 试讲：抽屉原理。}
+\addcontentsline{toc}{section}{Q082 试讲：抽屉原理。}
+\tagpill{试讲} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{组合试讲、建模、梯度}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 试讲：抽屉原理。
+\end{qbox}
+\begin{whybox}
+公开招聘常出现试讲/面谈。短时试讲重点看结构、互动、板书和认知负荷控制。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 基础例：对象多于盒子。
+\item 隐藏抽屉：余数分类。
+\item 进阶应用：区间/几何或数论。
+\end{itemize}
+\textbf{展开：} 15分钟内可以做三级：先用生活化座位例子建立原理；第二题给若干整数，要求证明两数同余，让学生自己说出“余数就是盒子”；第三题不出现明显分类，要求从目标关系反推抽屉。最后总结：抽屉题最难的不是数盒子，而是设计“同盒就有用”的分类。
+\end{ansbox}
+\begin{followbox}
+如果学生总是找不到抽屉，你会给什么层级提示？
+\end{followbox}
+\begin{warnbox}
+只讲$n+1$与$n$；所有例题抽屉都已写在题面。
+\end{warnbox}
+\begin{teachbox}
+提示分三级：目标关系→等价分类→具体盒子，避免一步给出答案。
+\end{teachbox}
+\begin{rubricbox}
+10分：三层梯度+建模总结；6分：有多个例子；3分：只讲原理。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q083 \quad 学生问：“老师，这条辅助线到底怎么想到的？”你怎么回答？}
+\addcontentsline{toc}{section}{Q083 学生问：“老师，这条辅助线到底怎么想到的？”你怎么回答？}
+\tagpill{教学沟通} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{可解释思维、几何发现、提示设计}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 学生问：“老师，这条辅助线到底怎么想到的？”你怎么回答？
+\end{qbox}
+\begin{whybox}
+学生最常问的是“怎么想到”。能否重建可学习的发现过程决定教学含金量。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 拒绝“做多了就知道”式回答。
+\item 从目标逆推需要的结构。
+\item 承认探索中可能有试错，并展示筛选依据。
+\end{itemize}
+\textbf{展开：} 一个高质量回答应尽量重建真实决策，例如：“目标是证这两个角相等；如果能让四点共圆就够了；而要共圆，我缺少一组同弧角，所以我把这个点连到那里，看看能否制造相似。” 这让辅助线从神秘直觉变成可复用的逆推链。必要时也可以坦诚：最初有两个候选构造，试算后发现一个没有产生新关系，于是放弃。
+\end{ansbox}
+\begin{followbox}
+什么样的“思维过程展示”会变成无效碎碎念？
+\end{followbox}
+\begin{warnbox}
+把发现过程伪装成“显然”；或逐秒复述所有无关试错。
+\end{warnbox}
+\begin{teachbox}
+只展示“有信息增益的分岔点”，而不是所有脑内活动。
+\end{teachbox}
+\begin{rubricbox}
+10分：能重建关键决策且适度；6分：会解释目标；3分：经验主义。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q084 \quad 你如何讲一道自己花两小时才做出来的题？}
+\addcontentsline{toc}{section}{Q084 你如何讲一道自己花两小时才做出来的题？}
+\tagpill{教学方法} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{专家盲点、探索压缩、课堂设计}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 你如何讲一道自己花两小时才做出来的题？
+\end{qbox}
+\begin{whybox}
+重点观察你能否解释学习机制，并给出课堂上真正可执行的干预。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 不能把两小时压成“显然”。
+\item 选取2-3个关键分岔供学生体验。
+\item 删除无教育价值的噪声试错，但保留方法选择理由。
+\end{itemize}
+\textbf{展开：} 课堂不是完整直播教师两小时的所有失败，也不能伪装成一步到位。应保留最能培养能力的节点：一个自然但失败的尝试、一个导致关键猜想的特殊化、一个最终结构转换。然后安排短暂停顿，让学生在这些节点自己做决策。这样既保持发现感，又控制认知负荷。
+\end{ansbox}
+\begin{followbox}
+你怎样判断某条失败路线值得课堂展示？
+\end{followbox}
+\begin{warnbox}
+把所有探索都删掉；或反过来把课堂变成漫长试错。
+\end{warnbox}
+\begin{teachbox}
+失败路线只有在能揭示“为什么某方法不够”或导向关键新信息时才保留。
+\end{teachbox}
+\begin{rubricbox}
+10分：探索压缩有原则；6分：能保留关键过程；3分：答案秀。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q085 \quad 为什么竞赛课堂不能一直由老师讲？}
+\addcontentsline{toc}{section}{Q085 为什么竞赛课堂不能一直由老师讲？}
+\tagpill{教学方法} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{主动学习、独立探索、反馈}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么竞赛课堂不能一直由老师讲？
+\end{qbox}
+\begin{whybox}
+重点观察你能否解释学习机制，并给出课堂上真正可执行的干预。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 听懂不等于独立重构。
+\item 课堂需插入预测、独立探索、学生讲解、错误分析。
+\item 提示要逐层释放，避免抢走思考权。
+\end{itemize}
+\textbf{展开：} 竞赛能力的核心产出发生在学生自己做决策时。如果老师连续展示漂亮解法，学生获得的是识别性熟悉感，而不是生成能力。课堂可以采用“3分钟猜想—8分钟独立—同伴比较—教师收束”这样的微循环。教练的价值不在讲得最多，而在设计什么时候让学生承担哪一段思考。
+\end{ansbox}
+\begin{followbox}
+独立探索时间太长导致课堂进度慢，怎么平衡？
+\end{followbox}
+\begin{warnbox}
+把“学生中心”理解成老师不讲；或完全不给探索时间。
+\end{warnbox}
+\begin{teachbox}
+用时间盒和分级提示控制成本：先独立，再提示方向，再提示关键lemma。
+\end{teachbox}
+\begin{rubricbox}
+10分：能解释学习机制并给课堂机制；6分：支持互动；3分：口号化。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q086 \quad 同一班学生水平差异很大，怎么讲同一道题？}
+\addcontentsline{toc}{section}{Q086 同一班学生水平差异很大，怎么讲同一道题？}
+\tagpill{分层教学} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{分层、同题异构、课堂管理}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 同一班学生水平差异很大，怎么讲同一道题？
+\end{qbox}
+\begin{whybox}
+真实竞赛班水平差异大，本题检测能否在同一课堂保持共同目标又提供不同挑战。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 核心题相同，认知任务不同。
+\item 基础层找突破口，中层独立证明，高层多解/推广。
+\item 避免把弱生长期锁在“听答案”角色。
+\end{itemize}
+\textbf{展开：} 同题分层比完全分开内容更容易保持班级共同节奏。例如同一道几何题：基础层给出辅助线并要求完成角追；中层只给目标结构；高层要求找到第二解或推广到更一般条件。评价也分层：基础看正确完成，中层看独立性，高层看结构与推广。这样既不牺牲共同讨论，也提供足够挑战。
+\end{ansbox}
+\begin{followbox}
+高层学生提前完成后，你如何避免他们影响其他学生探索？
+\end{followbox}
+\begin{warnbox}
+统一同一要求；或简单给强生多做几道无关难题。
+\end{warnbox}
+\begin{teachbox}
+提前准备“纵向追问卡”：第二解、删除条件、逆命题、一般化。
+\end{teachbox}
+\begin{rubricbox}
+10分：同题分层任务具体；6分：有A/B作业；3分：只说因材施教。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q087 \quad 你怎样讲学生的错题？}
+\addcontentsline{toc}{section}{Q087 你怎样讲学生的错题？}
+\tagpill{教学诊断} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{错因分类、反馈、纠偏}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 你怎样讲学生的错题？
+\end{qbox}
+\begin{whybox}
+高频真实教学场景，考察能否针对根因而不是针对表面错误处理。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先分类：知识、方法、推理、计算、读题、时间。
+\item 同一道错题不同错因需不同处理。
+\item 讲完后必须做近邻变式验证。
+\end{itemize}
+\textbf{展开：} “错题讲解”不是把标准答案再讲一遍。若学生错在定理条件，就要做条件辨析；错在方法选择，就比较两条路线；错在证明漏洞，就做proof audit；错在速度，则需要限时自动化。真正的闭环是：\textbf{诊断根因 → 针对性干预 → 近邻变式复测}。只有复测通过，错题才算关闭。
+\end{ansbox}
+\begin{followbox}
+“粗心”是不是一个合格错因？如何继续拆？
+\end{followbox}
+\begin{warnbox}
+所有错误归因粗心；统一重讲答案。
+\end{warnbox}
+\begin{teachbox}
+建立错因编码，如K知识/M方法/R严谨/C计算/T时间，每月统计趋势。
+\end{teachbox}
+\begin{rubricbox}
+10分：诊断与复测闭环；6分：会分类；3分：标准答案式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q088 \quad 什么样的板书适合竞赛课堂？}
+\addcontentsline{toc}{section}{Q088 什么样的板书适合竞赛课堂？}
+\tagpill{试讲} \quad \tagpill{难度 ★★★☆☆} \quad \tagpill{板书、信息结构、课堂呈现}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 什么样的板书适合竞赛课堂？
+\end{qbox}
+\begin{whybox}
+公开招聘常出现试讲/面谈。短时试讲重点看结构、互动、板书和认知负荷控制。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 题目条件与图形区。
+\item 主证明区。
+\item 关键idea/lemma/错误提醒区。
+\item 保留学生探索痕迹但定期收束。
+\end{itemize}
+\textbf{展开：} 竞赛板书要帮助学生看到证明的“骨架”。一个实用布局是左侧保留题目、关键图和条件编号；中间写主证明，严格按逻辑推进；右侧单列“为什么想到/关键lemma/易错点”。这样学生抄笔记时不会把探索和正式证明混在一起。复杂题还可在顶部维护目标树：当前已经证明什么、还缺什么。
+\end{ansbox}
+\begin{followbox}
+如果只有白板且需要频繁擦除，哪些内容必须保留到最后？
+\end{followbox}
+\begin{warnbox}
+满屏连续计算；关键图被擦掉；板书与口头不同步。
+\end{warnbox}
+\begin{teachbox}
+试讲前先设计板书地图，不逐字写稿，但确定每一区域功能。
+\end{teachbox}
+\begin{rubricbox}
+10分：结构化、可复盘；6分：整洁清楚；3分：只是字好看。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\chapter{课程研发与训练体系}
+\begin{center}\large\color{muted}课程、讲义、测评与题库工程\end{center}
+\vspace{1mm}
+\clearpage
+\section*{Q089 \quad 从零设计高中数学竞赛课程体系，你怎样拆模块？}
+\addcontentsline{toc}{section}{Q089 从零设计高中数学竞赛课程体系，你怎样拆模块？}
+\tagpill{课程研发} \quad \tagpill{难度 ★★★★★} \quad \tagpill{课程架构、知识与能力双维}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 从零设计高中数学竞赛课程体系，你怎样拆模块？
+\end{qbox}
+\begin{whybox}
+公开岗位明确要求课程体系、讲义、资料或书籍研发；本题直接对应岗位产出。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 知识维：代数/几何/数论/组合。
+\item 能力维：基础工具/方法识别/证明/综合/竞赛模拟。
+\item 每个单元写清先修、目标、评价和迁移题。
+\end{itemize}
+\textbf{展开：} 单轴课程容易出现“学完四大模块但不会综合”。更专业的设计是二维矩阵：横轴按知识域，纵轴按能力层级。比如“数论-基础”是整除/同余工具，“数论-证明”是最小反例/估值，“数论-综合”则与组合或代数融合。每个单元都要有可测学习目标，例如“能独立识别何时使用极值素因子”，而不是“掌握数论”。
+\end{ansbox}
+\begin{followbox}
+课程模块按知识拆和按题型拆，各有什么风险？
+\end{followbox}
+\begin{warnbox}
+目录式课程，没有能力纵轴；单元目标不可测。
+\end{warnbox}
+\begin{teachbox}
+用课程地图标出先修箭头和跨模块连接，帮助教练统一教学语言。
+\end{teachbox}
+\begin{rubricbox}
+10分：二维架构+可测目标；6分：有完整模块；3分：只是章节表。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q090 \quad 一个专题讲义应该如何组织？}
+\addcontentsline{toc}{section}{Q090 一个专题讲义应该如何组织？}
+\tagpill{课程研发} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{讲义设计、认知梯度、教研}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 一个专题讲义应该如何组织？
+\end{qbox}
+\begin{whybox}
+公开岗位明确要求课程体系、讲义、资料或书籍研发；本题直接对应岗位产出。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 动机/核心问题。
+\item 定义与基本lemma。
+\item 典型例题→方法抽象→变式→综合。
+\item 常见错误、总结、课后分层作业。
+\end{itemize}
+\textbf{展开：} 专业讲义不是“题目+答案合集”。推荐结构：Problem motivation → Core concept → Lemma toolkit → Canonical examples → Method extraction → Variations → Mixed problems → Challenge → Common mistakes → Summary。每个例题旁最好标注“为什么选它”：它是在展示第一次使用、边界条件还是方法组合。这样讲义同时服务学生学习和教师备课。
+\end{ansbox}
+\begin{followbox}
+例题讲义中标准答案应该写多细？
+\end{followbox}
+\begin{warnbox}
+堆题；例题之间没有梯度；答案只有技巧没有说明。
+\end{warnbox}
+\begin{teachbox}
+对主例题写完整证明与“思路起点”，对练习只给分级提示，避免答案替代思考。
+\end{teachbox}
+\begin{rubricbox}
+10分：结构、梯度、教师视角齐全；6分：章节完整；3分：题库拼接。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q091 \quad 你如何选择例题？}
+\addcontentsline{toc}{section}{Q091 你如何选择例题？}
+\tagpill{教研能力} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{例题选择、教学效率、代表性}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 你如何选择例题？
+\end{qbox}
+\begin{whybox}
+考察题目、解法、课程材料的评价能力，是从“教师”到“教练/教研”的分水岭。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 不是选最难，而是最大化单位时间迁移价值。
+\item 覆盖核心结构、典型错误和边界。
+\item 难度与当前学习目标匹配。
+\end{itemize}
+\textbf{展开：} 一个好例题应承担明确任务：第一次建立方法的“原型题”要结构纯；第二题要换表面检验识别；第三题可加入一个新障碍；最后才进入综合。若一题同时需要五个新技巧，虽然很精彩，却不适合作为初次教学。教研选题应记录“这题删除会损失什么”，如果回答不出来，它可能只是冗余。
+\end{ansbox}
+\begin{followbox}
+同一方法有十道经典题，你会按什么标准留下三道？
+\end{followbox}
+\begin{warnbox}
+按知名度选题；认为越难越有价值。
+\end{warnbox}
+\begin{teachbox}
+给每题打标签：原型性、变式性、误区覆盖、综合度、预计用时，做组合优化。
+\end{teachbox}
+\begin{rubricbox}
+10分：有明确选题函数与梯度；6分：考虑代表性和难度；3分：凭感觉。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q092 \quad 如何设计阶段测评？}
+\addcontentsline{toc}{section}{Q092 如何设计阶段测评？}
+\tagpill{测评设计} \quad \tagpill{难度 ★★★★★} \quad \tagpill{测评、效度、能力分解}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何设计阶段测评？
+\end{qbox}
+\begin{whybox}
+教练需要把“考试”变成诊断工具，而不是只产生排名。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 同时测知识覆盖、熟练度、陌生迁移、证明完整度和时间策略。
+\item 题目结构与课程目标对齐。
+\item 测后能定位技能，而不仅给总分。
+\end{itemize}
+\textbf{展开：} 阶段测评应具备诊断效度。可以分为：30\\%基础与自动化、30\\%典型方法、25\\%陌生迁移、15\\%长证明/综合。每题事先绑定技能标签，阅卷后生成技能矩阵。对竞赛班还要记录“首个有效思路出现时间”和“证明扣分类型”，因为同样0分可能是完全无思路，也可能是关键idea正确但书写不完整。
+\end{ansbox}
+\begin{followbox}
+怎样避免学生针对固定题型“刷测评”而分数虚高？
+\end{followbox}
+\begin{warnbox}
+每次随机拼真题；只看总分/排名。
+\end{warnbox}
+\begin{teachbox}
+保留一定比例“表面陌生但结构已学”的迁移题，防止题型记忆。
+\end{teachbox}
+\begin{rubricbox}
+10分：效度、标签、诊断输出完整；6分：能分层组卷；3分：只讲难度比例。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q093 \quad 如何根据测评结果诊断学生？}
+\addcontentsline{toc}{section}{Q093 如何根据测评结果诊断学生？}
+\tagpill{学情诊断} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{技能矩阵、错因、个性化训练}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 如何根据测评结果诊断学生？
+\end{qbox}
+\begin{whybox}
+考察能否用任务和行为证据诊断学生，而不是用标签、一次分数或主观印象。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 拆成Accuracy、Speed、Proof、Transfer等维度。
+\item 同一低分可能根因不同。
+\item 只针对限制瓶颈分配训练预算。
+\end{itemize}
+\textbf{展开：} 假设学生几何正确率50\\%，不能立即结论“几何差”。若基础角追正确但陌生构造失败，是结构识别问题；若idea对但大量丢证明分，是严谨性；若题都能做但超时，是自动化。可以建立技能矩阵，每两到四周更新一次，并只选1到2个最高收益瓶颈作为下一阶段目标，避免同时补十项导致训练稀释。
+\end{ansbox}
+\begin{followbox}
+如何把诊断结果向学生和家长解释，避免只说“基础不扎实”？
+\end{followbox}
+\begin{warnbox}
+按章节正确率下结论；训练计划与诊断无对应。
+\end{warnbox}
+\begin{teachbox}
+每个诊断结论必须配“证据题 + 行为表现 + 下周期指标”。
+\end{teachbox}
+\begin{rubricbox}
+10分：多维诊断+预算分配；6分：能分类错误；3分：泛化标签。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q094 \quad 学生还有三个月参加联赛，你怎么安排？}
+\addcontentsline{toc}{section}{Q094 学生还有三个月参加联赛，你怎么安排？}
+\tagpill{备赛规划} \quad \tagpill{难度 ★★★★★} \quad \tagpill{冲刺、模拟、查漏补缺}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 学生还有三个月参加联赛，你怎么安排？
+\end{qbox}
+\begin{whybox}
+考察短周期资源配置、模拟闭环与对比赛节奏的理解。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 第1月修结构性漏洞；第2月专题+综合；第3月全真模拟+短周期修复。
+\item 一试和二试训练节奏分开。
+\item 模拟必须形成simulate→diagnose→repair闭环。
+\end{itemize}
+\textbf{展开：} 三个月不应继续无限扩知识面。第一月根据最近测评锁定2到3个高收益短板，同时保持一试自动化；第二月提高综合题比例，建立题目选择和长题耐力；第三月按真实时间做全真模拟，第二天完成深度复盘与定向补题。每周至少保留一个恢复/轻量日，避免最后阶段只堆量造成准确率下降。
+\end{ansbox}
+\begin{followbox}
+如果最后一个月模拟分数波动很大，你优先查什么？
+\end{followbox}
+\begin{warnbox}
+最后三个月全刷真题；只看模拟总分。
+\end{warnbox}
+\begin{teachbox}
+给每次模拟做“可控损失”统计：计算、时间、证明漏项、错误选题，优先减少可控损失。
+\end{teachbox}
+\begin{rubricbox}
+10分：阶段目标+闭环+一二试区分；6分：有冲刺计划；3分：题海。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q095 \quad 怎样建立竞赛题库？}
+\addcontentsline{toc}{section}{Q095 怎样建立竞赛题库？}
+\tagpill{教研工程} \quad \tagpill{难度 ★★★★★} \quad \tagpill{题库元数据、检索、知识管理}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 怎样建立竞赛题库？
+\end{qbox}
+\begin{whybox}
+高水平团队需要可检索、可复用、可版本化的教研资产，而非个人电脑文件夹。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 题面和答案只是基础。
+\item 至少保存domain/subtopic/difficulty/key idea/prerequisite/common mistake/source/time。
+\item 建立相似题/变式关系和版本管理。
+\end{itemize}
+\textbf{展开：} 真正可用的题库是一张知识图谱。除题目、解答外，至少应有领域、子专题、关键idea、第二idea、难度、预计时间、先修、常见错误、适合班型、来源、相似题与变式。这样教练才能回答“我需要一题训练根轴、20分钟、但不依赖反演”的检索需求。原创或改编题还需保存版本与修改记录，避免同题多份答案漂移。
+\end{ansbox}
+\begin{followbox}
+题库难度标签应由教练主观给，还是由学生数据校准？
+\end{followbox}
+\begin{warnbox}
+只有文件夹分类；难度只有星级无行为数据。
+\end{warnbox}
+\begin{teachbox}
+后续用学生完成率、首个有效思路时间、平均得分校准主观难度。
+\end{teachbox}
+\begin{rubricbox}
+10分：元数据完整+数据校准+版本管理；6分：有标签体系；3分：题目仓库。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\chapter{学生培养与职业素养}
+\begin{center}\large\color{muted}长期带队、沟通与教育判断\end{center}
+\vspace{1mm}
+\clearpage
+\section*{Q096 \quad 很有天赋的学生长期不写完整证明，你怎么办？}
+\addcontentsline{toc}{section}{Q096 很有天赋的学生长期不写完整证明，你怎么办？}
+\tagpill{学生管理} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{严谨性、习惯塑造、评价}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 很有天赋的学生长期不写完整证明，你怎么办？
+\end{qbox}
+\begin{whybox}
+长期培养不仅是数学问题，还包括习惯、评价机制和反馈关系。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 明确“idea分”和“proof分”分离。
+\item 强制关键作业完整书写并二次提交。
+\item 用同伴审阅或评分标准让后果可见。
+\end{itemize}
+\textbf{展开：} 对高天赋学生最危险的是“答案感很强，因此省略被长期容忍”。处理时不应否定其思路速度，而要把评价体系改成两条：idea质量和proof完整性。指定部分作业必须按竞赛标准书写，第一次提交只批注漏洞，不代改；学生修复后再计最终分。让他批改同伴证明也很有效，因为审阅别人会反向提升自我审查。
+\end{ansbox}
+\begin{followbox}
+如果学生说“比赛里我自己知道就行”，你怎么回应？
+\end{followbox}
+\begin{warnbox}
+因为天赋高而纵容；或用大量抄写惩罚。
+\end{warnbox}
+\begin{teachbox}
+展示真实评分点：一个正确idea因为缺条件验证可能丢大量分，让规范与结果直接关联。
+\end{teachbox}
+\begin{rubricbox}
+10分：保护优势同时建立严谨机制；6分：要求重写；3分：说教。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q097 \quad 学生连续几次比赛发挥失常，你怎样处理？}
+\addcontentsline{toc}{section}{Q097 学生连续几次比赛发挥失常，你怎样处理？}
+\tagpill{学情与心理} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{数据诊断、策略、表现波动}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 学生连续几次比赛发挥失常，你怎样处理？
+\end{qbox}
+\begin{whybox}
+不做心理诊断，而是把“发挥失常”转成可观察、可控制的比赛行为。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 先区分知识、策略、时间、证明、偶然波动。
+\item 比较训练成绩与正式赛，定位情境差异。
+\item 只调整可控变量，不做人格化判断。
+\end{itemize}
+\textbf{展开：} “心态不好”往往是一个过度概括。先看每次失分是否集中在开局选题、某模块、最后30分钟、计算失误或证明遗漏；再比较平时同难度题表现。如果知识正确率稳定但正式赛前半段明显过度停留，可能是策略问题；若平时也波动，则要回到基础稳定性。教练应把抽象情绪标签转成可观察行为。
+\end{ansbox}
+\begin{followbox}
+怎样设置下一场比赛的过程目标，而不是只说“放轻松”？
+\end{followbox}
+\begin{warnbox}
+把一切归因心理；一次失常就改完整训练体系。
+\end{warnbox}
+\begin{teachbox}
+设可控目标如“前20分钟完成全卷扫描”“卡一题15分钟必须切换”。
+\end{teachbox}
+\begin{rubricbox}
+10分：数据化诊断+过程干预；6分：会分析原因；3分：鸡汤式。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q098 \quad 家长要求：“必须冲省一，多布置一点难题。”你怎么回答？}
+\addcontentsline{toc}{section}{Q098 家长要求：“必须冲省一，多布置一点难题。”你怎么回答？}
+\tagpill{家校沟通} \quad \tagpill{难度 ★★★★☆} \quad \tagpill{目标沟通、训练剂量、专业边界}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 家长要求：“必须冲省一，多布置一点难题。”你怎么回答？
+\end{qbox}
+\begin{whybox}
+真实岗位往往要求家长沟通，面试官关注你能否守住专业判断同时保持透明。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 认可目标但不直接接受“难题越多越好”的处方。
+\item 用当前技能矩阵说明瓶颈。
+\item 给出阶段指标、训练计划和复盘节点。
+\end{itemize}
+\textbf{展开：} 沟通可以先把目标具体化，再用证据解释训练方案：“目前一试稳定，但二试几何平均只能完成第一步；如果直接增加高难综合题，反馈密度过低。未来四周先把共圆/圆幂/相似的中档题完成率提升到80\\%，同时每周保留一道长题探索。” 这样既不与家长对抗，也守住专业判断。
+\end{ansbox}
+\begin{followbox}
+如果家长坚持以题量比较不同机构，你如何回应？
+\end{followbox}
+\begin{warnbox}
+迎合加量；或用专业术语压制家长。
+\end{warnbox}
+\begin{teachbox}
+定期给一页“目标-证据-行动-指标”报告，让沟通围绕进展而非焦虑。
+\end{teachbox}
+\begin{rubricbox}
+10分：专业、透明、有指标；6分：会解释训练计划；3分：情绪对抗或迎合。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q099 \quad 高二学生竞赛成绩长期没有突破，你是否建议继续？}
+\addcontentsline{toc}{section}{Q099 高二学生竞赛成绩长期没有突破，你是否建议继续？}
+\tagpill{教育判断} \quad \tagpill{难度 ★★★★★} \quad \tagpill{机会成本、成长曲线、学生意愿}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 高二学生竞赛成绩长期没有突破，你是否建议继续？
+\end{qbox}
+\begin{whybox}
+测试工具边界、机会成本与教育责任。极端、口号化回答通常得分不高。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 不以沉没成本决策。
+\item 评估能力、成长速度、时间成本、真实兴趣与替代路径。
+\item 与学生本人共同决定，而非只和家长谈。
+\end{itemize}
+\textbf{展开：} 继续竞赛不是默认正确答案。需要看最近半年能力曲线是否仍在增长、目标赛事的现实距离、投入时间对校内学习和其他发展路径的影响、学生是否仍有内在兴趣。如果训练只剩外部压力且机会成本很高，转向强基/校内深度学习可能更合理。教练的职责是提供清晰判断，不是为了留班而维持所有学生。
+\end{ansbox}
+\begin{followbox}
+什么数据能支持“再给三个月观察”而不是立即退出？
+\end{followbox}
+\begin{warnbox}
+因为已经投入很多就继续；或仅凭一次成绩劝退。
+\end{warnbox}
+\begin{teachbox}
+设观察期并定义退出/继续指标：方法迁移、模拟分位、学习投入意愿、校内影响。
+\end{teachbox}
+\begin{rubricbox}
+10分：多维、尊重学生、无利益绑架；6分：会谈机会成本；3分：单指标。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\clearpage
+\section*{Q100 \quad 为什么你适合成为高中数学竞赛教练？}
+\addcontentsline{toc}{section}{Q100 为什么你适合成为高中数学竞赛教练？}
+\tagpill{终面} \quad \tagpill{难度 ★★★★★} \quad \tagpill{自我呈现、证据链、岗位匹配}
+\vspace{2mm}
+\begin{qbox}
+\textbf{题目}\quad 为什么你适合成为高中数学竞赛教练？
+\end{qbox}
+\begin{whybox}
+最终要证明岗位匹配度：数学能力只是必要条件，教学、教研和长期培养证据同样关键。
+\end{whybox}
+\begin{ansbox}
+\textbf{先给框架：}
+\begin{itemize}
+\item 不要只讲奖项。
+\item 按Solve→Explain→Teach→Develop Students组织证据。
+\item 每一层至少给一个可验证经历或作品。
+\end{itemize}
+\textbf{展开：} 终面最有说服力的不是“我热爱数学”，而是证据链：我能在陌生题中稳定解决问题（Solve）；能把关键决策解释清楚（Explain）；能设计试讲、作业和反馈让学生掌握（Teach）；能根据测评和长期表现调整课程并与学生/家长沟通（Develop）。最后再说明自己的短板和学习计划，体现可成长性。公开招聘信息也反复显示，真实岗位同时要求课程研发、讲义资料、授课、学情反馈与沟通，而非只看个人竞赛奖项。
+\end{ansbox}
+\begin{followbox}
+请用一个具体案例证明你不仅“会讲”，还真正改变过学生的学习行为。
+\end{followbox}
+\begin{warnbox}
+奖项堆砌；空泛热爱；没有课程/学生证据。
+\end{warnbox}
+\begin{teachbox}
+准备“作品集”：一份讲义、一段试讲设计、一份学情诊断、一份题库样例，比口头自述更强。
+\end{teachbox}
+\begin{rubricbox}
+10分：四层证据链完整、反思真实；6分：匹配岗位但证据少；3分：只谈奖项与热爱。
+\end{rubricbox}
+\vfill\begin{flushright}\small\color{muted}复盘：先独立回答，再看本页框架；最后只看“追问”重新回答。\end{flushright}
+\appendix
+\chapter{附录A：30天面试训练计划}
+\begin{longtable}{p{16mm}p{31mm}p{88mm}}
+\toprule
+天数 & 主题 & 训练任务\\
+\midrule
+1-3 & 岗位画像 & Q1-Q10闭卷回答；完成一页“我的竞赛教育观”。\\
+4-8 & 代数 & 每天3题口述+1题板书；重点检查条件与等号。\\
+9-13 & 几何 & 每天3题；至少一次用“为什么想到辅助线”重建发现链。\\
+14-18 & 数论 & 每天3题；所有LTE/下降题强制写条件核对。\\
+19-23 & 组合 & 每天3题；每题先写建模对象/不变量/极值量。\\
+24-25 & 现场题 & Q71-Q78；每题做3分钟研究报告。\\
+26-27 & 试讲 & 从Q79-Q88随机抽3题，录制10-15分钟试讲。\\
+28 & 教研 & 完成一份专题讲义目录+三层变式+阶段测评。\\
+29 & 模拟面试 & 60分钟：专业20+试讲20+案例20。\\
+30 & 终面 & Q96-Q100；整理个人作品集与证据链。\\
+\bottomrule
+\end{longtable}
+
+\chapter{附录B：20分钟试讲评分表}
+\begin{tabularx}{\textwidth}{X r X}
+\toprule
+维度 & 分值 & 高分标准\\
+\midrule
+数学正确性 & 25 & 定义、条件、证明、边界无实质错误\\
+结构与节奏 & 15 & 有动机、有主线、时间可控\\
+思维可见性 & 15 & 解释“为什么想到”，而非只展示结论\\
+学生参与 & 15 & 有真实预测/探索/追问，不是假互动\\
+例题与变式 & 10 & 服务于同一核心目标，难度递进\\
+板书 & 10 & 图、主证明、关键idea分区清楚\\
+诊断与反馈 & 10 & 能预判错误并给分级提示\\
+\midrule
+总分 & 100 & \\
+\bottomrule
+\end{tabularx}
+
+\chapter{附录C：面试作品集建议}
+建议准备四件可以直接展示的作品，而不是只准备口头自述：
+\begin{enumerate}
+\item \textbf{一份专题讲义：}10-20页，包含原型题、方法抽象、三层变式和错因。
+\item \textbf{一份试讲设计：}15-20分钟，含板书地图、学生可能回答、分级提示。
+\item \textbf{一份学情诊断：}用虚拟或匿名数据展示如何从成绩拆成技能矩阵并制定计划。
+\item \textbf{一份题库样例：}20题即可，但元数据完整，能按方法、难度、时间、先修检索。
+\end{enumerate}
+
+\chapter{附录D：核心参考与公开依据}
+本书的岗位画像与竞赛范围依据以下公开资料进行核验（访问时间：2026-09）：
+\begin{enumerate}
+\item 中国数学会：全国高中数学联赛介绍。公开说明联赛一试/二试结构，以及二试涉及平面几何、代数、数论、组合。\\
+\url{https://www.cms.org.cn/en/Home/comp/comp_details/197.html}
+\item International Mathematical Olympiad：What is IMO? 官方说明IMO六题、两天、代数/组合/几何/数论以及完整证明要求。\\
+\url{https://www.imo-official.org/about/}
+\item International Mathematical Olympiad：General Regulations（2025更新），包含题目范围与竞赛组织规则。\\
+\url{https://www.imo-official.org/regulations/}
+\item 浙江大学就业服务平台：2026高中竞赛全职教练岗位。公开职责包括课程体系研发、讲义/资料/书籍编写、备课授课、作业批阅讲解、学情反馈。\\
+\url{https://www.career.zju.edu.cn/jyxt/sczp/zpztgl/ckZpgwXq.zf?zpxxbh=50307BB6F85128F4E0653A68DD0E9B18}
+\item 南方科技大学就业平台：2026高中竞赛教练岗位。公开职责包括竞赛产品体系设计、课程内容研发、讲义教案、授课、家长沟通和学习跟踪；流程含试讲/面谈。\\
+\url{https://career.sustech.edu.cn/detail/online?id=3574656}
+\item 浙江大学就业服务平台：竞赛教练公开岗位信息，明确课程研发、授课与竞赛经历要求。\\
+\url{https://www.career.zju.edu.cn/jyxt/sczp/zpztgl/ckZpgwXq.zf?zpxxbh=3B0DED63C61E9B1CE0653A68DD0E9B18}
+\end{enumerate}
+
+\chapter*{结语：真正要准备的不是100个答案}
+\addcontentsline{toc}{chapter}{结语：真正要准备的不是100个答案}
+如果把100题背成100段话，本书的价值会非常有限。更理想的目标是建立三类可迁移能力：
+\begin{enumerate}
+\item \textbf{面对陌生数学问题：}能迅速读结构、提出猜想、验证、换表示并完成证明。
+\item \textbf{面对学生：}能把专家的隐性判断拆成可学习步骤，并根据错误重新设计任务。
+\item \textbf{面对岗位：}能把个人能力沉淀成课程、讲义、题库、测评和长期培养体系。
+\end{enumerate}
+最终的分界线不是“你做过多少题”，而是：\textbf{你能否稳定地把一个未知问题变成结构，把一个结构变成证明，再把一个证明变成学生可以学会的过程。}
+
+\backmatter
+\end{document}

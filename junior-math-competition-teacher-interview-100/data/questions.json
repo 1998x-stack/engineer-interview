@@ -1,0 +1,3176 @@
+[
+  {
+    "n": 1,
+    "chapter": 1,
+    "title": "2 分钟自我介绍",
+    "kind": "公开教师面试高频",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "请用 2 分钟介绍你自己，并说明为什么适合初中数学竞赛/数学思维教师岗位。",
+    "intent": "观察表达结构、岗位匹配、证据密度；面试官不想听一遍简历，而想知道“你能为学生和教研团队提供什么”。",
+    "insight": "使用“背景 - 竞赛/教学证据 - 方法优势 - 岗位价值 - 收束”五段式，所有经历都服务于岗位。",
+    "solution": "示例框架：①数学/师范背景一句；②竞赛、教学、助教、家教或教研经历中最强的 1-2 个证据；③说明最擅长的模块或教学特点；④用一个学生/课程结果证明；⑤用一句“我希望把解题能力转化为学生可迁移的数学思维”收束。",
+    "teaching": "把“我会什么”改写为“学生能因此获得什么”。竞赛教师尤其要体现：能发现题目结构，也能设计提示、变式和复盘。",
+    "pitfalls": "流水账；堆奖项不谈教学；空泛说热爱教育；超过 2 分钟；只说自己不说学生。",
+    "followups": [
+      "追问：你最擅长哪个专题？",
+      "追问：没有高等级竞赛奖项时，如何证明专业能力？",
+      "变式：30 秒极速自我介绍。"
+    ],
+    "tags": [
+      "behavioral-interview",
+      "competition-math",
+      "evidence",
+      "self-introduction",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q001-2-分钟自我介绍.md"
+  },
+  {
+    "n": 2,
+    "chapter": 1,
+    "title": "为什么做竞赛老师，而不是普通数学老师？",
+    "kind": "招聘职责反推拟真",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "为什么选择数学竞赛/数学思维教学，而不是只做校内数学教学？",
+    "intent": "区分“喜欢难题”与“喜欢教学”。竞赛岗需要更强 problem solving，但教师价值最终体现在学生成长。",
+    "insight": "回答要同时覆盖“数学层面”和“教育层面”：竞赛提供更丰富的问题解决场景；教学目标是培养观察、猜想、证明、构造、迁移，而非炫技。",
+    "solution": "建议回答：校内数学建立基础框架，竞赛数学则提供更高密度的思维训练。我喜欢其中从特殊化到猜想、从结构到证明的过程；更重要的是，我愿意把这种过程拆成学生可经历的学习路径，而不是只给漂亮答案。",
+    "teaching": "用一个具体例子说明：例如“抽屉原理”不是背结论，而是训练建模——识别物体和抽屉；“几何辅助线”不是灵感，而是制造相似/全等/圆。",
+    "pitfalls": "把竞赛说成“提前学高中内容”；只强调奖项；贬低校内数学；把难度当价值。",
+    "followups": [
+      "追问：如果学生不参加任何比赛，竞赛课还有价值吗？",
+      "追问：你如何防止竞赛训练变成技巧堆砌？"
+    ],
+    "tags": [
+      "competition-math",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      3,
+      1,
+      4,
+      5
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q002-为什么做竞赛老师，而不是普通数学老师？.md"
+  },
+  {
+    "n": 3,
+    "chapter": 1,
+    "title": "什么样的老师才算优秀的竞赛老师？",
+    "kind": "公开教师面试高频",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "你认为什么样的老师才算优秀老师？如果限定在数学竞赛教师呢？",
+    "intent": "考察教育观与自我标准。",
+    "insight": "可用乘法模型：数学深度 × 学生感知力 × 解释能力 × 课程设计能力；任何一项接近 0，整体效果都会明显下降。",
+    "solution": "数学深度保证不把技巧讲错；学生感知力帮助定位卡点；解释能力把专家路径转换成学习路径；课程设计能力让单题知识形成专题网络。再加职业边界：不对奖项做不现实承诺。",
+    "teaching": "回答时给出“行为证据”：例如同一道题能给三层提示、能判断错误是知识还是策略、能设计一题多变而不是堆题。",
+    "pitfalls": "只说“耐心、责任心、热爱”；完全不提专业能力；把优秀等同于学生获奖数。",
+    "followups": [
+      "追问：这四项里你目前最强和最弱分别是什么？",
+      "追问：你准备如何补短板？"
+    ],
+    "tags": [
+      "competition-math",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      4,
+      2,
+      5,
+      1
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q003-什么样的老师才算优秀的竞赛老师？.md"
+  },
+  {
+    "n": 4,
+    "chapter": 1,
+    "title": "竞赛成绩好为什么不等于会教？",
+    "kind": "招聘职责反推拟真",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "你的竞赛成绩很好。为什么这并不能证明你一定是优秀竞赛老师？",
+    "intent": "测试反思能力和“专家盲点”意识。",
+    "insight": "会做题解决的是 Teacher→Problem；教学解决的是 Student→Problem。后者需要诊断、提示设计、认知负荷控制和迁移设计。",
+    "solution": "高手常把关键一步压缩成“显然”“容易看出”，而学生真正卡在这里。教师必须把隐性知识显性化：为什么想到这个变形？哪些条件触发这个方法？如果想不到，下一层提示是什么？",
+    "teaching": "用“提示梯度”解释：提示 1 指向观察；提示 2 指向结构；提示 3 给关键中间量；最后才展示完整解。",
+    "pitfalls": "把“会教”说成“讲得慢一点”；贬低竞赛成绩；只讲性格不讲方法。",
+    "followups": [
+      "追问：什么是专家盲点？",
+      "追问：举一道你会做但第一次很难讲清的题。"
+    ],
+    "tags": [
+      "competition-math",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      5,
+      3,
+      2,
+      7
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q004-竞赛成绩好为什么不等于会教？.md"
+  },
+  {
+    "n": 5,
+    "chapter": 1,
+    "title": "为什么选择教育机构/学校竞赛岗？",
+    "kind": "公开教师面试高频",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "为什么选择我们的竞赛/数学思维教师岗位？",
+    "intent": "看动机是否长期、是否了解岗位职责。",
+    "insight": "“平台特点 + 自身能力 + 可创造价值”三点要闭环。",
+    "solution": "不要停在“喜欢教育”。应说明你理解岗位不仅授课，还包括讲义、原创题、测试、学情诊断、复盘；然后把自己的证据逐一对接。",
+    "teaching": "用岗位语言回答：班课节奏、分层、讲义、测评、教研、家校沟通，而非泛泛谈“公司文化”。",
+    "pitfalls": "只说薪资/稳定；套模板；不了解岗位；夸大长期规划。",
+    "followups": [
+      "追问：你更喜欢授课还是教研？",
+      "追问：如果前 3 个月大量时间用于磨课和改讲义，能接受吗？"
+    ],
+    "tags": [
+      "competition-math",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      4,
+      7,
+      3,
+      8
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q005-为什么选择教育机构-学校竞赛岗？.md"
+  },
+  {
+    "n": 6,
+    "chapter": 1,
+    "title": "讲一个教学中的最大困难",
+    "kind": "公开教师面试高频",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "讲一个你在教学/辅导中遇到的最大困难，以及你如何解决。",
+    "intent": "行为面试：看是否会诊断问题、采取干预并复盘。",
+    "insight": "用 S-D-I-E-R：Situation 情境 → Diagnosis 诊断 → Intervention 干预 → Evidence 证据 → Reflection 反思。",
+    "solution": "示例：学生“听懂但不会做”。诊断发现他依赖例题识别、缺少独立提取。干预采用 worked example → 补全步骤 → 只给提示 → 独立做；两周后同构题独立率提升。最后说明今后会在课堂增加 retrieval practice。",
+    "teaching": "关键是“诊断依据”与“验证证据”，而不是把困难说得多戏剧化。",
+    "pitfalls": "只讲付出不讲诊断；结果无法验证；把原因全部归给学生；没有反思。",
+    "followups": [
+      "追问：如果干预无效怎么办？",
+      "追问：你怎么证明学生是真的会了？"
+    ],
+    "tags": [
+      "diagnostic-assessment",
+      "reflection",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      7,
+      5,
+      8,
+      4
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q006-讲一个教学中的最大困难.md"
+  },
+  {
+    "n": 7,
+    "chapter": 1,
+    "title": "学生课堂上持续讲话怎么办？",
+    "kind": "公开教师面试高频",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "竞赛班有学生一直说话、抢答或打断课堂，你怎么办？",
+    "intent": "课堂管理与学生理解。",
+    "insight": "先判断行为功能：太简单、太难、寻求关注、同伴互动或规则问题；再做低干扰处理。",
+    "solution": "课堂内：非语言提醒/位置调整/明确规则；若是能力过强，给“第二解、反例、一般化”额外任务；课后单独沟通原因；反复影响班级时再家校协同。始终保护其他学生的思考时间。",
+    "teaching": "高水平竞赛班管理的核心不是“压住强学生”，而是让不同层级都有合适任务。",
+    "pitfalls": "当众羞辱；立即赶出课堂；无条件纵容强学生抢答；只联系家长不先沟通。",
+    "followups": [
+      "追问：强学生每次 10 秒就答完怎么办？",
+      "追问：基础学生因此不敢发言怎么办？"
+    ],
+    "tags": [
+      "classroom-management",
+      "competition-math",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      8,
+      5,
+      4,
+      3
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q007-学生课堂上持续讲话怎么办？.md"
+  },
+  {
+    "n": 8,
+    "chapter": 1,
+    "title": "如何设计一节单元复习课？",
+    "kind": "公开教师面试高频",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "请设计一节 90 分钟竞赛专题复习课。",
+    "intent": "考察课程结构、测评与迁移。",
+    "insight": "复习课不是“题目串烧”，而是“知识 - 方法 - 触发器 - 易错点 - 迁移”的网络重建。",
+    "solution": "建议结构：10 分钟 retrieval quiz；15 分钟概念/方法地图；25 分钟典型题 2 道；20 分钟变式/对比；10 分钟限时独立题；5 分钟错因复盘；5 分钟 exit ticket。",
+    "teaching": "把题目按“同一结构不同表面”组织，让学生学会识别触发条件。",
+    "pitfalls": "一节课讲 15 道题；完全没有独立练习；只复述讲义；没有检查是否掌握。",
+    "followups": [
+      "追问：如何控制难度？",
+      "追问：复习课与新授课的提问方式有什么不同？"
+    ],
+    "tags": [
+      "competition-math",
+      "curriculum-design",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      7,
+      5,
+      4,
+      3
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q008-如何设计一节单元复习课？.md"
+  },
+  {
+    "n": 9,
+    "chapter": 1,
+    "title": "10 分钟准备一道陌生题怎么办？",
+    "kind": "招聘职责反推拟真",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "面试官现场给你一道陌生题，只给 10 分钟准备并要求试讲，你怎么处理？",
+    "intent": "现场 problem solving + 教学转译。",
+    "insight": "两条线并行：先求解，再选“最适合讲”的路径。流程：读条件 → 目标倒推 → 特殊化 → 找对称/不变量/极端 → 形成候选解 → 校验 → 设计提示。",
+    "solution": "第 1-3 分钟枚举结构；第 4-6 分钟完成一个可靠解；第 7-8 分钟找更短/更教学化的解；第 9-10 分钟写板书骨架与三个问题。",
+    "teaching": "面试时可以坦诚展示思考，但不能把无序试错全部讲给学生。",
+    "pitfalls": "为了“漂亮”放弃可靠解；直接背类似题；试讲时从自己的探索过程流水账开始。",
+    "followups": [
+      "追问：最快解和最好讲解不一致时选哪个？",
+      "追问：如果 10 分钟仍未完全解出怎么办？"
+    ],
+    "tags": [
+      "demo-teaching",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      10,
+      8,
+      7,
+      6
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q009-10-分钟准备一道陌生题怎么办？.md"
+  },
+  {
+    "n": 10,
+    "chapter": 1,
+    "title": "最强与最弱模块是什么？",
+    "kind": "招聘职责反推拟真",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "你最擅长代数、几何、数论还是组合？最弱的是哪个？",
+    "intent": "看自知、边界和成长计划。",
+    "insight": "“优势 + 证据 + 边界 + 补强机制”。",
+    "solution": "例如：几何是优势，能稳定处理相似、圆、面积、变换；数论达到初中竞赛教学需要，但在高阶不定方程/组合数论上仍会持续补强。说明每周固定做题、错题整理和教研共备。",
+    "teaching": "敢于说弱项，但不能把核心岗位要求说成“完全不会”。",
+    "pitfalls": "“都擅长”；或弱项过度暴露且无计划；把短板包装成假优点。",
+    "followups": [
+      "追问：最近一个月你系统补过什么专题？",
+      "追问：你怎么判断自己已经能“教”而不只是“会做”？"
+    ],
+    "tags": [
+      "algebra",
+      "teacher-competency",
+      "teacher-interview"
+    ],
+    "related": [
+      9,
+      8,
+      7,
+      6
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/01-role-and-teacher-competency/q010-最强与最弱模块是什么？.md"
+  },
+  {
+    "n": 11,
+    "chapter": 2,
+    "title": "因式分解：x⁴ + 4",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "不用展开求根，分解 x⁴ + 4。",
+    "intent": "看结构感与“添项”思想。",
+    "insight": "制造平方差：x⁴ + 4 = (x²+2)² - (2x)²。",
+    "solution": "因此 x⁴ + 4 = (x²-2x+2)(x²+2x+2)。更重要的是解释为什么想到加 4x²：原式离 (x²+2)² 只差 4x²，而补出后恰好形成平方差。",
+    "teaching": "教学时先问：“4 能看成 2²，但 x⁴ 与 4 直接不是平方差；能不能制造一个中间平方？”让学生经历“目标结构反推添项”。",
+    "pitfalls": "直接报 Sophie Germain 恒等式；只给答案不讲动机；展开验证代替发现过程。",
+    "followups": [
+      "追问：分解 a⁴+4b⁴。",
+      "变式：x⁴+4x²+16 如何分解？"
+    ],
+    "tags": [
+      "algebra",
+      "algebraic-structure",
+      "competition-math",
+      "factorization"
+    ],
+    "related": [
+      15,
+      24,
+      34,
+      12
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q011-因式分解-x⁴-+-4.md"
+  },
+  {
+    "n": 12,
+    "chapter": 2,
+    "title": "恒等式：x+y+z=0",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "已知 x+y+z=0，证明 x³+y³+z³=3xyz。",
+    "intent": "测试恒等变形与条件使用。",
+    "insight": "识别经典因式分解：x³+y³+z³-3xyz=(x+y+z)(x²+y²+z²-xy-yz-zx)。",
+    "solution": "右侧第一因子为 0，因此结论成立。也可令 z=-(x+y) 直接展开，作为低门槛解。",
+    "teaching": "比较两解：代入法适合第一次接触；恒等式法揭示一般结构，且能说明若 x+y+z≠0 时差值由什么决定。",
+    "pitfalls": "背恒等式不解释；忘记说明等价；展开过程中符号错误。",
+    "followups": [
+      "追问：该恒等式还能怎样写成 (x+y+z)[(x-y)²+…]/2？",
+      "追问：什么时候优先代入，什么时候优先恒等式？"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math"
+    ],
+    "related": [
+      13,
+      11,
+      14,
+      15
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q012-恒等式-x+y+z=0.md"
+  },
+  {
+    "n": 13,
+    "chapter": 2,
+    "title": "递推计算：x+1/x=3",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "若 x+1/x=3，求 x⁵+1/x⁵。",
+    "intent": "看递推建模而非暴力展开。",
+    "insight": "设 Sₙ=xⁿ+x⁻ⁿ。由 (x+x⁻¹)Sₙ₋₁=Sₙ+Sₙ₋₂，得 Sₙ=3Sₙ₋₁-Sₙ₋₂。",
+    "solution": "S₀=2，S₁=3，依次得到 S₂=7，S₃=18，S₄=47，S₅=123。答案 123。",
+    "teaching": "让学生发现“乘以 x+1/x 会把指数升一和降一同时带出来”，这是递推的来源。",
+    "pitfalls": "逐次平方导致计算膨胀；忘记 S₀=2；只报数字。",
+    "followups": [
+      "追问：给定 x+1/x=t，写出一般递推。",
+      "变式：求 x⁶+1/x⁶。"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math"
+    ],
+    "related": [
+      14,
+      12,
+      15,
+      11
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q013-递推计算-x+1-x=3.md"
+  },
+  {
+    "n": 14,
+    "chapter": 2,
+    "title": "绝对值方程的数轴解释",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "解 |x-1|+|x+2|=5，并给出不依赖机械分类的解释。",
+    "intent": "看代数-几何转化。",
+    "insight": "左侧是数轴点 x 到 1 与 -2 的距离之和。两定点距离为 3；要使总距离为 5，x 必在区间外，额外距离为 (5-3)/2=1。",
+    "solution": "所以 x=-3 或 2。也可分类讨论验证。",
+    "teaching": "先画数轴，再说“在两点之间距离和恒为 3；向外移动 1，总和增加 2”。视觉上非常适合试讲。",
+    "pitfalls": "盲目分三段但边界漏解；没有验证；不解释几何意义。",
+    "followups": [
+      "追问：|x-a|+|x-b|=c 的解的存在条件是什么？",
+      "变式：|x-1|-|x+2|=1。"
+    ],
+    "tags": [
+      "absolute-value",
+      "algebra",
+      "competition-math",
+      "equation"
+    ],
+    "related": [
+      15,
+      21,
+      23,
+      24
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q014-绝对值方程的数轴解释.md"
+  },
+  {
+    "n": 15,
+    "chapter": 2,
+    "title": "参数二次方程的结构识别",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "方程 x²-(m+1)x+m=0 何时有两个相等实根？",
+    "intent": "看判别式与因式分解两条路径。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "一眼可因式分解为 (x-1)(x-m)=0。两根相等当且仅当 m=1。判别式 Δ=(m-1)² 也给同样结论。",
+    "teaching": "教学重点是比较：公式法稳定但信息弱；因式分解直接暴露根 1 与 m，体现结构优先。",
+    "pitfalls": "只会判别式；说 Δ=0 却算错；不检查 m 的取值。",
+    "followups": [
+      "追问：若两根差的绝对值为 3，求 m。",
+      "追问：为什么“先看结构”常比套公式高效？"
+    ],
+    "tags": [
+      "algebra",
+      "algebraic-structure",
+      "competition-math",
+      "equation",
+      "factorization",
+      "lattice-path"
+    ],
+    "related": [
+      24,
+      11,
+      34,
+      14
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q015-参数二次方程的结构识别.md"
+  },
+  {
+    "n": 16,
+    "chapter": 2,
+    "title": "AM-GM 的初中化证明",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "证明对 a,b>0，有 (a+b)/2 ≥ √(ab)，并说明等号条件。",
+    "intent": "看不等式、等号和降阶教学。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "由 (√a-√b)²≥0 得 a+b≥2√ab。等号当且仅当 a=b。",
+    "teaching": "强调不等式题包含两件事：找到界 + 证明界可达。对未学 AM-GM 的学生，这个平方非负证明就是最自然入口。",
+    "pitfalls": "忘等号条件；误把 a,b 允许负数；只背结论。",
+    "followups": [
+      "追问：推出 x+4/x≥4。",
+      "变式：a/b+b/a≥2。"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math",
+      "inequality"
+    ],
+    "related": [
+      17,
+      15,
+      18,
+      14
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q016-AM-GM-的初中化证明.md"
+  },
+  {
+    "n": 17,
+    "chapter": 2,
+    "title": "最值：x+4/x",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "求 x+4/x (x>0) 的最小值。",
+    "intent": "看 AM-GM 与配方两种层次。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "AM-GM：x+4/x ≥2√4=4，x=2 取等。或 x+4/x-4=(x-2)²/x≥0。",
+    "teaching": "试讲时优先用平方非负建立“为什么最小值是 4”，再抽象成 AM-GM。",
+    "pitfalls": "没有说明 x>0；只给下界未说明可取；微积分超纲。",
+    "followups": [
+      "追问：x+a/x 的最小值。",
+      "变式：x+9/(x-1), x>1。"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math"
+    ],
+    "related": [
+      18,
+      16,
+      19,
+      15
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q017-最值-x+4-x.md"
+  },
+  {
+    "n": 18,
+    "chapter": 2,
+    "title": "递推数列猜想与归纳",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "a₁=1，aₙ₊₁=2aₙ+1，猜并证明通项。",
+    "intent": "看“计算-猜想-证明”的完整科学过程。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "前几项 1,3,7,15,… 猜 aₙ=2ⁿ-1。归纳：若 aₖ=2ᵏ-1，则 aₖ₊₁=2(2ᵏ-1)+1=2ᵏ⁺¹-1。",
+    "teaching": "教师要明确：前几项只能产生猜想，不能代替证明。",
+    "pitfalls": "把观察当证明；归纳法缺基步或归纳假设；下标错。",
+    "followups": [
+      "追问：如何用“平移”令 bₙ=aₙ+1 直接化为等比数列？",
+      "变式：aₙ₊₁=3aₙ+2。"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math",
+      "induction",
+      "recurrence",
+      "sequence"
+    ],
+    "related": [
+      19,
+      17,
+      20,
+      16
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q018-递推数列猜想与归纳.md"
+  },
+  {
+    "n": 19,
+    "chapter": 2,
+    "title": "余式定理的本质",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "P(x)=x⁵+2x³-x+7 除以 x-2 的余数是多少？",
+    "intent": "看余式定理及其可解释性。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "P(x)=(x-2)Q(x)+r，令 x=2，得到 r=P(2)=53。",
+    "teaching": "向初中生解释时，不必先背“余式定理”，先从除法恒等式代入 2：所有含 x-2 的部分自动消失，只剩余数。",
+    "pitfalls": "直接长除法；把 P(2) 算错；不知道为何代入。",
+    "followups": [
+      "追问：除以 ax-b 的余数如何求？",
+      "变式：已知 P(1)=2,P(2)=3，求除以 (x-1)(x-2) 的余式。"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math"
+    ],
+    "related": [
+      20,
+      18,
+      21,
+      17
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q019-余式定理的本质.md"
+  },
+  {
+    "n": 20,
+    "chapter": 2,
+    "title": "韦达定理真正重要在哪里？",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "请解释韦达定理在竞赛中的核心价值，而不是只背“根的和与积”。",
+    "intent": "看概念理解与专题组织能力。",
+    "insight": "韦达建立“方程系数 ↔ 根的对称关系”的桥梁，从而允许不求根研究根。",
+    "solution": "若根为 α,β，则 α+β=-b/a，αβ=c/a。由此可求 α²+β²、1/α+1/β，构造新方程，处理整数根和参数问题。",
+    "teaching": "讲义应按“基本关系 → 对称式 → 构造新方程 → 参数/整数性”组织，不要做孤立公式表。",
+    "pitfalls": "只背公式；忘 a≠0；遇到非对称表达就不会。",
+    "followups": [
+      "追问：用韦达求 α³+β³。",
+      "追问：何时韦达比求根公式更优？"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math",
+      "vieta"
+    ],
+    "related": [
+      21,
+      19,
+      22,
+      18
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q020-韦达定理真正重要在哪里？.md"
+  },
+  {
+    "n": 21,
+    "chapter": 2,
+    "title": "根式方程与验根",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "解 √(x+1)+√(4-x)=3。",
+    "intent": "看定义域、平方、增根意识。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "定义域 -1≤x≤4。平方得 5+2√((x+1)(4-x))=9，故 (x+1)(4-x)=4，化为 x(3-x)=0。检验得 x=0,3。",
+    "teaching": "把“平方”明确为可能引入增根的非等价变换，因此最后必须回代。",
+    "pitfalls": "先平方忘定义域；二次平方后不验根；根式移项符号错误。",
+    "followups": [
+      "追问：怎样判断平方步骤是否等价？",
+      "变式：√(x+1)-√(4-x)=1。"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math",
+      "equation",
+      "radical"
+    ],
+    "related": [
+      23,
+      24,
+      25,
+      15
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q021-根式方程与验根.md"
+  },
+  {
+    "n": 22,
+    "chapter": 2,
+    "title": "差分与平方数",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "f(0)=0，f(n+1)=f(n)+2n+1，求 f(n)。",
+    "intent": "看差分与求和。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "从 0 累加：f(n)=Σₖ₌₀ⁿ⁻¹(2k+1)=n²。",
+    "teaching": "连接几何：连续奇数和等于平方数，可用“给正方形加一圈 L 形点阵”解释。",
+    "pitfalls": "下标起点错；把最后一项写成 2n+1；只给归纳不解释。",
+    "followups": [
+      "追问：若差分为 3n²+…，如何判断原函数次数？",
+      "变式：f(n+1)-f(n)=n。"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math"
+    ],
+    "related": [
+      23,
+      21,
+      24,
+      20
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q022-差分与平方数.md"
+  },
+  {
+    "n": 23,
+    "chapter": 2,
+    "title": "等价变形的逻辑边界",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "为什么解方程时“同乘/同除一个式子”不一定保持等价？",
+    "intent": "看数学逻辑严谨性。",
+    "insight": "乘以可能为 0 的式子可能引入解；除以可能为 0 的式子可能丢解。所有操作都要记录定义域和可逆条件。",
+    "solution": "例：(x-1)(x+2)=0 若直接除以 x-1，会丢 x=1；1/(x-1)=1 必须先有 x≠1。",
+    "teaching": "给学生建立符号：⇔ 表示等价，⇒ 仅表示单向推出。每次平方、乘变量式、取倒数时都问“可逆吗？”",
+    "pitfalls": "滥用“移项都是等价”；忽略定义域；没有回代。",
+    "followups": [
+      "追问：平方何时等价？",
+      "追问：开平方为什么要 ±？"
+    ],
+    "tags": [
+      "algebra",
+      "competition-math",
+      "equation"
+    ],
+    "related": [
+      24,
+      25,
+      21,
+      15
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q023-等价变形的逻辑边界.md"
+  },
+  {
+    "n": 24,
+    "chapter": 2,
+    "title": "一元二次方程四种解法比较",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "你会怎样比较因式分解、配方法、公式法和图像法？",
+    "intent": "看教学组织，不是单题计算。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "四法对应四种视角：结构分解、完全平方、算法通解、函数零点。没有绝对最好，取决于题目和教学目标。",
+    "teaching": "先让学生在可分解题上体验结构；用配方推导公式；再用图像解释判别式与根数关系，形成统一认知。",
+    "pitfalls": "只说公式法最万能；把图像法当“看图猜”；方法之间不联系。",
+    "followups": [
+      "追问：如何用配方法解释二次函数顶点？",
+      "追问：判别式在图像上代表什么？"
+    ],
+    "tags": [
+      "algebra",
+      "algebraic-structure",
+      "competition-math",
+      "equation",
+      "factorization"
+    ],
+    "related": [
+      15,
+      11,
+      34,
+      25
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q024-一元二次方程四种解法比较.md"
+  },
+  {
+    "n": 25,
+    "chapter": 2,
+    "title": "现场设计“一题三解”",
+    "kind": "教研/试讲拟真",
+    "diff": 4,
+    "freq": "★★★★☆",
+    "prompt": "给一道二次函数/方程题，现场设计至少三种解法，并说明课堂第一解选哪一个。",
+    "intent": "考察方法储备、取舍与课程目标。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "多解的价值在“比较结构”，不是数量。常见三路：代数配方/判别式，图像对称/顶点，韦达或参数结构。",
+    "teaching": "回答时先给最自然的第一解，再给能揭示不同思想的第二、三解；最后说不同层次学生学到什么。",
+    "pitfalls": "为了凑三解使用超纲工具；三种方法本质相同；不说明教学顺序。",
+    "followups": [
+      "追问：什么时候“一题多解”反而增加认知负荷？",
+      "追问：如何把第三解设计成拓展而不是主讲？"
+    ],
+    "tags": [
+      "algebra",
+      "classroom-management",
+      "competition-math",
+      "curriculum-design",
+      "equation"
+    ],
+    "related": [
+      24,
+      23,
+      21,
+      15
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/02-algebra/q025-现场设计“一题三解”.md"
+  },
+  {
+    "n": 26,
+    "chapter": 3,
+    "title": "欧几里得算法与不变量",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "用欧几里得算法求 gcd(252,198)，并解释为什么算法成立。",
+    "intent": "看最大公因数本质。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "252=198+54，198=3×54+36，54=36+18，所以 gcd=18。核心性质：gcd(a,b)=gcd(b,a-qb)。",
+    "teaching": "教学不要只背竖式；证明“同时整除 a,b 的数，也同时整除 b,a-b”，所以公因数集合不变。",
+    "pitfalls": "只算不证；余数计算错；不知道何时停止。",
+    "followups": [
+      "追问：用算法求 252x+198y=18 的一组整数解。",
+      "变式：为何辗转相除复杂度很低？"
+    ],
+    "tags": [
+      "competition-math",
+      "divisor-function",
+      "number-theory"
+    ],
+    "related": [
+      31,
+      32,
+      34,
+      27
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q026-欧几里得算法与不变量.md"
+  },
+  {
+    "n": 27,
+    "chapter": 3,
+    "title": "素数无穷多",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "证明素数有无穷多个。",
+    "intent": "看反证与构造。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "假设只有 p₁,…,pₙ，考虑 N=p₁p₂…pₙ+1。N>1 有素因子 q，但任何 pᵢ 都不整除 N，因此 q 不在列表中，矛盾。",
+    "teaching": "关键不是背“乘积+1”，而是理解构造目的：制造一个对所有已知素数都余 1 的数。",
+    "pitfalls": "错误地说 N 本身一定是素数；没有说明 N 有素因子；反证结构不完整。",
+    "followups": [
+      "追问：N 必为素数吗？举反例。",
+      "追问：这个构造思想还能用于什么？"
+    ],
+    "tags": [
+      "competition-math",
+      "number-theory",
+      "proof-by-contradiction"
+    ],
+    "related": [
+      28,
+      26,
+      29,
+      30
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q027-素数无穷多.md"
+  },
+  {
+    "n": 28,
+    "chapter": 3,
+    "title": "模周期：2¹⁰⁰ mod 7",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "求 2¹⁰⁰ mod 7。",
+    "intent": "看同余、周期。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "2³=8≡1 (mod 7)，100=3×33+1，所以 2¹⁰⁰≡2。",
+    "teaching": "引导学生先算前几次幂发现循环，再解释“为何 2³≡1 后可以按指数 mod 3 化简”。",
+    "pitfalls": "把指数直接 mod 7；周期找错；没写同余链。",
+    "followups": [
+      "追问：2ⁿ mod 7 的周期为什么恰为 3？",
+      "变式：3¹⁰⁰ mod 7。"
+    ],
+    "tags": [
+      "competition-math",
+      "modular-arithmetic",
+      "number-theory"
+    ],
+    "related": [
+      30,
+      29,
+      27,
+      26
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q028-模周期-2¹⁰⁰-mod-7.md"
+  },
+  {
+    "n": 29,
+    "chapter": 3,
+    "title": "末两位：7²⁰²⁶",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "求 7²⁰²⁶ 的最后两位。",
+    "intent": "看模 100 与周期。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "7²=49，7⁴=2401≡1 (mod100)，2026≡2 (mod4)，故末两位 49。",
+    "teaching": "先把“最后两位”翻译成“mod 100”，这是模型转换。再找幂周期。",
+    "pitfalls": "只看个位；周期未经验证；把 2026 mod 100。",
+    "followups": [
+      "追问：最后三位对应什么模？",
+      "变式：3²⁰²⁶ 的最后两位。"
+    ],
+    "tags": [
+      "competition-math",
+      "number-theory"
+    ],
+    "related": [
+      30,
+      28,
+      31,
+      27
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q029-末两位-7²⁰²⁶.md"
+  },
+  {
+    "n": 30,
+    "chapter": 3,
+    "title": "整除证明：30 | n⁵-n",
+    "kind": "竞赛核心功底题",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "证明对任意整数 n，30 整除 n⁵-n。",
+    "intent": "看分解模数、分类与同余。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "30=2·3·5 且互素，分别证 2,3,5 整除。n⁵-n=n(n-1)(n+1)(n²+1)。连续三数保证 2、3；模 5 可用费马小定理或逐类余数证明 n⁵≡n。",
+    "teaching": "初中层面可不用费马：n mod5 只可能 0,±1,±2，逐一验证 n⁵≡n。突出“复杂整除 → 分解到素因子”。",
+    "pitfalls": "直接说由费马但学生没学；忘说明 2,3,5 互素；仅验证若干 n。",
+    "followups": [
+      "追问：证明 6 | n³-n。",
+      "变式：找所有 k 使 k | n⁵-n 对所有 n 成立。"
+    ],
+    "tags": [
+      "competition-math",
+      "divisibility",
+      "modular-arithmetic",
+      "number-theory"
+    ],
+    "related": [
+      28,
+      31,
+      29,
+      32
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q030-整除证明-30-n⁵-n.md"
+  },
+  {
+    "n": 31,
+    "chapter": 3,
+    "title": "因数个数公式",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "360 有多少个正因数？解释公式为什么是乘法。",
+    "intent": "看唯一分解与组合计数。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "360=2³·3²·5。因数中 2 的指数可选 0-3 共4种，3 指数3种，5指数2种，独立选择，所以 4×3×2=24。",
+    "teaching": "把因数写成 2ᵃ3ᵇ5ᶜ，用“独立选择”连接乘法原理。",
+    "pitfalls": "分解质因数错；指数直接相乘 3×2×1；不解释 +1。",
+    "followups": [
+      "追问：正因数和如何求？",
+      "变式：有多少个偶因数？"
+    ],
+    "tags": [
+      "competition-math",
+      "divisor-function",
+      "number-theory"
+    ],
+    "related": [
+      32,
+      34,
+      26,
+      30
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q031-因数个数公式.md"
+  },
+  {
+    "n": 32,
+    "chapter": 3,
+    "title": "恰有 12 个因数的最小整数",
+    "kind": "竞赛核心功底题",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "求最小的恰有 12 个正因数的正整数。",
+    "intent": "看“因数个数 ↔ 指数分拆”的优化。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "若 n=p₁^a…，则因数数=(a+1)…=12。分拆：12；6×2；4×3；3×2×2。为了最小，大指数配小素数，候选 2¹¹,2⁵·3,2³·3²,2²·3·5，最小 60。",
+    "teaching": "这是非常适合讲“先研究结构、再搜索数值”的题。",
+    "pitfalls": "遗漏乘法分拆；大指数配大素数；只试整数。",
+    "followups": [
+      "追问：恰有 18 个因数的最小数？",
+      "追问：为什么指数应按非增顺序配递增素数？"
+    ],
+    "tags": [
+      "competition-math",
+      "divisor-function",
+      "number-theory"
+    ],
+    "related": [
+      31,
+      34,
+      26,
+      33
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q032-恰有-12-个因数的最小整数.md"
+  },
+  {
+    "n": 33,
+    "chapter": 3,
+    "title": "线性不定方程",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "求 3x+5y=1 的所有整数解。",
+    "intent": "看 Bézout 与参数化。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "一组特解 x=2,y=-1。齐次解 3Δx+5Δy=0，因此 Δx=5t, Δy=-3t。所有解 x=2+5t,y=-1-3t。",
+    "teaching": "先让学生理解“从一个解出发，怎样保持左边不变”：x 加 5，则 3x 增15；y 减3，则5y减15。",
+    "pitfalls": "只找到一个特解；参数步长写反；遗漏 t∈Z。",
+    "followups": [
+      "追问：ax+by=c 什么时候有整数解？",
+      "变式：求正整数解。"
+    ],
+    "tags": [
+      "competition-math",
+      "diophantine-equation",
+      "equation",
+      "number-theory"
+    ],
+    "related": [
+      34,
+      32,
+      35,
+      31
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q033-线性不定方程.md"
+  },
+  {
+    "n": 34,
+    "chapter": 3,
+    "title": "平方差型不定方程",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "求正整数解 x²-y²=2025。",
+    "intent": "看因式分解转因数对。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "(x-y)(x+y)=2025=3⁴·5²。令 u=x-y,v=x+y，则 uv=2025，且 u,v 同奇、v>u>0；枚举正因数对，再 x=(u+v)/2,y=(v-u)/2。",
+    "teaching": "重点是模型：二次不定方程 → 乘法分解 → 因数对 + 奇偶约束。",
+    "pitfalls": "直接枚举 x；忘同奇偶；只给一组解。",
+    "followups": [
+      "追问：如何快速统计解的组数？",
+      "变式：x²-y²=N 什么时候无正整数解？"
+    ],
+    "tags": [
+      "algebraic-structure",
+      "competition-math",
+      "diophantine-equation",
+      "divisor-function",
+      "equation",
+      "factorization",
+      "number-theory"
+    ],
+    "related": [
+      33,
+      24,
+      15,
+      32
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q034-平方差型不定方程.md"
+  },
+  {
+    "n": 35,
+    "chapter": 3,
+    "title": "循环小数化分数",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "把 0.(123) 化成分数。",
+    "intent": "看位值与消循环。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "设 x=0.123123…，则1000x=123.123123…，相减 999x=123，x=41/333。",
+    "teaching": "让学生理解乘 10^k 的目的：把循环部分对齐，使无限尾巴相消。",
+    "pitfalls": "循环节长度看错；约分漏；只背“循环节/999”。",
+    "followups": [
+      "追问：0.1(23) 怎么处理？",
+      "变式：证明任意循环小数都是有理数。"
+    ],
+    "tags": [
+      "competition-math",
+      "number-theory",
+      "periodicity"
+    ],
+    "related": [
+      36,
+      34,
+      37,
+      33
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q035-循环小数化分数.md"
+  },
+  {
+    "n": 36,
+    "chapter": 3,
+    "title": "平方剩余的奇偶分类",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "证明任意整数平方模 4 只能余 0 或 1；进一步说明奇数平方模 8。",
+    "intent": "看分类与模思想。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "n 偶：n=2k，n²=4k²≡0 mod4；n奇：n=2k+1，n²=4k(k+1)+1，而 k(k+1) 偶，所以奇数平方≡1 mod8。",
+    "teaching": "这是证明“不可能”题的重要工具，例如 x²≡2 mod4 无解。",
+    "pitfalls": "只举例；模 8 推导不完整；混淆 n mod 4 与 n² mod4。",
+    "followups": [
+      "追问：平方模 3、5 的可能余数。",
+      "变式：证明 √2 无理数的另一种模论证。"
+    ],
+    "tags": [
+      "competition-math",
+      "number-theory"
+    ],
+    "related": [
+      37,
+      35,
+      38,
+      34
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q036-平方剩余的奇偶分类.md"
+  },
+  {
+    "n": 37,
+    "chapter": 3,
+    "title": "gcd(2ᵐ-1,2ⁿ-1)",
+    "kind": "竞赛提高题",
+    "diff": 5,
+    "freq": "★★★☆☆",
+    "prompt": "证明 gcd(2ᵐ-1,2ⁿ-1)=2^{gcd(m,n)}-1。",
+    "intent": "看指数结构与欧几里得算法迁移。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "若 m>n，利用 2ᵐ-1 - 2^{m-n}(2ⁿ-1)=2^{m-n}-1，故 gcd(2ᵐ-1,2ⁿ-1)=gcd(2ⁿ-1,2^{m-n}-1)。指数按欧几里得算法递减，最终到 d=gcd(m,n)。",
+    "teaching": "讲解重点是“把熟悉的欧几里得算法搬到指数上”，体现化归。",
+    "pitfalls": "直接引用结论；减法变形错；未处理 m=n 或基例。",
+    "followups": [
+      "追问：推广到 aᵐ-1。",
+      "变式：gcd(2ᵐ+1,2ⁿ+1) 是否有类似公式？"
+    ],
+    "tags": [
+      "competition-math",
+      "number-theory"
+    ],
+    "related": [
+      38,
+      36,
+      35,
+      34
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q037-gcd(2ᵐ-1,2ⁿ-1).md"
+  },
+  {
+    "n": 38,
+    "chapter": 3,
+    "title": "个位周期：3²⁰²⁶",
+    "kind": "竞赛核心功底题",
+    "diff": 1,
+    "freq": "★★★☆☆",
+    "prompt": "求 3²⁰²⁶ 的个位数，并说明怎样让学生自己发现周期。",
+    "intent": "看基本周期与启发式提问。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "个位循环 3,9,7,1，周期4；2026≡2 mod4，个位为9。",
+    "teaching": "不要直接宣布周期。让学生计算前 6 项，只保留个位，问“什么时候状态回到 1？回到 1 后会发生什么？”",
+    "pitfalls": "纯机械报周期；把余数0解释错误；不说明周期重启。",
+    "followups": [
+      "追问：底数与10不互素时会怎样？",
+      "变式：7^n 个位周期。"
+    ],
+    "tags": [
+      "competition-math",
+      "number-theory"
+    ],
+    "related": [
+      37,
+      36,
+      35,
+      34
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/03-number-theory/q038-个位周期-3²⁰²⁶.md"
+  },
+  {
+    "n": 39,
+    "chapter": 4,
+    "title": "三条中线共点及 2:1",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "证明三角形三条中线交于一点，且重心把每条中线按 2:1 分。",
+    "intent": "看面积法/坐标法和中心体系。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "可用面积法：两条中线交于 G，利用中线把面积二等分，再由同高面积比推出 AG:GD=2:1，并证明第三条中线也过 G。坐标法则令 A,B,C 为向量，G=(A+B+C)/3。",
+    "teaching": "初中首讲优先面积法；坐标法适合作为“稳定算法”拓展。",
+    "pitfalls": "只记 2:1 不证共点；面积比对应边选错；使用超纲向量作为唯一解。",
+    "followups": [
+      "追问：重心为什么也叫质心？",
+      "变式：三条中线把三角形分成几个等面积小三角形？"
+    ],
+    "tags": [
+      "area-method",
+      "competition-math",
+      "geometry",
+      "triangle-centers"
+    ],
+    "related": [
+      40,
+      48,
+      41,
+      42
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q039-三条中线共点及-2-1.md"
+  },
+  {
+    "n": 40,
+    "chapter": 4,
+    "title": "角平分线定理",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "在 △ABC 中，AD 平分 ∠A，证明 BD/DC=AB/AC。",
+    "intent": "看面积与正弦/辅助线方法。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "面积法：△ABD 与 △ACD 对 D 在 BC 具有同高，面积比=BD/DC；另一方面以 A 为顶点，面积分别为 1/2·AB·AD·sin∠BAD 与 1/2·AC·AD·sin∠CAD，因两角相等，面积比=AB/AC。",
+    "teaching": "若学生未学正弦，可作平行线构造相似；面试时说明你会根据学段选择证明。",
+    "pitfalls": "用超纲三角函数但不说明；比例对应颠倒；只背定理。",
+    "followups": [
+      "追问：角平分线定理的逆定理。",
+      "变式：内角平分线长度公式是否值得初中竞赛班讲？"
+    ],
+    "tags": [
+      "angle-bisector",
+      "area-method",
+      "auxiliary-construction",
+      "competition-math",
+      "geometry"
+    ],
+    "related": [
+      39,
+      48,
+      41,
+      42
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q040-角平分线定理.md"
+  },
+  {
+    "n": 41,
+    "chapter": 4,
+    "title": "勾股定理两种证明",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "请给出至少两种勾股定理证明，并说明哪种适合初次教学。",
+    "intent": "看证明储备与教学选择。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "可用面积拼图：边长 a+b 大正方形的两种面积表达；也可用相似三角形从斜边高得到 a²=c·m,b²=c·n 后相加。",
+    "teaching": "初次教学面积拼图直观；相似证明更能连接后续“射影定理”。多解要说明不同价值。",
+    "pitfalls": "为了多解而多解；图形关系说不清；使用循环论证。",
+    "followups": [
+      "追问：勾股定理逆定理怎么证明？",
+      "追问：如何设计一个让学生自己猜出 a²+b²=c² 的活动？"
+    ],
+    "tags": [
+      "competition-math",
+      "geometry",
+      "pythagorean-theorem"
+    ],
+    "related": [
+      42,
+      40,
+      43,
+      39
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q041-勾股定理两种证明.md"
+  },
+  {
+    "n": 42,
+    "chapter": 4,
+    "title": "四点共圆的判定",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "请总结至少三种常用四点共圆判定，并说明触发器。",
+    "intent": "看几何模型库。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "常用：对角互补；同弦所对角相等；某两角同为 90°（直径圆）；幂关系 PA·PB=PC·PD 的逆向构造。",
+    "teaching": "建立触发器：题里大量“角”优先角判定；出现两个直角想到直径圆；出现线段乘积想到点幂。",
+    "pitfalls": "堆性质表；把充分条件与必要条件混淆；圆内外角关系方向错。",
+    "followups": [
+      "追问：如何从“∠ABC=∠ADC”判断四点顺序？",
+      "变式：两点看到一条线段张同角。"
+    ],
+    "tags": [
+      "competition-math",
+      "cyclic-quadrilateral",
+      "geometry"
+    ],
+    "related": [
+      43,
+      41,
+      44,
+      40
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q042-四点共圆的判定.md"
+  },
+  {
+    "n": 43,
+    "chapter": 4,
+    "title": "点幂：什么时候该想到？",
+    "kind": "竞赛核心功底题",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "什么是点幂？什么时候应该想到它？",
+    "intent": "看公式背后的统一结构。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "对定圆和点 P，过 P 的割线交圆于 A,B，则 PA·PB 为常量；若另一割线交 C,D，则 PA·PB=PC·PD；切线时 PT²=PA·PB。",
+    "teaching": "触发器：“圆 + 线段乘积/平方 + 割线或切线”。点幂的价值是把不同方向的线段乘积统一为同一个量。",
+    "pitfalls": "只背三条公式；有向线段/内外点符号混乱；不知道逆用。",
+    "followups": [
+      "追问：如何用相似三角形证明点幂？",
+      "变式：看到 AB·AC=AD·AE 时如何构圆？"
+    ],
+    "tags": [
+      "competition-math",
+      "geometry",
+      "power-of-a-point"
+    ],
+    "related": [
+      44,
+      42,
+      45,
+      41
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q043-点幂-什么时候该想到？.md"
+  },
+  {
+    "n": 44,
+    "chapter": 4,
+    "title": "Ceva 定理",
+    "kind": "竞赛提高题",
+    "diff": 4,
+    "freq": "★★★★☆",
+    "prompt": "陈述并证明 Ceva 定理，并说明学生何时该想到它。",
+    "intent": "看共点与比例系统。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "在 △ABC 中，D∈BC,E∈CA,F∈AB，AD,BE,CF 共点当且仅当 (BD/DC)(CE/EA)(AF/FB)=1（适当条件下）。面积比法可证明必要性，再用唯一性/逆定理证明充分性。",
+    "teaching": "触发器：三条 cevian + 边上比例 + 共点。先从面积比推导，不要先扔公式。",
+    "pitfalls": "只背公式；对应边顺序错；不区分内分与外分。",
+    "followups": [
+      "追问：质量点法与 Ceva 有何关系？",
+      "变式：用 Ceva 证明三条中线共点。"
+    ],
+    "tags": [
+      "ceva",
+      "competition-math",
+      "geometry"
+    ],
+    "related": [
+      45,
+      43,
+      46,
+      42
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q044-Ceva-定理.md"
+  },
+  {
+    "n": 45,
+    "chapter": 4,
+    "title": "Ceva 与 Menelaus 的区别",
+    "kind": "竞赛提高题",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "Ceva 和 Menelaus 的本质区别是什么？如何防止学生混淆？",
+    "intent": "看定理组织。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "Ceva 处理“从顶点出发的三线共点”；Menelaus 处理“一条截线与三边/延长线交点共线”。一个是 concurrency，一个是 collinearity。",
+    "teaching": "让学生先判图形结构再写公式。可做一页“共点 vs 共线”对照，而不是靠口诀硬背。",
+    "pitfalls": "公式方向乱；有向线段符号；把截点全放边内导致 Menelaus 不可能。",
+    "followups": [
+      "追问：为何 Menelaus 常出现一个负号（有向线段）？",
+      "变式：同一图中如何用两定理互证？"
+    ],
+    "tags": [
+      "ceva",
+      "competition-math",
+      "geometry",
+      "menelaus"
+    ],
+    "related": [
+      44,
+      46,
+      47,
+      43
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q045-Ceva-与-Menelaus-的区别.md"
+  },
+  {
+    "n": 46,
+    "chapter": 4,
+    "title": "最短路径与反射",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "为什么几何最短路径问题经常使用反射？",
+    "intent": "看变换思想。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "反射保距离。把折线 PA+AQ 中的一段通过反射变成 PA′+AQ，若 A,Q,A′ 位置合适，则折线长度转为某两点间直线距离，最短由“两点间线段最短”得到。",
+    "teaching": "教学核心是“折线难比较 → 变成直线”，不是“看到最短就反射”。",
+    "pitfalls": "反射点选错；不验证路径经过指定边；只画图不证明最短。",
+    "followups": [
+      "追问：若涉及两次反射怎么办？",
+      "变式：台球反弹路径。"
+    ],
+    "tags": [
+      "competition-math",
+      "geometry",
+      "lattice-path",
+      "reflection"
+    ],
+    "related": [
+      47,
+      45,
+      48,
+      44
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q046-最短路径与反射.md"
+  },
+  {
+    "n": 47,
+    "chapter": 4,
+    "title": "什么时候想到旋转 60°？",
+    "kind": "竞赛提高题",
+    "diff": 4,
+    "freq": "★★★★☆",
+    "prompt": "在几何题中，什么信号会提示你尝试旋转 60°？",
+    "intent": "看变换触发器。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "等边三角形、60°、两段长度和/差、希望把两条分散线段首尾连接，都是典型信号。旋转保长度和角度，可把目标线段搬到可比较位置。",
+    "teaching": "讲旋转时要说清“旋转中心、角度、对应点、保什么量、为什么这个角度”。",
+    "pitfalls": "凭感觉乱转；旋转后不标对应边；不说明方向。",
+    "followups": [
+      "追问：90° 旋转常出现在哪些问题？",
+      "变式：正方形中的线段和。"
+    ],
+    "tags": [
+      "competition-math",
+      "geometry",
+      "rotation"
+    ],
+    "related": [
+      48,
+      46,
+      49,
+      45
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q047-什么时候想到旋转-60°？.md"
+  },
+  {
+    "n": 48,
+    "chapter": 4,
+    "title": "连续面积比",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "△ABC 中 D∈BC，BD:DC=2:3；E∈AD，AE:ED=1:2。求 [BDE]/[ABC]。",
+    "intent": "看面积比传递。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "[ABD]/[ABC]=BD/BC=2/5；[BDE]/[BDA]=DE/DA=2/3（同高，底分别 DE,DA）。故比为 4/15。",
+    "teaching": "画出“面积比例链”，让学生看到比例可逐层相乘：局部/中间 × 中间/整体。",
+    "pitfalls": "AE:ED 转换成 DE:DA 时写错；同高对象判断错。",
+    "followups": [
+      "追问：若给三点比例，如何快速构造面积树？",
+      "变式：引入另一个边上点。"
+    ],
+    "tags": [
+      "area-method",
+      "competition-math",
+      "geometry"
+    ],
+    "related": [
+      40,
+      39,
+      49,
+      47
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q048-连续面积比.md"
+  },
+  {
+    "n": 49,
+    "chapter": 4,
+    "title": "全等与相似的统一理解",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "如何向学生解释全等与相似的关系，而不是背两套判定？",
+    "intent": "看概念结构化。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "全等可以看作相似比为 1 的特殊相似；二者都依赖对应关系。相似关注形状与比例，全等进一步固定尺度。",
+    "teaching": "教学顺序：先确定对应点，再谈对应角与对应边。大量错误不是定理不会，而是对应关系乱。",
+    "pitfalls": "只说“形状一样”；判定条件混用；SSA 错判全等。",
+    "followups": [
+      "追问：为什么 AAA 只能判相似不能判全等？",
+      "变式：相似比 k 时面积比、周长比。"
+    ],
+    "tags": [
+      "competition-math",
+      "geometry",
+      "similarity"
+    ],
+    "related": [
+      50,
+      48,
+      51,
+      47
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q049-全等与相似的统一理解.md"
+  },
+  {
+    "n": 50,
+    "chapter": 4,
+    "title": "三角形中位线一题两证",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "用两种方法证明三角形中位线定理，并说明各自价值。",
+    "intent": "看相似与构造。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "方法一：相似三角形直接得到平行与 1/2；方法二：延长/平移补成平行四边形或用中心对称构造。",
+    "teaching": "第一解让学生巩固相似；第二解用于培养构造意识。",
+    "pitfalls": "两种解其实同一逻辑；辅助线无动机；只证明平行不证明长度。",
+    "followups": [
+      "追问：梯形中位线如何类比？",
+      "变式：用向量给出第三种证明。"
+    ],
+    "tags": [
+      "competition-math",
+      "geometry",
+      "similarity"
+    ],
+    "related": [
+      49,
+      51,
+      52,
+      48
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q050-三角形中位线一题两证.md"
+  },
+  {
+    "n": 51,
+    "chapter": 4,
+    "title": "欧拉线：教还是不教？",
+    "kind": "教研/课程判断题",
+    "diff": 4,
+    "freq": "★★★☆☆",
+    "prompt": "欧拉线是什么？对初中竞赛班什么时候值得讲，什么时候不值得？",
+    "intent": "看知识边界与课程 ROI。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "非等边三角形的外心 O、重心 G、垂心 H 共线，且 OG:GH=1:2。是否讲取决于后续复用、学生基础和课程目标。",
+    "teaching": "课程价值判断可用“复用价值 / 学习成本”。若只服务一道炫技题，不值得；若专题中反复连接中心与位似，才适合拓展。",
+    "pitfalls": "把“知道高级定理”当教学水平；不看学生层级；过早引入造成公式负担。",
+    "followups": [
+      "追问：九点圆是否适合初中竞赛班？",
+      "追问：如何决定一个拓展定理进入讲义？"
+    ],
+    "tags": [
+      "competition-math",
+      "curriculum-design",
+      "euler-line",
+      "geometry"
+    ],
+    "related": [
+      52,
+      50,
+      53,
+      49
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q051-欧拉线-教还是不教？.md"
+  },
+  {
+    "n": 52,
+    "chapter": 4,
+    "title": "三角形中心体系怎么教？",
+    "kind": "教研/课程判断题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "重心、垂心、内心、外心等三角形中心如何组织成一套可记忆的体系？",
+    "intent": "看知识结构化。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "从“特殊线 → 交点”组织：中线→重心；高→垂心；角平分线→内心；边垂直平分线→外心。再分别绑定等距/面积/圆等几何意义。",
+    "teaching": "让学生画“中心地图”，每个中心只记：由哪三条线定义、核心等距/比例性质、典型触发器。",
+    "pitfalls": "五张性质表平铺；混淆内心外心的等距对象；只记位置口诀。",
+    "followups": [
+      "追问：锐角/直角/钝角三角形垂心位置？",
+      "变式：旁心如何自然引出？"
+    ],
+    "tags": [
+      "competition-math",
+      "geometry"
+    ],
+    "related": [
+      53,
+      51,
+      50,
+      49
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q052-三角形中心体系怎么教？.md"
+  },
+  {
+    "n": 53,
+    "chapter": 4,
+    "title": "纯几何解 vs 坐标解",
+    "kind": "试讲/教学判断题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "一道几何题既有纯几何解，也有坐标解，你教哪一个？",
+    "intent": "看方法取舍。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "没有固定答案。纯几何常揭示结构、利于迁移；坐标法稳定、可算法化、适合复杂长度关系。选择取决于教学目标、学生基础和时间。",
+    "teaching": "理想做法：先用课程主线方法解决，再用另一方法做对比拓展，并总结“何时用坐标更划算”。",
+    "pitfalls": "迷信纯几何；或所有题都坐标暴算；超纲工具不说明。",
+    "followups": [
+      "追问：竞赛中解析法的适用边界？",
+      "追问：你怎么评价“漂亮解”？"
+    ],
+    "tags": [
+      "competition-math",
+      "geometry"
+    ],
+    "related": [
+      52,
+      51,
+      50,
+      49
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/04-plane-geometry/q053-纯几何解-vs-坐标解.md"
+  },
+  {
+    "n": 54,
+    "chapter": 5,
+    "title": "13 人与出生月份",
+    "kind": "竞赛核心功底题",
+    "diff": 1,
+    "freq": "★★★★★",
+    "prompt": "13 个人中证明至少两个人出生月份相同。",
+    "intent": "看抽屉原理最基本建模。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "12 个月为 12 个抽屉，13 个人为物体；若每月最多1人，则最多12人，矛盾。",
+    "teaching": "真正的教学任务是让学生学会“找抽屉”：分类结果必须有限且覆盖所有对象。",
+    "pitfalls": "只背 n+1 放 n；不知道对象/盒子；把日期当抽屉导致结论不同。",
+    "followups": [
+      "追问：至少多少人保证 3 人同月？",
+      "变式：按星期几出生。"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "pigeonhole-principle"
+    ],
+    "related": [
+      55,
+      62,
+      56,
+      57
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q054-13-人与出生月份.md"
+  },
+  {
+    "n": 55,
+    "chapter": 5,
+    "title": "Ramsey：6 人中的三角关系",
+    "kind": "竞赛提高题",
+    "diff": 4,
+    "freq": "★★★★☆",
+    "prompt": "证明任意 6 个人中，要么有 3 人两两认识，要么有 3 人两两不认识。",
+    "intent": "看抽屉 + 图论思维。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "取 A。与其余5人关系只有“认识/不认识”，至少有3人同类。若 A 认识的 B,C,D 中有一对互相认识，则与 A 构成认识三人组；否则 B,C,D 两两不认识。另一类同理。",
+    "teaching": "先用红蓝边图可视化，再抽象 R(3,3)=6。强调第一次抽屉后还有第二层讨论。",
+    "pitfalls": "误说 5 人中必有3认识；分类不完整；忘另一种情况对称。",
+    "followups": [
+      "追问：5 个人是否保证？构造反例。",
+      "变式：把人际关系画成图。"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "pigeonhole-principle",
+      "ramsey-theory"
+    ],
+    "related": [
+      54,
+      62,
+      56,
+      57
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q055-Ramsey-6-人中的三角关系.md"
+  },
+  {
+    "n": 56,
+    "chapter": 5,
+    "title": "格路计数",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "4×4 方格从左下到右上，只能向右或向上，有多少条最短路径？",
+    "intent": "看组合编码。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "任何最短路径恰有4个 R 和4个 U，共8步；路径与长度8字符串中选择4个位置放 R 一一对应，所以 C(8,4)=70。",
+    "teaching": "重点是“一一对应”：把几何路径编码成字符串，计数就变成选位置。",
+    "pitfalls": "把格点数和步数混淆；用 4²；重复计数。",
+    "followups": [
+      "追问：m×n 一般公式。",
+      "变式：必须经过某一点。"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "lattice-path"
+    ],
+    "related": [
+      57,
+      55,
+      58,
+      54
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q056-格路计数.md"
+  },
+  {
+    "n": 57,
+    "chapter": 5,
+    "title": "容斥：1 到 100",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "1-100 中能被 2 或 3 整除的数有多少？",
+    "intent": "看容斥的重叠修正。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "⌊100/2⌋+⌊100/3⌋-⌊100/6⌋=50+33-16=67。",
+    "teaching": "用两个圆画集合：先加会把交集数两次，所以减一次。",
+    "pitfalls": "忘减交集；交集用 2×3 不考虑 gcd（本题刚好6）；边界整除数量错。",
+    "followups": [
+      "追问：被2或3或5整除。",
+      "变式：恰被其中一个整除。"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "divisibility",
+      "inclusion-exclusion"
+    ],
+    "related": [
+      58,
+      62,
+      56,
+      59
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q057-容斥-1-到-100.md"
+  },
+  {
+    "n": 58,
+    "chapter": 5,
+    "title": "排列与整除条件",
+    "kind": "竞赛核心功底题",
+    "diff": 1,
+    "freq": "★★★☆☆",
+    "prompt": "数字 1,2,3,4,5 各用一次组成五位数，有多少个能被 5 整除？",
+    "intent": "看条件先行。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "被5整除个位必须是5（没有0），剩余四位任排：4!=24。",
+    "teaching": "先用强约束固定最末位，再排列剩余，比全排列后筛选更高效。",
+    "pitfalls": "把个位5或0但0不存在；算5!再除5理由不清。",
+    "followups": [
+      "追问：被 4 整除怎么办？",
+      "变式：允许0时首位限制如何处理？"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "divisibility",
+      "permutation"
+    ],
+    "related": [
+      59,
+      57,
+      62,
+      60
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q058-排列与整除条件.md"
+  },
+  {
+    "n": 59,
+    "chapter": 5,
+    "title": "圆排列",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "6 个人围圆桌就座，有多少种不同坐法？",
+    "intent": "看对称去重。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "直线排列 6! 中，每个圆排列因整体旋转被重复6次，因此 6!/6=5!=120；也可固定一人再排其余。",
+    "teaching": "讲清楚“旋转视为同一种”这个等价关系。",
+    "pitfalls": "若镜像也视同未说明；直接写 (n-1)! 不解释。",
+    "followups": [
+      "追问：若圆桌有编号座位？",
+      "变式：两人不能相邻。"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "permutation"
+    ],
+    "related": [
+      58,
+      60,
+      61,
+      57
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q059-圆排列.md"
+  },
+  {
+    "n": 60,
+    "chapter": 5,
+    "title": "多米诺铺法与 Fibonacci",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "用 2×1 多米诺铺满 2×n 长方形，有多少种铺法？",
+    "intent": "看状态分类与递推。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "看最右端：若竖放一块，剩2×(n-1)；若横放，则必须上下两块，剩2×(n-2)。故 aₙ=aₙ₋₁+aₙ₋₂，a₁=1,a₂=2。",
+    "teaching": "分类必须“互斥且穷尽”。这是递推教学最好的示例之一。",
+    "pitfalls": "只画前几项猜 Fibonacci；分类遗漏；初值错。",
+    "followups": [
+      "追问：3×n 怎么办？",
+      "变式：允许 2×2 方块。"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "fibonacci",
+      "recurrence"
+    ],
+    "related": [
+      61,
+      59,
+      62,
+      58
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q060-多米诺铺法与-Fibonacci.md"
+  },
+  {
+    "n": 61,
+    "chapter": 5,
+    "title": "棋盘染色不变量",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "8×8 棋盘去掉两个对角格，为什么无法用 1×2 多米诺铺满？",
+    "intent": "看染色与不变量。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "国际象棋染色后每块多米诺必盖一黑一白。两个对角格同色，去掉后黑白数量变成30:32或32:30，因此不可能。",
+    "teaching": "强调染色不是装饰，而是在寻找“每次操作保持的量”。",
+    "pitfalls": "只说颜色不一样不严谨；误判对角格颜色；没有说明每块骨牌覆盖异色。",
+    "followups": [
+      "追问：去掉一黑一白一定能铺吗？",
+      "变式：其他棋盘覆盖问题如何设计染色？"
+    ],
+    "tags": [
+      "coloring",
+      "combinatorics",
+      "competition-math",
+      "invariant"
+    ],
+    "related": [
+      62,
+      60,
+      63,
+      59
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q061-棋盘染色不变量.md"
+  },
+  {
+    "n": 62,
+    "chapter": 5,
+    "title": "抽屉 + 奇数部分",
+    "kind": "竞赛提高题",
+    "diff": 5,
+    "freq": "★★★★☆",
+    "prompt": "从 1,2,…,2n 中任取 n+1 个整数，证明其中两个数一个整除另一个。",
+    "intent": "看高阶抽屉建模。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "每个正整数唯一写成 2^k·m，m为奇数。1..2n 的奇数部分只能是 1,3,…,2n-1 共 n 种。取 n+1 个，必有两个奇数部分相同：2^a m,2^b m，较小整除较大。",
+    "teaching": "这题的核心是“抽屉不是现成给的，要自己设计等价类”。",
+    "pitfalls": "把奇数/偶数只分两类；没有证明表示唯一；整除方向错。",
+    "followups": [
+      "追问：这类题如何系统寻找“标签函数”？",
+      "变式：从 1..3n 取多少能保证某种倍数关系？"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "divisibility",
+      "pigeonhole-principle"
+    ],
+    "related": [
+      58,
+      57,
+      55,
+      54
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q062-抽屉-+-奇数部分.md"
+  },
+  {
+    "n": 63,
+    "chapter": 5,
+    "title": "极端原理：有限闭合集合",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "非空有限正整数集合 S 若对任意 a,b∈S 都有 a+b∈S，证明不存在。",
+    "intent": "看最大元/极端原理。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "有限非空正整数集有最大值 M。取任意 a∈S，则 M+a∈S 且 M+a>M，矛盾。",
+    "teaching": "看到“有限 + 大小关系 + 闭合”时，极端元素常是第一触发器。",
+    "pitfalls": "没有利用正数；若允许0要讨论；最大值存在理由不说。",
+    "followups": [
+      "追问：如果集合是有限整数集而允许负数呢？",
+      "变式：对乘法闭合会怎样？"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "extremal-principle"
+    ],
+    "related": [
+      64,
+      62,
+      65,
+      61
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q063-极端原理-有限闭合集合.md"
+  },
+  {
+    "n": 64,
+    "chapter": 5,
+    "title": "偶数大小子集计数",
+    "kind": "竞赛核心功底题",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "n 元集合有多少个偶数个元素的子集？",
+    "intent": "看配对法/二项式。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "固定元素 x。每个不含 x 的子集 A 与 A∪{x} 配成一对，两者大小奇偶相反；共有 2^{n-1} 对，因此偶子集 2^{n-1}。",
+    "teaching": "配对法比直接求 C(n,0)+C(n,2)+… 更体现结构，也能自然解释“恰好一半”。",
+    "pitfalls": "忘空集是偶数大小；配对不说明一一对应。",
+    "followups": [
+      "追问：用 (1+1)^n 与 (1-1)^n 证明。",
+      "变式：大小模 3 的子集如何计数？"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math"
+    ],
+    "related": [
+      65,
+      63,
+      62,
+      61
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q064-偶数大小子集计数.md"
+  },
+  {
+    "n": 65,
+    "chapter": 5,
+    "title": "隔板法：x+y+z=10",
+    "kind": "竞赛核心功底题",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "求非负整数解 x+y+z=10 的个数。",
+    "intent": "看 stars and bars 建模。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "把10个相同球排成一列，用2个隔板分成3组。共12个位置选择2个放隔板，所以 C(12,2)=66。",
+    "teaching": "先画小例子 x+y=4，让学生理解“连续隔板允许某组为0”。",
+    "pitfalls": "若要求正整数却仍用非负公式；隔板不能相邻的误解；变量可区分性混乱。",
+    "followups": [
+      "追问：正整数解。",
+      "变式：加入 x≤4 如何用容斥？"
+    ],
+    "tags": [
+      "combinatorics",
+      "competition-math",
+      "stars-and-bars"
+    ],
+    "related": [
+      64,
+      63,
+      62,
+      61
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/05-combinatorics/q065-隔板法-x+y+z=10.md"
+  },
+  {
+    "n": 66,
+    "chapter": 6,
+    "title": "什么时候应该特殊化？",
+    "kind": "解题方法论",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "遇到参数/一般性命题时，什么时候应先看特殊情况？",
+    "intent": "看探索与证明边界。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "特殊化用于发现规律、排除错误猜想、寻找不变量和构造；它是“生成假设”的工具，不是“验证全部”的证明。",
+    "teaching": "典型流程：n=1,2,3 → 观察输出 → 猜公式/结构 → 找反例 → 再选择归纳、恒等变形或构造完成证明。",
+    "pitfalls": "用几个例子当证明；只算不总结模式；选择特殊值没有信息量。",
+    "followups": [
+      "追问：什么特殊值最有信息量？0、1、边界、对称点为什么常用？",
+      "变式：参数几何题如何特殊化？"
+    ],
+    "tags": [
+      "assessment-design",
+      "competition-math",
+      "problem-solving",
+      "proof",
+      "specialization"
+    ],
+    "related": [
+      67,
+      68,
+      69,
+      70
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/06-problem-solving-methods/q066-什么时候应该特殊化？.md"
+  },
+  {
+    "n": 67,
+    "chapter": 6,
+    "title": "反证法：√2 无理",
+    "kind": "解题方法论",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "用反证法证明 √2 是无理数。",
+    "intent": "看反证、最简分数与奇偶。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "假设 √2=p/q，p,q互质。则 p²=2q²，故 p偶，设p=2k；代回得 q²=2k²，故q偶，矛盾于互质。",
+    "teaching": "把反证结构说清：假设命题否定 → 推出与已知/定义冲突 → 原否定不成立。",
+    "pitfalls": "未说明 p/q 最简；从 p² 偶到 p 偶不解释；结尾逻辑模糊。",
+    "followups": [
+      "追问：如何用唯一分解证明？",
+      "追问：什么时候反证比直接证明自然？"
+    ],
+    "tags": [
+      "competition-math",
+      "irrationality",
+      "problem-solving",
+      "proof",
+      "proof-by-contradiction"
+    ],
+    "related": [
+      68,
+      66,
+      69,
+      70
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/06-problem-solving-methods/q067-反证法-√2-无理.md"
+  },
+  {
+    "n": 68,
+    "chapter": 6,
+    "title": "归纳法：奇数和",
+    "kind": "解题方法论",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "用数学归纳法证明 1+3+…+(2n-1)=n²，并解释归纳法核心。",
+    "intent": "看形式逻辑与“递推桥梁”。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "基步 n=1 成立。假设 n=k 成立，则前 k+1 个奇数和=k²+(2k+1)=(k+1)²。",
+    "teaching": "强调核心是 P(k)→P(k+1) 的传播机制；格式只是外壳。可用多米诺骨牌类比但不要替代数学证明。",
+    "pitfalls": "缺基步；“假设 n=k+1 成立”循环；归纳假设没真正使用。",
+    "followups": [
+      "追问：强归纳法与普通归纳法区别。",
+      "变式：为什么有时需要从 n=2 开始？"
+    ],
+    "tags": [
+      "competition-math",
+      "induction",
+      "problem-solving",
+      "proof"
+    ],
+    "related": [
+      69,
+      67,
+      70,
+      66
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/06-problem-solving-methods/q068-归纳法-奇数和.md"
+  },
+  {
+    "n": 69,
+    "chapter": 6,
+    "title": "辅助线不是“灵感”",
+    "kind": "解题方法论",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "几何题中，你如何教学生“作辅助线”，避免变成玄学？",
+    "intent": "看几何方法论。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "辅助线应由目标结构驱动：制造相似/全等、补平行四边形、构圆、构等边、延长形成外角、连接中点形成中位线、把线段和首尾连接。",
+    "teaching": "教学时要求学生写一句“我希望得到____，因此作____”。把辅助线和目的绑定。",
+    "pitfalls": "说“多做题就有感觉”；给完辅助线再倒推理由；没有触发器总结。",
+    "followups": [
+      "追问：如何设计辅助线提示梯度？",
+      "变式：同一题可以有不同辅助线吗？如何评价？"
+    ],
+    "tags": [
+      "auxiliary-construction",
+      "competition-math",
+      "problem-solving",
+      "proof"
+    ],
+    "related": [
+      70,
+      68,
+      71,
+      67
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/06-problem-solving-methods/q069-辅助线不是“灵感”.md"
+  },
+  {
+    "n": 70,
+    "chapter": 6,
+    "title": "必要条件与充分条件",
+    "kind": "解题方法论",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "为什么必要条件、充分条件是竞赛证明中的核心？",
+    "intent": "看逻辑方向。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "A⇒B 表示 A 是 B 的充分条件、B 是 A 的必要条件；竞赛常因逆命题误用导致假证明。例 x=2⇒x²=4，但 x²=4 不推出 x=2。",
+    "teaching": "让学生在解方程中反复标记“⇒/⇔”，特别是平方、乘变量式、取倒数、估计。",
+    "pitfalls": "术语背反；把必要充分混淆；证明只做必要性没做充分性。",
+    "followups": [
+      "追问：判定定理通常要证明哪两个方向？",
+      "变式：给一个“只证明必要条件”的错误解。"
+    ],
+    "tags": [
+      "competition-math",
+      "logic",
+      "problem-solving",
+      "proof"
+    ],
+    "related": [
+      71,
+      69,
+      72,
+      68
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/06-problem-solving-methods/q070-必要条件与充分条件.md"
+  },
+  {
+    "n": 71,
+    "chapter": 6,
+    "title": "竞赛解答完整性 Checklist",
+    "kind": "解题方法论",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "你如何快速检查一道竞赛题的解答是否完整？",
+    "intent": "看严谨性与自检机制。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "八项：定义域；是否除以0；平方/开方增根；分类是否穷尽；等号可达；充分性；边界；极端/小规模核验。",
+    "teaching": "把 checklist 训练成考试最后 5 分钟的固定程序，比“再看一遍”有效。",
+    "pitfalls": "只重算数字；忽略逻辑；几何图形默认特殊位置。",
+    "followups": [
+      "追问：几何证明额外检查什么？",
+      "变式：组合计数如何检查重复/遗漏？"
+    ],
+    "tags": [
+      "competition-math",
+      "problem-solving",
+      "proof"
+    ],
+    "related": [
+      72,
+      70,
+      69,
+      68
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/06-problem-solving-methods/q071-竞赛解答完整性-Checklist.md"
+  },
+  {
+    "n": 72,
+    "chapter": 6,
+    "title": "一题多解的边界",
+    "kind": "解题方法论",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "为什么“一题多解”不是越多越好？",
+    "intent": "看教学目标与认知负荷。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "多解的价值是比较背后的结构：哪个最自然、哪个最稳、哪个可推广、哪个揭示新方法。若只是技巧堆砌，会分散主线。",
+    "teaching": "建议“一主一辅一拓展”：主解必须可学；辅解做比较；第三解留给高水平学生或课后阅读。",
+    "pitfalls": "把解法数量当教研成果；所有学生同步学 5 种；不做方法对比。",
+    "followups": [
+      "追问：怎样判断两个解法“本质相同”？",
+      "追问：什么时候只讲一个解更好？"
+    ],
+    "tags": [
+      "competition-math",
+      "multiple-solutions",
+      "problem-solving",
+      "proof"
+    ],
+    "related": [
+      71,
+      70,
+      69,
+      68
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/06-problem-solving-methods/q072-一题多解的边界.md"
+  },
+  {
+    "n": 73,
+    "chapter": 7,
+    "title": "8 分钟试讲：x⁴+4",
+    "kind": "试讲真题级模拟",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "现场 8 分钟试讲 x⁴+4 的因式分解。",
+    "intent": "看导入、问题链、板书、节奏、总结。",
+    "insight": "核心问题链：常规平方差为什么不直接可用？→ 如果想制造平方差，需要两个平方是什么？→ (x²+2)² 比原式多什么？→ 怎样补了再减？",
+    "solution": "时间分配：1分钟观察；2分钟引导添项；2分钟完成分解；1分钟检验；1分钟总结“目标结构反推”；1分钟变式 a⁴+4b⁴。",
+    "teaching": "试讲不是口述答案。要模拟学生等待时间，关键一步不要自问自答。",
+    "pitfalls": "前3分钟全是寒暄；公式一口报出；板书拥挤；无总结。",
+    "followups": [
+      "追问：学生就是想不到补4x²怎么办？",
+      "追问：现场出一个同方法变式。"
+    ],
+    "tags": [
+      "algebraic-structure",
+      "boardwork",
+      "demo-teaching",
+      "factorization",
+      "pedagogy",
+      "questioning",
+      "teacher-interview"
+    ],
+    "related": [
+      79,
+      80,
+      74,
+      75
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q073-8-分钟试讲-x⁴+4.md"
+  },
+  {
+    "n": 74,
+    "chapter": 7,
+    "title": "8 分钟试讲：抽屉原理",
+    "kind": "试讲真题级模拟",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "用 8 分钟给第一次接触的学生讲抽屉原理。",
+    "intent": "看概念形成而非公式灌输。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "从“13人/12个月”具体情境开始，让学生预测；再抽象出物体与抽屉；最后给一个非显式抽屉例子检查迁移。",
+    "teaching": "结构：情境1.5min → 反证式解释1.5 → 一般化2 → 例题1.5 → 变式1 → 总结0.5。",
+    "pitfalls": "第一句就是定理；只做生日例子学生不会找抽屉；没有说明“至少”。",
+    "followups": [
+      "追问：至少多少人保证3人同月？",
+      "追问：给一个抽屉不是“盒子”的例子。"
+    ],
+    "tags": [
+      "demo-teaching",
+      "pedagogy",
+      "pigeonhole-principle",
+      "teacher-interview"
+    ],
+    "related": [
+      75,
+      73,
+      76,
+      77
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q074-8-分钟试讲-抽屉原理.md"
+  },
+  {
+    "n": 75,
+    "chapter": 7,
+    "title": "10 分钟试讲：勾股定理",
+    "kind": "试讲真题级模拟",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "用 10 分钟完成勾股定理的核心试讲。",
+    "intent": "看图形表达、证明链与学生参与。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "从3-4-5或方格面积引出猜想；用面积拼图证明；明确“直角三角形”前提；给一个即时应用；最后提出逆命题作为悬念。",
+    "teaching": "板书只保留图、面积等式与结论，不要把所有口头解释写上去。",
+    "pitfalls": "把定理当已知；图画不清；例题占据全部时间；无前提。",
+    "followups": [
+      "追问：学生问“为什么不是所有三角形都成立”？",
+      "追问：如何自然引出逆定理？"
+    ],
+    "tags": [
+      "demo-teaching",
+      "pedagogy",
+      "pythagorean-theorem",
+      "teacher-interview"
+    ],
+    "related": [
+      76,
+      74,
+      77,
+      73
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q075-10-分钟试讲-勾股定理.md"
+  },
+  {
+    "n": 76,
+    "chapter": 7,
+    "title": "第一次讲“同余”",
+    "kind": "试讲真题级模拟",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "如何向第一次接触数论的学生解释同余？",
+    "intent": "看类比与形式化过渡。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "先用钟表：25点与1点在12小时制等价，因为相差24是12倍数。再定义 a≡b (mod m) ⇔ m | (a-b)。",
+    "teaching": "从“同余类”直觉过渡到运算规则：加减乘可在模意义下替换代表元。",
+    "pitfalls": "一上来堆符号；把“余数相同”与“数相等”混淆；除法规则讲错。",
+    "followups": [
+      "追问：同余能不能随便约分？",
+      "变式：为什么 17≡5 (mod12)？"
+    ],
+    "tags": [
+      "demo-teaching",
+      "modular-arithmetic",
+      "pedagogy",
+      "teacher-interview"
+    ],
+    "related": [
+      77,
+      75,
+      78,
+      74
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q076-第一次讲“同余”.md"
+  },
+  {
+    "n": 77,
+    "chapter": 7,
+    "title": "第一次讲 Ceva",
+    "kind": "试讲真题级模拟",
+    "diff": 4,
+    "freq": "★★★☆☆",
+    "prompt": "如何第一次讲 Ceva 而不让学生只背乘积公式？",
+    "intent": "看高阶定理的教学设计。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "先用中线/角平分线的共点问题制造需求；再用面积比追踪一圈，看到比例乘积自然消掉；最后抽象公式和触发器。",
+    "teaching": "公式出现前，学生应先知道“我们在试图用边上比例判断三线是否共点”。",
+    "pitfalls": "从定义直接公式；没有图形；一次讲正逆定理、质量点、有向线段导致过载。",
+    "followups": [
+      "追问：本节课只讲必要性还是正逆一起？为什么？",
+      "追问：如何设计一道无需 Ceva 也能做的过渡题？"
+    ],
+    "tags": [
+      "ceva",
+      "demo-teaching",
+      "pedagogy",
+      "teacher-interview"
+    ],
+    "related": [
+      78,
+      76,
+      79,
+      75
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q077-第一次讲-Ceva.md"
+  },
+  {
+    "n": 78,
+    "chapter": 7,
+    "title": "讲清“除法可能丢解”",
+    "kind": "试讲真题级模拟",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "用一个最小例子讲清为什么方程两边除以含未知数的式子可能丢解。",
+    "intent": "看逻辑教学。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "用 (x-1)(x+2)=0。若两边除以 x-1，只剩 x=-2，丢掉 x=1，因为在 x=1 时除数为0，操作本身非法。",
+    "teaching": "让学生把“除以前先问：它可能等于0吗？”写成固定自检问题。",
+    "pitfalls": "只说“不能除”；没有具体丢解演示；把乘法与除法风险混在一起。",
+    "followups": [
+      "追问：两边乘以 x-1 会发生什么？",
+      "变式：含分母方程如何先定定义域？"
+    ],
+    "tags": [
+      "demo-teaching",
+      "equation",
+      "pedagogy",
+      "teacher-interview"
+    ],
+    "related": [
+      79,
+      77,
+      80,
+      76
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q078-讲清“除法可能丢解”.md"
+  },
+  {
+    "n": 79,
+    "chapter": 7,
+    "title": "为一道竞赛题设计问题链",
+    "kind": "试讲/教研拟真",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "给任意一道中档竞赛题，现场设计 5-7 个递进问题，不直接泄露答案。",
+    "intent": "看 scaffolding。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "高质量问题链从“理解”到“结构”再到“策略”：目标是什么？未使用条件？特殊情况？能否改写目标？需要制造哪个熟悉结构？最小下一步是什么？",
+    "teaching": "提示要逐级增加信息量。第一层指方向，第二层给结构，第三层给关键中间量，最后才给完整解。",
+    "pitfalls": "全是“会不会/懂不懂”；问题实际就是命令；第一问直接给辅助线。",
+    "followups": [
+      "追问：如何给不同水平学生不同提示？",
+      "变式：同一题做“零提示版”和“强支架版”。"
+    ],
+    "tags": [
+      "competition-math",
+      "demo-teaching",
+      "pedagogy",
+      "questioning",
+      "teacher-interview"
+    ],
+    "related": [
+      80,
+      73,
+      78,
+      81
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q079-为一道竞赛题设计问题链.md"
+  },
+  {
+    "n": 80,
+    "chapter": 7,
+    "title": "竞赛试讲板书设计",
+    "kind": "试讲/教研拟真",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "10 分钟竞赛试讲，你如何规划板书？",
+    "intent": "看信息架构。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "推荐三栏：左侧条件/图与符号；中间主推导；右侧方法总结、易错点、变式。板书只写“对后续有用的信息”。",
+    "teaching": "先在备课纸上画板书终局，再决定口头内容。数学试讲最怕边讲边找位置。",
+    "pitfalls": "全文抄题；公式挤在角落；擦改频繁；结论无框选。",
+    "followups": [
+      "追问：几何图画在左还是中？",
+      "追问：板书与 PPT 如何分工？"
+    ],
+    "tags": [
+      "boardwork",
+      "competition-math",
+      "demo-teaching",
+      "pedagogy",
+      "teacher-interview"
+    ],
+    "related": [
+      79,
+      73,
+      81,
+      82
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q080-竞赛试讲板书设计.md"
+  },
+  {
+    "n": 81,
+    "chapter": 7,
+    "title": "学生的错误解法很有创意",
+    "kind": "公开教师面试高频",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "学生提出一个错误但很有创造性的解法，你如何处理？",
+    "intent": "看反馈文化与数学严谨。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "先肯定可取的观察，再定位最小逻辑断点，让学生用反例/代入/边界自行发现；修正后比较与标准解的关系。",
+    "teaching": "优秀竞赛课堂要同时保护“探索意愿”和“证明标准”。不能因为创意而放过错误，也不能因为错误扼杀探索。",
+    "pitfalls": "一句“不对”；直接替学生修完；为了鼓励说“思路是对的”但其实核心错误。",
+    "followups": [
+      "追问：如果错误思路会误导全班怎么办？",
+      "追问：如何把错误解转成教学资源？"
+    ],
+    "tags": [
+      "demo-teaching",
+      "pedagogy",
+      "teacher-interview"
+    ],
+    "related": [
+      82,
+      80,
+      79,
+      78
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q081-学生的错误解法很有创意.md"
+  },
+  {
+    "n": 82,
+    "chapter": 7,
+    "title": "现场出变式",
+    "kind": "试讲/教研拟真",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "刚讲完一道题，面试官要求你现场出 3 个变式，并说明难度梯度。",
+    "intent": "看教研能力。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "变式维度：改数字（最低级）、改条件、改结论、逆向、参数化/一般化、跨方法连接。真正的梯度应改变认知操作而非仅计算量。",
+    "teaching": "示例 x+4/x：V1 改常数；V2 加线性约束；V3 用代换把新题化归回模型；说明每题训练目标。",
+    "pitfalls": "三个变式只是数字不同；难度只靠大数；没有标准答案或边界。",
+    "followups": [
+      "追问：什么叫“同构变式”？",
+      "追问：如何用变式检查迁移而不是记忆？"
+    ],
+    "tags": [
+      "demo-teaching",
+      "pedagogy",
+      "teacher-interview",
+      "variation-design"
+    ],
+    "related": [
+      81,
+      80,
+      79,
+      78
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/07-demo-teaching/q082-现场出变式.md"
+  },
+  {
+    "n": 83,
+    "chapter": 8,
+    "title": "设计 16 次课竞赛入门班",
+    "kind": "教研岗位拟真",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "从零设计一个 16 次课的初中竞赛/数学思维入门班。",
+    "intent": "看 syllabus 架构与先后依赖。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "建议四阶段：数感/整除与代数结构 → 方程/不等式/数列 → 几何核心模型 → 组合与综合。每4次课设置一次整合与测评，而非16个孤立专题。",
+    "teaching": "示例：1整除，2奇偶同余，3因式分解，4阶段综合；5方程，6不等式，7数列，8代数综合；9全等相似，10面积，11圆，12几何综合；13枚举计数，14抽屉容斥，15不变量/极端，16综合测评。",
+    "pitfalls": "按“老师会什么”排课；没有依赖关系；每节都新方法无复习。",
+    "followups": [
+      "追问：如果只有 8 次课怎么压缩？",
+      "追问：七年级和九年级版本有什么不同？"
+    ],
+    "tags": [
+      "assessment",
+      "competition-math",
+      "curriculum",
+      "teacher-interview",
+      "teaching-research"
+    ],
+    "related": [
+      87,
+      88,
+      84,
+      85
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/08-curriculum-research-assessment/q083-设计-16-次课竞赛入门班.md"
+  },
+  {
+    "n": 84,
+    "chapter": 8,
+    "title": "新生诊断测试",
+    "kind": "教研岗位拟真",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "新学生入班，你如何设计诊断测试并决定分层？",
+    "intent": "看 assessment literacy。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "不能只看总分。至少拆运算、代数结构、几何读图/证明、数论敏感度、组合枚举、逻辑表达、新题启动、时间管理。",
+    "teaching": "题量不必大，但每个题要有诊断目的；结合答题过程、空白时间、草稿和口述追问。最后形成 skill matrix。",
+    "pitfalls": "用一张难卷按分数分班；把竞赛经验等同能力；不看错误类型。",
+    "followups": [
+      "追问：同样 60 分的两个学生如何可能完全不同？",
+      "追问：如何避免一次测试的偶然性？"
+    ],
+    "tags": [
+      "assessment",
+      "curriculum",
+      "diagnostic-assessment",
+      "differentiation",
+      "teacher-interview",
+      "teaching-research"
+    ],
+    "related": [
+      85,
+      83,
+      86,
+      87
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/08-curriculum-research-assessment/q084-新生诊断测试.md"
+  },
+  {
+    "n": 85,
+    "chapter": 8,
+    "title": "班内水平差距很大",
+    "kind": "教研/课堂拟真",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "同一个班学生差距很大，如何兼顾？",
+    "intent": "看差异化教学。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "采用“共同主线 + 同题分层 + 不同输出要求”。基础层完成核心解；中层解释关键一步/第二解；高层一般化、反例、参数化。",
+    "teaching": "同题分层保持班级共享语境，同时给强生足够挑战。作业也可 A 必做、B 进阶、C 挑战。",
+    "pitfalls": "发三套完全不同内容导致课堂割裂；只照顾强生；把基础生永久固定低层。",
+    "followups": [
+      "追问：强生觉得基础讲解浪费时间怎么办？",
+      "追问：如何设计分层作业的退出/升级机制？"
+    ],
+    "tags": [
+      "assessment",
+      "curriculum",
+      "teacher-interview",
+      "teaching-research"
+    ],
+    "related": [
+      86,
+      84,
+      87,
+      83
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/08-curriculum-research-assessment/q085-班内水平差距很大.md"
+  },
+  {
+    "n": 86,
+    "chapter": 8,
+    "title": "什么题值得进讲义？",
+    "kind": "教研岗位拟真",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "一道题凭什么进入你的核心讲义？",
+    "intent": "看选题标准。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "至少满足：方法典型、结构可迁移、易错点有代表性、能自然变式、连接两个专题、难度定位清楚。题难不等于题好。",
+    "teaching": "建立题目元数据：知识点、核心方法、触发器、难度、预计时间、常见错因、可变式方向、前置题/后续题。",
+    "pitfalls": "只按难度收藏；名校题就一定收；没有去重同构题。",
+    "followups": [
+      "追问：一道“很漂亮但复用低”的题收不收？",
+      "追问：如何判断两道题同构？"
+    ],
+    "tags": [
+      "assessment",
+      "curriculum",
+      "material-design",
+      "teacher-interview",
+      "teaching-research"
+    ],
+    "related": [
+      87,
+      85,
+      88,
+      84
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/08-curriculum-research-assessment/q086-什么题值得进讲义？.md"
+  },
+  {
+    "n": 87,
+    "chapter": 8,
+    "title": "错题系统按“错因”而非章节",
+    "kind": "教研岗位拟真",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "如何给竞赛学生建立真正有效的错题系统？",
+    "intent": "看反馈闭环。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "按错因优于按章节：知识缺口、运算、漏分类、模型识别、证明不严谨、策略错误、时间管理。每道错题记录“错误机制 + 下次触发器”。",
+    "teaching": "复习时做“同错因异题”比重做原题更能检查迁移。",
+    "pitfalls": "只抄题和标准答案；错题本越来越厚但不回顾；把所有错归为粗心。",
+    "followups": [
+      "追问：如何量化“同类错误是否下降”？",
+      "追问：什么错题不值得收？"
+    ],
+    "tags": [
+      "assessment",
+      "competition-math",
+      "curriculum",
+      "teacher-interview",
+      "teaching-research"
+    ],
+    "related": [
+      88,
+      83,
+      86,
+      89
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/08-curriculum-research-assessment/q087-错题系统按“错因”而非章节.md"
+  },
+  {
+    "n": 88,
+    "chapter": 8,
+    "title": "设计 90 分钟模拟卷",
+    "kind": "教研/命题拟真",
+    "diff": 4,
+    "freq": "★★★★☆",
+    "prompt": "如何设计一套 90 分钟竞赛模拟卷并控制区分度？",
+    "intent": "看命题蓝图与测量。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "先定义 blueprint：专题覆盖、方法覆盖、难度梯度、预期时间。可用约20%基础、35%中档、30%中高、15%高区分作为初始比例，再通过试做数据修正。",
+    "teaching": "真正控制难度靠试测：完成率、平均耗时、区分度、常见错误，而不是命题人的感觉。",
+    "pitfalls": "压轴题过多；重复考同一技巧；总耗时超过90分钟；没有评分细则。",
+    "followups": [
+      "追问：如何设计部分分？",
+      "追问：一道题太难但区分度低意味着什么？"
+    ],
+    "tags": [
+      "assessment",
+      "assessment-design",
+      "competition-math",
+      "curriculum",
+      "teacher-interview",
+      "teaching-research"
+    ],
+    "related": [
+      87,
+      83,
+      89,
+      90
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/08-curriculum-research-assessment/q088-设计-90-分钟模拟卷.md"
+  },
+  {
+    "n": 89,
+    "chapter": 8,
+    "title": "超纲但漂亮的定理要不要教？",
+    "kind": "教研/课程判断题",
+    "diff": 4,
+    "freq": "★★★★☆",
+    "prompt": "一个很漂亮但明显超出学生认知负荷的定理，要不要教？",
+    "intent": "看 curriculum judgment。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "用 ROI：后续复用价值 / 学习成本，并考虑前置知识、可解释性、是否遮蔽基础方法。",
+    "teaching": "可作为“拓展阅读”而非主线。若定理能统一大量题型，且可用学生已有知识证明，则价值更高；若只是秒杀一题，通常不值得。",
+    "pitfalls": "把高级知识当竞争力；用定理替代思考；学生只记名字。",
+    "followups": [
+      "追问：质量点、塞瓦、梅涅劳斯分别何时引入？",
+      "追问：如何处理家长要求“多教高级内容”？"
+    ],
+    "tags": [
+      "assessment",
+      "curriculum",
+      "teacher-interview",
+      "teaching-research"
+    ],
+    "related": [
+      90,
+      88,
+      87,
+      86
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/08-curriculum-research-assessment/q089-超纲但漂亮的定理要不要教？.md"
+  },
+  {
+    "n": 90,
+    "chapter": 8,
+    "title": "赛后/阶段测评复盘",
+    "kind": "教研岗位拟真",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "一次阶段测评后，你如何组织复盘并更新训练计划？",
+    "intent": "看数据驱动教学。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "四层诊断：Knowledge 知识；Strategy 启动与方法选择；Execution 运算/表达；Time/Selection 时间与选题。再按班级与个体分别更新计划。",
+    "teaching": "不要只重新讲错题。统计每题失分类型、空白率、首步正确率、耗时；找“共性失误”决定下一次课。",
+    "pitfalls": "只排名；把低分归因努力不足；复盘没有后续动作。",
+    "followups": [
+      "追问：如何区分“不会”和“来不及”？",
+      "追问：哪些测评数据最值得记录？"
+    ],
+    "tags": [
+      "assessment",
+      "curriculum",
+      "reflection",
+      "teacher-interview",
+      "teaching-research"
+    ],
+    "related": [
+      89,
+      88,
+      87,
+      86
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/08-curriculum-research-assessment/q090-赛后-阶段测评复盘.md"
+  },
+  {
+    "n": 91,
+    "chapter": 9,
+    "title": "强学生总抢答",
+    "kind": "课堂管理拟真",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "班里一个竞赛很强的学生总抢答，其他人逐渐不思考，怎么办？",
+    "intent": "看公平、挑战与课堂节奏。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "设置 think time：全班先静默 30-60 秒，再随机点人；强生得到额外任务“第二解/一般化/找反例”，而不是禁止他思考。",
+    "teaching": "把强生从“答案提供者”转成“深度任务承担者”。",
+    "pitfalls": "当众压制；每次都让强生回答；让强生当小老师替你授课。",
+    "followups": [
+      "追问：强生抱怨课堂太慢？",
+      "追问：如何保护基础生的发言安全感？"
+    ],
+    "tags": [
+      "classroom-management",
+      "communication",
+      "competition-math",
+      "student-support",
+      "teacher-interview"
+    ],
+    "related": [
+      96,
+      92,
+      93,
+      94
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/09-students-classroom-parents/q091-强学生总抢答.md"
+  },
+  {
+    "n": 92,
+    "chapter": 9,
+    "title": "“听懂了，但自己不会做”",
+    "kind": "学情诊断高频",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "学生说“老师你讲的我都懂，但我自己不会做”，你怎么诊断？",
+    "intent": "看认知科学与训练设计。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "典型是 recognition ≠ recall，跟随理解 ≠ 独立提取。应减少完整示范依赖，增加 retrieval 和 fading scaffolds。",
+    "teaching": "训练链：完整例题 → 遮住关键一步 → 只给第一提示 → 延迟同构题 → 陌生表面迁移题。记录“无提示独立率”。",
+    "pitfalls": "继续讲更多例题；把问题归为不认真；只让他重看笔记。",
+    "followups": [
+      "追问：如何证明不是“题太难”导致？",
+      "追问：隔天测和当堂测有什么差别？"
+    ],
+    "tags": [
+      "communication",
+      "diagnostic-assessment",
+      "student-support",
+      "teacher-interview"
+    ],
+    "related": [
+      95,
+      93,
+      91,
+      94
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/09-students-classroom-parents/q092-“听懂了，但自己不会做”.md"
+  },
+  {
+    "n": 93,
+    "chapter": 9,
+    "title": "学生迷恋“秒杀技巧”",
+    "kind": "学情/价值观拟真",
+    "diff": 3,
+    "freq": "★★★★☆",
+    "prompt": "学生喜欢背各种秒杀技巧，短期正确率很高，你怎么引导？",
+    "intent": "看方法边界意识。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "不必全盘否定技巧，但必须绑定 principle（原理）、trigger（触发器）、boundary（失效条件）、transfer（变式）。",
+    "teaching": "每教一个技巧，至少配一题“看似能用但会失败”的反例，让学生学会判断适用条件。",
+    "pitfalls": "简单说“技巧没用”；或反过来把技巧当课程卖点；只追求速度。",
+    "followups": [
+      "追问：竞赛中速度与理解如何平衡？",
+      "变式：设计一个“错误触发器”反例。"
+    ],
+    "tags": [
+      "communication",
+      "student-support",
+      "teacher-interview"
+    ],
+    "related": [
+      94,
+      92,
+      95,
+      91
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/09-students-classroom-parents/q093-学生迷恋“秒杀技巧”.md"
+  },
+  {
+    "n": 94,
+    "chapter": 9,
+    "title": "家长要求保证拿奖",
+    "kind": "家长沟通拟真",
+    "diff": 2,
+    "freq": "★★★★★",
+    "prompt": "家长问：“你能保证孩子拿奖吗？”你如何回答？",
+    "intent": "看诚信、预期管理与合规。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "明确不能承诺奖项。可以承诺的是专业教学流程：诊断、分层目标、训练、反馈、复盘和透明沟通。结果受基础、投入、赛制等多因素影响。",
+    "teaching": "把目标从“结果承诺”转成“过程可控指标”：独立解题率、专题掌握、限时策略、证明质量。并说明竞赛结果不应被包装成招生保证。",
+    "pitfalls": "为了签约承诺名次；回避问题；批评家长功利。",
+    "followups": [
+      "追问：家长坚持只看奖项怎么办？",
+      "追问：如何设阶段性可验证目标？"
+    ],
+    "tags": [
+      "communication",
+      "compliance",
+      "expectation-management",
+      "parent-communication",
+      "student-support",
+      "teacher-interview"
+    ],
+    "related": [
+      95,
+      93,
+      96,
+      92
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/09-students-classroom-parents/q094-家长要求保证拿奖.md"
+  },
+  {
+    "n": 95,
+    "chapter": 9,
+    "title": "刷题三个月不涨分",
+    "kind": "学情诊断高频",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "学生刷了很多题，成绩三个月没涨，你先查什么？",
+    "intent": "看系统诊断，而非加量。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "查五层：Input题目是否匹配；Process是否独立思考；Feedback错误是否修复；Transfer换皮后是否会；Exam时间/选题/心理。",
+    "teaching": "用数据找瓶颈：每题无提示启动时间、首次思路命中率、错因、二次复现、同构迁移，而不是只看题量。",
+    "pitfalls": "再加一倍题；归因“天赋”；只换更难题。",
+    "followups": [
+      "追问：如果知识掌握高但陌生题启动慢？",
+      "追问：什么时候应该降低训练难度？"
+    ],
+    "tags": [
+      "communication",
+      "diagnostic-assessment",
+      "student-support",
+      "teacher-interview"
+    ],
+    "related": [
+      92,
+      96,
+      94,
+      93
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/09-students-classroom-parents/q095-刷题三个月不涨分.md"
+  },
+  {
+    "n": 96,
+    "chapter": 9,
+    "title": "学生因竞赛压力排斥数学",
+    "kind": "课堂/成长拟真",
+    "diff": 2,
+    "freq": "★★★★☆",
+    "prompt": "学生因为竞赛训练压力开始排斥数学，你怎么处理？",
+    "intent": "看长期教育判断。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "先降低即时压力源：难度、量、节奏、比较方式；重建可达成目标和成功反馈。必要时与家长沟通，把目标从奖项回到学习质量。",
+    "teaching": "竞赛训练的可持续性比短期题量重要。对于青少年，学习节奏应与正常学习、休息和发展相协调。",
+    "pitfalls": "用“坚持就是胜利”压过去；羞辱；继续加码；把退出竞赛视为失败。",
+    "followups": [
+      "追问：如何区分暂时挫败与长期不适配？",
+      "追问：什么时候建议暂停竞赛训练？"
+    ],
+    "tags": [
+      "communication",
+      "competition-math",
+      "student-support",
+      "teacher-interview"
+    ],
+    "related": [
+      91,
+      95,
+      94,
+      93
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/09-students-classroom-parents/q096-学生因竞赛压力排斥数学.md"
+  },
+  {
+    "n": 97,
+    "chapter": 10,
+    "title": "竞赛与数学思维训练的关系",
+    "kind": "综合终面",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "你怎么看“初中数学竞赛”和“数学思维训练”的关系？",
+    "intent": "看职业定位与合规意识。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "竞赛训练是具体任务/赛制导向；数学 problem solving 教育更广，核心是观察、猜想、证明、分类、构造、反例、抽象和迁移。即便不参赛，后者仍有独立教育价值。",
+    "teaching": "优秀岗位回答应把课程目标表述为“拔尖学习和数学素养”，而不是把竞赛奖项当唯一 KPI。",
+    "pitfalls": "把两者完全等同；或否定竞赛的挑战价值；只谈政策不谈教学。",
+    "followups": [
+      "追问：不参加比赛如何设计课程目标？",
+      "追问：如何评价思维能力提升？"
+    ],
+    "tags": [
+      "competition-math",
+      "compliance",
+      "professional-judgment",
+      "teacher-interview"
+    ],
+    "related": [
+      98,
+      99,
+      100,
+      96
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/10-compliance-final-interview/q097-竞赛与数学思维训练的关系.md"
+  },
+  {
+    "n": 98,
+    "chapter": 10,
+    "title": "家长问某赛事“含金量/升学价值”",
+    "kind": "综合终面",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "家长拿一个赛事问：“这个比赛含金量高不高？能不能帮助升学？”你怎么答？",
+    "intent": "看信息核验、合规与沟通。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "先核验是否属于相关主管部门公布的合规赛事清单、主办方和规则；再讨论赛事本身的学习适配度。明确竞赛结果不得被承诺为中小学招生依据或高考加分。",
+    "teaching": "回答从“合规性 → 学习价值 → 学生适配 → 成本 → 预期”排序，而不是先营销。",
+    "pitfalls": "未核验就推荐；保证升学；把“含金量”只等同奖项等级。",
+    "followups": [
+      "追问：如果赛事不在名单怎么办？",
+      "追问：如何向家长解释“训练价值 ≠ 招生价值”？"
+    ],
+    "tags": [
+      "compliance",
+      "parent-communication",
+      "professional-judgment",
+      "teacher-interview"
+    ],
+    "related": [
+      97,
+      94,
+      99,
+      100
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/10-compliance-final-interview/q098-家长问某赛事“含金量-升学价值”.md"
+  },
+  {
+    "n": 99,
+    "chapter": 10,
+    "title": "不用奖项，如何衡量竞赛课效果？",
+    "kind": "综合终面",
+    "diff": 4,
+    "freq": "★★★★★",
+    "prompt": "如果不以“拿奖”为唯一目标，你怎么衡量竞赛课效果？",
+    "intent": "看 assessment framework。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "建立 K-P-T-C：Knowledge知识、Problem Solving陌生题解决、Transfer迁移、Communication证明表达。再辅以无提示启动率、错题复现率、限时选择、学习持续性。",
+    "teaching": "每个指标要有证据：例如同构题→远迁移题的正确率差；证明 rubric；新题前3分钟能否产生有效观察。",
+    "pitfalls": "只看满意度；只看刷题量；指标很多但无法采集。",
+    "followups": [
+      "追问：如何给“思维能力”做可操作评价？",
+      "追问：你会向家长展示哪些数据？"
+    ],
+    "tags": [
+      "competition-math",
+      "expectation-management",
+      "professional-judgment",
+      "teacher-interview"
+    ],
+    "related": [
+      97,
+      100,
+      98,
+      96
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/10-compliance-final-interview/q099-不用奖项，如何衡量竞赛课效果？.md"
+  },
+  {
+    "n": 100,
+    "chapter": 10,
+    "title": "录用后前三个月怎么做？",
+    "kind": "综合终面",
+    "diff": 3,
+    "freq": "★★★★★",
+    "prompt": "如果明天录用你，前三个月你会怎么工作？",
+    "intent": "看执行计划、学习速度、团队协作。",
+    "insight": "先识别题目或情境中的核心结构，再选择最稳健、最适合教学的路径。",
+    "solution": "阶段化：第1-2周理解 syllabus/讲义/学生画像与标准；第3-4周磨课与听课；第2月稳定授课并采集学情；第3月开始输出专题讲义、变式库或测评并参与教研复盘。",
+    "teaching": "目标链：会做题 → 会讲题 → 会设计学习 → 会用数据迭代课程。每阶段给可交付物。",
+    "pitfalls": "承诺三个月“成为名师”；只有宏观口号；不提听课、共备、反馈。",
+    "followups": [
+      "追问：前三个月最重要的一个指标是什么？",
+      "追问：如果你的讲法与现有教研体系冲突怎么办？"
+    ],
+    "tags": [
+      "onboarding-plan",
+      "professional-judgment",
+      "teacher-interview"
+    ],
+    "related": [
+      99,
+      98,
+      97,
+      96
+    ],
+    "content_version": "2.0-deep",
+    "markdown_path": "questions/10-compliance-final-interview/q100-录用后前三个月怎么做？.md"
+  }
+]

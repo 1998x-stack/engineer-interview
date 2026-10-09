@@ -1,0 +1,13 @@
+{
+  "content_version": "v1.1.0-professional-v2",
+  "date": "2026-09-02",
+  "question_count": 100,
+  "chapter_count": 10,
+  "professional_v2": true,
+  "professional_v2_marker_count": 100,
+  "question_markdown_characters_total": 557319,
+  "question_markdown_characters_median": 5525.0,
+  "question_markdown_characters_min": 4991,
+  "question_markdown_characters_max": 6455,
+  "source_pdf": "pdf/网络安全面试宝典_100题_2026.pdf"
+}

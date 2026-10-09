@@ -1,0 +1,144 @@
+docs_dir: .
+site_dir: site
+exclude_docs: |
+  source/
+  assets/pdf/
+  .github/
+  scripts/
+site_name: 高中数学竞赛教练面试100题
+site_description: 高中数学竞赛教练岗位的100题专业面试知识库
+repo_name: high-school-math-olympiad-coach-interview
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+markdown_extensions:
+  - tables
+  - attr_list
+  - pymdownx.arithmatex:
+      generic: true
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+nav:
+  - 首页: README.md
+  - 指南:
+      - 出版说明与评分: docs/book-frontmatter.md
+      - 面试实战手册: docs/interview-playbook.md
+      - 100题覆盖矩阵: docs/coverage-matrix.md
+      - 30天训练计划: docs/30-day-plan.md
+      - 试讲评分表: docs/demo-lesson-rubric.md
+      - 作品集建议: docs/portfolio-guide.md
+      - 参考资料: docs/references.md
+  - 题库:
+      - 竞赛体系与教练认知: questions/01-foundations/README.md
+      - Q001: questions/01-foundations/Q001.md
+      - Q002: questions/01-foundations/Q002.md
+      - Q003: questions/01-foundations/Q003.md
+      - Q004: questions/01-foundations/Q004.md
+      - Q005: questions/01-foundations/Q005.md
+      - Q006: questions/01-foundations/Q006.md
+      - Q007: questions/01-foundations/Q007.md
+      - Q008: questions/01-foundations/Q008.md
+      - Q009: questions/01-foundations/Q009.md
+      - Q010: questions/01-foundations/Q010.md
+      - 代数: questions/02-algebra/README.md
+      - Q011: questions/02-algebra/Q011.md
+      - Q012: questions/02-algebra/Q012.md
+      - Q013: questions/02-algebra/Q013.md
+      - Q014: questions/02-algebra/Q014.md
+      - Q015: questions/02-algebra/Q015.md
+      - Q016: questions/02-algebra/Q016.md
+      - Q017: questions/02-algebra/Q017.md
+      - Q018: questions/02-algebra/Q018.md
+      - Q019: questions/02-algebra/Q019.md
+      - Q020: questions/02-algebra/Q020.md
+      - Q021: questions/02-algebra/Q021.md
+      - Q022: questions/02-algebra/Q022.md
+      - Q023: questions/02-algebra/Q023.md
+      - Q024: questions/02-algebra/Q024.md
+      - Q025: questions/02-algebra/Q025.md
+      - 平面几何: questions/03-geometry/README.md
+      - Q026: questions/03-geometry/Q026.md
+      - Q027: questions/03-geometry/Q027.md
+      - Q028: questions/03-geometry/Q028.md
+      - Q029: questions/03-geometry/Q029.md
+      - Q030: questions/03-geometry/Q030.md
+      - Q031: questions/03-geometry/Q031.md
+      - Q032: questions/03-geometry/Q032.md
+      - Q033: questions/03-geometry/Q033.md
+      - Q034: questions/03-geometry/Q034.md
+      - Q035: questions/03-geometry/Q035.md
+      - Q036: questions/03-geometry/Q036.md
+      - Q037: questions/03-geometry/Q037.md
+      - Q038: questions/03-geometry/Q038.md
+      - Q039: questions/03-geometry/Q039.md
+      - Q040: questions/03-geometry/Q040.md
+      - 数论: questions/04-number-theory/README.md
+      - Q041: questions/04-number-theory/Q041.md
+      - Q042: questions/04-number-theory/Q042.md
+      - Q043: questions/04-number-theory/Q043.md
+      - Q044: questions/04-number-theory/Q044.md
+      - Q045: questions/04-number-theory/Q045.md
+      - Q046: questions/04-number-theory/Q046.md
+      - Q047: questions/04-number-theory/Q047.md
+      - Q048: questions/04-number-theory/Q048.md
+      - Q049: questions/04-number-theory/Q049.md
+      - Q050: questions/04-number-theory/Q050.md
+      - Q051: questions/04-number-theory/Q051.md
+      - Q052: questions/04-number-theory/Q052.md
+      - Q053: questions/04-number-theory/Q053.md
+      - Q054: questions/04-number-theory/Q054.md
+      - Q055: questions/04-number-theory/Q055.md
+      - 组合数学: questions/05-combinatorics/README.md
+      - Q056: questions/05-combinatorics/Q056.md
+      - Q057: questions/05-combinatorics/Q057.md
+      - Q058: questions/05-combinatorics/Q058.md
+      - Q059: questions/05-combinatorics/Q059.md
+      - Q060: questions/05-combinatorics/Q060.md
+      - Q061: questions/05-combinatorics/Q061.md
+      - Q062: questions/05-combinatorics/Q062.md
+      - Q063: questions/05-combinatorics/Q063.md
+      - Q064: questions/05-combinatorics/Q064.md
+      - Q065: questions/05-combinatorics/Q065.md
+      - Q066: questions/05-combinatorics/Q066.md
+      - Q067: questions/05-combinatorics/Q067.md
+      - Q068: questions/05-combinatorics/Q068.md
+      - Q069: questions/05-combinatorics/Q069.md
+      - Q070: questions/05-combinatorics/Q070.md
+      - 综合解题与证明: questions/06-problem-solving-proof/README.md
+      - Q071: questions/06-problem-solving-proof/Q071.md
+      - Q072: questions/06-problem-solving-proof/Q072.md
+      - Q073: questions/06-problem-solving-proof/Q073.md
+      - Q074: questions/06-problem-solving-proof/Q074.md
+      - Q075: questions/06-problem-solving-proof/Q075.md
+      - Q076: questions/06-problem-solving-proof/Q076.md
+      - Q077: questions/06-problem-solving-proof/Q077.md
+      - Q078: questions/06-problem-solving-proof/Q078.md
+      - 试讲与教学能力: questions/07-demo-teaching/README.md
+      - Q079: questions/07-demo-teaching/Q079.md
+      - Q080: questions/07-demo-teaching/Q080.md
+      - Q081: questions/07-demo-teaching/Q081.md
+      - Q082: questions/07-demo-teaching/Q082.md
+      - Q083: questions/07-demo-teaching/Q083.md
+      - Q084: questions/07-demo-teaching/Q084.md
+      - Q085: questions/07-demo-teaching/Q085.md
+      - Q086: questions/07-demo-teaching/Q086.md
+      - Q087: questions/07-demo-teaching/Q087.md
+      - Q088: questions/07-demo-teaching/Q088.md
+      - 课程研发与训练体系: questions/08-curriculum-research/README.md
+      - Q089: questions/08-curriculum-research/Q089.md
+      - Q090: questions/08-curriculum-research/Q090.md
+      - Q091: questions/08-curriculum-research/Q091.md
+      - Q092: questions/08-curriculum-research/Q092.md
+      - Q093: questions/08-curriculum-research/Q093.md
+      - Q094: questions/08-curriculum-research/Q094.md
+      - Q095: questions/08-curriculum-research/Q095.md
+      - 学生培养与职业素养: questions/09-student-development/README.md
+      - Q096: questions/09-student-development/Q096.md
+      - Q097: questions/09-student-development/Q097.md
+      - Q098: questions/09-student-development/Q098.md
+      - Q099: questions/09-student-development/Q099.md
+      - Q100: questions/09-student-development/Q100.md

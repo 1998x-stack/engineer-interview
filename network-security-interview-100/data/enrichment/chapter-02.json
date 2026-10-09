@@ -1,0 +1,412 @@
+{
+  "Q11": {
+    "model": [
+      "Web 安全测试应从资产/数据流/信任边界出发，而不是从漏洞名称或工具列表出发。",
+      "推荐把测试面拆为 authentication、authorization、session、input/output、business logic、API、configuration、dependency 和 logging。",
+      "WSTG 偏测试方法，ASVS 偏可验证安全要求；两者结合可把“怎么测”和“应该达到什么状态”连接起来。"
+    ],
+    "boundary": [
+      "测试范围、授权、生产影响和数据处理规则必须先确定；技术上能测不代表应在生产直接测。",
+      "自动扫描覆盖已知模式较好，但对业务越权、状态机、跨角色逻辑和架构信任边界覆盖有限。",
+      "单个入口页面并不代表攻击面小，还需枚举 API、移动端、第三方回调、后台任务和管理面。"
+    ],
+    "design": [
+      "先形成资产与数据流清单，再建立 threat hypothesis 和测试矩阵。",
+      "高风险路径优先：身份、资金/敏感数据、文件处理、服务端出站请求、管理功能。",
+      "把发现映射到 root cause 与 ASVS 控制，避免报告只有症状和 payload。",
+      "修复后要求 regression test 和 owner/期限，形成闭环。"
+    ],
+    "evidence": [
+      "应用/网关日志确认请求是否到达、以哪个身份执行、访问了什么对象。",
+      "代码/配置证据用于确认根因，不把扫描器输出直接视为事实。",
+      "测试记录应包含范围、前置条件、请求上下文、结果和风险解释。"
+    ],
+    "validation": [
+      "对关键权限场景做角色×对象×动作矩阵回归。",
+      "对修复点验证正常业务、异常输入与跨边界输入，而不是只重放一个样例。",
+      "复测同时检查日志/告警是否能识别对应行为。"
+    ],
+    "deep_questions": [
+      "黑盒测试与代码审计如何组合以提高覆盖率？",
+      "如何证明“没有发现”不是“没有覆盖”？",
+      "如果只能测试两天，你如何按风险排序？"
+    ],
+    "deliverable": "一份可追踪的 Web 安全测试计划：scope、资产/角色、数据流、测试矩阵、证据、风险、修复和复测状态。",
+    "summary": {
+      "root": "安全测试是围绕信任边界和安全要求验证，而非工具扫描。",
+      "boundary": "授权范围、业务逻辑和隐藏接口决定真实覆盖。",
+      "control": "WSTG 方法 + ASVS 要求 + 风险排序。",
+      "evidence": "请求/身份/对象日志 + 代码/配置。",
+      "verify": "角色矩阵与安全回归。"
+    }
+  },
+  "Q12": {
+    "model": [
+      "SQLi 统一判断标准是“不可信数据是否进入 SQL grammar”，而不是是否出现单引号。",
+      "Source 可来自 HTTP、消息队列、文件或数据库二次读取；Sink 是最终能执行 SQL 的接口。",
+      "参数化把 value 与 SQL structure 分离；动态表名、列名、排序方向等结构元素必须用固定映射/allowlist。"
+    ],
+    "boundary": [
+      "ORM 只有在使用参数绑定路径时才提供保护；raw query、字符串拼接和动态表达式仍需审查。",
+      "二阶注入说明 Source 与 Sink 可能不在同一请求：数据先被存储，后续又被拼入 SQL。",
+      "数据库权限决定漏洞爆炸半径；同一注入在只读最小权限账号与高权限账号上的风险不同。"
+    ],
+    "design": [
+      "所有 query construction 统一走安全数据访问层，禁止业务代码散落拼接。",
+      "identifier 类动态需求使用枚举→固定 SQL 片段映射。",
+      "数据库账号按服务/环境分离并执行最小权限。",
+      "SAST/代码审查重点建模 source-propagation-sink，而不是关键字搜索。"
+    ],
+    "evidence": [
+      "应用层记录 query template/operation，而不是记录敏感完整 SQL 参数。",
+      "数据库审计关注异常语句类型、错误、访问对象和权限使用。",
+      "WAF/网关信号可辅助关联，但不能作为是否存在 SQLi 的唯一证据。"
+    ],
+    "validation": [
+      "单元测试验证危险输入始终作为参数值处理。",
+      "对动态排序、搜索、报表等最容易产生动态 SQL 的路径做专项回归。",
+      "复测数据库权限：即使应用层出现缺陷，也不应获得业务不需要的能力。"
+    ],
+    "deep_questions": [
+      "为什么 PreparedStatement 不能直接参数化表名和 ORDER BY 方向？",
+      "二阶注入为什么容易逃过单请求扫描？",
+      "如何在大型代码库里系统找到 SQL 构造风险而不是手工 grep？"
+    ],
+    "deliverable": "SQL 查询安全规范 + data-access lint/SAST 规则 + 动态 identifier allowlist + 数据库最小权限矩阵 + regression tests。",
+    "summary": {
+      "root": "数据被 SQL 解析器当成结构而非值。",
+      "boundary": "raw query、动态 identifier、二阶数据流会绕过“已用 ORM”的简单判断。",
+      "control": "参数化 + 固定映射 + 最小权限。",
+      "evidence": "query template/DB audit/应用异常。",
+      "verify": "动态 SQL 专项测试与权限回归。"
+    }
+  },
+  "Q13": {
+    "model": [
+      "Prepared Statement 主要保证“绑定值不会改变已编译 SQL 结构”，它不是动态 SQL 的万能抽象。",
+      "数据库参数通常绑定 literal value，而不是 SQL identifier、keyword、operator 或语法片段。",
+      "高分回答要区分“数据参数化”和“结构动态化”两个问题。"
+    ],
+    "boundary": [
+      "ORDER BY 字段、ASC/DESC、表名/列名、动态过滤表达式常不能直接使用普通 bind parameter。",
+      "有些 ORM 会安全构造 AST，有些 helper 会退化为字符串；必须看实际 API contract。",
+      "存储过程也不是天然安全，如果内部继续动态拼接 SQL，风险仍存在。"
+    ],
+    "design": [
+      "把用户选择映射到内部枚举，例如 sort=created → 固定 created_at。",
+      "复杂查询使用 query builder/AST 并限定可用字段和操作符。",
+      "在 code review 中把 raw SQL、format/interpolation、native query 标为高关注点。",
+      "建立安全数据访问封装而不是让每个团队自行发明转义。"
+    ],
+    "evidence": [
+      "代码层能证明 parameter 与 structure 在 API 上分离。",
+      "数据库/ORM debug trace 能显示 query template 与 bound params 的分离。",
+      "SAST 结果用于定位 raw query 与不可信数据流。"
+    ],
+    "validation": [
+      "为每个动态 identifier 入口做非法枚举和边界测试。",
+      "升级 ORM/driver 后运行 query regression，避免 API 行为变化。",
+      "检查存储过程和报表系统中的 dynamic SQL。"
+    ],
+    "deep_questions": [
+      "参数化 value 为什么不能代表任意 SQL token？",
+      "存储过程什么时候安全，什么时候仍可能注入？",
+      "ORM 的 orderBy(String) 这类 API 应如何审查？"
+    ],
+    "deliverable": "动态 SQL 安全模式文档：允许的 query-builder API、identifier 映射、禁止 API、review checklist 和测试样例。",
+    "summary": {
+      "root": "预编译只隔离参数值，不自动约束所有 SQL 结构。",
+      "boundary": "identifier/keyword/raw SQL/存储过程动态拼接。",
+      "control": "枚举映射 + AST/query builder + API 治理。",
+      "evidence": "代码与 ORM trace。",
+      "verify": "动态结构入口安全回归。"
+    }
+  },
+  "Q14": {
+    "model": [
+      "XSS 的统一模型是“不可信数据进入浏览器可执行上下文”，Stored/Reflected/DOM 只是数据来源和执行路径不同。",
+      "浏览器解析存在多种上下文：HTML text、attribute、URL、JavaScript、CSS；编码必须与 context 匹配。",
+      "DOM XSS 更强调客户端 Source→DOM transformation→dangerous sink，服务端响应可能本身完全正常。"
+    ],
+    "boundary": [
+      "“过滤 script 标签”无法覆盖事件属性、URL、DOM API 等多种执行上下文。",
+      "框架默认 escaping 有边界：raw HTML、dangerouslySetInnerHTML、模板绕过、第三方组件会重新打开风险。",
+      "HttpOnly 只能降低部分 Cookie 被 JS 读取的后果，并不消除 XSS 对页面行为的控制。"
+    ],
+    "design": [
+      "模板默认 auto-escape，禁止散落 raw HTML。",
+      "需要富文本时采用成熟 sanitizer 并定义允许的标签/属性/URL scheme。",
+      "客户端避免 innerHTML/eval 类危险 sink，优先 textContent/安全 DOM API。",
+      "CSP/Trusted Types 等作为纵深降低单点失效后的可利用面。"
+    ],
+    "evidence": [
+      "响应与 DOM 快照区分服务端反射与客户端拼接。",
+      "CSP violation report、前端异常与浏览器安全日志可提供辅助证据。",
+      "代码审计定位 template raw output 和 DOM sinks。"
+    ],
+    "validation": [
+      "按具体上下文做编码测试，不用一个 payload 代表所有场景。",
+      "对富文本 sanitizer 的允许列表和 URL 处理做 regression corpus。",
+      "验证 CSP 违规报告与 Trusted Types 策略在关键页面生效。"
+    ],
+    "deep_questions": [
+      "为什么 HTML escaping 不能直接用于 JavaScript context？",
+      "Stored XSS 与 DOM XSS 可以同时存在吗？",
+      "React/Vue 等框架为什么仍可能出现 XSS？"
+    ],
+    "deliverable": "XSS context matrix：Source、render context、编码/消毒策略、dangerous sinks、CSP/Trusted Types 和测试用例。",
+    "summary": {
+      "root": "不可信数据被浏览器解析为可执行内容。",
+      "boundary": "上下文、框架逃逸口和 DOM sink 决定风险。",
+      "control": "上下文编码/安全 DOM + sanitizer + CSP 纵深。",
+      "evidence": "response/DOM/code/CSP reports。",
+      "verify": "按 context 的 regression corpus。"
+    }
+  },
+  "Q15": {
+    "model": [
+      "CSP 是浏览器执行策略，主要限制资源来源与脚本执行方式；它降低 XSS 成功后的执行能力，但不修复数据流根因。",
+      "强 CSP 的价值来自最小化允许的脚本执行集合，而不是“加了一个 Header”。",
+      "nonce/hash、strict-dynamic 等机制解决的是可信脚本引导问题，策略设计需结合应用加载模型。"
+    ],
+    "boundary": [
+      "允许 unsafe-inline、过宽 host、通配源或可控可信源会显著削弱 CSP。",
+      "CSP 不能替服务端输出编码，也不能修复 DOM 逻辑、越权、SQLi 等问题。",
+      "report-only 只观测不阻断；生产启用前需理解第三方脚本和历史 inline code。"
+    ],
+    "design": [
+      "先 inventory 脚本/样式来源和 inline 依赖，再逐步收紧策略。",
+      "优先 nonce/hash 与减少 inline script，避免长期依赖宽泛 host allowlist。",
+      "启用 reporting endpoint 并做 violation 去噪和 owner 归属。",
+      "对关键前端可结合 Trusted Types 控制高风险 DOM sink。"
+    ],
+    "evidence": [
+      "浏览器 violation report 包含被阻止资源和触发 directive。",
+      "前端资源清单和构建产物用于判断策略依赖。",
+      "安全测试需确认实际 response header，而不只是配置文件。"
+    ],
+    "validation": [
+      "先 report-only 观察，再分页面/流量灰度 enforcement。",
+      "验证第三方脚本故障时业务可控并有回滚。",
+      "故意触发受控违规确认策略真正阻断且 report 可用。"
+    ],
+    "deep_questions": [
+      "nonce 泄露/复用会带来什么设计问题？",
+      "为什么只配置 script-src self 仍不一定是强 CSP？",
+      "CSP 与 Trusted Types 分别控制什么层面？"
+    ],
+    "deliverable": "CSP rollout plan：资源 inventory、目标策略、report-only 数据、例外清单、enforcement 灰度和回归。",
+    "summary": {
+      "root": "CSP 限制浏览器允许执行/加载的资源，是纵深防线。",
+      "boundary": "宽松 directive、可控可信源和业务兼容性。",
+      "control": "强策略 + nonce/hash + reporting + 安全编码。",
+      "evidence": "CSP violation reports 与实际响应头。",
+      "verify": "report-only→灰度 enforcement 回归。"
+    }
+  },
+  "Q16": {
+    "model": [
+      "CSRF 利用的是浏览器对目标站点自动携带认证状态，而目标服务未充分验证请求的“用户意图/来源真实性”。",
+      "是否存在 CSRF 取决于认证载体和请求方式：自动附带 Cookie 的风险模型与显式 Authorization token 不完全相同。",
+      "核心控制应使状态改变请求包含攻击站点无法伪造/获得的真实性信号。"
+    ],
+    "boundary": [
+      "SameSite 能显著降低常见 CSRF，但受 Cookie 属性、浏览器行为和业务跨站需求影响。",
+      "GET 应保持幂等/无副作用；若 GET 改状态，浏览器预取/链接访问也会产生风险。",
+      "XSS 可能破坏同源内的 CSRF token 防线，因此 CSRF 与 XSS 是纵深关系。"
+    ],
+    "design": [
+      "状态修改请求使用 CSRF token 或框架成熟机制。",
+      "合理设置 SameSite/Secure/HttpOnly，并明确跨站登录/支付/SSO 场景。",
+      "对高风险动作采用重新认证/二次确认和业务级风控。",
+      "服务端可对 Origin 等信号进行适当校验，但不要依赖单一脆弱信号。"
+    ],
+    "evidence": [
+      "服务端记录 method、Origin/Referer（注意隐私）、session/account 和结果。",
+      "异常来自跨站来源的状态修改请求可用于检测与复盘。",
+      "前端/网关日志验证 Cookie 属性和请求路径。"
+    ],
+    "validation": [
+      "构造合法跨站业务场景验证 SameSite 不误伤。",
+      "验证 token 与 session/请求上下文绑定、生命周期和错误处理。",
+      "检查所有 state-changing endpoint，包括旧 API 和非标准 method。"
+    ],
+    "deep_questions": [
+      "为什么 Authorization Bearer token 常改变 CSRF 风险模型？",
+      "SameSite=Lax 能解决哪些场景，不能解决哪些？",
+      "为什么 CSRF token 不能替代授权？"
+    ],
+    "deliverable": "状态修改接口清单 + 认证载体/CSRF 控制矩阵 + Cookie policy + 高风险动作二次验证策略。",
+    "summary": {
+      "root": "浏览器自动携带身份，但服务端缺少请求真实性验证。",
+      "boundary": "认证载体、跨站业务和 XSS 会改变风险。",
+      "control": "CSRF token + SameSite + 高风险动作验证。",
+      "evidence": "Origin/session/action 日志。",
+      "verify": "跨站与业务兼容性回归。"
+    }
+  },
+  "Q17": {
+    "model": [
+      "SSRF 是“攻击者影响服务器的出站请求目标/行为”，本质是借用服务器所在网络和身份边界。",
+      "风险来自 destination control × server reachability × server identity/credentials 三者组合。",
+      "把 SSRF 只理解成访问 localhost 会遗漏云 metadata、内部 API、第三方回调和非 HTTP 协议等边界。"
+    ],
+    "boundary": [
+      "URL 字符串检查与最终实际连接地址之间可能经过解析、DNS、redirect、proxy 等多步转换。",
+      "应用有合法抓取任意 URL 的业务时，allowlist 可能不可行，需要隔离 fetcher 和严格 egress。",
+      "即使目标不可读，盲 SSRF 仍可能产生副作用或提供网络探测信号，因此不能只看响应内容。"
+    ],
+    "design": [
+      "优先业务级 destination allowlist；不可行时使用隔离的 fetch service。",
+      "URL parse→scheme policy→DNS resolve→IP classification→connect 的决策链必须一致。",
+      "限制 redirect、超时、响应大小、协议和出站网络。",
+      "云环境使用最小权限 workload identity 与 metadata 防护，降低 SSRF 爆炸半径。"
+    ],
+    "evidence": [
+      "应用出站代理/DNS/flow 日志用于证明服务器实际连接到哪里。",
+      "请求审计记录业务输入 URL 与最终 resolved destination 的映射。",
+      "云身份/metadata 服务访问日志用于关联潜在身份滥用。"
+    ],
+    "validation": [
+      "覆盖 hostname、IPv4/IPv6、redirect、DNS 变化和 URL parser edge cases 的单元测试。",
+      "验证 egress policy 在应用绕过代理时仍有效。",
+      "定期测试 fetcher 无法访问内部管理面和 link-local 地址。"
+    ],
+    "deep_questions": [
+      "为什么 URL allowlist 还需要检查解析后的 IP？",
+      "SSRF 与云 workload identity 为什么强相关？",
+      "业务必须抓取公网任意 URL 时如何做最小风险架构？"
+    ],
+    "deliverable": "Server-side fetching security design：URL normalization、destination policy、resolver、redirect、egress、identity 和 observability。",
+    "summary": {
+      "root": "不可信输入控制服务器的网络请求能力。",
+      "boundary": "DNS/redirect/parser/业务需求会改变最终目标。",
+      "control": "destination policy + isolated fetcher + egress + least-privilege identity。",
+      "evidence": "出站 DNS/flow/proxy 与应用映射。",
+      "verify": "多表示/重定向/网络隔离回归。"
+    }
+  },
+  "Q18": {
+    "model": [
+      "SSRF 防御失败常发生在“校验的字符串”和“最终连接的网络地址”不是同一个对象。",
+      "正确模型是 canonicalize/parse → resolve → classify → enforce → re-check redirects，而不是 substring blacklist。",
+      "IP 分类必须同时考虑 IPv4、IPv6、私有、环回、链路本地、保留地址以及组织内部网段。"
+    ],
+    "boundary": [
+      "DNS 结果可能随时间改变；只在第一次解析时校验但连接时重新解析会产生 TOCTOU 风险。",
+      "代理环境中应用实际连接的是 proxy，但 proxy 决定最终 destination，因此策略应放在正确层。",
+      "重定向链中每一跳都需要重新执行目标验证。"
+    ],
+    "design": [
+      "使用标准 URL parser，不自行用正则拆 URL。",
+      "统一 resolver/connector，尽量让“被验证的解析结果”就是实际连接使用的结果。",
+      "出站网络层默认拒绝敏感网段，作为应用校验的第二道防线。",
+      "为 fetcher 使用无特权身份并限制响应体、超时与方法。"
+    ],
+    "evidence": [
+      "记录 normalized URL、resolved IP、redirect chain、最终连接地址。",
+      "DNS 与 egress firewall logs 用于确认策略是否在网络层兑现。",
+      "拒绝事件分类可发现正常业务依赖的隐藏目标并推动 allowlist 治理。"
+    ],
+    "validation": [
+      "建立 URL/IP edge-case corpus，覆盖 IPv6、重定向和多 A/AAAA 结果。",
+      "模拟 DNS 结果变化，确认校验与连接不会解耦。",
+      "验证 egress policy 即使应用校验被错误配置也能阻断敏感目的地。"
+    ],
+    "deep_questions": [
+      "DNS rebinding 为什么属于“解析时间与连接时间不一致”问题？",
+      "为什么每一次 redirect 都要重新校验？",
+      "proxy 模式下应该在哪里实施最终 destination 控制？"
+    ],
+    "deliverable": "统一 SSRF URL validation/fetch library + egress policy + edge-case regression corpus + 拒绝审计。",
+    "summary": {
+      "root": "字符串校验与实际网络 destination 不一致。",
+      "boundary": "DNS、redirect、proxy、IPv6/地址表示。",
+      "control": "标准解析 + 解析后分类 + egress 默认拒绝。",
+      "evidence": "normalized URL/resolved IP/redirect/flow。",
+      "verify": "edge-case 与 TOCTOU/redirect 回归。"
+    }
+  },
+  "Q19": {
+    "model": [
+      "XXE 风险来自 XML parser 被允许解释 DTD/external entity 等外部资源能力，导致输入数据跨越文件/网络边界。",
+      "现代库默认更安全、XML 使用减少，使其出现频率下降，但 legacy integration、SAML/SOAP、文档转换仍可能存在。",
+      "核心不是“XML 有漏洞”，而是 parser feature 与不可信文档之间的能力边界。"
+    ],
+    "boundary": [
+      "不同 parser/library/version 默认值不同，不能凭语言或框架名称假定安全。",
+      "即使禁用 external entity，超大/复杂 XML 仍可能有资源消耗风险，需要独立限制。",
+      "XML 处理链可能经过上传解析器、转换器、schema validator，多层设置需一致。"
+    ],
+    "design": [
+      "对不可信 XML 明确禁用 DTD/external entity/外部网络访问等不必要功能。",
+      "使用 schema/size/depth/time limits 管理复杂度。",
+      "解析服务运行在最小权限和无敏感网络访问的隔离环境。",
+      "升级/替换库时用安全配置测试而不是相信默认值。"
+    ],
+    "evidence": [
+      "应用错误日志可显示 DTD/entity/parser feature 相关异常。",
+      "出站网络日志和文件访问 telemetry 可辅助识别解析器越界行为。",
+      "依赖清单和配置审计用于确认实际 parser/version。"
+    ],
+    "validation": [
+      "用安全测试样例确认外部实体被拒绝且没有网络/文件副作用。",
+      "测试大文档、深嵌套和异常编码的资源限制。",
+      "覆盖所有 XML 入口，包括上传、API、消息和第三方集成。"
+    ],
+    "deep_questions": [
+      "为什么“升级到新 parser”不能替代配置验证？",
+      "XXE 和 SSRF 的关系是什么？",
+      "Schema validation 为什么不能自动解决 external entity 风险？"
+    ],
+    "deliverable": "XML parser inventory + 安全配置基线 + 资源限制 + 网络/文件权限隔离 + parser regression tests。",
+    "summary": {
+      "root": "解析器对外部实体/DTD 的能力被不可信 XML 触发。",
+      "boundary": "库默认值、处理链和资源消耗风险。",
+      "control": "禁用不必要特性 + 限制资源 + 隔离。",
+      "evidence": "parser errors + egress/file telemetry。",
+      "verify": "实体拒绝与资源限制回归。"
+    }
+  },
+  "Q20": {
+    "model": [
+      "上传安全必须看完整生命周期：ingest→validate→store→process→serve，而不是只看扩展名。",
+      "风险通常来自内容被错误解析/执行、文件路径与元数据处理、解析器漏洞、访问控制和资源消耗。",
+      "“文件类型”是多信号概念：用户声明 MIME、扩展名、magic/content、实际 parser 可能不一致。"
+    ],
+    "boundary": [
+      "图片/文档即使不可执行，也可能触发复杂 parser；压缩包还涉及递归解压和资源膨胀。",
+      "对象存储权限和下载响应头决定文件是否能在可信 origin 上被浏览器解释。",
+      "杀毒/内容扫描是辅助控制，不能证明文件绝对安全。"
+    ],
+    "design": [
+      "上传先进入 quarantine/non-executable storage，并生成随机对象 ID。",
+      "按业务 allowlist 文件类型、大小、数量与解析流程；必要时重新编码/转码。",
+      "解析服务隔离、最小权限、无多余网络访问，并限制 CPU/memory/time。",
+      "下载通过授权检查，使用独立内容域和安全 Content-Type/Disposition。"
+    ],
+    "evidence": [
+      "记录 uploader identity、object ID、hash、declared/detected type、scanner/processor result。",
+      "对象存储 audit 和下载 access log 用于追踪暴露与访问。",
+      "解析器 crash/timeout/资源异常是重要安全信号。"
+    ],
+    "validation": [
+      "建立文件 corpus 覆盖扩展名/MIME/content 不一致和损坏文件。",
+      "测试超大文件、压缩深度和解析超时边界。",
+      "验证未授权用户无法通过猜测对象路径直接下载。"
+    ],
+    "deep_questions": [
+      "为什么“改名 + 校验后缀”不是完整方案？",
+      "为什么上传和下载应该使用不同的信任边界？",
+      "重新编码图片能降低哪些风险，不能降低哪些？"
+    ],
+    "deliverable": "安全上传架构与策略：类型/大小、quarantine、扫描/转码、对象权限、下载响应头、审计和资源限额。",
+    "summary": {
+      "root": "不可信文件跨越存储、解析、执行和浏览器边界。",
+      "boundary": "类型识别、复杂 parser、对象访问与资源消耗。",
+      "control": "隔离上传 + allowlist + 安全处理 + 授权下载。",
+      "evidence": "上传/对象/解析/下载全链审计。",
+      "verify": "恶意/损坏/超限 corpus 与访问控制回归。"
+    }
+  }
+}

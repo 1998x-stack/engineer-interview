@@ -1,0 +1,902 @@
+[
+  {
+    "id": "Q001",
+    "title": "Redis 为什么这么快？",
+    "difficulty": "基础必会",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 5,
+    "path": "chapters/01-data-modeling/q001.md"
+  },
+  {
+    "id": "Q002",
+    "title": "Redis 和 Memcached 有什么区别？",
+    "difficulty": "基础必会",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 6,
+    "path": "chapters/01-data-modeling/q002.md"
+  },
+  {
+    "id": "Q003",
+    "title": "Redis 有哪些核心数据类型？分别怎么选？",
+    "difficulty": "基础必会",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 7,
+    "path": "chapters/01-data-modeling/q003.md"
+  },
+  {
+    "id": "Q004",
+    "title": "String 最大能做什么？为什么 String 不只是字符串？",
+    "difficulty": "基础必会",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 8,
+    "path": "chapters/01-data-modeling/q004.md"
+  },
+  {
+    "id": "Q005",
+    "title": "Hash 和 String JSON 应该怎么选？",
+    "difficulty": "基础必会",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 9,
+    "path": "chapters/01-data-modeling/q005.md"
+  },
+  {
+    "id": "Q006",
+    "title": "List 可以实现消息队列吗？",
+    "difficulty": "基础必会",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 10,
+    "path": "chapters/01-data-modeling/q006.md"
+  },
+  {
+    "id": "Q007",
+    "title": "Set 最适合哪些场景？",
+    "difficulty": "基础必会",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 11,
+    "path": "chapters/01-data-modeling/q007.md"
+  },
+  {
+    "id": "Q008",
+    "title": "Sorted Set 为什么能做排行榜？",
+    "difficulty": "基础必会",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 12,
+    "path": "chapters/01-data-modeling/q008.md"
+  },
+  {
+    "id": "Q009",
+    "title": "Sorted Set 为什么通常使用 skiplist，而不是平衡树？",
+    "difficulty": "中级",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 13,
+    "path": "chapters/01-data-modeling/q009.md"
+  },
+  {
+    "id": "Q010",
+    "title": "Bitmap 和 HyperLogLog 分别解决什么问题？",
+    "difficulty": "基础必会",
+    "chapter": 1,
+    "chapter_title": "数据结构与数据建模",
+    "pdf_page": 14,
+    "path": "chapters/01-data-modeling/q010.md"
+  },
+  {
+    "id": "Q011",
+    "title": "Redis String 底层为什么不用普通 C 字符串？",
+    "difficulty": "中级",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 16,
+    "path": "chapters/02-internals-memory/q011.md"
+  },
+  {
+    "id": "Q012",
+    "title": "embstr、raw、int 有什么区别？",
+    "difficulty": "中级",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 17,
+    "path": "chapters/02-internals-memory/q012.md"
+  },
+  {
+    "id": "Q013",
+    "title": "List 的底层结构是什么？",
+    "difficulty": "中级",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 18,
+    "path": "chapters/02-internals-memory/q013.md"
+  },
+  {
+    "id": "Q014",
+    "title": "Hash 的底层结构是什么？",
+    "difficulty": "中级",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 19,
+    "path": "chapters/02-internals-memory/q014.md"
+  },
+  {
+    "id": "Q015",
+    "title": "Redis 为什么会自动改变 encoding？",
+    "difficulty": "中级",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 20,
+    "path": "chapters/02-internals-memory/q015.md"
+  },
+  {
+    "id": "Q016",
+    "title": "什么是 Big Key？",
+    "difficulty": "基础必会",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 21,
+    "path": "chapters/02-internals-memory/q016.md"
+  },
+  {
+    "id": "Q017",
+    "title": "Big Key 如何治理？",
+    "difficulty": "中级",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 22,
+    "path": "chapters/02-internals-memory/q017.md"
+  },
+  {
+    "id": "Q018",
+    "title": "什么是 Hot Key？",
+    "difficulty": "基础必会",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 23,
+    "path": "chapters/02-internals-memory/q018.md"
+  },
+  {
+    "id": "Q019",
+    "title": "Hot Key 怎么解决？",
+    "difficulty": "中级",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 24,
+    "path": "chapters/02-internals-memory/q019.md"
+  },
+  {
+    "id": "Q020",
+    "title": "Redis 为什么可能出现内存碎片？",
+    "difficulty": "中级",
+    "chapter": 2,
+    "chapter_title": "底层编码与内存机制",
+    "pdf_page": 25,
+    "path": "chapters/02-internals-memory/q020.md"
+  },
+  {
+    "id": "Q021",
+    "title": "Redis Key 是怎么过期的？",
+    "difficulty": "基础必会",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 27,
+    "path": "chapters/03-cache-ttl-eviction/q021.md"
+  },
+  {
+    "id": "Q022",
+    "title": "TTL 到了，Key 一定瞬间从内存消失吗？",
+    "difficulty": "基础必会",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 28,
+    "path": "chapters/03-cache-ttl-eviction/q022.md"
+  },
+  {
+    "id": "Q023",
+    "title": "Redis 的过期在主从之间怎么保持一致？",
+    "difficulty": "中级",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 29,
+    "path": "chapters/03-cache-ttl-eviction/q023.md"
+  },
+  {
+    "id": "Q024",
+    "title": "Redis 有哪些 maxmemory 淘汰策略？",
+    "difficulty": "基础必会",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 30,
+    "path": "chapters/03-cache-ttl-eviction/q024.md"
+  },
+  {
+    "id": "Q025",
+    "title": "LRU 和 LFU 有什么区别？",
+    "difficulty": "基础必会",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 31,
+    "path": "chapters/03-cache-ttl-eviction/q025.md"
+  },
+  {
+    "id": "Q026",
+    "title": "什么是缓存穿透？",
+    "difficulty": "基础必会",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 32,
+    "path": "chapters/03-cache-ttl-eviction/q026.md"
+  },
+  {
+    "id": "Q027",
+    "title": "什么是缓存击穿？",
+    "difficulty": "基础必会",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 33,
+    "path": "chapters/03-cache-ttl-eviction/q027.md"
+  },
+  {
+    "id": "Q028",
+    "title": "什么是缓存雪崩？",
+    "difficulty": "基础必会",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 34,
+    "path": "chapters/03-cache-ttl-eviction/q028.md"
+  },
+  {
+    "id": "Q029",
+    "title": "Cache Aside 如何保证数据库和 Redis 一致性？",
+    "difficulty": "高级",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 35,
+    "path": "chapters/03-cache-ttl-eviction/q029.md"
+  },
+  {
+    "id": "Q030",
+    "title": "Redis Client-Side Caching 是什么？",
+    "difficulty": "中级",
+    "chapter": 3,
+    "chapter_title": "TTL、缓存模式与淘汰",
+    "pdf_page": 36,
+    "path": "chapters/03-cache-ttl-eviction/q030.md"
+  },
+  {
+    "id": "Q031",
+    "title": "RDB 是什么？",
+    "difficulty": "基础必会",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 38,
+    "path": "chapters/04-persistence/q031.md"
+  },
+  {
+    "id": "Q032",
+    "title": "SAVE 和 BGSAVE 有什么区别？",
+    "difficulty": "基础必会",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 39,
+    "path": "chapters/04-persistence/q032.md"
+  },
+  {
+    "id": "Q033",
+    "title": "什么是 Copy-On-Write？",
+    "difficulty": "中级",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 40,
+    "path": "chapters/04-persistence/q033.md"
+  },
+  {
+    "id": "Q034",
+    "title": "AOF 是什么？",
+    "difficulty": "基础必会",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 41,
+    "path": "chapters/04-persistence/q034.md"
+  },
+  {
+    "id": "Q035",
+    "title": "AOF 为什么需要 rewrite？",
+    "difficulty": "中级",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 42,
+    "path": "chapters/04-persistence/q035.md"
+  },
+  {
+    "id": "Q036",
+    "title": "Redis 7 以后的 Multi-Part AOF 是什么？",
+    "difficulty": "中级",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 43,
+    "path": "chapters/04-persistence/q036.md"
+  },
+  {
+    "id": "Q037",
+    "title": "RDB 和 AOF 应该选哪个？",
+    "difficulty": "基础必会",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 44,
+    "path": "chapters/04-persistence/q037.md"
+  },
+  {
+    "id": "Q038",
+    "title": "RDB 与 AOF 同时开启，Redis 重启优先使用什么？",
+    "difficulty": "中级",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 45,
+    "path": "chapters/04-persistence/q038.md"
+  },
+  {
+    "id": "Q039",
+    "title": "AOF everysec 是不是绝对只丢 1 秒数据？",
+    "difficulty": "高级",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 46,
+    "path": "chapters/04-persistence/q039.md"
+  },
+  {
+    "id": "Q040",
+    "title": "Redis 8.10 的 BACKUP 有什么意义？",
+    "difficulty": "新版加分",
+    "chapter": 4,
+    "chapter_title": "持久化：RDB、AOF 与恢复",
+    "pdf_page": 47,
+    "path": "chapters/04-persistence/q040.md"
+  },
+  {
+    "id": "Q041",
+    "title": "Redis 主从复制是同步还是异步？",
+    "difficulty": "基础必会",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 49,
+    "path": "chapters/05-replication-sentinel/q041.md"
+  },
+  {
+    "id": "Q042",
+    "title": "Redis 全量复制是怎样发生的？",
+    "difficulty": "中级",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 50,
+    "path": "chapters/05-replication-sentinel/q042.md"
+  },
+  {
+    "id": "Q043",
+    "title": "什么是 PSYNC？",
+    "difficulty": "中级",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 51,
+    "path": "chapters/05-replication-sentinel/q043.md"
+  },
+  {
+    "id": "Q044",
+    "title": "replication backlog 是干什么的？",
+    "difficulty": "中级",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 52,
+    "path": "chapters/05-replication-sentinel/q044.md"
+  },
+  {
+    "id": "Q045",
+    "title": "WAIT 能不能保证 Redis 强一致？",
+    "difficulty": "高级",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 53,
+    "path": "chapters/05-replication-sentinel/q045.md"
+  },
+  {
+    "id": "Q046",
+    "title": "Redis Sentinel 是干什么的？",
+    "difficulty": "基础必会",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 54,
+    "path": "chapters/05-replication-sentinel/q046.md"
+  },
+  {
+    "id": "Q047",
+    "title": "Sentinel 的 SDOWN 和 ODOWN 是什么？",
+    "difficulty": "中级",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 55,
+    "path": "chapters/05-replication-sentinel/q047.md"
+  },
+  {
+    "id": "Q048",
+    "title": "Sentinel quorum 和 majority 有什么区别？",
+    "difficulty": "高级",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 56,
+    "path": "chapters/05-replication-sentinel/q048.md"
+  },
+  {
+    "id": "Q049",
+    "title": "Sentinel 为什么推荐奇数个？",
+    "difficulty": "中级",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 57,
+    "path": "chapters/05-replication-sentinel/q049.md"
+  },
+  {
+    "id": "Q050",
+    "title": "Sentinel 会不会脑裂？",
+    "difficulty": "高级",
+    "chapter": 5,
+    "chapter_title": "复制与 Sentinel 高可用",
+    "pdf_page": 58,
+    "path": "chapters/05-replication-sentinel/q050.md"
+  },
+  {
+    "id": "Q051",
+    "title": "Redis Cluster 为什么是 16384 个 slot？",
+    "difficulty": "基础必会",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 60,
+    "path": "chapters/06-cluster/q051.md"
+  },
+  {
+    "id": "Q052",
+    "title": "Redis Cluster 为什么不用一致性哈希？",
+    "difficulty": "中级",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 61,
+    "path": "chapters/06-cluster/q052.md"
+  },
+  {
+    "id": "Q053",
+    "title": "Cluster Client 怎么知道 Key 在哪个节点？",
+    "difficulty": "基础必会",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 62,
+    "path": "chapters/06-cluster/q053.md"
+  },
+  {
+    "id": "Q054",
+    "title": "MOVED 和 ASK 有什么区别？",
+    "difficulty": "中级",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 63,
+    "path": "chapters/06-cluster/q054.md"
+  },
+  {
+    "id": "Q055",
+    "title": "什么是 Hash Tag？",
+    "difficulty": "基础必会",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 64,
+    "path": "chapters/06-cluster/q055.md"
+  },
+  {
+    "id": "Q056",
+    "title": "为什么 Cluster 多 Key 操作经常报 CROSSSLOT？",
+    "difficulty": "基础必会",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 65,
+    "path": "chapters/06-cluster/q056.md"
+  },
+  {
+    "id": "Q057",
+    "title": "Redis Cluster Resharding 怎么工作？",
+    "difficulty": "中级",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 66,
+    "path": "chapters/06-cluster/q057.md"
+  },
+  {
+    "id": "Q058",
+    "title": "Cluster 怎么检测节点故障？",
+    "difficulty": "中级",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 67,
+    "path": "chapters/06-cluster/q058.md"
+  },
+  {
+    "id": "Q059",
+    "title": "Cluster 是强一致系统吗？",
+    "difficulty": "高级",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 68,
+    "path": "chapters/06-cluster/q059.md"
+  },
+  {
+    "id": "Q060",
+    "title": "Redis Cluster 最少为什么经常部署 6 个实例？",
+    "difficulty": "基础必会",
+    "chapter": 6,
+    "chapter_title": "Redis Cluster 与水平扩展",
+    "pdf_page": 69,
+    "path": "chapters/06-cluster/q060.md"
+  },
+  {
+    "id": "Q061",
+    "title": "Redis 单个命令为什么可以认为是原子的？",
+    "difficulty": "基础必会",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 71,
+    "path": "chapters/07-transactions-locks/q061.md"
+  },
+  {
+    "id": "Q062",
+    "title": "MULTI/EXEC 是什么？",
+    "difficulty": "基础必会",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 72,
+    "path": "chapters/07-transactions-locks/q062.md"
+  },
+  {
+    "id": "Q063",
+    "title": "Redis Transaction 支持 rollback 吗？",
+    "difficulty": "基础必会",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 73,
+    "path": "chapters/07-transactions-locks/q063.md"
+  },
+  {
+    "id": "Q064",
+    "title": "WATCH 是怎么实现乐观锁的？",
+    "difficulty": "中级",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 74,
+    "path": "chapters/07-transactions-locks/q064.md"
+  },
+  {
+    "id": "Q065",
+    "title": "Pipeline 和 Transaction 有什么区别？",
+    "difficulty": "基础必会",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 75,
+    "path": "chapters/07-transactions-locks/q065.md"
+  },
+  {
+    "id": "Q066",
+    "title": "Lua Script 为什么经常用于 Redis？",
+    "difficulty": "中级",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 76,
+    "path": "chapters/07-transactions-locks/q066.md"
+  },
+  {
+    "id": "Q067",
+    "title": "Lua Script 最大风险是什么？",
+    "difficulty": "中级",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 77,
+    "path": "chapters/07-transactions-locks/q067.md"
+  },
+  {
+    "id": "Q068",
+    "title": "Redis Functions 和 Lua EVAL 有什么区别？",
+    "difficulty": "中级",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 78,
+    "path": "chapters/07-transactions-locks/q068.md"
+  },
+  {
+    "id": "Q069",
+    "title": "怎么正确实现单 Redis 实例分布式锁？",
+    "difficulty": "基础必会",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 79,
+    "path": "chapters/07-transactions-locks/q069.md"
+  },
+  {
+    "id": "Q070",
+    "title": "Redlock 是否绝对安全？",
+    "difficulty": "高级",
+    "chapter": 7,
+    "chapter_title": "事务、Lua、Functions 与分布式锁",
+    "pdf_page": 80,
+    "path": "chapters/07-transactions-locks/q070.md"
+  },
+  {
+    "id": "Q071",
+    "title": "Redis Pub/Sub 的特点是什么？",
+    "difficulty": "基础必会",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 82,
+    "path": "chapters/08-messaging-streams/q071.md"
+  },
+  {
+    "id": "Q072",
+    "title": "Pub/Sub 和 Stream 最大区别是什么？",
+    "difficulty": "基础必会",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 83,
+    "path": "chapters/08-messaging-streams/q072.md"
+  },
+  {
+    "id": "Q073",
+    "title": "Redis Stream 的 ID 是什么？",
+    "difficulty": "基础必会",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 84,
+    "path": "chapters/08-messaging-streams/q073.md"
+  },
+  {
+    "id": "Q074",
+    "title": "Consumer Group 是什么？",
+    "difficulty": "基础必会",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 85,
+    "path": "chapters/08-messaging-streams/q074.md"
+  },
+  {
+    "id": "Q075",
+    "title": "什么是 PEL？",
+    "difficulty": "中级",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 86,
+    "path": "chapters/08-messaging-streams/q075.md"
+  },
+  {
+    "id": "Q076",
+    "title": "Consumer 崩溃后 Pending Message 怎么处理？",
+    "difficulty": "中级",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 87,
+    "path": "chapters/08-messaging-streams/q076.md"
+  },
+  {
+    "id": "Q077",
+    "title": "Redis Streams 能保证 exactly-once 吗？",
+    "difficulty": "高级",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 88,
+    "path": "chapters/08-messaging-streams/q077.md"
+  },
+  {
+    "id": "Q078",
+    "title": "Redis 8.8 XNACK 解决了什么？",
+    "difficulty": "新版加分",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 89,
+    "path": "chapters/08-messaging-streams/q078.md"
+  },
+  {
+    "id": "Q079",
+    "title": "Redis Stream 怎么防止无限增长？",
+    "difficulty": "中级",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 90,
+    "path": "chapters/08-messaging-streams/q079.md"
+  },
+  {
+    "id": "Q080",
+    "title": "Redis 和 Kafka 应该怎么选？",
+    "difficulty": "高级",
+    "chapter": 8,
+    "chapter_title": "Pub/Sub、Streams 与消息处理",
+    "pdf_page": 91,
+    "path": "chapters/08-messaging-streams/q080.md"
+  },
+  {
+    "id": "Q081",
+    "title": "为什么生产环境不要使用 KEYS *？",
+    "difficulty": "基础必会",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 93,
+    "path": "chapters/09-operations-performance/q081.md"
+  },
+  {
+    "id": "Q082",
+    "title": "SCAN 会不会漏 Key 或重复 Key？",
+    "difficulty": "中级",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 94,
+    "path": "chapters/09-operations-performance/q082.md"
+  },
+  {
+    "id": "Q083",
+    "title": "Redis 延迟突然从 1 ms 变成 500 ms，怎么排查？",
+    "difficulty": "高级",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 95,
+    "path": "chapters/09-operations-performance/q083.md"
+  },
+  {
+    "id": "Q084",
+    "title": "SLOWLOG 记录的是网络耗时吗？",
+    "difficulty": "基础必会",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 96,
+    "path": "chapters/09-operations-performance/q084.md"
+  },
+  {
+    "id": "Q085",
+    "title": "Pipeline 为什么能提高吞吐？",
+    "difficulty": "基础必会",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 97,
+    "path": "chapters/09-operations-performance/q085.md"
+  },
+  {
+    "id": "Q086",
+    "title": "Redis CPU 100%，最先看什么？",
+    "difficulty": "高级",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 98,
+    "path": "chapters/09-operations-performance/q086.md"
+  },
+  {
+    "id": "Q087",
+    "title": "Redis OOM 了怎么办？",
+    "difficulty": "高级",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 99,
+    "path": "chapters/09-operations-performance/q087.md"
+  },
+  {
+    "id": "Q088",
+    "title": "为什么 Redis 不应该使用 Swap？",
+    "difficulty": "基础必会",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 100,
+    "path": "chapters/09-operations-performance/q088.md"
+  },
+  {
+    "id": "Q089",
+    "title": "Redis 应该怎么做安全控制？",
+    "difficulty": "基础必会",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 101,
+    "path": "chapters/09-operations-performance/q089.md"
+  },
+  {
+    "id": "Q090",
+    "title": "Redis 监控最重要的指标有哪些？",
+    "difficulty": "基础必会",
+    "chapter": 9,
+    "chapter_title": "性能诊断、运维与安全",
+    "pdf_page": 102,
+    "path": "chapters/09-operations-performance/q090.md"
+  },
+  {
+    "id": "Q091",
+    "title": "Redis 8 最大的架构变化是什么？",
+    "difficulty": "新版加分",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 104,
+    "path": "chapters/10-redis8-system-design/q091.md"
+  },
+  {
+    "id": "Q092",
+    "title": "Vector Set 和 Redis Query Engine Vector Search 怎么选？",
+    "difficulty": "新版加分",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 105,
+    "path": "chapters/10-redis8-system-design/q092.md"
+  },
+  {
+    "id": "Q093",
+    "title": "Bloom Filter 为什么适合解决缓存穿透？",
+    "difficulty": "中级",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 106,
+    "path": "chapters/10-redis8-system-design/q093.md"
+  },
+  {
+    "id": "Q094",
+    "title": "Count-Min Sketch、Top-K、t-digest 有什么作用？",
+    "difficulty": "新版加分",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 107,
+    "path": "chapters/10-redis8-system-design/q094.md"
+  },
+  {
+    "id": "Q095",
+    "title": "Redis 8.8 的 Array 与传统 List 有什么不同？",
+    "difficulty": "新版加分",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 108,
+    "path": "chapters/10-redis8-system-design/q095.md"
+  },
+  {
+    "id": "Q096",
+    "title": "Redis 8.8 INCREX 为什么值得关注？",
+    "difficulty": "新版加分",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 109,
+    "path": "chapters/10-redis8-system-design/q096.md"
+  },
+  {
+    "id": "Q097",
+    "title": "设计一个秒杀库存系统，你会怎么用 Redis？",
+    "difficulty": "系统设计",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 110,
+    "path": "chapters/10-redis8-system-design/q097.md"
+  },
+  {
+    "id": "Q098",
+    "title": "设计一个高并发排行榜系统。",
+    "difficulty": "系统设计",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 111,
+    "path": "chapters/10-redis8-system-design/q098.md"
+  },
+  {
+    "id": "Q099",
+    "title": "设计一个 Redis Rate Limiter，有哪些算法？",
+    "difficulty": "系统设计",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 112,
+    "path": "chapters/10-redis8-system-design/q099.md"
+  },
+  {
+    "id": "Q100",
+    "title": "终极题：如果让你设计一个生产级 Redis 架构，你会怎么做？",
+    "difficulty": "系统设计",
+    "chapter": 10,
+    "chapter_title": "Redis 8.x 与系统设计压轴题",
+    "pdf_page": 113,
+    "path": "chapters/10-redis8-system-design/q100.md"
+  }
+]

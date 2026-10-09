@@ -1,0 +1,506 @@
+{
+  "question_count": 100,
+  "total_question_chars": 238624,
+  "files": [
+    {
+      "file": "docs/01-http-url-robots-cache/Q001-浏览器访问一个-URL-到拿到-HTML，中间到底发生了什么.md",
+      "chars": 2662,
+      "sha256": "252e4408ad6dd3ff4c1fa0439722b155a1fda0e22fa6c483c022a7cbb7c81fb9"
+    },
+    {
+      "file": "docs/01-http-url-robots-cache/Q002-GET-和-POST-在爬虫里的核心区别是什么.md",
+      "chars": 2104,
+      "sha256": "2b6bfb7fbecd1e4b4355cf575414ccecec06a194c9f6d8ee17f5f47f68492c00"
+    },
+    {
+      "file": "docs/01-http-url-robots-cache/Q003-什么是幂等性？为什么爬虫工程必须理解.md",
+      "chars": 2305,
+      "sha256": "afa2ab181d4c2fca3d24ee981d6d6ce1b817ec714ed54517851ad8b388ef8681"
+    },
+    {
+      "file": "docs/01-http-url-robots-cache/Q004-301、302、307、308-有什么区别.md",
+      "chars": 2203,
+      "sha256": "779ea9d190f36c1ca077bacb82740278af3111a2da88163213ac364697a3bef3"
+    },
+    {
+      "file": "docs/01-http-url-robots-cache/Q005-304-Not-Modified-对增量爬虫有什么意义.md",
+      "chars": 2380,
+      "sha256": "bad0b76b2d089b9d1f7f3e6a8d497ef5315189bd02fa3a120e3037f999d0b7b7"
+    },
+    {
+      "file": "docs/01-http-url-robots-cache/Q006-Cookie、Session、Token-三者是什么关系.md",
+      "chars": 2258,
+      "sha256": "10a3d2bd436813f3a3e3a7891063b5f1b98e20de62fa20bbf64def580feb6992"
+    },
+    {
+      "file": "docs/01-http-url-robots-cache/Q007-robots.txt-到底是什么？是不是访问授权文件.md",
+      "chars": 2390,
+      "sha256": "9a31d439280aeee375e13b6458cdf9ed531e0e5a4eb449301f657f5029bf1b83"
+    },
+    {
+      "file": "docs/01-http-url-robots-cache/Q008-robots.txt-的-Allow-与-Disallow-冲突怎么办.md",
+      "chars": 2128,
+      "sha256": "96c0c1b2cf1bd2b42bd825fe12ecd3512a7fa14687b200c7fe9de6a75c3ebb86"
+    },
+    {
+      "file": "docs/01-http-url-robots-cache/Q009-Sitemap-与-URL-Frontier-有什么关系.md",
+      "chars": 2297,
+      "sha256": "6ca0ed90b0749178ed6e9d43bfb3d68fb3ea6167b35a97725a9cf1683c536207"
+    },
+    {
+      "file": "docs/01-http-url-robots-cache/Q010-什么是-polite-crawling.md",
+      "chars": 2560,
+      "sha256": "21d315190d6a1468c1f6fe80991ae6d80f0568bf583f304e82f5c02cf6db69f0"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q011-XPath-和-CSS-Selector-怎么选.md",
+      "chars": 2298,
+      "sha256": "db21a13c38e02d0b5afbaf58a4f38afa52dba301d0c2119bf402f21fe8bd3bbe"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q012-为什么绝对-XPath-很脆弱.md",
+      "chars": 2352,
+      "sha256": "00ce22e0696c28e9a8198c776a237ae6b22bfc3b5c563ef2832e758742eb9a1d"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q013-DOM-Tree-与原始-HTML-为什么可能不同.md",
+      "chars": 2417,
+      "sha256": "15565e5d2359fa8a01b213d4750f6a33fd5cd7ca3ca2911b744640d5d3815d17"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q014-正文抽取为什么比-XPath-难得多.md",
+      "chars": 2485,
+      "sha256": "3f1e7e44d9e3ca45483e18fe051e85441b4c85b402b9ae19384c4ebbd93d8b0c"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q015-页面结构变化后，如何避免大规模产出空数据.md",
+      "chars": 2457,
+      "sha256": "6e8f8b5357b38af517b655eb6958a1b512f395fcc34afe0d366f5ced20ad3a0e"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q016-JSON-LD-为什么对-crawler-很重要.md",
+      "chars": 2329,
+      "sha256": "737d65eaf9c8f635baad0d9ebdf23af25eb3ded92fd8c3cef070e1d5a19df118"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q017-页面有多个价格，到底应该抓哪个.md",
+      "chars": 2345,
+      "sha256": "4716526e5eb601251dc148a41a7047e9376f1bb10ebe7986303c9242c6e78c15"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q018-如何处理分页.md",
+      "chars": 2341,
+      "sha256": "0d60241dcc1e5e7cad1072ee0e9c8f83adcc1aa5796fd71048e7c6e5d279fc0b"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q019-无限滚动页面为什么难抓.md",
+      "chars": 2330,
+      "sha256": "a059e895c03b23b6517c7e49ced283aaceb50c729dff13ab4ea764fbd2127117"
+    },
+    {
+      "file": "docs/02-html-dom-extraction/Q020-HTML-parser-应该选择严格还是容错.md",
+      "chars": 2472,
+      "sha256": "1c052868e8f7c4aeb6bfa40ddf8282c687261c36e9149431f7ef12979b4edb49"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q021-画出-Scrapy-的架构.md",
+      "chars": 2584,
+      "sha256": "93c46e2b653c31a8d9e62aaa3b2b88e534cf2c08e722417575515d7356619811"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q022-Scrapy-为什么通常比-requests-+-ThreadPool-更适合高并发抓取.md",
+      "chars": 2410,
+      "sha256": "f778d606d1df722206542aecb16f7bae87e6698163b4e322b925dbcd61b4a4e0"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q023-Reactor---Event-Loop-是什么.md",
+      "chars": 2176,
+      "sha256": "3ec2e77108367ca99575a7d023e39b9b39a734539c10e84159a07044256be68f"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q024-Scrapy-Scheduler-是做什么的.md",
+      "chars": 2210,
+      "sha256": "6deb132b259796cdd4df0e722c393a2314a20c71a387e369a73186ce7695d6e4"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q025-Downloader-Middleware-和-Spider-Middleware-有什么区别.md",
+      "chars": 2400,
+      "sha256": "f6be48e2ae26f782fcd7534a85bbe12036c05755e991d8b97ab460e9a2a2d8dd"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q026-Item-Pipeline-为什么不能和-Spider-混在一起.md",
+      "chars": 2243,
+      "sha256": "1aa231439d0d4e36d752a4bd727597315c6b7fb2390af8e32aadea8ff0fb59f0"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q027-Scrapy-如何控制并发.md",
+      "chars": 2152,
+      "sha256": "b5f1c2b9007af7c4f480a82aa673849e6d4a23a70a2f02267ef5d2b434ec0c32"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q028-AutoThrottle-是什么.md",
+      "chars": 2217,
+      "sha256": "20e90054f8c8cca928f097a2017601895707a21bf542afb618f6a31dd8c08414"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q029-为什么不能在-Scrapy-callback-里做长时间-CPU-运算.md",
+      "chars": 2194,
+      "sha256": "92826d7a504fed178c852b4cef757d3ec7b74d810aaf4ae0aaa2105442aff965"
+    },
+    {
+      "file": "docs/03-scrapy-async-concurrency/Q030-Scrapy-如何实现-graceful-shutdown.md",
+      "chars": 2422,
+      "sha256": "72a0589b03b12ffd71d310256133a4671bdddc52c2ea3b398e735cdb76fcad3d"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q031-requests-能拿到-HTML，为什么还是没有数据.md",
+      "chars": 2141,
+      "sha256": "e00dc8549ac0355ec305f30324ff878472ec9361c5454247105700ca7afebf6f"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q032-SPA-爬虫应该先分析-DOM-还是-Network.md",
+      "chars": 2227,
+      "sha256": "7f014e608c6ba799d5eb21c9912a1100165694b6d6cb64c8e9f41442c004a257"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q033-Playwright-的-Browser、Context、Page-分别是什么.md",
+      "chars": 2296,
+      "sha256": "5f30d49d89926c805307aa97a31146ec0b125277f77e0fb072d5e8d569103a45"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q034-Selenium-和-Playwright-的主要区别.md",
+      "chars": 2262,
+      "sha256": "3166213f108f10f70d0c512884c66ce3988862498f7923c485dda7935133b7ad"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q035-为什么-sleep-5-是浏览器自动化的坏味道.md",
+      "chars": 2208,
+      "sha256": "1cb8a5b9c5cd95a750e4bb51f84ccb352045684eb91072afc3da1b06562cac45"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q036-什么是-explicit-wait.md",
+      "chars": 2111,
+      "sha256": "0e10ec87b6fcf6edf03a1a06665522e744c4876d4db08097dddb21d693e4da57"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q037-为什么不建议混用-implicit-wait-和-explicit-wait.md",
+      "chars": 2182,
+      "sha256": "82c421cf77381becd4dc88e8cbe58e89ab943ee42666adc70f0e65dd8ab40232"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q038-什么是-Chrome-DevTools-Protocol（CDP）.md",
+      "chars": 2226,
+      "sha256": "eac30c10103e4ce7b5ea2e7863b91fc7b4eb27c272915dae959ca6564e857f7d"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q039-Playwright-如何观察-Network-Request.md",
+      "chars": 2610,
+      "sha256": "d63ab72c230ec5678ea45c73c1caf9065b90eb0f7047b45fb6e2f519d86540bd"
+    },
+    {
+      "file": "docs/04-js-spa-browser-automation/Q040-Browser-Crawler-最大的性能问题是什么.md",
+      "chars": 2564,
+      "sha256": "6bbc7c9ee21bb233674d298e72905d8875a45b963461fef0f545ef815e35fdb9"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q041-单机爬虫怎么演化成分布式爬虫.md",
+      "chars": 2133,
+      "sha256": "8264d96bcd882a6a311359ed812fc9e5c9e0b8dc2d47252c96b778ee96a3f934"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q042-分布式-crawler-最难的问题是什么.md",
+      "chars": 2105,
+      "sha256": "708bfd3cae5ec9ddefd870439cdde89c8dfdae719b027654f2d4777cab92915e"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q043-URL-Frontier-是什么.md",
+      "chars": 2694,
+      "sha256": "830fd2fd9265c2588885e25c4ac65c676a1f6cd08ec09a7f66fdcfb5dbe0d73a"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q044-URL-如何分片到不同-Worker.md",
+      "chars": 2222,
+      "sha256": "04e84289f88276c1cc71639548687b53f4a68d1553d0325769dd025570f8a25f"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q045-如何解决热门域名导致的-Partition-Skew.md",
+      "chars": 2070,
+      "sha256": "0590bc4059016e2ec15652b2bed0d26a2d7fac7e082e30ab9a1eb69b8207bdf7"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q046-Kafka-能不能直接当-URL-Frontier.md",
+      "chars": 2385,
+      "sha256": "020493e73ec624b2979448f4c707fe3aad8cd60c88f1ae2aa2315f2f774c646a"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q047-Redis-在分布式-crawler-中适合做什么.md",
+      "chars": 2086,
+      "sha256": "34e9bae96d91ea8fe4e547087202422ec206c6500595f4452e1583ca6a53292b"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q048-如何保证-Worker-Crash-后任务不丢.md",
+      "chars": 2412,
+      "sha256": "acd84b0a9a25cd613e59423623e6caa8b4cdce67c2ed7c2a2be4114752050faa"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q049-为什么-Exactly-once-Crawling-几乎没有必要.md",
+      "chars": 2160,
+      "sha256": "afd8b7442c15a45f3d33416f503216285f346b01eefbc68f33f122d98509c28d"
+    },
+    {
+      "file": "docs/05-distributed-crawling/Q050-什么是-Backpressure.md",
+      "chars": 2453,
+      "sha256": "8c54ba7b7ee06a02ba1abf9910c45629e5ae26a76e417e8ca8ec471d757b7d76"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q051-URL-去重最简单怎么做.md",
+      "chars": 2044,
+      "sha256": "6b8314c212fd8e7dba980e259cfaac7e17a3f7c4ad568a3d48db7f04993d3d39"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q052-Bloom-Filter-为什么适合-URL-去重.md",
+      "chars": 2151,
+      "sha256": "1d8e555a4d14869a3296b3977be91238408facc3c0014d263beecf7ec8f52b47"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q053-Bloom-Filter-假阳性率怎么估.md",
+      "chars": 2664,
+      "sha256": "bcf03c35cea83d17d21096e31874e7f71c7f484fc5bfeb6fed4ec9410d16f675"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q054-URL-Canonicalization-为什么困难.md",
+      "chars": 2255,
+      "sha256": "1986efc7adc08d9df22e561c5c896148e0e6b9f0058bee284abb026481aa47ed"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q055-URL-去重和内容去重有什么区别.md",
+      "chars": 1966,
+      "sha256": "baff20ba625479f0d76df651f9f0a1ba1dd24869a64bdeb9bcbd8d8927cc3892"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q056-网页内容如何做近重复检测.md",
+      "chars": 2276,
+      "sha256": "752f195aa46c04a6b921707ccb3af4c9d57f291eefcb35de64e8af07aa263f7e"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q057-什么时候使用-SimHash.md",
+      "chars": 2202,
+      "sha256": "e851cfb31271b3ea163043c3b227cb5144e72066d5dbf60cc759528d24f26024"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q058-数据应该存-MySQL、MongoDB-还是对象存储.md",
+      "chars": 2131,
+      "sha256": "cc8d91235dfe40c8e7ce704ee18faa0ef722f676b07d0771b60bdd92a9b62032"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q059-为什么原始-HTML-最好保留.md",
+      "chars": 2272,
+      "sha256": "8b69ac8dd2759e0be9f86a8c13de1a2483a6df8304fa3db5421e0bbbdcb684d5"
+    },
+    {
+      "file": "docs/06-dedup-scheduling-storage-quality/Q060-成熟-crawler-的数据模型应该有哪些-Metadata.md",
+      "chars": 2394,
+      "sha256": "d47d40cf8ddb721bd8aceaaa7f3dc6984ad35bd2062c5aef0018383e742b091b"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q061-服务端如何判断一个请求是不是-Bot.md",
+      "chars": 2469,
+      "sha256": "cffe0a518bc834a9922469156d0322234babef875646530e49bf9c202d728b15"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q062-为什么只改-User-Agent-不能解决-Bot-Detection.md",
+      "chars": 2170,
+      "sha256": "ec66f0b575347fa74e8ec9b8ff37e30288b540684f35f3234b20fd49601cbc2b"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q063-什么是浏览器指纹.md",
+      "chars": 2241,
+      "sha256": "f4764112972a09c8468e84a70ce83ec4036e2272ae0f2127e52348e171169607"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q064-TLS-Fingerprint-是什么.md",
+      "chars": 2344,
+      "sha256": "eef7e7f90d93f6083a19e80cfd3f4f05c1893b88fc16fdc73f6311f420e6bae9"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q065-IP-Reputation-是怎么工作的.md",
+      "chars": 2242,
+      "sha256": "9ec76ca16d6ae1bbc07c5bd93ceeda9b762d804fe6d639f838f71745e6ffa9ec"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q066-为什么数据中心-IP-与普通用户网络的风险画像可能不同.md",
+      "chars": 2121,
+      "sha256": "c09c846beb9832f3e77b8c85686247b0c0f59c2525acd107a70d017fcdab44e9"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q067-行为检测主要看什么.md",
+      "chars": 2178,
+      "sha256": "34daac3b6331676d44c4067ce8cc61df29a311a28e2b88b1118338db8cd7e50d"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q068-为什么固定频率访问容易形成异常特征.md",
+      "chars": 2238,
+      "sha256": "8d9f7e67bdb53f0051292cb9db75edbdc19040c2d2d02068834fd0327f6f9d6d"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q069-CAPTCHA-在-Bot-Management-体系中处于什么位置.md",
+      "chars": 2327,
+      "sha256": "5639bdea28d5af8e3f964c689bbdd4165140d2bc3a742b3e76657a56442443ef"
+    },
+    {
+      "file": "docs/07-bot-detection-principles/Q070-为什么“出现-CAPTCHA-就自动破解”不是成熟-crawler-的设计.md",
+      "chars": 2416,
+      "sha256": "81520e926246d20a6feb28f278ad539f90aa3e837607c3fee6fd2d36479cf3f3"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q071-如何设计最简单的-Rate-Limiter.md",
+      "chars": 2296,
+      "sha256": "8e4e2190903ef8e251402f88479cdda1f8ee8e437aa5fa644e6e3b5dedefdce8"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q072-Sliding-Window-有什么优势.md",
+      "chars": 2287,
+      "sha256": "b15dc3296f3d359d9399eab59a325b5cbee80463c6cd941d298133506fb13a15"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q073-Token-Bucket-原理是什么.md",
+      "chars": 2595,
+      "sha256": "8dc010d9bc03b05936555f4d6d15d59af963c92e6bda3f949278f8ccc3e161cd"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q074-Leaky-Bucket-和-Token-Bucket-区别.md",
+      "chars": 2297,
+      "sha256": "234722e575936945273d4ccdcb7d492547a7cd0e951b2cf422d17516cfee44d8"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q075-只按-IP-Rate-Limit-有什么问题.md",
+      "chars": 2352,
+      "sha256": "612a9579265d78a464d61340db9862be7b01d2c8dfb85502a27b7ff6d49ebe18"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q076-如何保护一个昂贵-Search-API.md",
+      "chars": 2287,
+      "sha256": "079b89b543a49b9b0fd27e522f8cc83fc879e3582b5b4417c7970d28abb23cfe"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q077-WAF-与-Bot-Management-有什么区别.md",
+      "chars": 2281,
+      "sha256": "1bbe46cbd22300c3de9cffa1c4fe1e41cecef397e0be83164d97be3aed0d1b75"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q078-Challenge、Block、Throttle-应该如何选择.md",
+      "chars": 2242,
+      "sha256": "0b0fc2981cc33fc8909ff1bb59e08e59a1fc6caf4873857b123f49bf296534fe"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q079-如何评价一个反爬模型.md",
+      "chars": 2488,
+      "sha256": "1e3261359c77bbceb340ae0ace28e0a1323db42b01e128dce2da4982efae965e"
+    },
+    {
+      "file": "docs/08-server-side-bot-mitigation/Q080-如何设计反爬系统的-Feature-Pipeline.md",
+      "chars": 2746,
+      "sha256": "6f29bad7ba5f4550df5056dcd5dab7b61052a4ad8c184bee17cf17c579e96d6c"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q081-Crawler-最重要的指标是什么.md",
+      "chars": 2463,
+      "sha256": "494a0ede04d40d103ef53bc9d766517ce2cc474269d50fcb92548031f17103a4"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q082-为什么-HTTP-200-不能代表抓取成功.md",
+      "chars": 2234,
+      "sha256": "8c3036d1014a8011ef8bc05ec094d4d3bc7e7c2d8ff5687778cef54d4cbced56"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q083-如何发现网站改版.md",
+      "chars": 2447,
+      "sha256": "150976e6e096456ddbd0ec987b81292f3adc65fbcb555b692c70ff705e0f6582"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q084-什么叫-Silent-Data-Corruption.md",
+      "chars": 2369,
+      "sha256": "e529296ecc190974f93893a39697be69c466da07240ec260c54a1014cc1e4d82"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q085-如何做-Crawler-Regression-Test.md",
+      "chars": 2399,
+      "sha256": "8c4f135f9b865d31f4f35fe19ccc9f5c5a0c399b2ff579c1127ef8aeded7417d"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q086-如何做-Canary-Crawling.md",
+      "chars": 2304,
+      "sha256": "e1b70ed83f32ee670e74b0d1e26aef16b3b13ec752f55acc2cbe1a3360764322"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q087-Retry-应如何设计.md",
+      "chars": 2453,
+      "sha256": "bc85e2d81b9ebc98c03c4ac32962bfd4822ffc835cc25bd4e27dae977e74347b"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q088-哪些错误不应该反复-Retry.md",
+      "chars": 2141,
+      "sha256": "ba1b28071c51d15d0a4d3363216334776741cb85eddf6a947ab18810f62a0ee3"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q089-Dead-Letter-Queue-是什么.md",
+      "chars": 2288,
+      "sha256": "754b69eeb87eafe32340d09646d7d197145d596a03d0f5c0ea242bfec5ed6aa1"
+    },
+    {
+      "file": "docs/09-reliability-observability-quality/Q090-如何定位“爬虫今天突然变慢”.md",
+      "chars": 2715,
+      "sha256": "bc361f1168efbca950b5ba4641c7b58e4e58504b23096e1e0c84b1dbbb31c17e"
+    },
+    {
+      "file": "docs/10-system-design/Q091-设计一个每天抓取-1-亿网页的系统.md",
+      "chars": 3329,
+      "sha256": "e3c7315feba517a3f9301b5cf06a48e2f5155e70d0d2c5f3a6ec0c94e7adb18a"
+    },
+    {
+      "file": "docs/10-system-design/Q092-设计一个搜索引擎-Web-Crawler.md",
+      "chars": 2600,
+      "sha256": "eb4566c9c3a297859b991db1c34f80a35f348fc01a75c5f1fcf45d7572ce4566"
+    },
+    {
+      "file": "docs/10-system-design/Q093-如何设计-Recrawl-Scheduler.md",
+      "chars": 2379,
+      "sha256": "6a18a371f6c41f860b0867dab4f60c773b4b0efd9fffe6e97941a00990437825"
+    },
+    {
+      "file": "docs/10-system-design/Q094-如何检测-Crawl-Trap.md",
+      "chars": 2241,
+      "sha256": "267741a4396dd015a44a4161d064b0bde6f9194b7719ca8b22720176fd042ef5"
+    },
+    {
+      "file": "docs/10-system-design/Q095-如何抓取-1000-个域名，同时保证每个域名不超过自己的-QPS.md",
+      "chars": 2656,
+      "sha256": "6e63630fff7cd540a135431397d9410c506a06924e7f2a4f3038e8e6c856c001"
+    },
+    {
+      "file": "docs/10-system-design/Q096-设计一个“HTTP-+-Browser”混合爬虫.md",
+      "chars": 2745,
+      "sha256": "83a1d26f4fc14693842027e0900d23930f3619b092fb01932182ac4fe215e291"
+    },
+    {
+      "file": "docs/10-system-design/Q097-Browser-Pool-应该怎么设计.md",
+      "chars": 2192,
+      "sha256": "51652981399d4fece16218d3e9a9e20f57a385e426adeec60023b47304fcdd0b"
+    },
+    {
+      "file": "docs/10-system-design/Q098-设计一个企业级反爬系统.md",
+      "chars": 2691,
+      "sha256": "f53b1fc9b90c7b089ea025effe7bb2ff67ccea29f2bba01145557c7fe7688066"
+    },
+    {
+      "file": "docs/10-system-design/Q099-Crawler-成功率从-99%-突然降到-30%，怎么排查.md",
+      "chars": 2334,
+      "sha256": "cf7ca3729483a622289d44577ea41f0ca49c1e6eff4192af2224d71f417e6e33"
+    },
+    {
+      "file": "docs/10-system-design/Q100-终极题：设计一个十亿级-URL、可增量更新、合规、稳定且不压垮目标网站的爬虫平台.md",
+      "chars": 7004,
+      "sha256": "2fd39d8376ec237b180e1609a86fcb84adcd1bdd35d39f60f04861182ca121b6"
+    }
+  ]
+}

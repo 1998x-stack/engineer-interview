@@ -1,0 +1,69 @@
+{
+  "modules": [
+    {
+      "id": 1,
+      "folder": "01-national-accounts",
+      "title": "国民收入核算与宏观数据",
+      "scope": "GDP、GNI、CPI、实际与名义变量、储蓄投资恒等式"
+    },
+    {
+      "id": 2,
+      "folder": "02-keynesian-cross",
+      "title": "凯恩斯交叉与乘数",
+      "scope": "收入决定、计划支出、存货、财政乘数、自动稳定器"
+    },
+    {
+      "id": 3,
+      "folder": "03-is-lm",
+      "title": "IS-LM 与政策组合",
+      "scope": "产品市场、货币市场、挤出、流动性陷阱、现代利率规则"
+    },
+    {
+      "id": 4,
+      "folder": "04-ad-as",
+      "title": "AD-AS、通胀、失业与周期",
+      "scope": "总需求、总供给、Phillips 曲线、预期、奥肯定律"
+    },
+    {
+      "id": 5,
+      "folder": "05-open-economy",
+      "title": "开放经济与汇率",
+      "scope": "实际汇率、净出口、J 曲线、Mundell-Fleming、不可能三角"
+    },
+    {
+      "id": 6,
+      "folder": "06-growth",
+      "title": "长期增长",
+      "scope": "Solow、黄金律、收敛、技术进步、人力资本与内生增长"
+    },
+    {
+      "id": 7,
+      "folder": "07-modern-macro",
+      "title": "现代宏观与预期",
+      "scope": "跨期消费、投资、RBC、新凯恩斯、Taylor Rule、DSGE"
+    },
+    {
+      "id": 8,
+      "folder": "08-fiscal-monetary-finance",
+      "title": "财政、债务、货币与金融传导",
+      "scope": "债务动态、QE、信贷渠道、银行、房地产、债务通缩"
+    },
+    {
+      "id": 9,
+      "folder": "09-china-2026",
+      "title": "2026 中国宏观热点",
+      "scope": "增长目标、物价、消费、房地产、地方财政、政策组合"
+    },
+    {
+      "id": 10,
+      "folder": "10-research-interview",
+      "title": "研究能力与压力面试",
+      "scope": "因果识别、VAR、政策评估、预测框架、英文表达、综合答题"
+    }
+  ],
+  "difficulty": [
+    "foundation",
+    "intermediate",
+    "advanced"
+  ]
+}

@@ -1,0 +1,27 @@
+# 参考资料（官方 / 一手资料）
+
+> PDF 原始引用以 R1-R15 编号；R16-R23 是 GitHub 扩展版补充。协议规范会持续更新，面试前建议再次核验版本。
+
+- **R1** - Ethereum.org: [Ethereum Virtual Machine (EVM)](https://ethereum.org/developers/docs/evm/)
+- **R2** - Ethereum Improvement Proposals: [EIP-4844: Shard Blob Transactions](https://eips.ethereum.org/EIPS/eip-4844)
+- **R3** - Ethereum Improvement Proposals: [EIP-7702: Set Code for EOAs](https://eips.ethereum.org/EIPS/eip-7702)
+- **R4** - Ethereum Improvement Proposals: [EIP-1153: Transient storage opcodes](https://eips.ethereum.org/EIPS/eip-1153)
+- **R5** - Solidity Documentation: [Security Considerations](https://docs.soliditylang.org/en/latest/security-considerations.html)
+- **R6** - OpenZeppelin Contracts: [Access Control](https://docs.openzeppelin.com/contracts/5.x/access-control)
+- **R7** - OpenZeppelin Contracts: [Proxy - Transparent vs UUPS](https://docs.openzeppelin.com/contracts/5.x/api/proxy)
+- **R8** - OpenZeppelin Upgrades Plugins: [Storage compatibility / FAQ](https://docs.openzeppelin.com/upgrades-plugins/faq)
+- **R9** - Uniswap: [Uniswap v3 Core Whitepaper](https://app.uniswap.org/whitepaper-v3.pdf)
+- **R10** - Aave: [Health Factor & Liquidations](https://aave.com/help/borrowing/liquidations)
+- **R11** - Ethereum Improvement Proposals: [ERC-4337: Account Abstraction Using Alt Mempool](https://eips.ethereum.org/EIPS/eip-4337)
+- **R12** - Solana Documentation: [Core Concepts](https://solana.com/docs/core)
+- **R13** - Solana Documentation: [Program Derived Addresses (PDAs)](https://solana.com/docs/core/pda)
+- **R14** - Solana Documentation: [Cross Program Invocation (CPI)](https://solana.com/docs/core/cpi)
+- **R15** - Ethereum Improvement Proposals: [EIP-1559: Fee market change](https://eips.ethereum.org/EIPS/eip-1559)
+- **R16** - Solidity Documentation: [Contract ABI Specification](https://docs.soliditylang.org/en/latest/abi-spec.html)
+- **R17** - Ethereum Improvement Proposals: [EIP-712: Typed structured data hashing and signing](https://eips.ethereum.org/EIPS/eip-712)
+- **R18** - Ethereum Improvement Proposals: [ERC-2612: Permit Extension for EIP-20 Signed Approvals](https://eips.ethereum.org/EIPS/eip-2612)
+- **R19** - Ethereum.org: [Optimistic Rollups](https://ethereum.org/developers/docs/scaling/optimistic-rollups/)
+- **R20** - Ethereum.org: [Zero-knowledge rollups](https://ethereum.org/developers/docs/scaling/zk-rollups/)
+- **R21** - Ethereum.org: [Data availability](https://ethereum.org/developers/docs/data-availability/)
+- **R22** - OpenZeppelin Contracts: [Contracts 5.x](https://docs.openzeppelin.com/contracts/5.x/)
+- **R23** - Foundry Book: [Foundry documentation](https://book.getfoundry.sh/)

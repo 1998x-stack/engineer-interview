@@ -1,0 +1,18 @@
+{
+  "name": "Data-Structures-Interview-100",
+  "generated_at": "2026-09-02",
+  "source_pdf": "assets/pdf/数据结构面试100题_专业版.pdf",
+  "source_pdf_sha256": "9414444cafaf5ab9d62d536b355cbc19dc4ea4ad1d5aa26fb3c8466d4ad35fca",
+  "source_pdf_pages": 217,
+  "question_count": 100,
+  "markdown_count": 149,
+  "pattern_count": 16,
+  "public_interview_variant_count": 7,
+  "version": "2.0.0",
+  "deep_enrichment": true,
+  "question_markdown_total_bytes": 1639362,
+  "question_markdown_avg_bytes": 16394,
+  "chapter_readme_count": 10,
+  "support_docs_enriched": true,
+  "validator_requires_deep_sections": true
+}

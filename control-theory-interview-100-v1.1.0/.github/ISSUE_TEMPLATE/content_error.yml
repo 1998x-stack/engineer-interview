@@ -1,0 +1,22 @@
+name: 内容/公式纠错
+description: 报告题目、公式、适用条件或工程说明中的问题
+title: "[Correction] "
+labels: [content]
+body:
+  - type: input
+    id: question
+    attributes:
+      label: 题号
+      placeholder: Q043
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: 问题描述
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 推导 / 公开来源 / 可复现实验

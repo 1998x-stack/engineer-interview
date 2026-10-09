@@ -1,0 +1,23 @@
+name: 题解纠错 / 补充
+description: 报告协议、Linux 行为、实验或表述问题
+title: "[Qxxx] "
+labels: [content]
+body:
+  - type: input
+    id: question
+    attributes:
+      label: 题号
+      placeholder: Q026
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: 问题描述
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: RFC / Kernel / 抓包证据
+      description: 请尽量提供权威来源或可复现实验。

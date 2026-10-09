@@ -1,0 +1,910 @@
+{
+  "title": "Computer Network Interview 100",
+  "edition": "2.0-deep-2026",
+  "source_pdf": "计算机网络面试100题_专业详解版_2026.pdf",
+  "question_count": 100,
+  "chapters": [
+    {
+      "index": 1,
+      "name": "第一章 网络分层、链路与二层基础",
+      "start": 1,
+      "end": 10,
+      "desc": "建立“逐层封装与当前一跳”的基本心智模型。",
+      "dir": "01-link-layer-foundations",
+      "questions": [
+        {
+          "id": 1,
+          "title": "OSI 七层与 TCP/IP 模型如何对应？工程上为什么更常用 TCP/IP？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "分层 / 封装 / 协议栈",
+          "path": "questions/01-link-layer-foundations/001-osi-tcp-ip-model.md"
+        },
+        {
+          "id": 2,
+          "title": "一个应用层消息从 send() 到网卡发送经历了什么封装？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "封装 / 内核网络栈",
+          "path": "questions/01-link-layer-foundations/002-send-to-nic-encapsulation.md"
+        },
+        {
+          "id": 3,
+          "title": "Hub、Switch、Router 的本质区别是什么？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "L1 / L2 / L3",
+          "path": "questions/01-link-layer-foundations/003-hub-switch-router.md"
+        },
+        {
+          "id": 4,
+          "title": "MAC 地址和 IP 地址为什么要同时存在？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "寻址 / 下一跳",
+          "path": "questions/01-link-layer-foundations/004-mac-vs-ip.md"
+        },
+        {
+          "id": 5,
+          "title": "ARP 的工作原理是什么？跨网段通信时 ARP 查询谁？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "ARP / 邻居解析",
+          "path": "questions/01-link-layer-foundations/005-arp-next-hop.md"
+        },
+        {
+          "id": 6,
+          "title": "MTU 与 MSS 有什么区别？为什么常见 MSS 是 1460？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "MTU / MSS / 分段",
+          "path": "questions/01-link-layer-foundations/006-mtu-vs-mss.md"
+        },
+        {
+          "id": 7,
+          "title": "子网掩码 / CIDR 前缀到底解决什么问题？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "CIDR / 子网",
+          "path": "questions/01-link-layer-foundations/007-cidr-subnet-mask.md"
+        },
+        {
+          "id": 8,
+          "title": "ping 的完整原理是什么？ping 不通能否说明 TCP 也不通？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "ICMP / 诊断",
+          "path": "questions/01-link-layer-foundations/008-ping-icmp.md"
+        },
+        {
+          "id": 9,
+          "title": "traceroute 为什么能看到中间路由器？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "TTL / ICMP / 路径诊断",
+          "path": "questions/01-link-layer-foundations/009-traceroute-ttl.md"
+        },
+        {
+          "id": 10,
+          "title": "为什么二层需要 VLAN？VLAN 与广播域是什么关系？",
+          "difficulty": "进阶",
+          "frequency": "★★★☆☆",
+          "tags": "VLAN / 二层隔离",
+          "path": "questions/01-link-layer-foundations/010-vlan-broadcast-domain.md"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "第二章 IP、NAT 与路由",
+      "start": 11,
+      "end": 20,
+      "desc": "从本机路由选择扩展到自治系统与全局流量调度。",
+      "dir": "02-ip-nat-routing",
+      "questions": [
+        {
+          "id": 11,
+          "title": "NAT 到底做了什么？SNAT、DNAT、PAT 有什么区别？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "NAT / 端口映射",
+          "path": "questions/02-ip-nat-routing/011-nat-snat-dnat-pat.md"
+        },
+        {
+          "id": 12,
+          "title": "NAT 为什么让 P2P 变难？STUN、TURN、ICE 分别做什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★☆☆",
+          "tags": "NAT Traversal / WebRTC",
+          "path": "questions/02-ip-nat-routing/012-nat-traversal-stun-turn-ice.md"
+        },
+        {
+          "id": 13,
+          "title": "DHCP 的 DORA 流程是什么？为什么客户端一开始没有 IP 也能通信？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "DHCP / 地址分配",
+          "path": "questions/02-ip-nat-routing/013-dhcp-dora.md"
+        },
+        {
+          "id": 14,
+          "title": "IPv4 与 IPv6 除了地址长度，还有哪些关键差异？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "IPv6 / NDP / Header",
+          "path": "questions/02-ip-nat-routing/014-ipv4-vs-ipv6.md"
+        },
+        {
+          "id": 15,
+          "title": "IP Fragmentation 为什么通常应该避免？Path MTU Discovery 如何工作？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "分片 / PMTU",
+          "path": "questions/02-ip-nat-routing/015-ip-fragmentation-pmtud.md"
+        },
+        {
+          "id": 16,
+          "title": "TTL / Hop Limit 为什么存在？路由环路是怎么形成的？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "TTL / 路由环路",
+          "path": "questions/02-ip-nat-routing/016-ttl-hop-limit-routing-loop.md"
+        },
+        {
+          "id": 17,
+          "title": "路由器为什么使用最长前缀匹配？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "Routing / LPM",
+          "path": "questions/02-ip-nat-routing/017-longest-prefix-match.md"
+        },
+        {
+          "id": 18,
+          "title": "OSPF 与 BGP 的定位和核心思想有什么不同？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "IGP / EGP / 路由协议",
+          "path": "questions/02-ip-nat-routing/018-ospf-vs-bgp.md"
+        },
+        {
+          "id": 19,
+          "title": "BGP 的 AS_PATH、LOCAL_PREF、MED 分别解决什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★☆☆",
+          "tags": "BGP 属性 / 策略",
+          "path": "questions/02-ip-nat-routing/019-bgp-as-path-local-pref-med.md"
+        },
+        {
+          "id": 20,
+          "title": "Anycast 是什么？为什么 DNS/CDN 常用？",
+          "difficulty": "进阶",
+          "frequency": "★★★☆☆",
+          "tags": "Anycast / CDN / BGP",
+          "path": "questions/02-ip-nat-routing/020-anycast-dns-cdn.md"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "name": "第三章 TCP 连接、状态机与可靠性",
+      "start": 21,
+      "end": 35,
+      "desc": "面试最高频核心：握手、挥手、TIME_WAIT、序号、重传与 framing。",
+      "dir": "03-tcp-connection-reliability",
+      "questions": [
+        {
+          "id": 21,
+          "title": "TCP 与 UDP 的本质区别是什么？不要只说“可靠/不可靠”。",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "TCP / UDP / 语义",
+          "path": "questions/03-tcp-connection-reliability/021-tcp-vs-udp.md"
+        },
+        {
+          "id": 22,
+          "title": "TCP 三次握手完整过程是什么？每一步同步了什么状态？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "TCP Handshake / ISN",
+          "path": "questions/03-tcp-connection-reliability/022-tcp-three-way-handshake.md"
+        },
+        {
+          "id": 23,
+          "title": "为什么 TCP 需要三次握手，不能两次？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "Handshake / 旧报文",
+          "path": "questions/03-tcp-connection-reliability/023-why-three-way-handshake.md"
+        },
+        {
+          "id": 24,
+          "title": "第三次握手 ACK 丢失后，客户端立刻带数据发送，服务端能建立连接吗？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "TCP 状态机 / ACK+Data",
+          "path": "questions/03-tcp-connection-reliability/024-third-ack-lost-with-data.md"
+        },
+        {
+          "id": 25,
+          "title": "TCP 为什么通常需要四次挥手？FIN 与 ACK 的语义是什么？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "TCP Close / Half-close",
+          "path": "questions/03-tcp-connection-reliability/025-tcp-four-way-close.md"
+        },
+        {
+          "id": 26,
+          "title": "TIME_WAIT 为什么存在？为什么经常讨论 2MSL？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "TIME_WAIT / 连接复用",
+          "path": "questions/03-tcp-connection-reliability/026-time-wait-2msl.md"
+        },
+        {
+          "id": 27,
+          "title": "服务器几十万个 TIME_WAIT，应该怎么分析而不是直接改内核参数？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "TIME_WAIT / 排障",
+          "path": "questions/03-tcp-connection-reliability/027-time-wait-at-scale.md"
+        },
+        {
+          "id": 28,
+          "title": "CLOSE_WAIT 大量堆积通常说明什么？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "CLOSE_WAIT / 资源泄漏",
+          "path": "questions/03-tcp-connection-reliability/028-close-wait-leak.md"
+        },
+        {
+          "id": 29,
+          "title": "什么是 TCP Half-close？什么时候有用？",
+          "difficulty": "进阶",
+          "frequency": "★★★☆☆",
+          "tags": "shutdown / 半关闭",
+          "path": "questions/03-tcp-connection-reliability/029-tcp-half-close.md"
+        },
+        {
+          "id": 30,
+          "title": "SYN Flood 怎么攻击？SYN Cookies 是什么，为什么不是万能方案？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "SYN Flood / SYN Cookie",
+          "path": "questions/03-tcp-connection-reliability/030-syn-flood-syn-cookies.md"
+        },
+        {
+          "id": 31,
+          "title": "TCP Sequence Number 与 ACK Number 到底在确认什么？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "Seq / Ack / Byte Stream",
+          "path": "questions/03-tcp-connection-reliability/031-tcp-seq-ack.md"
+        },
+        {
+          "id": 32,
+          "title": "TCP 可靠性由哪些机制共同保证？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "可靠传输 / 重传 / SACK",
+          "path": "questions/03-tcp-connection-reliability/032-tcp-reliability.md"
+        },
+        {
+          "id": 33,
+          "title": "超时重传、快速重传和 SACK 分别解决什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "RTO / Fast Retransmit / SACK",
+          "path": "questions/03-tcp-connection-reliability/033-rto-fast-retransmit-sack.md"
+        },
+        {
+          "id": 34,
+          "title": "TCP 滑动窗口解决什么问题？发送窗口为什么不是固定大小？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "Sliding Window / Pipeline",
+          "path": "questions/03-tcp-connection-reliability/034-tcp-sliding-window.md"
+        },
+        {
+          "id": 35,
+          "title": "所谓 TCP “粘包/拆包”到底是什么？应用层怎样正确 framing？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "Byte Stream / Framing",
+          "path": "questions/03-tcp-connection-reliability/035-tcp-stream-framing.md"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "name": "第四章 TCP 性能、窗口与拥塞控制",
+      "start": 36,
+      "end": 45,
+      "desc": "理解吞吐为什么受到 RTT、窗口、拥塞算法和系统队列共同约束。",
+      "dir": "04-tcp-performance-congestion",
+      "questions": [
+        {
+          "id": 36,
+          "title": "Flow Control 与 Congestion Control 的区别是什么？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "rwnd / cwnd",
+          "path": "questions/04-tcp-performance-congestion/036-flow-vs-congestion-control.md"
+        },
+        {
+          "id": 37,
+          "title": "Slow Start 为什么叫“慢启动”，它的增长其实有多快？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "Slow Start / ssthresh",
+          "path": "questions/04-tcp-performance-congestion/037-tcp-slow-start.md"
+        },
+        {
+          "id": 38,
+          "title": "Fast Retransmit 与 Fast Recovery 分别是什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "Reno / Loss Recovery",
+          "path": "questions/04-tcp-performance-congestion/038-fast-retransmit-fast-recovery.md"
+        },
+        {
+          "id": 39,
+          "title": "rwnd、cwnd、ssthresh 三者是什么关系？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "窗口 / 拥塞状态",
+          "path": "questions/04-tcp-performance-congestion/039-rwnd-cwnd-ssthresh.md"
+        },
+        {
+          "id": 40,
+          "title": "TCP Reno 与 CUBIC 的核心差异是什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "Reno / CUBIC",
+          "path": "questions/04-tcp-performance-congestion/040-reno-vs-cubic.md"
+        },
+        {
+          "id": 41,
+          "title": "BBR 与 CUBIC 的核心思想差在哪里？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "BBR / Model-based CC",
+          "path": "questions/04-tcp-performance-congestion/041-bbr-vs-cubic.md"
+        },
+        {
+          "id": 42,
+          "title": "Nagle Algorithm 解决什么？为什么交互式 RPC 常设置 TCP_NODELAY？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "Nagle / Tinygram",
+          "path": "questions/04-tcp-performance-congestion/042-nagle-tcp-nodelay.md"
+        },
+        {
+          "id": 43,
+          "title": "TCP_NODELAY 到底改变什么，不改变什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★☆☆",
+          "tags": "TCP_NODELAY / 延迟",
+          "path": "questions/04-tcp-performance-congestion/043-tcp-nodelay-boundaries.md"
+        },
+        {
+          "id": 44,
+          "title": "BDP 是什么？为什么高带宽长 RTT 链路需要大窗口？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "BDP / Long Fat Network",
+          "path": "questions/04-tcp-performance-congestion/044-bandwidth-delay-product.md"
+        },
+        {
+          "id": 45,
+          "title": "TCP 半连接队列、全连接队列与 listen(backlog) 有什么关系？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "SYN Queue / Accept Queue",
+          "path": "questions/04-tcp-performance-congestion/045-syn-queue-accept-queue-backlog.md"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "name": "第五章 UDP、QUIC 与 HTTP/3 传输基础",
+      "start": 46,
+      "end": 52,
+      "desc": "从“无连接数据报”到现代用户态可靠传输协议。",
+      "dir": "05-udp-quic-http3",
+      "questions": [
+        {
+          "id": 46,
+          "title": "如果基于 UDP 实现可靠传输，需要补哪些机制？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "Reliable UDP / Protocol Design",
+          "path": "questions/05-udp-quic-http3/046-reliable-udp-design.md"
+        },
+        {
+          "id": 47,
+          "title": "UDP 为什么不存在 TCP 那种“粘包”语义？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "Datagram / Message Boundary",
+          "path": "questions/05-udp-quic-http3/047-udp-datagram-boundaries.md"
+        },
+        {
+          "id": 48,
+          "title": "QUIC 为什么建立在 UDP 上，而不是直接改 TCP？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "QUIC / Deployability",
+          "path": "questions/05-udp-quic-http3/048-why-quic-over-udp.md"
+        },
+        {
+          "id": 49,
+          "title": "HTTP/2 已有多路复用，为什么 HTTP/3 仍需要 QUIC？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "HTTP/2 / HTTP/3 / HOL",
+          "path": "questions/05-udp-quic-http3/049-http2-vs-http3-hol.md"
+        },
+        {
+          "id": 50,
+          "title": "QUIC Connection Migration 为什么适合移动网络？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "Connection ID / Path Validation",
+          "path": "questions/05-udp-quic-http3/050-quic-connection-migration.md"
+        },
+        {
+          "id": 51,
+          "title": "QUIC 为什么能减少首次/恢复连接延迟？0-RTT 的收益与风险是什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "QUIC Handshake / 0-RTT",
+          "path": "questions/05-udp-quic-http3/051-quic-handshake-0rtt.md"
+        },
+        {
+          "id": 52,
+          "title": "QUIC 使用 UDP，是否就不需要拥塞控制和流量控制？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "QUIC Flow/Congestion Control",
+          "path": "questions/05-udp-quic-http3/052-quic-flow-congestion-control.md"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "name": "第六章 DNS、全局调度与 CDN",
+      "start": 53,
+      "end": 60,
+      "desc": "掌握域名解析、缓存、一致性与边缘加速。",
+      "dir": "06-dns-cdn",
+      "questions": [
+        {
+          "id": 53,
+          "title": "输入域名后，DNS 完整解析链路是什么？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "DNS / Resolver / Cache",
+          "path": "questions/06-dns-cdn/053-dns-resolution-path.md"
+        },
+        {
+          "id": 54,
+          "title": "DNS 递归查询与迭代查询有什么区别？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "Recursive / Iterative",
+          "path": "questions/06-dns-cdn/054-dns-recursive-vs-iterative.md"
+        },
+        {
+          "id": 55,
+          "title": "为什么“DNS 使用 UDP”是错误或不完整答案？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "DNS / UDP / TCP",
+          "path": "questions/06-dns-cdn/055-dns-udp-and-tcp.md"
+        },
+        {
+          "id": 56,
+          "title": "A、AAAA、CNAME、MX、NS、TXT 分别表达什么？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "DNS Records",
+          "path": "questions/06-dns-cdn/056-dns-record-types.md"
+        },
+        {
+          "id": 57,
+          "title": "DNS TTL 与 Negative Caching 是什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "TTL / NXDOMAIN",
+          "path": "questions/06-dns-cdn/057-dns-ttl-negative-cache.md"
+        },
+        {
+          "id": 58,
+          "title": "DNS 如何做负载均衡？它的局限是什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "DNS LB / GSLB",
+          "path": "questions/06-dns-cdn/058-dns-load-balancing.md"
+        },
+        {
+          "id": 59,
+          "title": "DNS Cache Poisoning 是什么？DNSSEC、DoH/DoT 分别保护什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "DNS Security",
+          "path": "questions/06-dns-cdn/059-dns-cache-poisoning-dnssec-doh-dot.md"
+        },
+        {
+          "id": 60,
+          "title": "CDN 为什么能加速？缓存命中率为什么只是其中一部分？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "CDN / Edge / Origin",
+          "path": "questions/06-dns-cdn/060-cdn-acceleration.md"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "name": "第七章 HTTP/1.1、HTTP/2 与应用层协议",
+      "start": 61,
+      "end": 73,
+      "desc": "从 HTTP 语义深入到 framing、缓存、多路复用与 RPC。",
+      "dir": "07-http",
+      "questions": [
+        {
+          "id": 61,
+          "title": "HTTP/1.1 Request/Response 报文结构是什么？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "HTTP Message / Framing",
+          "path": "questions/07-http/061-http11-message-structure.md"
+        },
+        {
+          "id": 62,
+          "title": "GET 与 POST 真正的区别是什么？safe、idempotent、cacheable 如何区分？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "HTTP Semantics",
+          "path": "questions/07-http/062-get-vs-post-semantics.md"
+        },
+        {
+          "id": 63,
+          "title": "常见 HTTP 状态码中，301/302/307/308、401/403、502/504 怎么区分？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "Status Code / Gateway",
+          "path": "questions/07-http/063-http-status-codes.md"
+        },
+        {
+          "id": 64,
+          "title": "HTTP “无状态”是什么意思？Cookie、Session、Token 为什么出现？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "Stateless / Session",
+          "path": "questions/07-http/064-http-stateless-cookie-session-token.md"
+        },
+        {
+          "id": 65,
+          "title": "HTTP Persistent Connection 与 TCP 长连接是什么关系？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "Keep-Alive / Connection Reuse",
+          "path": "questions/07-http/065-http-persistent-connection.md"
+        },
+        {
+          "id": 66,
+          "title": "Content-Length 与 chunked transfer encoding 解决什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "HTTP/1.1 Framing",
+          "path": "questions/07-http/066-content-length-chunked.md"
+        },
+        {
+          "id": 67,
+          "title": "Cache-Control 中 max-age、no-cache、no-store、private、must-revalidate 怎么理解？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "HTTP Cache",
+          "path": "questions/07-http/067-cache-control.md"
+        },
+        {
+          "id": 68,
+          "title": "ETag/If-None-Match 与 Last-Modified/If-Modified-Since 如何工作？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "Conditional Request / 304",
+          "path": "questions/07-http/068-etag-last-modified.md"
+        },
+        {
+          "id": 69,
+          "title": "HTTP/1.1 与 HTTP/2 的核心差异是什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "HTTP/2 / Binary Framing",
+          "path": "questions/07-http/069-http11-vs-http2.md"
+        },
+        {
+          "id": 70,
+          "title": "HTTP/2 为什么仍存在 Head-of-Line Blocking？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "HOL / TCP",
+          "path": "questions/07-http/070-http2-head-of-line-blocking.md"
+        },
+        {
+          "id": 71,
+          "title": "HPACK 与 QPACK 为什么不能完全相同？",
+          "difficulty": "进阶",
+          "frequency": "★★★☆☆",
+          "tags": "Header Compression / QPACK",
+          "path": "questions/07-http/071-hpack-vs-qpack.md"
+        },
+        {
+          "id": 72,
+          "title": "WebSocket、SSE、Long Polling 应该怎么选？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "Realtime / Streaming",
+          "path": "questions/07-http/072-websocket-sse-long-polling.md"
+        },
+        {
+          "id": 73,
+          "title": "gRPC 为什么常运行在 HTTP/2 上？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "gRPC / RPC / HTTP2",
+          "path": "questions/07-http/073-grpc-http2.md"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "name": "第八章 HTTPS、TLS 1.3 与 PKI",
+      "start": 74,
+      "end": 80,
+      "desc": "掌握握手、证书、密钥协商与 0-RTT 风险。",
+      "dir": "08-tls-https-pki",
+      "questions": [
+        {
+          "id": 74,
+          "title": "HTTP 与 HTTPS 的本质区别是什么？TLS 提供了哪些安全属性？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "HTTPS / TLS",
+          "path": "questions/08-tls-https-pki/074-http-vs-https.md"
+        },
+        {
+          "id": 75,
+          "title": "TLS 1.3 Handshake 需要掌握到什么程度？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "TLS 1.3 / Handshake",
+          "path": "questions/08-tls-https-pki/075-tls13-handshake.md"
+        },
+        {
+          "id": 76,
+          "title": "浏览器如何验证 HTTPS 证书？证书链、主机名、有效期各自是什么作用？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "PKI / Certificate Chain",
+          "path": "questions/08-tls-https-pki/076-certificate-validation.md"
+        },
+        {
+          "id": 77,
+          "title": "TLS 为什么同时使用非对称密码学和对称加密？",
+          "difficulty": "基础",
+          "frequency": "★★★★☆",
+          "tags": "Key Exchange / AEAD",
+          "path": "questions/08-tls-https-pki/077-asymmetric-vs-symmetric-crypto.md"
+        },
+        {
+          "id": 78,
+          "title": "什么是 Forward Secrecy？为什么 ECDHE 很重要？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "PFS / ECDHE",
+          "path": "questions/08-tls-https-pki/078-forward-secrecy-ecdhe.md"
+        },
+        {
+          "id": 79,
+          "title": "SNI 与 ALPN 分别解决什么问题？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "TLS Extension / Virtual Hosting",
+          "path": "questions/08-tls-https-pki/079-sni-vs-alpn.md"
+        },
+        {
+          "id": 80,
+          "title": "TLS 1.3 0-RTT 为什么有 Replay Risk？哪些业务不适合？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "0-RTT / Replay / Idempotency",
+          "path": "questions/08-tls-https-pki/080-tls13-0rtt-replay.md"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "name": "第九章 Socket、epoll 与 Linux 网络栈",
+      "start": 81,
+      "end": 90,
+      "desc": "把协议知识落到系统调用、事件循环与内核收包路径。",
+      "dir": "09-linux-socket-io",
+      "questions": [
+        {
+          "id": 81,
+          "title": "一个 TCP Server 从 socket() 到处理请求的系统调用流程是什么？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "Socket API / Server",
+          "path": "questions/09-linux-socket-io/081-tcp-server-socket-syscalls.md"
+        },
+        {
+          "id": 82,
+          "title": "Blocking Socket 与 Non-blocking Socket 的核心区别是什么？",
+          "difficulty": "基础",
+          "frequency": "★★★★★",
+          "tags": "Blocking / EAGAIN",
+          "path": "questions/09-linux-socket-io/082-blocking-vs-nonblocking-socket.md"
+        },
+        {
+          "id": 83,
+          "title": "经典五种 I/O Model 是什么？readiness 与 completion 的区别是什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "IO Model / AIO",
+          "path": "questions/09-linux-socket-io/083-five-io-models.md"
+        },
+        {
+          "id": 84,
+          "title": "select、poll、epoll 的核心差异是什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "IO Multiplexing",
+          "path": "questions/09-linux-socket-io/084-select-poll-epoll.md"
+        },
+        {
+          "id": 85,
+          "title": "epoll LT 与 ET 有什么区别？ET 为什么要求“读到 EAGAIN”？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "epoll / LT / ET",
+          "path": "questions/09-linux-socket-io/085-epoll-lt-vs-et.md"
+        },
+        {
+          "id": 86,
+          "title": "为什么 epoll ET 几乎总与 nonblocking socket 搭配？",
+          "difficulty": "进阶",
+          "frequency": "★★★★★",
+          "tags": "ET / Nonblocking",
+          "path": "questions/09-linux-socket-io/086-epoll-et-nonblocking.md"
+        },
+        {
+          "id": 87,
+          "title": "为什么 epoll 对普通磁盘文件意义有限？",
+          "difficulty": "进阶",
+          "frequency": "★★★☆☆",
+          "tags": "epoll / File IO",
+          "path": "questions/09-linux-socket-io/087-epoll-regular-files.md"
+        },
+        {
+          "id": 88,
+          "title": "send() 返回成功，是否意味着对端已经收到或处理？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "send / Kernel Buffer / App ACK",
+          "path": "questions/09-linux-socket-io/088-send-success-semantics.md"
+        },
+        {
+          "id": 89,
+          "title": "Zero Copy 的目标是什么？sendfile、splice、mmap 各自大致减少了什么？",
+          "difficulty": "进阶",
+          "frequency": "★★★★☆",
+          "tags": "Zero Copy / sendfile",
+          "path": "questions/09-linux-socket-io/089-zero-copy-sendfile-splice-mmap.md"
+        },
+        {
+          "id": 90,
+          "title": "一个 Packet 从 NIC 到应用 recv() 大致经过哪些 Linux 网络栈阶段？",
+          "difficulty": "高级",
+          "frequency": "★★★★☆",
+          "tags": "NIC / NAPI / Softirq / Socket Queue",
+          "path": "questions/09-linux-socket-io/090-linux-packet-receive-path.md"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "name": "第十章 综合故障定位与系统设计",
+      "start": 91,
+      "end": 100,
+      "desc": "用分层方法处理真实线上问题与高并发架构题。",
+      "dir": "10-troubleshooting-system-design",
+      "questions": [
+        {
+          "id": 91,
+          "title": "浏览器输入 https://www.example.com 到页面显示，完整发生了什么？",
+          "difficulty": "综合",
+          "frequency": "★★★★★",
+          "tags": "URL 全流程 / 综合",
+          "path": "questions/10-troubleshooting-system-design/091-url-to-page-full-path.md"
+        },
+        {
+          "id": 92,
+          "title": "用户说“网站突然很慢”，你如何系统化拆解而不是猜？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "Latency / Troubleshooting",
+          "path": "questions/10-troubleshooting-system-design/092-website-slow-troubleshooting.md"
+        },
+        {
+          "id": 93,
+          "title": "服务延迟升高但 CPU、QPS 都没变化，你优先怀疑什么？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "Tail Latency / Queueing",
+          "path": "questions/10-troubleshooting-system-design/093-latency-high-cpu-qps-stable.md"
+        },
+        {
+          "id": 94,
+          "title": "大量 TIME_WAIT 的完整排障流程是什么？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "TIME_WAIT / Connection Churn",
+          "path": "questions/10-troubleshooting-system-design/094-time-wait-troubleshooting.md"
+        },
+        {
+          "id": 95,
+          "title": "大量 CLOSE_WAIT 的完整排障流程是什么？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "CLOSE_WAIT / Application Leak",
+          "path": "questions/10-troubleshooting-system-design/095-close-wait-troubleshooting.md"
+        },
+        {
+          "id": 96,
+          "title": "大量 SYN_RECV 且新连接失败，应如何判断是攻击、丢包还是容量问题？",
+          "difficulty": "工程",
+          "frequency": "★★★★★",
+          "tags": "SYN_RECV / Backlog",
+          "path": "questions/10-troubleshooting-system-design/096-syn-recv-troubleshooting.md"
+        },
+        {
+          "id": 97,
+          "title": "网络服务 CPU 很高但业务线程不忙，可能是什么？",
+          "difficulty": "高级",
+          "frequency": "★★★★☆",
+          "tags": "Softirq / PPS / NIC",
+          "path": "questions/10-troubleshooting-system-design/097-network-cpu-softirq.md"
+        },
+        {
+          "id": 98,
+          "title": "四层负载均衡与七层负载均衡怎么选？",
+          "difficulty": "系统设计",
+          "frequency": "★★★★★",
+          "tags": "L4 / L7 / Load Balancing",
+          "path": "questions/10-troubleshooting-system-design/098-l4-vs-l7-load-balancing.md"
+        },
+        {
+          "id": 99,
+          "title": "设计支持 100 万 TCP 长连接的服务器，第一性约束有哪些？",
+          "difficulty": "系统设计",
+          "frequency": "★★★★★",
+          "tags": "Million Connections / Capacity Planning",
+          "path": "questions/10-troubleshooting-system-design/099-million-tcp-connections.md"
+        },
+        {
+          "id": 100,
+          "title": "给你一份 tcpdump/Wireshark 抓包，如何系统判断 TCP 问题？",
+          "difficulty": "综合",
+          "frequency": "★★★★★",
+          "tags": "Packet Analysis / Troubleshooting",
+          "path": "questions/10-troubleshooting-system-design/100-tcpdump-wireshark-analysis.md"
+        }
+      ]
+    }
+  ],
+  "updated": "2026-09-02",
+  "content_policy": "PDF baseline + question-specific V2 engineering expansion"
+}

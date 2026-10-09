@@ -1,0 +1,412 @@
+{
+  "Q31": {
+    "model": [
+      "主机 IR 的第一原则不是“先查哪个命令”，而是确定事件严重度、当前活动是否持续、哪些 volatile evidence 最容易丢失。",
+      "调查模型可按 process、network、identity、persistence、filesystem、application 六类证据并行建立时间线。",
+      "生产主机处置需权衡 containment 与 evidence/business impact，不能机械“发现异常就关机”。"
+    ],
+    "boundary": [
+      "关机可能丢失内存/连接等易失证据，也可能是阻断继续破坏的必要动作，取决于场景。",
+      "单机证据不足以证明攻击链，需关联 IdP、网络、应用、云等外部 telemetry。",
+      "命令输出会改变系统状态，取证环境要记录操作和时间。"
+    ],
+    "design": [
+      "预先定义 IR playbook、主机隔离能力、取证权限和可信工具。",
+      "关键服务器启用集中日志/EDR，避免证据只留在本机。",
+      "高价值主机建立时间同步、进程审计、认证与文件完整性监控。",
+      "调查时区分 collect、contain、eradicate、recover，不混为一次操作。"
+    ],
+    "evidence": [
+      "进程树、命令行、用户、启动时间、签名/hash。",
+      "网络连接、DNS、listening socket、远端目的地。",
+      "认证日志、sudo/SSH、cron/systemd、文件修改、应用日志。"
+    ],
+    "validation": [
+      "tabletop 验证值班人员能在不破坏证据的情况下完成采集和隔离。",
+      "测试 EDR isolation 对管理通道和关键业务的影响。",
+      "确认时间同步和集中日志在主机被入侵后仍可用于 cross-host correlation。"
+    ],
+    "deep_questions": [
+      "什么时候应该立即隔离，什么时候应先采集？",
+      "如何判断异常进程是 root cause 还是后续结果？",
+      "如果主机日志可能被篡改，你还能信哪些外部证据？"
+    ],
+    "deliverable": "Linux host IR checklist + evidence collection matrix + containment decision tree + timeline worksheet。",
+    "summary": {
+      "root": "事件调查需要围绕易失证据、范围和持续活动建立时间线。",
+      "boundary": "处置动作会影响证据与业务。",
+      "control": "预置 telemetry、playbook、隔离与可信取证。",
+      "evidence": "process/network/auth/persistence/file/app。",
+      "verify": "tabletop 与隔离/证据可用性演练。"
+    }
+  },
+  "Q32": {
+    "model": [
+      "Windows 调查要从“事件语义”而非单个 Event ID 出发：登录、进程、PowerShell、服务/任务、Defender/EDR 等共同描述行为。",
+      "事件 ID 只是索引；相同 ID 在不同 Logon Type、account、host role 下意义不同。",
+      "高分回答会把 Windows 原生日志与 EDR、IdP、网络 telemetry 关联。"
+    ],
+    "boundary": [
+      "未启用 process command-line/audit policy 时，日志天然不完整。",
+      "日志轮转、容量、转发失败会造成 blind spot。",
+      "域控、服务器、终端的“正常”基线不同，不能用同一阈值。"
+    ],
+    "design": [
+      "按 use case 配置 Advanced Audit Policy、PowerShell logging 和集中转发。",
+      "保留关键字段：user/SID、logon type、source、process parent/command line。",
+      "对日志采集健康度本身建立监控。",
+      "结合 Sysmon/EDR 时明确重复与互补字段，避免成本失控。"
+    ],
+    "evidence": [
+      "Security/System/Application + PowerShell operational。",
+      "EDR process/network/file telemetry。",
+      "AD/IdP 登录、Kerberos/NTLM、VPN 与邮件上下文。"
+    ],
+    "validation": [
+      "用已知管理行为与模拟安全事件验证日志链能完整关联。",
+      "检查日志缺失/agent offline 是否触发监控。",
+      "对不同 Windows 版本/服务器角色验证策略一致性。"
+    ],
+    "deep_questions": [
+      "为什么不能背几个 Event ID 就算会 Windows IR？",
+      "Logon Type 对登录事件解释有什么帮助？",
+      "PowerShell 日志与 EDR 各自能补什么盲区？"
+    ],
+    "deliverable": "Windows telemetry baseline：audit policy、日志源、字段、保留期、转发健康和检测 use cases。",
+    "summary": {
+      "root": "Windows 行为需要多日志语义关联。",
+      "boundary": "审计策略和主机角色决定可见性。",
+      "control": "Advanced Audit + PowerShell + EDR + 集中转发。",
+      "evidence": "Security/System/PowerShell/EDR/IdP。",
+      "verify": "模拟行为与采集健康检查。"
+    }
+  },
+  "Q33": {
+    "model": [
+      "异常进程判断应使用 context scoring：image/path/signature/parent/user/command line/network/file/persistence/host role。",
+      "“名字陌生”或“hash 未知”都只是弱信号；真正重要的是行为组合与环境基线。",
+      "进程树提供因果近似，但还需时间线与跨主机证据确认。"
+    ],
+    "boundary": [
+      "合法管理工具可能表现得像攻击工具，尤其运维、脚本和远程管理。",
+      "攻击者可能滥用合法系统二进制，所以“已签名”也不等于安全。",
+      "容器/虚拟化环境中的 parent/path 语义与普通终端不同。"
+    ],
+    "design": [
+      "建立高价值资产的正常进程/父子关系基线。",
+      "检测关注异常 parent-child、敏感访问、网络目的地和持久化组合。",
+      "对高风险进程保留原始样本/metadata 和关联事件。",
+      "处置前确认业务 owner 和进程角色，降低误杀。"
+    ],
+    "evidence": [
+      "process lineage、command line、user/integrity level、signature/hash。",
+      "network destinations、file/registry changes、loaded modules。",
+      "同账号/同 hash 在其他主机的分布与首次出现时间。"
+    ],
+    "validation": [
+      "用红蓝/仿真行为验证 detection 不是只匹配进程名。",
+      "对软件升级、运维变更观察 baseline 漂移。",
+      "复盘误报并记录 allow 依据、到期时间和 owner。"
+    ],
+    "deep_questions": [
+      "为什么 signed binary 仍可能参与恶意行为？",
+      "如何区分运维脚本和异常脚本？",
+      "“首次出现”信号为什么有价值又为什么不能单独定罪？"
+    ],
+    "deliverable": "Process triage scorecard + lineage timeline + prevalence 查询 + disposition/owner 记录。",
+    "summary": {
+      "root": "进程风险来自行为与上下文组合。",
+      "boundary": "合法工具滥用、基线差异、签名不是安全证明。",
+      "control": "行为关联 + 基线 + 处置审批。",
+      "evidence": "lineage/command/network/file/prevalence。",
+      "verify": "行为仿真与误报治理。"
+    }
+  },
+  "Q34": {
+    "model": [
+      "Persistence 是“维持访问能力”的战术目标，不等于某一个自启动位置。",
+      "蓝队应把持久化看成 identity、startup/configuration、service、cloud control plane 等多种长期状态变化。",
+      "ATT&CK 用于描述对手行为，不应被当成检测规则逐条照抄。"
+    ],
+    "boundary": [
+      "很多 persistence 技术与合法管理机制共享同一功能，因此关键是主体、时间、变更来源和业务上下文。",
+      "仅扫描主机启动项会遗漏 cloud identity、SaaS rule、API key 等非主机持久化。",
+      "删除持久化项不等于攻击者访问能力已消失，可能还有凭据或其他入口。"
+    ],
+    "design": [
+      "关键配置/账户/启动机制做变更审计与基线。",
+      "高权限变更采用审批/JIT/MFA。",
+      "incident scope 中专门检查“还能如何回来”，并在 recovery 后持续监控。",
+      "用 ATT&CK coverage 组织 telemetry gap，而不是只追求 technique 数量。"
+    ],
+    "evidence": [
+      "startup/service/task/config change audit。",
+      "account/token/key/certificate lifecycle logs。",
+      "EDR/Cloud audit 中创建→使用的时间关联。"
+    ],
+    "validation": [
+      "tabletop/紫队验证至少覆盖主机、身份、云三个 persistence 面。",
+      "恢复后验证旧凭据、token、任务和管理入口已失效。",
+      "检测规则对合法管理员变更保持可解释的低误报。"
+    ],
+    "deep_questions": [
+      "Persistence 与 Privilege Escalation 为什么可能使用同一个机制但目标不同？",
+      "为什么删掉恶意任务后仍不能宣布事件结束？",
+      "如何用 ATT&CK 做 coverage 而不是背 ID？"
+    ],
+    "deliverable": "Persistence hunting checklist：host + identity + cloud/SaaS，包含基线、变更审计、恢复验证。",
+    "summary": {
+      "root": "对手建立可持续访问能力。",
+      "boundary": "合法管理机制与多控制面会造成混淆。",
+      "control": "变更审计 + 高权限治理 + 多面 hunting。",
+      "evidence": "startup/account/key/config lifecycle。",
+      "verify": "恢复后重新进入路径验证。"
+    }
+  },
+  "Q35": {
+    "model": [
+      "提权题的专业回答应围绕 privilege boundary：当前主体拥有什么、缺什么、哪些信任/配置允许跨越边界。",
+      "来源可归类为 misconfiguration、credential exposure、vulnerable component、delegation/trust、excessive permissions。",
+      "防守价值在于理解为何低权限主体能获得更高能力，并修复根因。"
+    ],
+    "boundary": [
+      "“本地管理员/root”本身仍可能受容器、SELinux/AppArmor、域/云控制面等更高边界约束。",
+      "补丁只解决已知实现缺陷，不解决 sudo/service ACL/secret 等配置问题。",
+      "检测单个命令无法覆盖提权，需看 token/权限变化与配置修改。"
+    ],
+    "design": [
+      "主机/服务运行最小权限，管理操作使用 JIT/JEA/PAM 类机制。",
+      "持续审计 sudoers、service permissions、scheduled tasks、local groups 等高风险配置。",
+      "Secrets 与管理员凭据隔离，减少可复用高权凭据落地。",
+      "对高风险系统启用强制访问控制/应用隔离等纵深。"
+    ],
+    "evidence": [
+      "身份/token/integrity level/UID 变化。",
+      "高权限进程 parent-child 与服务/任务修改。",
+      "sudo/UAC/local group/service ACL audit。"
+    ],
+    "validation": [
+      "基线扫描验证关键权限配置符合策略。",
+      "权限变更后用 deny tests 证明低权主体不能跨界。",
+      "演练 credential compromise 场景验证 JIT/隔离能限制影响。"
+    ],
+    "deep_questions": [
+      "“提权”与“获得另一个高权限凭据”有什么差别？",
+      "为什么最小权限仍需要 credential hygiene？",
+      "容器内 root 与宿主机 root 是同一个边界吗？"
+    ],
+    "deliverable": "Privilege boundary map + hardening baseline + admin/JIT access policy + deny regression tests。",
+    "summary": {
+      "root": "错误信任、配置、凭据或漏洞使主体跨越权限边界。",
+      "boundary": "多层权限模型与不同控制面。",
+      "control": "最小权限 + 配置治理 + JIT/PAM + secret 隔离。",
+      "evidence": "token/UID、privileged process、ACL/group changes。",
+      "verify": "deny tests 与权限基线。"
+    }
+  },
+  "Q36": {
+    "model": [
+      "Java 企业安全复杂性来自框架、容器、反射、序列化、表达式、依赖和管理接口叠加形成的巨大可达能力面。",
+      "漏洞分析应建模 input → framework feature → sink/side effect，而不是死背某个 CVE。",
+      "classloader/classpath 和依赖图决定许多“可触发能力”是否真实存在。"
+    ],
+    "boundary": [
+      "同名框架不同版本/配置风险不同；默认关闭某功能后，历史 PoC 可能已无意义。",
+      "管理面若网络隔离/强身份保护，风险模型与公网暴露完全不同。",
+      "JVM 层安全不等于业务授权安全，两者需分层。"
+    ],
+    "design": [
+      "依赖治理、最小 classpath、及时升级并删除不用组件。",
+      "管理端点单独网络/身份边界，禁止默认凭据和公网暴露。",
+      "危险 parser/serialization/expression 功能显式关闭或 allowlist。",
+      "应用进程最小 OS/云权限并限制出站网络。"
+    ],
+    "evidence": [
+      "SBOM/dependency tree + runtime version。",
+      "应用 server 管理/部署 audit。",
+      "EDR/JVM telemetry、异常 class loading/child process/network。"
+    ],
+    "validation": [
+      "在 staging 对框架升级运行安全 regression 与兼容测试。",
+      "定期扫描管理端点暴露和默认配置。",
+      "验证危险功能关闭后确实不可通过备用入口重新启用。"
+    ],
+    "deep_questions": [
+      "为什么“Java 反序列化漏洞”经常和依赖 classpath 有关？",
+      "管理接口为什么应该视为独立高权限控制面？",
+      "框架自动绑定/表达式能力为什么既提高开发效率又扩大安全面？"
+    ],
+    "deliverable": "Java application attack-surface inventory：framework/server/dependency/management/serialization/expression + hardening 与 tests。",
+    "summary": {
+      "root": "复杂框架能力让不可信输入可能到达高影响 sink。",
+      "boundary": "版本、配置、classpath、管理面暴露。",
+      "control": "依赖/功能最小化 + 管理面隔离 + 进程最小权限。",
+      "evidence": "SBOM/runtime/admin/JVM/EDR。",
+      "verify": "升级与危险功能回归。"
+    }
+  },
+  "Q37": {
+    "model": [
+      "Redis 未授权风险的根因通常是“数据服务被放在错误信任边界”：网络暴露、认证/ACL 弱、服务权限过高。",
+      "数据库/缓存服务本质上拥有数据和一定操作能力，不能把“内网端口”当安全控制。",
+      "正确答案应优先讲 exposure reduction 和 least privilege，而不是攻击技巧。"
+    ],
+    "boundary": [
+      "不同 Redis 版本与部署模式的 ACL/TLS 能力不同。",
+      "即使启用密码，如果端口公网暴露、凭据长期共享，整体风险仍高。",
+      "云托管服务的网络/IAM 边界与自建 Redis 不完全相同。"
+    ],
+    "design": [
+      "只允许应用所需网络路径访问，默认无公网入口。",
+      "使用强认证/ACL，服务身份独立、凭据短期/轮换。",
+      "运行账户和文件系统最小权限，禁用/限制业务不用的高风险能力。",
+      "监控配置漂移、异常命令和新来源连接。"
+    ],
+    "evidence": [
+      "Redis connection/auth/audit（按部署能力）与网络 flow。",
+      "cloud SG/firewall/config change logs。",
+      "应用侧连接池来源与失败趋势。"
+    ],
+    "validation": [
+      "外部资产扫描确认没有意外暴露。",
+      "从不允许网络区域做 connectivity deny test。",
+      "凭据轮换和 ACL 变更验证业务无隐藏共享账号。"
+    ],
+    "deep_questions": [
+      "为什么“加密码”不是公网暴露 Redis 的完整修复？",
+      "托管 Redis 与自建 Redis 的责任边界有何不同？",
+      "如何检测 shadow/遗留 Redis 实例？"
+    ],
+    "deliverable": "Data service exposure baseline：network path、ACL/identity、TLS、runtime privilege、inventory 和 monitoring。",
+    "summary": {
+      "root": "高能力数据服务被错误暴露或缺乏身份控制。",
+      "boundary": "版本/托管模型/共享凭据。",
+      "control": "无公网 + ACL/身份 + 最小权限 + inventory。",
+      "evidence": "flow/auth/config audit。",
+      "verify": "deny connectivity 与轮换回归。"
+    }
+  },
+  "Q38": {
+    "model": [
+      "WebShell 检测应联合 file、web request、process、network、identity；单独正则匹配代码关键字容易高误报。",
+      "高价值行为链是 web-facing process → unusual child process/file/network action。",
+      "静态检测、行为检测与基线检测解决不同层面，应互补。"
+    ],
+    "boundary": [
+      "运维/部署脚本也可能让 web process 启动子进程，需要应用架构上下文。",
+      "无文件/内存型后门说明“只扫描 webroot 文件”覆盖不完整。",
+      "上传目录和应用发布目录的正常变化频率不同，baseline 应分区。"
+    ],
+    "design": [
+      "Web 进程默认不具备启动任意 shell/写应用目录等不必要权限。",
+      "webroot/关键目录做 FIM，并和发布流水线事件关联。",
+      "EDR 规则关注 web server child process、异常网络与敏感文件访问。",
+      "应用上传与部署路径隔离，减少“上传即被解释”的可能。"
+    ],
+    "evidence": [
+      "HTTP request ID ↔ web process ↔ child process correlation。",
+      "FIM/file creation metadata、hash、owner、source deployment。",
+      "DNS/network egress 与 process lineage。"
+    ],
+    "validation": [
+      "用受控测试脚本验证文件/进程两类检测都能触发。",
+      "发布期间验证不会因合法文件变化导致告警洪水。",
+      "检查没有 EDR 的服务器是否存在替代 telemetry。"
+    ],
+    "deep_questions": [
+      "为什么只查 eval/base64 误报高？",
+      "web process 启动 shell 一定恶意吗？",
+      "如果没有落地文件，应该靠什么检测？"
+    ],
+    "deliverable": "WebShell detection pack：FIM + process lineage + HTTP correlation + egress + deployment allow context。",
+    "summary": {
+      "root": "Web 入口导致异常代码/行为驻留或执行。",
+      "boundary": "合法运维、无文件行为、目录基线差异。",
+      "control": "最小进程权限 + FIM + EDR 行为关联。",
+      "evidence": "HTTP→process→file/network chain。",
+      "verify": "受控行为仿真与发布期误报测试。"
+    }
+  },
+  "Q39": {
+    "model": [
+      "IDS/IPS/EDR/NDR/WAF 的本质区别在 telemetry 位置、决策语义、是否 inline、响应能力，而不是产品营销名。",
+      "网络设备看到 flow/packet/L7，EDR 看到 endpoint process/file/identity，WAF 聚焦 Web 请求语义。",
+      "高分回答要说控制覆盖与盲区，说明为什么需要多层关联。"
+    ],
+    "boundary": [
+      "加密流量会降低部分网络内容可见性。",
+      "Inline blocking 有误杀业务风险，因此检测置信度和 fail-open/close 设计很重要。",
+      "EDR agent 离线或服务器不支持 agent 时需要补充网络/云日志。"
+    ],
+    "design": [
+      "按 threat/use case 设计 telemetry，而非“每类产品买一个”。",
+      "统一事件 schema/correlation ID，支持跨 endpoint/network/app 关联。",
+      "阻断规则与检测规则分层治理，明确自动化审批门槛。",
+      "持续监控 sensor health 和 coverage。"
+    ],
+    "evidence": [
+      "IDS/NDR：flow/session/protocol；WAF：HTTP rule/action。",
+      "EDR：process/file/network/user；IPS：inline decision。",
+      "SIEM 汇总 asset/identity context 后才形成完整调查证据。"
+    ],
+    "validation": [
+      "针对同一场景验证各层分别能看到什么和看不到什么。",
+      "测试 sensor/agent offline 是否告警。",
+      "验证阻断规则回滚和误杀处理流程。"
+    ],
+    "deep_questions": [
+      "WAF 和 NDR 为什么不能替代 EDR？",
+      "TLS 加密后网络检测还能看到什么？",
+      "何时应该自动阻断，何时只告警？"
+    ],
+    "deliverable": "Security control coverage matrix：telemetry、prevention/detection、blind spots、owner、health metrics 和 response。",
+    "summary": {
+      "root": "不同控制在不同位置观察/阻断不同语义。",
+      "boundary": "加密、agent coverage、inline 误杀。",
+      "control": "use-case driven layered telemetry + health monitoring。",
+      "evidence": "network/app/endpoint/identity 多源。",
+      "verify": "coverage 与 failure-mode 测试。"
+    }
+  },
+  "Q40": {
+    "model": [
+      "安全基线是“可持续的最小安全状态”，应同时包含配置、身份、补丁、日志、备份和管理流程。",
+      "基线价值在于减少攻击面、统一期望并让 configuration drift 可被检测。",
+      "硬化不能只靠一次扫描，必须进入镜像/IaC/配置管理和持续验证。"
+    ],
+    "boundary": [
+      "不同主机角色需要不同基线，数据库、跳板机、开发机不能用一份模板硬套。",
+      "过度硬化可能破坏业务/运维，必须有例外流程和风险接受。",
+      "补丁级别只是基线一部分，零日和配置问题仍需其他控制。"
+    ],
+    "design": [
+      "采用 role-based baseline，映射到配置管理和合规检查。",
+      "默认关闭不用服务/端口，管理员与服务账号分离。",
+      "统一日志、时间同步、EDR/AV、磁盘加密/backup 等必需能力。",
+      "例外必须有 owner、原因、补偿控制和到期日期。"
+    ],
+    "evidence": [
+      "configuration compliance/drift reports。",
+      "patch/EDR/logging/backup coverage metrics。",
+      "例外清单与变更审计。"
+    ],
+    "validation": [
+      "新镜像上线前自动 baseline test。",
+      "定期 restore test 验证备份可用而非“有备份”。",
+      "随机抽样主机核对扫描结果与实际运行状态。"
+    ],
+    "deep_questions": [
+      "安全基线和 CIS benchmark 有什么关系？",
+      "为什么“全部按最高等级硬化”可能不是好方案？",
+      "如何管理不得不偏离基线的业务例外？"
+    ],
+    "deliverable": "Role-based host baseline + policy-as-code checks + exception register + coverage/drift dashboard。",
+    "summary": {
+      "root": "缺乏统一最小安全状态导致攻击面和配置漂移。",
+      "boundary": "主机角色、业务兼容和例外。",
+      "control": "role-based baseline + automation + exception governance。",
+      "evidence": "compliance/drift/coverage/backup test。",
+      "verify": "镜像 gate 与持续抽样。"
+    }
+  }
+}

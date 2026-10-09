@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+title: "Time Series Interview 100"
+message: "If you use this repository for teaching or interview preparation, please cite the repository."
+type: software
+version: 2026.09
+date-released: 2026-09-02
+license: MIT

@@ -1,0 +1,734 @@
+{
+  "version": "2.0",
+  "metrics": {
+    "question_count": 100,
+    "total_question_chars": 578017,
+    "avg_question_chars": 5780.2,
+    "min_question_chars": 5418,
+    "max_question_chars": 6636,
+    "lab_count": 10,
+    "sqlite_baseline": "3.53.4 (2026-07-24)"
+  },
+  "files": [
+    {
+      "path": ".github/workflows/validate.yml",
+      "bytes": 308,
+      "sha256": "235fedaf739bc13768f410e8515324bb8fd0fb5be413d978cfa860622c4c9cd0"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 36,
+      "sha256": "a49d061376da959d57158ff1b941a2ce592e6234ce0f93d4bc61f3c887fe9ca4"
+    },
+    {
+      "path": ".markdownlint.json",
+      "bytes": 56,
+      "sha256": "342bda41b31fc59325330fe0e666d44a4b36e9806460b9b3153ee1a751378833"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 506,
+      "sha256": "c00087d945ed3eceb3d068ed1114955a38eba0e4efd37a165bbc11cd0b74ae0d"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "bytes": 598,
+      "sha256": "22e7e085ef03daeac1730c7ef6141c1b62fb1010d896fa3383a0c8947f25e9b3"
+    },
+    {
+      "path": "QUALITY_METRICS.json",
+      "bytes": 217,
+      "sha256": "d0058a1875ec8f2f6272c715bdb2d4cab7dcc77421913a986048f814aab28a32"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5115,
+      "sha256": "51b69366b86f6372298390f62a62ca8d12da2ab66c7db60b79579413c688caf3"
+    },
+    {
+      "path": "UPGRADE_REPORT.md",
+      "bytes": 1737,
+      "sha256": "86c1bc3ba1219975d998d5da7ac4471c8b77c269392941ccbc8385e9e6f1543c"
+    },
+    {
+      "path": "book/SQLite面试100题_专业详解_2026.pdf",
+      "bytes": 2229954,
+      "sha256": "97a0dc6c2322b913ae0834191ec5d76b48c193b97e1e988a2a5fbef211cb6adb"
+    },
+    {
+      "path": "docs/00-preface.md",
+      "bytes": 1342,
+      "sha256": "936bc7377e53e68e5c839a1843f81cc5f51027e5d5318817d6c61e9a26855bed"
+    },
+    {
+      "path": "docs/01-architecture/001-sqlite-vs-client-server.md",
+      "bytes": 11363,
+      "sha256": "6aa358fd839d06023b19eed869ea4326e4752cda5382f5b1746797abb9f3fa73"
+    },
+    {
+      "path": "docs/01-architecture/002-why-serverless.md",
+      "bytes": 10982,
+      "sha256": "3ae423e67bdf6ce80ba6a5475d475d3b382b1fbdac2cb34d4fc5638ad193e29f"
+    },
+    {
+      "path": "docs/01-architecture/003-best-fit-scenarios.md",
+      "bytes": 10955,
+      "sha256": "6384eb13a1cb8ad90b0c04d4e38a46f685c7ec9acc3e98774ad18e943deaea20"
+    },
+    {
+      "path": "docs/01-architecture/004-when-not-to-use-sqlite.md",
+      "bytes": 10867,
+      "sha256": "db8021fe472931ef0a41ac93fcce763c3f0c954652cc59c3248f090c835957f9"
+    },
+    {
+      "path": "docs/01-architecture/005-acid-guarantees.md",
+      "bytes": 10691,
+      "sha256": "1d769800173c4d1e976a5c17c360cd0181c15f333547650fd1096ef8074b73a3"
+    },
+    {
+      "path": "docs/01-architecture/006-memory-vs-disk.md",
+      "bytes": 10851,
+      "sha256": "d220959eb2fa8373bf17ccbd61f932749500b0cf55fea627d199317a34830c13"
+    },
+    {
+      "path": "docs/01-architecture/007-database-size-limits.md",
+      "bytes": 10841,
+      "sha256": "cf14e8c1d46d99eb7b2201c9832d27363dfcd98ba64f13730fef4096b3a3151c"
+    },
+    {
+      "path": "docs/01-architecture/008-single-file-myth.md",
+      "bytes": 10932,
+      "sha256": "f40f5f70d34d5cd01d0c160cb5c3d766a3da4c6eb465e2f0a291f96c6ebdbd62"
+    },
+    {
+      "path": "docs/01-architecture/009-why-mobile.md",
+      "bytes": 10954,
+      "sha256": "71fa568541386cbe8404ea5a42036d99b3f8153334fa97d0cf3d430afb0863db"
+    },
+    {
+      "path": "docs/01-architecture/010-design-philosophy.md",
+      "bytes": 10748,
+      "sha256": "3216879be921fea29a88d9c18d005083427b38f714441e250eb996f1c9df56f1"
+    },
+    {
+      "path": "docs/01-architecture/README.md",
+      "bytes": 2596,
+      "sha256": "76d15308b1c7e46c679d036c0204e33bc92b8de7a5cd353684f55c987ea079f7"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/011-storage-classes.md",
+      "bytes": 10354,
+      "sha256": "657459b71918965f8cacd057d04696f66ff87ef08dd715805f159b99278d3157"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/012-type-affinity.md",
+      "bytes": 10791,
+      "sha256": "aaded93e1a1f4a3290262eeb6f1e9aec5e0578cac096f933a47b80af058ef48b"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/013-varchar-length.md",
+      "bytes": 10557,
+      "sha256": "0b1be6a806673b075d44e9f20d358fef5838cc929ebd77deb90e7b83a6ad8756"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/014-boolean.md",
+      "bytes": 10370,
+      "sha256": "52cb8f0c6b012e0325c6800464b7f5297edb62280b04b33f7db3bb36f32ce622"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/015-date-time-storage.md",
+      "bytes": 10516,
+      "sha256": "dfdcabd8c1669b5c208a8bca32b0a868c86cdea17b5c7edb8e4bbbffae4aace7"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/016-strict-tables.md",
+      "bytes": 10754,
+      "sha256": "aaf1627f7d1420efce4ebfefe1ba5ebc472eb0dbb82948807a0b7ca76fd661a2"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/017-strict-any.md",
+      "bytes": 10526,
+      "sha256": "dce4b293e1095c6234b164222dee556271f86f79628381248a3f96be986c1272"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/018-rowid.md",
+      "bytes": 10796,
+      "sha256": "95ca56173b3c5fbc91744c9d55a5e07a0b5ccbd295f2f7f0b5490df255f84ba4"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/019-integer-primary-key.md",
+      "bytes": 11033,
+      "sha256": "b96407f8f97467f9415224b0c6ebef03841cd91dc4df9b8cad0639cb47f815de"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/020-autoincrement.md",
+      "bytes": 11004,
+      "sha256": "e71d787c06fbaf98dd72c7b5ee8d5240f4aa3413693f464285dee70a6ce4e1ba"
+    },
+    {
+      "path": "docs/02-types-schema-rowid/README.md",
+      "bytes": 2368,
+      "sha256": "c07b1e90311f21c338ea0e04b298a2aba601b527a8fadd23fd459bea3dfdacee"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/021-implicit-transaction.md",
+      "bytes": 10743,
+      "sha256": "333062313fd6eaccb11126cee5697ec9f2f6f51306ff9b73d7bf9f138c1aa4b7"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/022-begin-deferred.md",
+      "bytes": 10724,
+      "sha256": "75f0885550ee7d07802b85cb45eede4c3fb5e2765f734d32e61357b0c8161205"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/023-begin-immediate.md",
+      "bytes": 10927,
+      "sha256": "e2e720c0b3bbabd4e202919aa84b33a4bbae433602d88c30e970d6e40b298eb5"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/024-begin-exclusive.md",
+      "bytes": 10797,
+      "sha256": "f6398afadedc32c45f49673157ee862342ea0e75f1aa13f9b47d35acf4a63994"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/025-concurrent-reads.md",
+      "bytes": 10649,
+      "sha256": "7d1f7070294770a3c9c5165abbd4d3ff00c33d49daabf8f758196dd854c0f534"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/026-single-writer.md",
+      "bytes": 10859,
+      "sha256": "2e1aa5dc659d0b80b925bddef08b004cdf70c68cfce589f2b5a0a4ba33cc9294"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/027-read-to-write-upgrade.md",
+      "bytes": 11370,
+      "sha256": "3d77c379e80311aa81c78562048e5ac1be4096bb69e708304aa8769d7b58458c"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/028-busy-timeout.md",
+      "bytes": 10884,
+      "sha256": "743542af1f3018748c0d10173585a8ec7aa999dcdae5981f4e86fa94b2837a20"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/029-savepoint-nesting.md",
+      "bytes": 10745,
+      "sha256": "a5c3aa131d037b6ef9d5d99e32fd834bd89b90adf2da1617e8bee58513088b06"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/030-read-uncommitted.md",
+      "bytes": 10846,
+      "sha256": "2698917f5fc13017ea3d09205406bdaec3baf91ff633147ce711b66a59a9e602"
+    },
+    {
+      "path": "docs/03-transactions-concurrency/README.md",
+      "bytes": 2461,
+      "sha256": "4c710a1b82ca0984d0df5bde1bf535aa4f74114c994067b83808daacf53bbc0e"
+    },
+    {
+      "path": "docs/04-wal-durability/031-rollback-journal.md",
+      "bytes": 10358,
+      "sha256": "cfc656b7cbd2d957f084e55e084315e2c7dc2f1ce29459a9b281943016d29ef0"
+    },
+    {
+      "path": "docs/04-wal-durability/032-wal-basics.md",
+      "bytes": 10644,
+      "sha256": "602655107e31547db1bd692a172cd9c5f6d78adf2441e72180516fad36df9b6c"
+    },
+    {
+      "path": "docs/04-wal-durability/033-wal-read-write-concurrency.md",
+      "bytes": 10665,
+      "sha256": "4e6929dc5d70fe1c29892fdc8cd33954e35fb4bec472aa8d26fe99e0ef5bfb90"
+    },
+    {
+      "path": "docs/04-wal-durability/034-wal-still-locks.md",
+      "bytes": 10525,
+      "sha256": "23aeee88c4737e105c6ab9ddadb6296c41810b7fbe9566f30c2762dcc0e29f88"
+    },
+    {
+      "path": "docs/04-wal-durability/035-wal-network-filesystem.md",
+      "bytes": 10613,
+      "sha256": "4c0ea23ba281586a7efd5b354f5b684ccd21531f09c4fbd4cbf2c5c53f396299"
+    },
+    {
+      "path": "docs/04-wal-durability/036-checkpoint.md",
+      "bytes": 10471,
+      "sha256": "ab0894e7641a14bd93c0d060fd04e1cc97c3e50f6341f5f4bb8bd5108192ec00"
+    },
+    {
+      "path": "docs/04-wal-durability/037-checkpoint-starvation.md",
+      "bytes": 10713,
+      "sha256": "d597d3f1b47fc3da560120b74e1638f2f137b86c0bdbc241288013743b2f0887"
+    },
+    {
+      "path": "docs/04-wal-durability/038-synchronous.md",
+      "bytes": 10607,
+      "sha256": "2f85824dd0a6ab9d4a047872434b71c5849285f1f540fca513c3977d52d5746f"
+    },
+    {
+      "path": "docs/04-wal-durability/039-hot-journal.md",
+      "bytes": 10350,
+      "sha256": "74b66c07267806d3e7d7ff3b0a10c6e376ea440921519bf3c96b4a8a0386291f"
+    },
+    {
+      "path": "docs/04-wal-durability/040-sqlite-3-53.md",
+      "bytes": 10651,
+      "sha256": "7f835bb66ac240bef69960cf53fdf8906fcd0ab4b46af1d2a77891fddf717217"
+    },
+    {
+      "path": "docs/04-wal-durability/README.md",
+      "bytes": 2399,
+      "sha256": "cd7d863b7600164559b99202537663495393d07abbcff7090f7f3d9bea75e4e4"
+    },
+    {
+      "path": "docs/05-indexes/041-index-btree.md",
+      "bytes": 10322,
+      "sha256": "4e1086e9579f079082e4ad4ca9496e60dc37e16107f947be3c68ad8db0cf6c5c"
+    },
+    {
+      "path": "docs/05-indexes/042-composite-index.md",
+      "bytes": 10973,
+      "sha256": "51afd92cdaf07db26378262fe2bb04dcbcadb7e67eef7f31802a0852815c40e6"
+    },
+    {
+      "path": "docs/05-indexes/043-covering-index.md",
+      "bytes": 10691,
+      "sha256": "457fad7c7c4410c609397b7fbdf9e01028b49150a7aba36651723a95155c26f8"
+    },
+    {
+      "path": "docs/05-indexes/044-redundant-prefix-index.md",
+      "bytes": 10482,
+      "sha256": "e93b1ae5ef0ddb60d1b8c62023d6d2efdd215c2e562cade13aa5968b325d64cf"
+    },
+    {
+      "path": "docs/05-indexes/045-partial-index.md",
+      "bytes": 10558,
+      "sha256": "330c9f30c573742e0938ce24a563086665746ccc89a0d69bf317990a889b70f3"
+    },
+    {
+      "path": "docs/05-indexes/046-partial-unique-index.md",
+      "bytes": 10487,
+      "sha256": "3384cf7753adf698898883129bbaf7d60358739b33b3eb65085d8d994a16496d"
+    },
+    {
+      "path": "docs/05-indexes/047-expression-index.md",
+      "bytes": 10472,
+      "sha256": "869e4347fcd357eb84f2316b6826fe3289de7d882d0b0655499e65cf64d740c5"
+    },
+    {
+      "path": "docs/05-indexes/048-expression-syntax-match.md",
+      "bytes": 10756,
+      "sha256": "108042a02345bfc0f9fdf4b897230ddb463427a752f806254bc10488d75fed49"
+    },
+    {
+      "path": "docs/05-indexes/049-deterministic-functions.md",
+      "bytes": 10730,
+      "sha256": "173b5ae54963a6c8a22fc0f868539f5d5c793bcf67b1558977bc8537eeb9e0e1"
+    },
+    {
+      "path": "docs/05-indexes/050-index-vs-full-scan.md",
+      "bytes": 10623,
+      "sha256": "82406ee0790e4790d1468462f4698648045a7596e09b4d097cf8ed9e426263ca"
+    },
+    {
+      "path": "docs/05-indexes/README.md",
+      "bytes": 2476,
+      "sha256": "bd7064598dd1a1a9824437f77b8cc7eaf47e8deaf968b9e2a77a76cf2326ce39"
+    },
+    {
+      "path": "docs/06-query-planner/051-explain-vs-eqp.md",
+      "bytes": 10414,
+      "sha256": "94b3d4850cc658727fe1793149b51f641ddb6561d7939fc08f5447d64b21849e"
+    },
+    {
+      "path": "docs/06-query-planner/052-scan-vs-search.md",
+      "bytes": 10300,
+      "sha256": "6c45273409c1623a19c0d7b2cdc9f8128f912cdb214c551d5a9db9b3c1b5753c"
+    },
+    {
+      "path": "docs/06-query-planner/053-temp-btree-order-by.md",
+      "bytes": 10449,
+      "sha256": "0a80d2b6b6347226b61c123414c792232b1c606b006b0535bcfaad1aab478f9b"
+    },
+    {
+      "path": "docs/06-query-planner/054-analyze-statistics.md",
+      "bytes": 10648,
+      "sha256": "5efefbb099edec2fdfa80f0b15a944cbf4e64c8b50f2075005b32ac54567b7e9"
+    },
+    {
+      "path": "docs/06-query-planner/055-pragma-optimize.md",
+      "bytes": 10495,
+      "sha256": "3c978f5ca6fa55d4d5ca2c943a165e4d9bce324100eb8d5637b91da6b411970f"
+    },
+    {
+      "path": "docs/06-query-planner/056-join-algorithm.md",
+      "bytes": 10315,
+      "sha256": "979cc28ff325aa57ccd8b037ead4229d7b7136dde8c31992b9528d5a0eeab0bc"
+    },
+    {
+      "path": "docs/06-query-planner/057-join-order.md",
+      "bytes": 10470,
+      "sha256": "906ee6e4f6b0bb67c88d3aa6c2ddc7322a674834b6d6d490046ae0e9a65dea5f"
+    },
+    {
+      "path": "docs/06-query-planner/058-multi-index-or.md",
+      "bytes": 10446,
+      "sha256": "d4e155f049e98ebc41af3df15b88ca807acfe5ce8e0c3fd6ae8a84483dba8516"
+    },
+    {
+      "path": "docs/06-query-planner/059-skip-scan.md",
+      "bytes": 10575,
+      "sha256": "b9c7f8e8562fcb85b261d305b430b8e596b35abbf43c4ea98f4c89ba81ed60f8"
+    },
+    {
+      "path": "docs/06-query-planner/060-correlated-subquery.md",
+      "bytes": 10338,
+      "sha256": "f12d473dc880134315ba0c0ca9e5126aa155c9ea9a5bb090c00b3db64204767a"
+    },
+    {
+      "path": "docs/06-query-planner/README.md",
+      "bytes": 2306,
+      "sha256": "c7531f19f3a845762646b295bf566f5b62479aa1c7b4c9bb88ce8701e7e0dd6b"
+    },
+    {
+      "path": "docs/07-storage-engine/061-sql-execution-pipeline.md",
+      "bytes": 10410,
+      "sha256": "067513acb6cf001bf575a2d899a09806bbb8ebb493dd7aab4c9e86d6a38c4fae"
+    },
+    {
+      "path": "docs/07-storage-engine/062-vdbe.md",
+      "bytes": 10182,
+      "sha256": "fe04238590704e6583aeebc4aa16ae04b4fc0b48307254e53322ba559ad09fd2"
+    },
+    {
+      "path": "docs/07-storage-engine/063-rowid-table-storage.md",
+      "bytes": 10287,
+      "sha256": "0200368e2bfea0eb01fed08520720e12bf9bfbf088ee5f97349082e67a94318f"
+    },
+    {
+      "path": "docs/07-storage-engine/064-index-vs-table-btree.md",
+      "bytes": 10453,
+      "sha256": "210598a8686bfa8d95667fc21f7b9350e3172affaf92c22ddf93b5f3b582891d"
+    },
+    {
+      "path": "docs/07-storage-engine/065-page.md",
+      "bytes": 10367,
+      "sha256": "5f2bc912409b973667c48428cf3763f33def6894385cb05cb7975b1dfee1fdff"
+    },
+    {
+      "path": "docs/07-storage-engine/066-overflow-page.md",
+      "bytes": 10405,
+      "sha256": "94cea8b3e0c3a6ee7b9e8bc28725a341c505cfd5953d91a08a13837c0037d773"
+    },
+    {
+      "path": "docs/07-storage-engine/067-varint.md",
+      "bytes": 10272,
+      "sha256": "e30d481a3915b2abfc7cf7aca2df26605f709ea69523d1ed11d1c7eee3c9f2d7"
+    },
+    {
+      "path": "docs/07-storage-engine/068-freelist.md",
+      "bytes": 10136,
+      "sha256": "f555b998176b966eaec05a32d13986b2f8ed68a8b04a01774becb1f92c61d36f"
+    },
+    {
+      "path": "docs/07-storage-engine/069-without-rowid.md",
+      "bytes": 10444,
+      "sha256": "39da8dca81b28fe0318b12cb96e73023286bdfdef27227cd8dc8065738658dd3"
+    },
+    {
+      "path": "docs/07-storage-engine/070-without-rowid-limitations.md",
+      "bytes": 10323,
+      "sha256": "15d0300808fda4cccbca8df2914553f8e013979b426d7e8411d3fc07333199c1"
+    },
+    {
+      "path": "docs/07-storage-engine/README.md",
+      "bytes": 2297,
+      "sha256": "5a623dfea658c9928a2b6900166214504524be042652d3ab5ad06fc6a54a6f14"
+    },
+    {
+      "path": "docs/08-operations-integrity/071-vacuum.md",
+      "bytes": 10262,
+      "sha256": "a8b4638ff2324ca49482f03d723ec33b018ace43fc10ff24d34e28e3476a890d"
+    },
+    {
+      "path": "docs/08-operations-integrity/072-auto-vacuum.md",
+      "bytes": 10362,
+      "sha256": "3847c29ebb5005e2e195793840fcf3f37c9117b4a97f18478c0b53ab39fee068"
+    },
+    {
+      "path": "docs/08-operations-integrity/073-vacuum-rowid-change.md",
+      "bytes": 10294,
+      "sha256": "8650eee2638d948a5ab3c34e20fe0a5a0faf64f8b812856ed5431b10c373a41e"
+    },
+    {
+      "path": "docs/08-operations-integrity/074-integrity-check.md",
+      "bytes": 10508,
+      "sha256": "a4a0553031d9b152dd59a7f82a682deb294c669c37d6e6436a0037cb385b59a5"
+    },
+    {
+      "path": "docs/08-operations-integrity/075-foreign-keys.md",
+      "bytes": 10615,
+      "sha256": "90467fcfb59e6f778faa793debf0b11a4cdbccbed68917ef6397072f6cde42f9"
+    },
+    {
+      "path": "docs/08-operations-integrity/076-schema-migration.md",
+      "bytes": 10364,
+      "sha256": "ff5860b4b6e65013e26cff57f4a106be90776af00283f552095a6202ca7cc0fa"
+    },
+    {
+      "path": "docs/08-operations-integrity/077-reindex-expressions.md",
+      "bytes": 10636,
+      "sha256": "e26c62f1233105d578803c767b0926dbed1825807955f1a176740ef3c81c008f"
+    },
+    {
+      "path": "docs/08-operations-integrity/078-schema-cookie.md",
+      "bytes": 10573,
+      "sha256": "cfd36f4e08c53dd7dcfcd9d388972d93ace8e3bf2426583799eb5fa149845b24"
+    },
+    {
+      "path": "docs/08-operations-integrity/079-threading-modes.md",
+      "bytes": 10246,
+      "sha256": "b462fecee043b26bf51b5bd035b3850920c72f3ad63beb930f058894478c9d15"
+    },
+    {
+      "path": "docs/08-operations-integrity/080-corruption-causes.md",
+      "bytes": 10454,
+      "sha256": "e38bbe436be3e97361392b91be8b3fa15b2944b9adc474ecde889bfbf7a83de5"
+    },
+    {
+      "path": "docs/08-operations-integrity/README.md",
+      "bytes": 2343,
+      "sha256": "6c7d7fc2319403bab3ac0e3f3cac77ca1cd1fca8c146c8dbdd452fb182f083ce"
+    },
+    {
+      "path": "docs/09-advanced-features/081-fts5-vs-like.md",
+      "bytes": 10572,
+      "sha256": "4bc7447f79f16fafebc669fdad6abd9cb0052fa39bafcbfba953d210900ab303"
+    },
+    {
+      "path": "docs/09-advanced-features/082-fts5-tokenizer.md",
+      "bytes": 10402,
+      "sha256": "82e41155c8adb296a52577c62ed5e1b7a9e2ac86dcd154614c472dbe327ccb99"
+    },
+    {
+      "path": "docs/09-advanced-features/083-fts5-external-content.md",
+      "bytes": 10592,
+      "sha256": "7351f54575f7242beeac0e8d727d041eaa7d70bb69027970e8bd90ef4c9a0ffb"
+    },
+    {
+      "path": "docs/09-advanced-features/084-fts5-contentless.md",
+      "bytes": 10377,
+      "sha256": "d496b6c8b4972588252837cb6e96f3ff1ded3607d4f383802426a1016e507779"
+    },
+    {
+      "path": "docs/09-advanced-features/085-json-storage.md",
+      "bytes": 10332,
+      "sha256": "88ebc09e5ca0c7c5b219604f060ebdb22004f4b5c4a0bfc6249cf2da8c05ad43"
+    },
+    {
+      "path": "docs/09-advanced-features/086-jsonb.md",
+      "bytes": 10309,
+      "sha256": "819bcdbe4c0ab5e515b01035408d29ea6a65b071b9a7243232bd012488517339"
+    },
+    {
+      "path": "docs/09-advanced-features/087-generated-columns.md",
+      "bytes": 10553,
+      "sha256": "257745b4bc0e474e7e3b4733178ef6def7a0ac4cbcff2cf877d4301b04fdf562"
+    },
+    {
+      "path": "docs/09-advanced-features/088-generated-vs-expression-index.md",
+      "bytes": 10763,
+      "sha256": "4f447bcf81e4e3cc4560d51021da89ea1caa7850dcb6242a776c4df46763efec"
+    },
+    {
+      "path": "docs/09-advanced-features/089-upsert-vs-replace.md",
+      "bytes": 10875,
+      "sha256": "8681b011be7c991b5ff9d679dd86b440ccbeb5fd3cbbc96f6ddd6076da732c00"
+    },
+    {
+      "path": "docs/09-advanced-features/090-on-conflict.md",
+      "bytes": 10354,
+      "sha256": "4a50425d4ece196025f93bcb2c6fa441bf88c089af8e9f2b25301ec90e9f29f0"
+    },
+    {
+      "path": "docs/09-advanced-features/README.md",
+      "bytes": 2371,
+      "sha256": "0105389537d89fbd7a1c9b58dafaebf187b6e0dd3014a4c24f33756761f3946d"
+    },
+    {
+      "path": "docs/10-production-design/091-database-is-locked.md",
+      "bytes": 11444,
+      "sha256": "a660b1273bd7dd31e409fc5de1aa066846cb7b01eea8817d00b0bfdbc76333c0"
+    },
+    {
+      "path": "docs/10-production-design/092-many-writers.md",
+      "bytes": 10936,
+      "sha256": "4c40b8353977cbc2642c714a06607be0a493b69d066998efc79c531be989d7be"
+    },
+    {
+      "path": "docs/10-production-design/093-bulk-insert.md",
+      "bytes": 10776,
+      "sha256": "18b37a1292d083eca133266f66e5f7400684975daba2ca77860386e7f5a035ad"
+    },
+    {
+      "path": "docs/10-production-design/094-mobile-journal-mode.md",
+      "bytes": 10754,
+      "sha256": "2be3e135e51be7aee30a48b06ebc10c0b1018c1c87e792ed3fa7dd912bde0db6"
+    },
+    {
+      "path": "docs/10-production-design/095-hundred-million-row-query.md",
+      "bytes": 11166,
+      "sha256": "014ea686baa4a80aeac4504920e24b63003bdc102fd8df11aef47d4df283fdaa"
+    },
+    {
+      "path": "docs/10-production-design/096-feed-index-design.md",
+      "bytes": 11255,
+      "sha256": "72babbef9bf26eb7c987ed6f3d86980f7787f4d5fbe47188f654dbafec90cc6c"
+    },
+    {
+      "path": "docs/10-production-design/097-one-current-row.md",
+      "bytes": 10855,
+      "sha256": "3b439a3b208881d3e2cecd19091e327b70d8499770167f60824b1754e3219398"
+    },
+    {
+      "path": "docs/10-production-design/098-local-full-text-search.md",
+      "bytes": 10969,
+      "sha256": "8f5126519fbc445b1e0d4ae4d3b18709ca9cc5e99c9d741d44e69b7ca01f5515"
+    },
+    {
+      "path": "docs/10-production-design/099-multi-version-migration.md",
+      "bytes": 11020,
+      "sha256": "5f3537dbd25db9c9f900b401dfddb57368646b1f66477e53c13205eb910fa7e4"
+    },
+    {
+      "path": "docs/10-production-design/100-offline-first-notes.md",
+      "bytes": 11668,
+      "sha256": "6558dbba1a121bd93c4c8816e8a9b20e7b62c752b454b7f63e30064ad54bc757"
+    },
+    {
+      "path": "docs/10-production-design/README.md",
+      "bytes": 2689,
+      "sha256": "e9fce5d19c82ae015362c7a516020b8e5bf2830b20f0204452aecd20a8821f65"
+    },
+    {
+      "path": "docs/11-s-tier.md",
+      "bytes": 2756,
+      "sha256": "8b3b7edd2084b81a755f4cc2148dac9ff61f235df8679baff9270a2670cb0f5b"
+    },
+    {
+      "path": "docs/12-mental-model.md",
+      "bytes": 776,
+      "sha256": "8ba1f7aea038d6a4c16f3d2afc56b37af3ad2900a1a70e0aa42dd09f318399dc"
+    },
+    {
+      "path": "docs/13-production-checklist.md",
+      "bytes": 1008,
+      "sha256": "1387b19305001447e876832f529d1e3a9d8f511e304e69d3cc5bac092331dccc"
+    },
+    {
+      "path": "docs/14-official-references.md",
+      "bytes": 1810,
+      "sha256": "db4e0e39d1f81ec7b949ad00992f4e1106273a732d7b67d9d91b4cc0c4d2ae24"
+    },
+    {
+      "path": "docs/15-content-map.md",
+      "bytes": 15742,
+      "sha256": "17594286688e071c61fd8b4a744034aa4aa4718acfac7944e12525899ef9c99a"
+    },
+    {
+      "path": "docs/16-source-reading-guide.md",
+      "bytes": 2208,
+      "sha256": "c9986d5bee248a9421d6b11788d02c66f73cdc1c5598fdcf6b57088923e594ee"
+    },
+    {
+      "path": "docs/README.md",
+      "bytes": 15293,
+      "sha256": "cd823a0beb4ab941b509368b98dba0a9a4e1c47cb278c0e95eb8451cb39e5c83"
+    },
+    {
+      "path": "docs/assets/SQLite面试100题_专业详解_2026.pdf",
+      "bytes": 2229954,
+      "sha256": "97a0dc6c2322b913ae0834191ec5d76b48c193b97e1e988a2a5fbef211cb6adb"
+    },
+    {
+      "path": "docs/index.md",
+      "bytes": 4158,
+      "sha256": "8762b00c5167542f11173a353687e62f8354776dcc4e48fe1643a56f9b53ad48"
+    },
+    {
+      "path": "docs/labs/01-architecture-lab.md",
+      "bytes": 432,
+      "sha256": "58f9ba37c15226ba43f3b2306436b22bffdabbc9de04cd47412fbb1e6b111eff"
+    },
+    {
+      "path": "docs/labs/02-types-rowid-lab.md",
+      "bytes": 469,
+      "sha256": "29795201935d9aaa40a53d8e0dd670c7fbcd1aa66d6af5d61608934b38d88fac"
+    },
+    {
+      "path": "docs/labs/03-transactions-lab.md",
+      "bytes": 401,
+      "sha256": "eefc3eb95270542ab888bc7f35487c8773ea9e2f36de1e852118ce2abaf15151"
+    },
+    {
+      "path": "docs/labs/04-wal-checkpoint-lab.md",
+      "bytes": 347,
+      "sha256": "b4fa08a40972acd1c2441e7be82583122009d4636f9cf985d30e34cb2b35cfb0"
+    },
+    {
+      "path": "docs/labs/05-index-lab.md",
+      "bytes": 453,
+      "sha256": "c5ba4268fa4c9ed698af3b335c6bfec885fdaa5e2957a47a7a8ce7157da89b03"
+    },
+    {
+      "path": "docs/labs/06-planner-lab.md",
+      "bytes": 317,
+      "sha256": "604f20b9cd7edb7b4701a163f547b67ba77b7ec414c6ee1bd8d3ad7328e45777"
+    },
+    {
+      "path": "docs/labs/07-storage-lab.md",
+      "bytes": 297,
+      "sha256": "5c8f6acfd9870be7cd9134534decf58154cae3ec566df47f5ec5238dba86f16b"
+    },
+    {
+      "path": "docs/labs/08-operations-lab.md",
+      "bytes": 361,
+      "sha256": "600ad1776560372cf6efdbd3e28d8937b5d21c52e9a62b9d57e1d57454c3c43f"
+    },
+    {
+      "path": "docs/labs/09-advanced-lab.md",
+      "bytes": 385,
+      "sha256": "e62ac9241d3f3d429ba07c67f8516c8cb1dc16bfeaf70db61ba3f38f3eae1313"
+    },
+    {
+      "path": "docs/labs/10-production-lab.md",
+      "bytes": 439,
+      "sha256": "33761e7cf6e66db97ec50c3e4764a006c244a2d53188ec0a1fd774859e9e6ee0"
+    },
+    {
+      "path": "docs/labs/README.md",
+      "bytes": 635,
+      "sha256": "c3959b8e28e92eb74faadfa14f8633912b893540468c7d0ff77c4eea38ac56ea"
+    },
+    {
+      "path": "mkdocs.yml",
+      "bytes": 12610,
+      "sha256": "ebefade71adab0ce18cd9bf1a56ffa781203613b99c4e79ff5cb13207b254ff9"
+    },
+    {
+      "path": "requirements-docs.txt",
+      "bytes": 52,
+      "sha256": "41c46adecde485a697583726d4ad001b4cf9d1fe7d2d0362b9ee6b980d2eeba3"
+    },
+    {
+      "path": "scripts/check_links.py",
+      "bytes": 678,
+      "sha256": "bbd8811859960605b2e99aac58ced7911dc50193031889f89fe613dd4f469266"
+    },
+    {
+      "path": "scripts/validate_repo.py",
+      "bytes": 1491,
+      "sha256": "a0ca8d256885db683dcbddbb25410853565aa7156cdb70d754f9552f7d0413d0"
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+site_name: 剑指 Web3 Offer - 100 Interview Questions
+site_description: Web3 / Solidity / DeFi / L2 / Account Abstraction professional interview handbook
+repo_name: jianzhi-web3-offer-100
+
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - tables
+  - attr_list
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+
+nav:
+  - 首页: index.md
+  - 编写说明:
+      - 封面: 00-preface/cover.md
+      - 能力地图: 00-preface/index.md
+  - "01 Blockchain 基础与密码学直觉":
+      - 章节导读: 01-blockchain-fundamentals/index.md
+      - "Q01 Blockchain 到底解决了什么问题？": 01-blockchain-fundamentals/q01.md
+      - "Q02 UTXO 模型与 Account Model 有什么区别？": 01-blockchain-fundamentals/q02.md
+      - "Q03 Hash 在 Blockchain 中有哪些作用？": 01-blockchain-fundamentals/q03.md
+      - "Q04 Merkle Tree 为什么特别适合 Blockchain？": 01-blockchain-fundamentals/q04.md
+      - "Q05 什么是区块链 Finality？": 01-blockchain-fundamentals/q05.md
+      - "Q06 PoW 与 PoS 的本质差异是什么？": 01-blockchain-fundamentals/q06.md
+      - "Q07 Fork、Fork Choice 与 Hard Fork 有什么区别？": 01-blockchain-fundamentals/q07.md
+      - "Q08 为什么区块链需要 Gas？": 01-blockchain-fundamentals/q08.md
+      - "Q09 Private Key、Public Key、Address、Signature 的关系是什么？": 01-blockchain-fundamentals/q09.md
+      - "Q10 为什么“Code is Law”并不完全成立？": 01-blockchain-fundamentals/q10.md
+  - "02 Ethereum / EVM：从交易到状态转换":
+      - 章节导读: 02-ethereum-evm/index.md
+      - "Q11 EVM 是什么？": 02-ethereum-evm/q11.md
+      - "Q12 Stack / Memory / Storage / Transient Storage 有什么区别？": 02-ethereum-evm/q12.md
+      - "Q13 Solidity 的 storage、memory、calldata 有什么区别？": 02-ethereum-evm/q13.md
+      - "Q14 CALL 与 DELEGATECALL 有什么区别？": 02-ethereum-evm/q14.md
+      - "Q15 ABI Function Selector 和 calldata 如何编码？": 02-ethereum-evm/q15.md
+      - "Q16 Mapping 在 EVM Storage 中如何定位？": 02-ethereum-evm/q16.md
+      - "Q17 CREATE 与 CREATE2 有什么区别？": 02-ethereum-evm/q17.md
+      - "Q18 EIP-1559 的费用机制如何工作？": 02-ethereum-evm/q18.md
+      - "Q19 EIP-1153 Transient Storage 解决了什么？": 02-ethereum-evm/q19.md
+      - "Q20 一笔 Ethereum Transaction 从钱包到 Finality 经历什么？": 02-ethereum-evm/q20.md
+  - "03 Solidity 工程：语言语义、ABI 与 Gas":
+      - 章节导读: 03-solidity/index.md
+      - "Q21 public / external / internal / private 有什么区别？": 03-solidity/q21.md
+      - "Q22 view 与 pure 有什么区别？": 03-solidity/q22.md
+      - "Q23 receive() 与 fallback() 有什么区别？": 03-solidity/q23.md
+      - "Q24 Solidity 0.8 之后为什么还会使用 unchecked？": 03-solidity/q24.md
+      - "Q25 immutable 与 constant 有什么区别？": 03-solidity/q25.md
+      - "Q26 Event 为什么通常比 storage 便宜？什么时候不能用 Event 替代 Storage？": 03-solidity/q26.md
+      - "Q27 Custom Error 为什么比 revert string 更适合生产合约？": 03-solidity/q27.md
+      - "Q28 ERC-20 Allowance Race Condition 是什么？": 03-solidity/q28.md
+      - "Q29 ERC-721 与 ERC-1155 的核心区别是什么？": 03-solidity/q29.md
+      - "Q30 如何系统做 Solidity Gas Optimization？": 03-solidity/q30.md
+  - "04 智能合约安全：从漏洞列表到 Invariant":
+      - 章节导读: 04-smart-contract-security/index.md
+      - "Q31 什么是 Reentrancy？": 04-smart-contract-security/q31.md
+      - "Q32 Checks-Effects-Interactions 为什么有效？": 04-smart-contract-security/q32.md
+      - "Q33 ReentrancyGuard 是否解决所有 Reentrancy？": 04-smart-contract-security/q33.md
+      - "Q34 为什么不能使用 tx.origin 做 Authorization？": 04-smart-contract-security/q34.md
+      - "Q35 Oracle Manipulation 的根因是什么？": 04-smart-contract-security/q35.md
+      - "Q36 Flash Loan 为什么不是漏洞本身？": 04-smart-contract-security/q36.md
+      - "Q37 Access Control 应如何设计？": 04-smart-contract-security/q37.md
+      - "Q38 Transparent Proxy 与 UUPS Proxy 有什么区别？": 04-smart-contract-security/q38.md
+      - "Q39 Upgradeable Contract 为什么不能随便改变 State Variable 顺序？": 04-smart-contract-security/q39.md
+      - "Q40 给你一份 200 行 Solidity 合约，如何系统做 Security Review？": 04-smart-contract-security/q40.md
+  - "05 DeFi：AMM、Lending 与经济不变量":
+      - 章节导读: 05-defi/index.md
+      - "Q41 Uniswap V2 为什么使用 x*y=k？": 05-defi/q41.md
+      - "Q42 Slippage 与 Price Impact 有什么区别？": 05-defi/q42.md
+      - "Q43 什么是 Impermanent Loss？": 05-defi/q43.md
+      - "Q44 Uniswap V3 Concentrated Liquidity 解决了什么问题？": 05-defi/q44.md
+      - "Q45 Uniswap V3 Tick 与 sqrtPriceX96 是什么？": 05-defi/q45.md
+      - "Q46 Lending Protocol 的 Health Factor 是什么？": 05-defi/q46.md
+      - "Q47 为什么 DeFi Lending 通常需要 Over-collateralization？": 05-defi/q47.md
+      - "Q48 Liquidation 的经济机制是什么？": 05-defi/q48.md
+      - "Q49 Stablecoin 有哪些主要设计与 Failure Modes？": 05-defi/q49.md
+      - "Q50 设计 DeFi Protocol 时最重要的 Invariant 是什么？": 05-defi/q50.md
+  - "06 Layer2、Rollup、ZK 与 Bridge":
+      - 章节导读: 06-layer2-rollup-zk-bridge/index.md
+      - "Q51 为什么 Ethereum 需要 Layer2？": 06-layer2-rollup-zk-bridge/q51.md
+      - "Q52 Optimistic Rollup 的工作原理是什么？": 06-layer2-rollup-zk-bridge/q52.md
+      - "Q53 ZK Rollup 与 Optimistic Rollup 的核心区别？": 06-layer2-rollup-zk-bridge/q53.md
+      - "Q54 EIP-4844 为什么对 Rollup 重要？": 06-layer2-rollup-zk-bridge/q54.md
+      - "Q55 Data Availability 到底是什么意思？": 06-layer2-rollup-zk-bridge/q55.md
+      - "Q56 Sequencer 是什么？中心化 Sequencer 有哪些风险？": 06-layer2-rollup-zk-bridge/q56.md
+      - "Q57 Validium 与 ZK Rollup 有什么区别？": 06-layer2-rollup-zk-bridge/q57.md
+      - "Q58 为什么 Bridge 是 Web3 高风险组件？": 06-layer2-rollup-zk-bridge/q58.md
+      - "Q59 ZK Proof 的 Completeness、Soundness、Zero-Knowledge 分别是什么？": 06-layer2-rollup-zk-bridge/q59.md
+      - "Q60 设计一个 Rollup 需要哪些核心组件？": 06-layer2-rollup-zk-bridge/q60.md
+  - "07 钱包、签名与 Account Abstraction":
+      - 章节导读: 07-wallet-signature-account-abstraction/index.md
+      - "Q61 EOA 与 Smart Contract Account 有什么区别？": 07-wallet-signature-account-abstraction/q61.md
+      - "Q62 ecrecover 做什么？有哪些安全注意事项？": 07-wallet-signature-account-abstraction/q62.md
+      - "Q63 什么是 Signature Replay Attack？": 07-wallet-signature-account-abstraction/q63.md
+      - "Q64 EIP-712 解决什么问题？": 07-wallet-signature-account-abstraction/q64.md
+      - "Q65 ERC-2612 Permit 是什么？": 07-wallet-signature-account-abstraction/q65.md
+      - "Q66 Account Abstraction 解决哪些 UX 与安全问题？": 07-wallet-signature-account-abstraction/q66.md
+      - "Q67 ERC-4337 的 UserOperation 与 EntryPoint 流程是什么？": 07-wallet-signature-account-abstraction/q67.md
+      - "Q68 ERC-4337 Paymaster 是做什么的？": 07-wallet-signature-account-abstraction/q68.md
+      - "Q69 EIP-7702 与 ERC-4337 是什么关系？": 07-wallet-signature-account-abstraction/q69.md
+      - "Q70 如何设计一个生产级 Smart Wallet？": 07-wallet-signature-account-abstraction/q70.md
+  - "08 Oracle、MEV 与 Web3 基础设施":
+      - 章节导读: 08-oracle-mev-infrastructure/index.md
+      - "Q71 为什么智能合约不能直接请求普通 HTTP API？": 08-oracle-mev-infrastructure/q71.md
+      - "Q72 一个可靠 Oracle 应具备哪些性质？": 08-oracle-mev-infrastructure/q72.md
+      - "Q73 什么是 MEV？": 08-oracle-mev-infrastructure/q73.md
+      - "Q74 Front-running、Back-running、Sandwich 在机制上如何区分？": 08-oracle-mev-infrastructure/q74.md
+      - "Q75 为什么 Public Mempool 会产生独特安全问题？": 08-oracle-mev-infrastructure/q75.md
+      - "Q76 JSON-RPC 在 Web3 架构中是什么？": 08-oracle-mev-infrastructure/q76.md
+      - "Q77 Archive Node、Full Node、Light Client 有什么区别？": 08-oracle-mev-infrastructure/q77.md
+      - "Q78 为什么 Web3 应用通常需要 Indexer？": 08-oracle-mev-infrastructure/q78.md
+      - "Q79 Indexer 如何正确处理 Chain Reorg？": 08-oracle-mev-infrastructure/q79.md
+      - "Q80 RPC Provider 挂了，生产 dApp 应如何降级？": 08-oracle-mev-infrastructure/q80.md
+  - "09 Solana 与 Multi-chain：另一种执行模型":
+      - 章节导读: 09-solana-multichain/index.md
+      - "Q81 Ethereum 与 Solana 最大的编程模型区别是什么？": 09-solana-multichain/q81.md
+      - "Q82 Solana Account 是什么？": 09-solana-multichain/q82.md
+      - "Q83 为什么 Solana Program 通常被称为 Stateless？": 09-solana-multichain/q83.md
+      - "Q84 什么是 PDA？为什么没有私钥？": 09-solana-multichain/q84.md
+      - "Q85 什么是 CPI？": 09-solana-multichain/q85.md
+      - "Q86 Solana 为什么更容易并行执行某些 Transactions？": 09-solana-multichain/q86.md
+      - "Q87 Ethereum 与 Solana Transaction Atomicity 有何异同？": 09-solana-multichain/q87.md
+      - "Q88 为什么 Multi-chain dApp 比单链难很多？": 09-solana-multichain/q88.md
+      - "Q89 Multi-chain Token 如何保证 Total Supply Invariant？": 09-solana-multichain/q89.md
+      - "Q90 设计一个 Ethereum + Solana Wallet SDK。": 09-solana-multichain/q90.md
+  - "10 系统设计与现场实战":
+      - 章节导读: 10-system-design-practice/index.md
+      - "Q91 Coding：实现一个 Mini ERC-20 Staking Contract，怎样从 O(N) 奖励更新到 O(1)？": 10-system-design-practice/q91.md
+      - "Q92 Coding Review：看到一个 Withdraw 函数，如何快速审查？": 10-system-design-practice/q92.md
+      - "Q93 System Design：设计一个 NFT Marketplace。": 10-system-design-practice/q93.md
+      - "Q94 System Design：设计 DAO Governance System。": 10-system-design-practice/q94.md
+      - "Q95 System Design：设计 Multi-sig Wallet。": 10-system-design-practice/q95.md
+      - "Q96 System Design：设计 Token Vesting Contract。": 10-system-design-practice/q96.md
+      - "Q97 System Design：设计高可靠 Blockchain Indexing Service。": 10-system-design-practice/q97.md
+      - "Q98 System Design：设计中心化交易平台 Deposit System。": 10-system-design-practice/q98.md
+      - "Q99 Debug：用户说“交易失败了”，你如何系统排查？": 10-system-design-practice/q99.md
+      - "Q100 Staff 题：从用户点击按钮到链上结算，设计完整 Web3 Protocol。": 10-system-design-practice/q100.md
+  - Appendix:
+      - 总览: 11-appendix/index.md
+      - Core 30: 11-appendix/core-30.md
+      - 7 天冲刺: 11-appendix/7-day-plan.md
+      - Security Checklist: 11-appendix/security-review-checklist.md
+      - System Design Checklist: 11-appendix/system-design-checklist.md
+      - 结束语: 11-appendix/end-note.md
+  - References: references.md

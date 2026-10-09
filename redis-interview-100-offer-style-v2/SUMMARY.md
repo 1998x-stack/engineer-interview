@@ -1,0 +1,133 @@
+# 100 题总索引
+
+> 一题一个 Markdown。建议使用 GitHub 搜索 `id: Q0xx` 或直接从章节导航进入。
+
+## 01 · 数据结构与数据建模
+
+- [Q001 · Redis 为什么这么快？](chapters/01-data-modeling/q001.md) — **基础必会**
+- [Q002 · Redis 和 Memcached 有什么区别？](chapters/01-data-modeling/q002.md) — **基础必会**
+- [Q003 · Redis 有哪些核心数据类型？分别怎么选？](chapters/01-data-modeling/q003.md) — **基础必会**
+- [Q004 · String 最大能做什么？为什么 String 不只是字符串？](chapters/01-data-modeling/q004.md) — **基础必会**
+- [Q005 · Hash 和 String JSON 应该怎么选？](chapters/01-data-modeling/q005.md) — **基础必会**
+- [Q006 · List 可以实现消息队列吗？](chapters/01-data-modeling/q006.md) — **基础必会**
+- [Q007 · Set 最适合哪些场景？](chapters/01-data-modeling/q007.md) — **基础必会**
+- [Q008 · Sorted Set 为什么能做排行榜？](chapters/01-data-modeling/q008.md) — **基础必会**
+- [Q009 · Sorted Set 为什么通常使用 skiplist，而不是平衡树？](chapters/01-data-modeling/q009.md) — **中级**
+- [Q010 · Bitmap 和 HyperLogLog 分别解决什么问题？](chapters/01-data-modeling/q010.md) — **基础必会**
+
+## 02 · 底层编码与内存机制
+
+- [Q011 · Redis String 底层为什么不用普通 C 字符串？](chapters/02-internals-memory/q011.md) — **中级**
+- [Q012 · embstr、raw、int 有什么区别？](chapters/02-internals-memory/q012.md) — **中级**
+- [Q013 · List 的底层结构是什么？](chapters/02-internals-memory/q013.md) — **中级**
+- [Q014 · Hash 的底层结构是什么？](chapters/02-internals-memory/q014.md) — **中级**
+- [Q015 · Redis 为什么会自动改变 encoding？](chapters/02-internals-memory/q015.md) — **中级**
+- [Q016 · 什么是 Big Key？](chapters/02-internals-memory/q016.md) — **基础必会**
+- [Q017 · Big Key 如何治理？](chapters/02-internals-memory/q017.md) — **中级**
+- [Q018 · 什么是 Hot Key？](chapters/02-internals-memory/q018.md) — **基础必会**
+- [Q019 · Hot Key 怎么解决？](chapters/02-internals-memory/q019.md) — **中级**
+- [Q020 · Redis 为什么可能出现内存碎片？](chapters/02-internals-memory/q020.md) — **中级**
+
+## 03 · TTL、缓存模式与淘汰
+
+- [Q021 · Redis Key 是怎么过期的？](chapters/03-cache-ttl-eviction/q021.md) — **基础必会**
+- [Q022 · TTL 到了，Key 一定瞬间从内存消失吗？](chapters/03-cache-ttl-eviction/q022.md) — **基础必会**
+- [Q023 · Redis 的过期在主从之间怎么保持一致？](chapters/03-cache-ttl-eviction/q023.md) — **中级**
+- [Q024 · Redis 有哪些 maxmemory 淘汰策略？](chapters/03-cache-ttl-eviction/q024.md) — **基础必会**
+- [Q025 · LRU 和 LFU 有什么区别？](chapters/03-cache-ttl-eviction/q025.md) — **基础必会**
+- [Q026 · 什么是缓存穿透？](chapters/03-cache-ttl-eviction/q026.md) — **基础必会**
+- [Q027 · 什么是缓存击穿？](chapters/03-cache-ttl-eviction/q027.md) — **基础必会**
+- [Q028 · 什么是缓存雪崩？](chapters/03-cache-ttl-eviction/q028.md) — **基础必会**
+- [Q029 · Cache Aside 如何保证数据库和 Redis 一致性？](chapters/03-cache-ttl-eviction/q029.md) — **高级**
+- [Q030 · Redis Client-Side Caching 是什么？](chapters/03-cache-ttl-eviction/q030.md) — **中级**
+
+## 04 · 持久化：RDB、AOF 与恢复
+
+- [Q031 · RDB 是什么？](chapters/04-persistence/q031.md) — **基础必会**
+- [Q032 · SAVE 和 BGSAVE 有什么区别？](chapters/04-persistence/q032.md) — **基础必会**
+- [Q033 · 什么是 Copy-On-Write？](chapters/04-persistence/q033.md) — **中级**
+- [Q034 · AOF 是什么？](chapters/04-persistence/q034.md) — **基础必会**
+- [Q035 · AOF 为什么需要 rewrite？](chapters/04-persistence/q035.md) — **中级**
+- [Q036 · Redis 7 以后的 Multi-Part AOF 是什么？](chapters/04-persistence/q036.md) — **中级**
+- [Q037 · RDB 和 AOF 应该选哪个？](chapters/04-persistence/q037.md) — **基础必会**
+- [Q038 · RDB 与 AOF 同时开启，Redis 重启优先使用什么？](chapters/04-persistence/q038.md) — **中级**
+- [Q039 · AOF everysec 是不是绝对只丢 1 秒数据？](chapters/04-persistence/q039.md) — **高级**
+- [Q040 · Redis 8.10 的 BACKUP 有什么意义？](chapters/04-persistence/q040.md) — **新版加分**
+
+## 05 · 复制与 Sentinel 高可用
+
+- [Q041 · Redis 主从复制是同步还是异步？](chapters/05-replication-sentinel/q041.md) — **基础必会**
+- [Q042 · Redis 全量复制是怎样发生的？](chapters/05-replication-sentinel/q042.md) — **中级**
+- [Q043 · 什么是 PSYNC？](chapters/05-replication-sentinel/q043.md) — **中级**
+- [Q044 · replication backlog 是干什么的？](chapters/05-replication-sentinel/q044.md) — **中级**
+- [Q045 · WAIT 能不能保证 Redis 强一致？](chapters/05-replication-sentinel/q045.md) — **高级**
+- [Q046 · Redis Sentinel 是干什么的？](chapters/05-replication-sentinel/q046.md) — **基础必会**
+- [Q047 · Sentinel 的 SDOWN 和 ODOWN 是什么？](chapters/05-replication-sentinel/q047.md) — **中级**
+- [Q048 · Sentinel quorum 和 majority 有什么区别？](chapters/05-replication-sentinel/q048.md) — **高级**
+- [Q049 · Sentinel 为什么推荐奇数个？](chapters/05-replication-sentinel/q049.md) — **中级**
+- [Q050 · Sentinel 会不会脑裂？](chapters/05-replication-sentinel/q050.md) — **高级**
+
+## 06 · Redis Cluster 与水平扩展
+
+- [Q051 · Redis Cluster 为什么是 16384 个 slot？](chapters/06-cluster/q051.md) — **基础必会**
+- [Q052 · Redis Cluster 为什么不用一致性哈希？](chapters/06-cluster/q052.md) — **中级**
+- [Q053 · Cluster Client 怎么知道 Key 在哪个节点？](chapters/06-cluster/q053.md) — **基础必会**
+- [Q054 · MOVED 和 ASK 有什么区别？](chapters/06-cluster/q054.md) — **中级**
+- [Q055 · 什么是 Hash Tag？](chapters/06-cluster/q055.md) — **基础必会**
+- [Q056 · 为什么 Cluster 多 Key 操作经常报 CROSSSLOT？](chapters/06-cluster/q056.md) — **基础必会**
+- [Q057 · Redis Cluster Resharding 怎么工作？](chapters/06-cluster/q057.md) — **中级**
+- [Q058 · Cluster 怎么检测节点故障？](chapters/06-cluster/q058.md) — **中级**
+- [Q059 · Cluster 是强一致系统吗？](chapters/06-cluster/q059.md) — **高级**
+- [Q060 · Redis Cluster 最少为什么经常部署 6 个实例？](chapters/06-cluster/q060.md) — **基础必会**
+
+## 07 · 事务、Lua、Functions 与分布式锁
+
+- [Q061 · Redis 单个命令为什么可以认为是原子的？](chapters/07-transactions-locks/q061.md) — **基础必会**
+- [Q062 · MULTI/EXEC 是什么？](chapters/07-transactions-locks/q062.md) — **基础必会**
+- [Q063 · Redis Transaction 支持 rollback 吗？](chapters/07-transactions-locks/q063.md) — **基础必会**
+- [Q064 · WATCH 是怎么实现乐观锁的？](chapters/07-transactions-locks/q064.md) — **中级**
+- [Q065 · Pipeline 和 Transaction 有什么区别？](chapters/07-transactions-locks/q065.md) — **基础必会**
+- [Q066 · Lua Script 为什么经常用于 Redis？](chapters/07-transactions-locks/q066.md) — **中级**
+- [Q067 · Lua Script 最大风险是什么？](chapters/07-transactions-locks/q067.md) — **中级**
+- [Q068 · Redis Functions 和 Lua EVAL 有什么区别？](chapters/07-transactions-locks/q068.md) — **中级**
+- [Q069 · 怎么正确实现单 Redis 实例分布式锁？](chapters/07-transactions-locks/q069.md) — **基础必会**
+- [Q070 · Redlock 是否绝对安全？](chapters/07-transactions-locks/q070.md) — **高级**
+
+## 08 · Pub/Sub、Streams 与消息处理
+
+- [Q071 · Redis Pub/Sub 的特点是什么？](chapters/08-messaging-streams/q071.md) — **基础必会**
+- [Q072 · Pub/Sub 和 Stream 最大区别是什么？](chapters/08-messaging-streams/q072.md) — **基础必会**
+- [Q073 · Redis Stream 的 ID 是什么？](chapters/08-messaging-streams/q073.md) — **基础必会**
+- [Q074 · Consumer Group 是什么？](chapters/08-messaging-streams/q074.md) — **基础必会**
+- [Q075 · 什么是 PEL？](chapters/08-messaging-streams/q075.md) — **中级**
+- [Q076 · Consumer 崩溃后 Pending Message 怎么处理？](chapters/08-messaging-streams/q076.md) — **中级**
+- [Q077 · Redis Streams 能保证 exactly-once 吗？](chapters/08-messaging-streams/q077.md) — **高级**
+- [Q078 · Redis 8.8 XNACK 解决了什么？](chapters/08-messaging-streams/q078.md) — **新版加分**
+- [Q079 · Redis Stream 怎么防止无限增长？](chapters/08-messaging-streams/q079.md) — **中级**
+- [Q080 · Redis 和 Kafka 应该怎么选？](chapters/08-messaging-streams/q080.md) — **高级**
+
+## 09 · 性能诊断、运维与安全
+
+- [Q081 · 为什么生产环境不要使用 KEYS *？](chapters/09-operations-performance/q081.md) — **基础必会**
+- [Q082 · SCAN 会不会漏 Key 或重复 Key？](chapters/09-operations-performance/q082.md) — **中级**
+- [Q083 · Redis 延迟突然从 1 ms 变成 500 ms，怎么排查？](chapters/09-operations-performance/q083.md) — **高级**
+- [Q084 · SLOWLOG 记录的是网络耗时吗？](chapters/09-operations-performance/q084.md) — **基础必会**
+- [Q085 · Pipeline 为什么能提高吞吐？](chapters/09-operations-performance/q085.md) — **基础必会**
+- [Q086 · Redis CPU 100%，最先看什么？](chapters/09-operations-performance/q086.md) — **高级**
+- [Q087 · Redis OOM 了怎么办？](chapters/09-operations-performance/q087.md) — **高级**
+- [Q088 · 为什么 Redis 不应该使用 Swap？](chapters/09-operations-performance/q088.md) — **基础必会**
+- [Q089 · Redis 应该怎么做安全控制？](chapters/09-operations-performance/q089.md) — **基础必会**
+- [Q090 · Redis 监控最重要的指标有哪些？](chapters/09-operations-performance/q090.md) — **基础必会**
+
+## 10 · Redis 8.x 与系统设计压轴题
+
+- [Q091 · Redis 8 最大的架构变化是什么？](chapters/10-redis8-system-design/q091.md) — **新版加分**
+- [Q092 · Vector Set 和 Redis Query Engine Vector Search 怎么选？](chapters/10-redis8-system-design/q092.md) — **新版加分**
+- [Q093 · Bloom Filter 为什么适合解决缓存穿透？](chapters/10-redis8-system-design/q093.md) — **中级**
+- [Q094 · Count-Min Sketch、Top-K、t-digest 有什么作用？](chapters/10-redis8-system-design/q094.md) — **新版加分**
+- [Q095 · Redis 8.8 的 Array 与传统 List 有什么不同？](chapters/10-redis8-system-design/q095.md) — **新版加分**
+- [Q096 · Redis 8.8 INCREX 为什么值得关注？](chapters/10-redis8-system-design/q096.md) — **新版加分**
+- [Q097 · 设计一个秒杀库存系统，你会怎么用 Redis？](chapters/10-redis8-system-design/q097.md) — **系统设计**
+- [Q098 · 设计一个高并发排行榜系统。](chapters/10-redis8-system-design/q098.md) — **系统设计**
+- [Q099 · 设计一个 Redis Rate Limiter，有哪些算法？](chapters/10-redis8-system-design/q099.md) — **系统设计**
+- [Q100 · 终极题：如果让你设计一个生产级 Redis 架构，你会怎么做？](chapters/10-redis8-system-design/q100.md) — **系统设计**

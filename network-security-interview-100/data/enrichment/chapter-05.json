@@ -1,0 +1,412 @@
+{
+  "Q41": {
+    "model": [
+      "Kerberos 通过 KDC、TGT 与 service ticket 把“用户长期密钥”与“访问具体服务的短期票据”分离。",
+      "AS 阶段建立初始身份，TGS 阶段用 TGT 换取面向特定 SPN 的服务票据。",
+      "面试应强调时间、SPN、票据生命周期和域信任，而不是只背三次请求。"
+    ],
+    "boundary": [
+      "时钟偏差、SPN 配置、DNS/域信任都会影响 Kerberos。",
+      "票据可被滥用的风险取决于密钥保护、生命周期和账户权限。",
+      "跨域/委派场景比单域基本流程复杂，需要单独建模。"
+    ],
+    "design": [
+      "保护 KDC/域控和高价值服务账户密钥。",
+      "服务账户最小权限、定期轮换并优先托管身份。",
+      "监控异常票据请求、异常 SPN 使用和高权限账户登录。",
+      "避免不必要委派并审计 delegation 配置。"
+    ],
+    "evidence": [
+      "KDC/域控认证日志、TGT/TGS 请求。",
+      "SPN/服务账户配置与变更审计。",
+      "终端登录/服务访问和时间同步状态。"
+    ],
+    "validation": [
+      "验证关键服务 SPN/委派配置与预期一致。",
+      "服务账户轮换演练确认业务不中断。",
+      "异常票据/跨主机使用检测规则做仿真验证。"
+    ],
+    "deep_questions": [
+      "TGT 与 service ticket 分别解决什么？",
+      "Kerberos 为什么依赖时间同步？",
+      "委派为什么是高风险配置边界？"
+    ],
+    "deliverable": "Kerberos identity map：KDC、SPN、服务账户、委派、票据 TTL、日志和轮换。",
+    "summary": {
+      "root": "用可信 KDC 和短期票据完成域内服务认证。",
+      "boundary": "时间、SPN、委派、密钥与域信任。",
+      "control": "KDC/服务账户保护 + 委派治理 + 票据监控。",
+      "evidence": "KDC tickets + SPN/config + endpoint auth。",
+      "verify": "配置/轮换/异常票据演练。"
+    }
+  },
+  "Q42": {
+    "model": [
+      "NTLM 是 challenge-response 家族，Kerberos 是基于 KDC/票据的认证体系；二者的信任、委派和可审计语义不同。",
+      "企业安全重点不是“哪个绝对更安全”，而是减少 legacy authentication、提高强认证和服务身份可管理性。",
+      "协议选择还受兼容性、域加入、名称解析和应用历史依赖影响。"
+    ],
+    "boundary": [
+      "Kerberos 配置失败时系统可能回退到 NTLM，形成长期隐性依赖。",
+      "旧设备/应用可能无法一次性禁用 NTLM。",
+      "认证协议强度不能替代最小权限和 MFA。"
+    ],
+    "design": [
+      "先 inventory NTLM usage 和依赖来源，再分阶段减少。",
+      "关键/管理员访问优先现代认证与 MFA。",
+      "修复 SPN/DNS 等导致 Kerberos fallback 的配置。",
+      "对 legacy exception 设置 owner、补偿控制和淘汰计划。"
+    ],
+    "evidence": [
+      "域控 NTLM/Kerberos authentication logs。",
+      "应用/终端来源、账户、目标服务的协议分布。",
+      "配置变更与 fallback/error trend。"
+    ],
+    "validation": [
+      "禁用前在 audit 模式统计影响范围。",
+      "灰度限制 NTLM 并验证关键业务。",
+      "确认新增系统不再引入 legacy authentication。"
+    ],
+    "deep_questions": [
+      "为什么 Kerberos 失败后会出现 NTLM fallback？",
+      "如何安全淘汰企业中的 NTLM？",
+      "MFA 为什么仍不能替代协议和权限治理？"
+    ],
+    "deliverable": "Legacy authentication reduction plan：usage inventory、dependency owner、灰度策略、exception 和 KPI。",
+    "summary": {
+      "root": "两种 Windows 认证模型不同，legacy 协议扩大可滥用面。",
+      "boundary": "兼容/fallback/旧系统依赖。",
+      "control": "inventory→灰度减少→强认证。",
+      "evidence": "域控协议使用日志。",
+      "verify": "audit/限制/业务回归。"
+    }
+  },
+  "Q43": {
+    "model": [
+      "Credential Access 的价值在于合法凭据能把攻击流量伪装成“正常身份行为”。",
+      "凭据不仅是密码，还包括 token、cookie、API key、certificate、cloud secret。",
+      "防御需要从 credential creation、storage、use、rotation、revocation 全生命周期治理。"
+    ],
+    "boundary": [
+      "即使凭据未泄露，过度授权也会放大任何账号 compromise。",
+      "MFA 可降低部分凭据重放，但 session/token/certificate 风险仍存在。",
+      "终端、浏览器、CI/CD、云 metadata 都可能成为 credential source。"
+    ],
+    "design": [
+      "减少长期凭据，优先短期 workload/user credentials。",
+      "高权限使用 PAM/JIT/MFA 与隔离管理终端。",
+      "Secrets 不落代码/镜像/普通配置，集中管理与轮换。",
+      "建立异常认证与 token/certificate 使用检测。"
+    ],
+    "evidence": [
+      "IdP/login/MFA/session logs。",
+      "secret manager access、token issuance、certificate lifecycle。",
+      "EDR 对 credential store 访问与浏览器/进程行为。"
+    ],
+    "validation": [
+      "演练账号/secret 泄露后的 revoke/rotate 时间。",
+      "检查 dormant/unused credentials 和过度权限。",
+      "验证同一 credential 在异常地理/设备/服务使用能被发现。"
+    ],
+    "deep_questions": [
+      "为什么合法凭据通常比恶意文件更难检测？",
+      "MFA 后还需要保护 session/token 吗？",
+      "machine credential 与 human credential 的治理有何不同？"
+    ],
+    "deliverable": "Credential inventory + privilege/TTL/rotation matrix + compromise response playbook + anomaly detections。",
+    "summary": {
+      "root": "攻击者获得可复用身份凭据后可模拟合法主体。",
+      "boundary": "密码之外还有 token/cert/API key。",
+      "control": "短期凭据 + JIT/MFA + secret 生命周期治理。",
+      "evidence": "IdP/secret/token/cert/EDR。",
+      "verify": "泄露轮换与异常使用演练。"
+    }
+  },
+  "Q44": {
+    "model": [
+      "Lateral Movement 是从已控制主体/主机访问其他资产，核心依赖信任关系、远程管理路径和凭据。",
+      "网络连通性只是条件之一；身份授权和服务管理能力往往更关键。",
+      "检测应识别“谁从哪里以什么身份访问了什么新系统”。"
+    ],
+    "boundary": [
+      "合法运维工具与横向行为高度重合。",
+      "网络分段若允许通用管理平面，仍可能形成横向通道。",
+      "云环境 lateral movement 常表现为 IAM/API 跨资源访问，而非传统主机远程登录。"
+    ],
+    "design": [
+      "分离用户区、服务器区、管理区并限制 east-west 管理协议。",
+      "管理员使用专用身份/跳板/JIT。",
+      "服务账号避免跨大量主机复用。",
+      "建立 identity+endpoint+network 的横向关联检测。"
+    ],
+    "evidence": [
+      "远程登录/管理日志、source host、target、account。",
+      "EDR process lineage 与远程服务行为。",
+      "云 API/role assumption 和 network flow。"
+    ],
+    "validation": [
+      "紫队/演练验证跨段、跨账号访问能被阻断/检测。",
+      "检查共享管理员账号和高权限服务账号横向范围。",
+      "验证网络策略与身份策略同时生效。"
+    ],
+    "deep_questions": [
+      "为什么网络分段不能单独阻止横向移动？",
+      "如何区分运维远程管理与异常 lateral movement？",
+      "云环境的 lateral movement 与 AD 环境有何不同？"
+    ],
+    "deliverable": "Lateral movement path map：network routes + admin identities + remote services + detections + choke points。",
+    "summary": {
+      "root": "利用身份/远程服务/信任从一个资产移动到另一个。",
+      "boundary": "合法管理与云 API 会改变行为形态。",
+      "control": "分段 + JIT 管理身份 + 凭据隔离。",
+      "evidence": "remote auth/process/flow/cloud API。",
+      "verify": "跨边界演练。"
+    }
+  },
+  "Q45": {
+    "model": [
+      "网络分区控制“哪里可以连到哪里”；Zero Trust 更强调每次资源访问基于身份、设备、资源和上下文做显式判断。",
+      "Zero Trust 不取消网络安全，而是不把网络位置当充分信任依据。",
+      "NIST SP 800-207 的核心是资源导向、持续评估和最小权限。"
+    ],
+    "boundary": [
+      "“内网”仍可作为风险信号之一，但不能自动授权。",
+      "Zero Trust 产品化容易把概念简化成 VPN 替代或单点 IAM 项目。",
+      "legacy protocol/设备可能限制细粒度身份控制，需要补偿网络隔离。"
+    ],
+    "design": [
+      "先识别关键资源与访问关系，再定义 policy enforcement。",
+      "强身份、设备 posture、短期会话与最小权限。",
+      "网络分区作为 blast-radius control 保留。",
+      "持续记录访问决策并根据风险调整。"
+    ],
+    "evidence": [
+      "IdP/device posture/policy decision logs。",
+      "network flow 与 resource access audit。",
+      "policy exceptions 和 privileged access lifecycle。"
+    ],
+    "validation": [
+      "从“在内网但身份不满足”场景验证仍被拒绝。",
+      "设备状态变化后验证访问策略重新评估。",
+      "对高价值资源做 JIT/least privilege regression。"
+    ],
+    "deep_questions": [
+      "Zero Trust 是否意味着“不信任任何人”？",
+      "网络分区在 Zero Trust 中还有什么价值？",
+      "如何从传统 VPN 架构逐步演进？"
+    ],
+    "deliverable": "Zero Trust access map：resource、subject、device signal、policy、network segment、decision logs。",
+    "summary": {
+      "root": "不因位置隐式信任，资源访问需显式决策。",
+      "boundary": "legacy/产品化误解/网络仍有价值。",
+      "control": "identity+device+resource policy + segmentation。",
+      "evidence": "policy/IdP/device/flow。",
+      "verify": "位置与身份/设备条件交叉测试。"
+    }
+  },
+  "Q46": {
+    "model": [
+      "Least Privilege 不只是“权限少”，还包括权限范围、持续时间、环境、动作和审批上下文最小化。",
+      "人、服务、CI/CD、云 workload 都应使用各自独立身份。",
+      "JIT/JEA/PAM 等解决“需要高权但不应长期拥有”的时间维度。"
+    ],
+    "boundary": [
+      "过度收紧会影响可用性，因此要基于实际任务和可观测使用数据。",
+      "共享账号会破坏 least privilege 和审计归属。",
+      "角色膨胀会让 RBAC 名义上最小、实际权限组合过大。"
+    ],
+    "design": [
+      "按 job/service function 定义权限，默认拒绝。",
+      "高权操作临时提升并记录审批/原因。",
+      "定期 access review 与 unused privilege removal。",
+      "服务身份按组件分离，避免通用万能账号。"
+    ],
+    "evidence": [
+      "permission grant/revoke、role changes、JIT sessions。",
+      "access usage 与 unused permission reports。",
+      "异常高权操作审计。"
+    ],
+    "validation": [
+      "deny tests 证明不需要的动作被拒绝。",
+      "定期对实际使用与授予权限做差异分析。",
+      "离职/角色变化验证撤权及时。"
+    ],
+    "deep_questions": [
+      "Least Privilege 与 Need-to-Know 有何区别？",
+      "如何证明某个权限“业务必需”？",
+      "为什么时间维度是最小权限的重要组成？"
+    ],
+    "deliverable": "Privilege matrix + JIT/PAM workflow + access review cadence + unused permission dashboard。",
+    "summary": {
+      "root": "主体拥有超出任务所需的能力会扩大错误/compromise 影响。",
+      "boundary": "业务可用性、共享账号、role explosion。",
+      "control": "default deny + JIT + 定期 review。",
+      "evidence": "grant/use/revoke audit。",
+      "verify": "deny test 与 unused privilege review。"
+    }
+  },
+  "Q47": {
+    "model": [
+      "域管理员疑似泄露是 identity/control-plane incident，不能按普通单机密码泄露处理。",
+      "优先目标是确认是否仍有攻击者访问、哪些 privileged paths/persistence 已建立，并保护可信恢复链。",
+      "重置凭据只是一个步骤；如果域控、身份系统或管理终端被控制，信任根可能已受损。"
+    ],
+    "boundary": [
+      "过早批量重置可能打断业务并提示攻击者，策略需结合活动状态。",
+      "证据保全与 containment 存在时间权衡。",
+      "云/混合身份可能让本地域管理员事件扩展到 SaaS/Cloud。"
+    ],
+    "design": [
+      "启动重大事件流程和独立沟通渠道。",
+      "隔离受影响 privileged identities/devices，检查域控与关键身份配置。",
+      "按可信顺序重置/轮换高价值 credentials 和 sessions。",
+      "恢复后加强 JIT/PAM/管理终端隔离并持续 hunting。"
+    ],
+    "evidence": [
+      "域控/IdP privileged login 与 role changes。",
+      "admin workstation EDR/process/network。",
+      "new accounts、delegation、scheduled/service changes、cloud federation。"
+    ],
+    "validation": [
+      "恢复后验证旧 session/token/credentials 全部失效。",
+      "tabletop 演练域控/管理员 compromise。",
+      "检查 privileged access 只能从受控设备/路径进入。"
+    ],
+    "deep_questions": [
+      "为什么“改域管理员密码”不足以结束事件？",
+      "如何判断域的信任根是否仍可信？",
+      "混合 AD/Azure/云身份时 scope 怎么扩展？"
+    ],
+    "deliverable": "Privileged identity incident playbook + trust restoration checklist + credential reset order + validation plan。",
+    "summary": {
+      "root": "高权身份泄露可能演变为身份控制平面失信。",
+      "boundary": "活动攻击、业务中断、混合身份。",
+      "control": "重大 IR + trusted recovery + privileged isolation。",
+      "evidence": "DC/IdP/admin endpoint/config。",
+      "verify": "旧凭据失效与 trust-path 复核。"
+    }
+  },
+  "Q48": {
+    "model": [
+      "资产发现是安全控制的分母：不知道资产存在，就无法正确计算覆盖率、补丁率或暴露面。",
+      "资产应包含主机、云资源、应用/API、域名、证书、代码库、身份和 SaaS，而不只 IP。",
+      "关键是 identity/resolution：不同来源发现的记录如何判断是同一资产。"
+    ],
+    "boundary": [
+      "CMDB 往往不是事实源，可能滞后。",
+      "短生命周期 cloud/container 资产要求事件驱动/实时 inventory。",
+      "第三方 SaaS 和 shadow IT 常不在传统扫描范围。"
+    ],
+    "design": [
+      "融合 cloud API、EDR、DNS、certificate、network、CMDB、repo 等数据源。",
+      "建立 canonical asset ID 与 owner/criticality。",
+      "持续 reconcile “已发现但无 owner”“有 owner但无 telemetry”。",
+      "资产 lifecycle 包含创建、变更、退役。"
+    ],
+    "evidence": [
+      "inventory source、last seen、owner、environment、exposure。",
+      "DNS/CT/cloud/EDR/network 的交叉存在性。",
+      "资产变更与退役 audit。"
+    ],
+    "validation": [
+      "抽样核对 inventory 与实际环境。",
+      "用 external ASM 与内部清单比较未知资产。",
+      "验证短生命周期资源也能进入安全控制。"
+    ],
+    "deep_questions": [
+      "为什么 CMDB 不能天然当资产真相？",
+      "如何计算 EDR coverage 的可靠分母？",
+      "API/证书/域名为什么也属于资产？"
+    ],
+    "deliverable": "Unified asset inventory + identity resolution rules + ownership/criticality + coverage dashboard。",
+    "summary": {
+      "root": "未知资产造成安全控制盲区和错误指标。",
+      "boundary": "多数据源、短生命周期、shadow IT。",
+      "control": "多源发现 + canonical ID + owner/lifecycle。",
+      "evidence": "last-seen/source/owner/exposure。",
+      "verify": "抽样与内外资产差异分析。"
+    }
+  },
+  "Q49": {
+    "model": [
+      "Secret 是用于认证/签名/解密的敏感凭据；安全目标包括不暴露、最小权限、短寿命、可轮换、可审计。",
+      "secret manager 解决集中存储与分发，但不能自动解决过度权限和应用日志泄露。",
+      "更优方向是能不用长期 secret 就不用：workload identity/short-lived token。"
+    ],
+    "boundary": [
+      "环境变量仍可能出现在进程/诊断/崩溃信息中。",
+      "加密 secret 如果解密 key 与应用同权限，主要保护的是静态存储而非运行时 compromise。",
+      "轮换设计若应用不支持双 key/重载，会导致可用性风险。"
+    ],
+    "design": [
+      "代码/镜像/CI 日志禁止长期 secret。",
+      "集中 secret manager + workload identity + scoped access。",
+      "自动 rotation，支持 overlap/rollback。",
+      "secret access、creation、export、rotation 全审计。"
+    ],
+    "evidence": [
+      "secret manager access/rotation logs。",
+      "Git/CI secret scanning findings。",
+      "异常应用读取或高频失败认证。"
+    ],
+    "validation": [
+      "定期轮换演练，确认服务不中断。",
+      "泄露 tabletop 测量 revoke/rotate 时延。",
+      "检查日志、trace、crash dump 不含 secret。"
+    ],
+    "deep_questions": [
+      "为什么“把密码放环境变量”仍不是理想方案？",
+      "什么时候 workload identity 能完全替代 secret？",
+      "secret rotation 如何做到无损切换？"
+    ],
+    "deliverable": "Secrets lifecycle policy + manager/IAM design + rotation SLO + secret scanning + incident playbook。",
+    "summary": {
+      "root": "长期敏感凭据易泄露且滥用范围大。",
+      "boundary": "运行时、日志、轮换可用性。",
+      "control": "workload identity + secret manager + rotation + audit。",
+      "evidence": "manager/Git/CI/auth logs。",
+      "verify": "轮换与泄露响应演练。"
+    }
+  },
+  "Q50": {
+    "model": [
+      "Machine identity 包括 TLS client/server cert、签名证书、设备证书等；它们数量通常远超人类账号。",
+      "证书风险集中在 issuance、private key custody、TTL、rotation、revocation、trust store。",
+      "“证书有效”只说明链和时间等条件，不代表私钥未泄露或用途合理。"
+    ],
+    "boundary": [
+      "短期证书降低长期泄露窗口，但需要可靠自动化。",
+      "私钥可能在文件、容器、CI、HSM/KMS 中，保护强度不同。",
+      "trust store 过宽会让不必要 CA/issuer 扩大信任面。"
+    ],
+    "design": [
+      "建立 certificate inventory 与 owner、purpose、issuer、expiry。",
+      "私钥优先不可导出/HSM/KMS，工作负载自动申请短期证书。",
+      "最小 trust anchors 与用途约束。",
+      "监控即将过期、异常 issuance 和 duplicate key use。"
+    ],
+    "evidence": [
+      "CA issuance/revocation logs、cert transparency（适用公网）。",
+      "KMS/HSM key usage 与 workload identity。",
+      "TLS handshake failure/expiry monitoring。"
+    ],
+    "validation": [
+      "自动 rotation 演练并验证无中断。",
+      "检查 retired service cert/key 是否撤销/失效。",
+      "验证服务只信任预期 CA/identity。"
+    ],
+    "deep_questions": [
+      "Machine identity 为什么会成为“证书雪崩”运维问题？",
+      "短期证书为什么能降低 revocation 依赖？",
+      "mTLS 中证书身份如何映射到授权？"
+    ],
+    "deliverable": "Machine identity PKI inventory + issuance/rotation automation + key custody policy + trust/revocation monitoring。",
+    "summary": {
+      "root": "机器身份依赖大量证书/私钥，生命周期失控会形成高影响信任风险。",
+      "boundary": "私钥存储、trust store、TTL/rotation。",
+      "control": "inventory + automated short-lived cert + protected keys。",
+      "evidence": "CA/KMS/TLS lifecycle logs。",
+      "verify": "轮换/退役/trust tests。"
+    }
+  }
+}

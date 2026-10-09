@@ -1,0 +1,737 @@
+[
+  {
+    "path": ".editorconfig",
+    "size": 151,
+    "sha256": "fbb87bedc2547f38f12c655e34a4b44f568aa0e5e40d77b14d75bb5a1079a347"
+  },
+  {
+    "path": ".github/ISSUE_TEMPLATE/question-correction.md",
+    "size": 326,
+    "sha256": "9120188518c3392de28ac9eaa47c6e2f957592fccd8df5075e74dbe0c9165c2d"
+  },
+  {
+    "path": ".github/workflows/validate.yml",
+    "size": 267,
+    "sha256": "d65910334bd3eb6f006ae22d1eb64a986c1750fe4f0e2fff43035ed11cef80b7"
+  },
+  {
+    "path": ".gitignore",
+    "size": 55,
+    "sha256": "1e5a4dc66ecb385b74cca7e6a089bcbb183eb5d5948f157ed5d82c953211c2a0"
+  },
+  {
+    "path": "CHANGELOG.md",
+    "size": 374,
+    "sha256": "300372ec7f39eca9d3f8d95cf2df38b7123534b973de124755ec29b2e44f465d"
+  },
+  {
+    "path": "CONTRIBUTING.md",
+    "size": 877,
+    "sha256": "70169e59fdfb876b9707958dda8b260afe21626864c4194f50028388fddf7034"
+  },
+  {
+    "path": "LICENSE",
+    "size": 378,
+    "sha256": "fb80df0331296e35bb1ce93f118d64fb1239451ce0c5ca39092e138f5b6f781d"
+  },
+  {
+    "path": "Makefile",
+    "size": 112,
+    "sha256": "5b501195b23a223ad8d69b8f68382a187640a4d3e9e68203992457045d841081"
+  },
+  {
+    "path": "README.md",
+    "size": 5749,
+    "sha256": "fce8b466384e3841da519524c4847df15f86b9ed43a1edae6c417ea2a28c5b58"
+  },
+  {
+    "path": "SUMMARY.md",
+    "size": 12317,
+    "sha256": "08af5a4ef30b4b39cc4416d97bc1cc9a2e6b7fba13c934eec0a865879f31a4e7"
+  },
+  {
+    "path": "docs/14-day-study-plan.md",
+    "size": 1431,
+    "sha256": "ffc17c39813a2a3e86a43b9691b1296de4b8d403f49da303728b91bebd2e4a0e"
+  },
+  {
+    "path": "docs/CUDA_编程优化面试100题_专业版.pdf",
+    "size": 2826300,
+    "sha256": "fe81fc79f2609ebc7c543d65df3b696c13aa689c2a85c02bec05133e3516f081"
+  },
+  {
+    "path": "docs/README.md",
+    "size": 686,
+    "sha256": "23d17267d624b6543107f7d0f87bdb7b9b82b7d9ee99d546dc5797234c35c215"
+  },
+  {
+    "path": "docs/appendix-a-quick-reference.md",
+    "size": 24348,
+    "sha256": "587b3d22aea1542901e7f6337bf3c4a3d27b5612a6e61930a2b01df727ae968e"
+  },
+  {
+    "path": "docs/appendix-b-answer-template.md",
+    "size": 1115,
+    "sha256": "6e1b51efe20d3d123172bd9f06494ed4d9df7636c9a58f77b880bd1007a060f7"
+  },
+  {
+    "path": "docs/appendix-c-sources.md",
+    "size": 1280,
+    "sha256": "5ef6d0660dbb36e994698eb00b78ca83b7b0ed3d71e192cc2852915b0073bbd4"
+  },
+  {
+    "path": "docs/architecture-era-guide.md",
+    "size": 3794,
+    "sha256": "6fe6989a20d2584db35f68d751a713b83dc85ff1dd39ca548d119d1e31186711"
+  },
+  {
+    "path": "docs/interview-cheatsheet.md",
+    "size": 987,
+    "sha256": "256348390ff05dc042e941b4435473672336abaae7551af64e86001f715ced02"
+  },
+  {
+    "path": "docs/pdf-transcript.txt",
+    "size": 165991,
+    "sha256": "c88f84fc910d0a7af85214e58eaf32f2c45feb21c9c09eb3ed819135dced799f"
+  },
+  {
+    "path": "docs/performance-equations.md",
+    "size": 1880,
+    "sha256": "4647e95649748d855bfe27c8ab004ad7ef85041db1bea31e062371165cb75690"
+  },
+  {
+    "path": "docs/preface.md",
+    "size": 1786,
+    "sha256": "4de742ec1e8ae69b088eaf4f2fd9b051a01950547665d5db5eeb16ffac93b6ce"
+  },
+  {
+    "path": "docs/profiling-playbook.md",
+    "size": 944,
+    "sha256": "0398c428e4a33fc852fd730eda0c62cdc3ce78f0326ccde25598dada34f461c4"
+  },
+  {
+    "path": "docs/qa-report.md",
+    "size": 1007,
+    "sha256": "8a13d4c8fb26d06266974b3c5d102d4d64b4b940ad824f454737f112729f4114"
+  },
+  {
+    "path": "docs/references.md",
+    "size": 2649,
+    "sha256": "999ea61169876fd68ccdff2322b7523444ff513fc0d604ec314e7043b12c2701"
+  },
+  {
+    "path": "docs/study-map.md",
+    "size": 962,
+    "sha256": "75d75b9534c8ff0b4db2d8402f299388862060ad185f7654b5b74e75ac829299"
+  },
+  {
+    "path": "examples/CMakeLists.txt",
+    "size": 294,
+    "sha256": "27bc484bfe462f9d5bc34434083c231bcbe83a73e6bc3d24d4a45552281895f0"
+  },
+  {
+    "path": "examples/README.md",
+    "size": 515,
+    "sha256": "b74496b807675652f8bb5f1a5472771f50a480c7e4dcbe2e6049c9a474b1b284"
+  },
+  {
+    "path": "examples/blelloch_scan.cu",
+    "size": 902,
+    "sha256": "e83dd5c167130579b5d6904d0701573bcbe9fbd74a8daffbfc472897815f7363"
+  },
+  {
+    "path": "examples/grid_stride.cu",
+    "size": 218,
+    "sha256": "d88e703f4809aab201ba984d022f64d3a2b9de2c8c5126c27c7c611d4aa282c0"
+  },
+  {
+    "path": "examples/histogram_shared.cu",
+    "size": 566,
+    "sha256": "870f5d55f88066fa0a338f33ff501d9d0c6982a74650cfcc0bacb402287ec6ed"
+  },
+  {
+    "path": "examples/reduction.cu",
+    "size": 887,
+    "sha256": "18ec6e7876372dbe3563fa321b21d3ea40515e97f4173f30d2ff9e8eebaf7058"
+  },
+  {
+    "path": "examples/stream_overlap.cu",
+    "size": 460,
+    "sha256": "822cead618f216acfb59cbdce8260ca69648c10c3e010ca635c3cd48378787b8"
+  },
+  {
+    "path": "examples/tiled_gemm.cu",
+    "size": 806,
+    "sha256": "23bea8f290ff049093a99f277d83e3bb97a142a831e58397cc3a35426c66a160"
+  },
+  {
+    "path": "examples/transpose.cu",
+    "size": 740,
+    "sha256": "98a34cded54562fdc57e0b384a034aee0f4b49f7b9c7b72a2130924d8266b7be"
+  },
+  {
+    "path": "examples/warp_reduce.cu",
+    "size": 212,
+    "sha256": "5d3e410013aac8fee4fdc4fc01e0dc70abe70f04254035fa53dcb5ff4be322d9"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/README.md",
+    "size": 1290,
+    "sha256": "48221930aeeb52e1f3ecd0625e68d6d4f467d60285b878cede498774cd2429d7"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q001.md",
+    "size": 6039,
+    "sha256": "edf541a789a00bc856fcf0c8c86b1d1f59467ff8ea56b27ccb93c0bd7174d931"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q002.md",
+    "size": 5846,
+    "sha256": "c8e5c592862cd17810d1d286dc2e7498d9dec9456ee5e46c3e958348473cadfc"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q003.md",
+    "size": 5767,
+    "sha256": "a83e15e9eb3f3a1f655374d4690dffcf5fffc7ebbb60e6d8f58d579535879141"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q004.md",
+    "size": 5769,
+    "sha256": "a181abb08c51fc256e9e01ec02b89c4689dded4be37dfc9ee68c33cc5db577ce"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q005.md",
+    "size": 5801,
+    "sha256": "0c19930aa3128d2ac9575d44ac8579f91de11ce4714924e77d75f4f1e390983e"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q006.md",
+    "size": 6033,
+    "sha256": "1f0d4110e172641702e8675496ca7ec52e844ae7e17aa5abd1b19e1efa4eaf3d"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q007.md",
+    "size": 6106,
+    "sha256": "4c1114b4cbd771fa04360f186db35b784e6e239a658885c14f1731c0b3e4930f"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q008.md",
+    "size": 5654,
+    "sha256": "4955c1fdccbcc52199ac78cd328f879952a277752a316fe5e090efd9e0a5f520"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q009.md",
+    "size": 5627,
+    "sha256": "79ae0731ecff99e45164481599337bf2e9a77ba48c7afece457e287bea4af5ac"
+  },
+  {
+    "path": "questions/01-CUDA-执行模型与-SIMT/q010.md",
+    "size": 5675,
+    "sha256": "da61b084aecccdc568b4949ff8f7909ebf1db9367a142e5806d6f95f66991c87"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/README.md",
+    "size": 1320,
+    "sha256": "15f0f2eb655a82c81a1a8c59a3c2cf60f23713befa56db98289b6e16dbeb633a"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q011.md",
+    "size": 6095,
+    "sha256": "b664358bcae778b9232c93c07471475ca45b5ccf216db8d522194ddf5bc3153b"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q012.md",
+    "size": 5546,
+    "sha256": "62a3020af0cd582c0b39e00303355d23dad1913d1b77c2d2ddbbf8ca44fb49b4"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q013.md",
+    "size": 5471,
+    "sha256": "b278a94d80f3400c61500cc16147640aea5804d9141e3acaf78df65a81020266"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q014.md",
+    "size": 5682,
+    "sha256": "12975072a5e80a85e27047472f780a421edf49afc548f980d7d9efb863a264ce"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q015.md",
+    "size": 5619,
+    "sha256": "15c6921607cce3b68b50bd0c788be9be339d29ec8a6a2bf8b41f8596be1c8cf2"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q016.md",
+    "size": 5561,
+    "sha256": "3b8bbf79856ba6084e3e71b6f75cc4003b5f3c2ed04db7fa658cb1399294e4d1"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q017.md",
+    "size": 5447,
+    "sha256": "1b93828f5a4dd01e68991da3d326136fa390516254f757c7e8b8637a9983e892"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q018.md",
+    "size": 5462,
+    "sha256": "fa94a07cd94a9787db644640033d4412cb8e2d15ca588a7ebf7689c5da4f0897"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q019.md",
+    "size": 5658,
+    "sha256": "30e76e721e7210e641a7d990e4dc74267efef047ad2c15c2054d3d4c4257fe25"
+  },
+  {
+    "path": "questions/02-GPU-Memory-Hierarchy/q020.md",
+    "size": 5644,
+    "sha256": "12a92e555835020d8ea07f6466ad58dee958c5ed5fa840c54c6a9994b88d7fd3"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/README.md",
+    "size": 1294,
+    "sha256": "34e20c48d9230537497681a492c7e8a22576fba3e1010201388f23e3489584a2"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q021.md",
+    "size": 5774,
+    "sha256": "3d0dea04d4273a6a85593ab71bbdd67d7a1df9041e797667adbe5cdcbf25cf4a"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q022.md",
+    "size": 5308,
+    "sha256": "1961b006f7791fb4ae50f6ae14935cc810768e5a924fbb8f1e28b14159010c70"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q023.md",
+    "size": 5529,
+    "sha256": "95de804d2cf9759a00a6fe566e6be99ec6b3991366689e54e020325e019716e0"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q024.md",
+    "size": 5492,
+    "sha256": "438c3c240ec5c81912cb38559cab85b52d32a83bba7562c06e45d865372d20f4"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q025.md",
+    "size": 5426,
+    "sha256": "aa633ec346fb5e386a413e8a22d84f6105a810317b789360b6f8dc315cc2dc36"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q026.md",
+    "size": 5786,
+    "sha256": "c9b0389e6501086d343fbf70e4b40ffcdc4fe0f9037307b8b7ce88c1efef7ada"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q027.md",
+    "size": 5687,
+    "sha256": "61bc2e011490d96915a7eeee2791c168837a591ea178c007e68ccf72483dd7ad"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q028.md",
+    "size": 5669,
+    "sha256": "fa9fbe962903f8146e1d85eba579e1ef5daedccecd1be958ba96c8c8f2dafb45"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q029.md",
+    "size": 5342,
+    "sha256": "fcf8a20596ed5891d694e19375348f5d4b659165207da1e184dc2abecf84a380"
+  },
+  {
+    "path": "questions/03-Global-Memory-与-Coalescing/q030.md",
+    "size": 5830,
+    "sha256": "ff95f4b103eda91e25439b36137aa58945ab3f4354a14b107ca9841d254d43b2"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/README.md",
+    "size": 1290,
+    "sha256": "a196bbe456edea6d1d0f6613cda93279a32469a5a6542b0d5c8b89c387e528db"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q031.md",
+    "size": 5139,
+    "sha256": "60f7047b6993acad56ee952faff8b81a7da46d742af37b1eef8a55061eda7b6a"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q032.md",
+    "size": 5451,
+    "sha256": "f6b8d5558c064b4078d572f7e646a16028e4651e6d704c01fce9a1f26830fb70"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q033.md",
+    "size": 5264,
+    "sha256": "bb3a5ae65e15e2c9f5cdf465c392e8dab995a2cac0e31d3014b37dde0eb3f95f"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q034.md",
+    "size": 5580,
+    "sha256": "a067c960ed98be99f56b08962e28cf127307d16810f1867edbd1ac568548f109"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q035.md",
+    "size": 5243,
+    "sha256": "2851e5a1a18e651c1add94c0b8865df28b2d99c74347fe312cdf4fcea7d268ec"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q036.md",
+    "size": 5300,
+    "sha256": "0d5bbc4899c9fd2db3ae467398c7dc10cd40f084c9d49b11580f70319e19fdf7"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q037.md",
+    "size": 5499,
+    "sha256": "c68e5dda77f236256bb9a73c54991546270231906babfd203c2c950dcd2f6d87"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q038.md",
+    "size": 5360,
+    "sha256": "57ca1b0ef709aff2b7e6142f1ab409f83deafdf987266bdac5978dcbc05ff4fc"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q039.md",
+    "size": 5493,
+    "sha256": "5c2516c18cca93241eeab6130a4056c043472ea5a0b496ee7bc78522929113cf"
+  },
+  {
+    "path": "questions/04-Shared-Memory-Warp-与-Divergence/q040.md",
+    "size": 5307,
+    "sha256": "1b6cae44a43713f415c872735463d3152fa485ea45de936b2aae10c1d8273f95"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/README.md",
+    "size": 1241,
+    "sha256": "32fd320256187db49edc1db9d0d5b14b3c2c72062ac117f8c677844a775adeb6"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q041.md",
+    "size": 5628,
+    "sha256": "f8b1c6ff1579b52fb4c26b959d34ce7c5055ecffb3f58fd31d03925662ee3775"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q042.md",
+    "size": 5442,
+    "sha256": "56f69d6628e54b9522c9304bc4434c5729eb743b2da6f2eac23850c5f8ee4020"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q043.md",
+    "size": 5433,
+    "sha256": "3ddcf433d36f6c14dec43b0047ae6cefe7633729f9aa4671c64b93f6857b6032"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q044.md",
+    "size": 5491,
+    "sha256": "baec9ee30fe6059865b0be22a9e2561c6cce69d8c5256f4b9c6a6f8ae93a5b2a"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q045.md",
+    "size": 5572,
+    "sha256": "5eee8e8c85b17dc7c30f57fae754d85e58996acf5a8692aed9f5f550c3e7fe5f"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q046.md",
+    "size": 5377,
+    "sha256": "6f1ddd58b7e699fa9485da25a709c68e3f67c13182818f41ec983533c4f7b378"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q047.md",
+    "size": 5728,
+    "sha256": "20ce838417809e8fdd8975c8d5263408143e1195d55f8fe0ccf16b3c621ab155"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q048.md",
+    "size": 5632,
+    "sha256": "67841aa61a41ce7a755e102ad991e96bceba50f9006e0e2e5b68b9dcd5b86d7d"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q049.md",
+    "size": 5676,
+    "sha256": "30f7ce876859b80ad0b02d3354dfe978bba64bd0d050550556e41a3ffa4a74de"
+  },
+  {
+    "path": "questions/05-Occupancy-Register-与-Latency-Hiding/q050.md",
+    "size": 5710,
+    "sha256": "7a6725f59199e244732208992ab185bc084c81477d53e9477ba94b214cd777f0"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/README.md",
+    "size": 1308,
+    "sha256": "2b22c16c6730bd48108a18268f35b3725b3c77191c97b59809e046e1390da9c8"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q051.md",
+    "size": 7120,
+    "sha256": "1912ae68dea5ca57bd62c0746e434d3e59c3372a1c4a0d32843d678685461c8d"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q052.md",
+    "size": 5300,
+    "sha256": "8cabc17474b48f43e170f840b8bb205bf9589629cc52ee382c4183c97ad9470f"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q053.md",
+    "size": 5409,
+    "sha256": "fb01fd1876fcf20dbc953e7f9a743a698b9782ff74d4bc0facd1f71dfa2970c0"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q054.md",
+    "size": 5774,
+    "sha256": "62420615907f7dc4d41393551b9b0c349d7555b6467a0cb0478c2ce49ad36513"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q055.md",
+    "size": 6000,
+    "sha256": "c9ed872b2f00509c8d0ac55cded7810021030ddedf278a603dad249918b40017"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q056.md",
+    "size": 6047,
+    "sha256": "230aa8a59e13ef9088fb644244aa2445a20f03107d89c9998a29b1a59a3236d4"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q057.md",
+    "size": 6138,
+    "sha256": "c356b1ffc4b27c599ee0c227535db5408910cf69e64051656ac80e7b4412ba69"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q058.md",
+    "size": 5445,
+    "sha256": "30ff1d478b653a9ce40596a429e28d35adf1bc0df394b1e364e79a4a211441f8"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q059.md",
+    "size": 5266,
+    "sha256": "e2f1a5b5279c29a2c94dc8105541de47357bebe15137f411f2f20b4969712e14"
+  },
+  {
+    "path": "questions/06-经典-CUDA-Kernel-现场编程/q060.md",
+    "size": 5337,
+    "sha256": "6838ef8a68096dd3d5529c3068af1aa4b264d921c33160522cd4444da45de483"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/README.md",
+    "size": 1308,
+    "sha256": "9c88d13faa29dc2043569b99ec0f00fb409a71fec295500e9be1c6927e7f2361"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q061.md",
+    "size": 5423,
+    "sha256": "02f719c48f961fbb01d554b5b4c3b196573d4e519e9d6908b2acbf0c928b2e34"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q062.md",
+    "size": 5294,
+    "sha256": "209b943ceaa36f9880c2587c168acc63d947a47eb1d864602fd92e610b480328"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q063.md",
+    "size": 5419,
+    "sha256": "f81f57d89cc790db0c96fa299101e50dd6dae43c3900d20c350c4f38c70ff429"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q064.md",
+    "size": 5226,
+    "sha256": "193235358bcc21d1f374429c858b10b5c28ab60dae6c7780fbd028a174132e30"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q065.md",
+    "size": 5519,
+    "sha256": "0eebb9502cbe486972ec6f47527eef83996848a6fb31c01cb7fccd34bc45e5e8"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q066.md",
+    "size": 6004,
+    "sha256": "ddfc85eb67a97246cbffb6a835f4792e652b897117e68dca4639289855b37107"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q067.md",
+    "size": 5442,
+    "sha256": "81aa1ebb19f47d29bf83356b8b063528eefedc1fec1740d92f0152d5e0a73c3d"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q068.md",
+    "size": 5751,
+    "sha256": "a6113bfc8b5ea144426e40d671179802f4d71504c664df5e4c47bb7bfd26808d"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q069.md",
+    "size": 5462,
+    "sha256": "293d3c36286518c28f95a348150a6baddb79c0da76a5282865811233e101c7ed"
+  },
+  {
+    "path": "questions/07-Stream-异步拷贝与-Software-Pipeline/q070.md",
+    "size": 5588,
+    "sha256": "2362f1dcbfe28912cd624b020f7b4e0373e78757c5d604a8c96b1c26e289bf13"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/README.md",
+    "size": 1260,
+    "sha256": "3472ab13d636977aaa1340b6a45dbd333d0edde16276ff2e63339e1d390cee1b"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q071.md",
+    "size": 5321,
+    "sha256": "3b9857497011fb6c870c7fc8cfaf0ac9159e2dd60118b5b433883a7c8c5c0a40"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q072.md",
+    "size": 5172,
+    "sha256": "73e06116ac1924396c07abb0fca4ba9aae91c7572254afadcade9824bda35f89"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q073.md",
+    "size": 5388,
+    "sha256": "9f6c49b1415c1d8704c4ef3f45d7723eb9e3b9ece194fb72796fb3f5c068d854"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q074.md",
+    "size": 5219,
+    "sha256": "612be24d00bb5abc7d4f6fabdbc6e9ffc27fb97fd6fb01ecaea52db1572505d8"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q075.md",
+    "size": 5200,
+    "sha256": "0ae5cae41d07e4f5fb88f1c3bc749b52fe669c2a159931268867da8c06f5a51b"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q076.md",
+    "size": 5280,
+    "sha256": "58290be76e94f17ec4363384e5b2f413623c0f33e4fc7b18de6eac68f40d4eae"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q077.md",
+    "size": 5428,
+    "sha256": "fb7c12392c7433540ca7626a0f616532eea46b72748a062f4078969bc51e7a65"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q078.md",
+    "size": 5283,
+    "sha256": "1dd757a7a82afef65928113042a6c7c296df4c6f7572a8194e9e823aa226102b"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q079.md",
+    "size": 5219,
+    "sha256": "e54badc758a915dff320cd7474117f945c66c87787bb8d5c80f8d13903ee280c"
+  },
+  {
+    "path": "questions/08-Nsight-Roofline-与性能诊断/q080.md",
+    "size": 5338,
+    "sha256": "3c6b870e60ed7965fd2152b4f9870af877cf6860287dd96bb182be9776d62210"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/README.md",
+    "size": 1263,
+    "sha256": "536be21ed0e32d95052645c3a5162f01bc5f301fa8569f1ec352f61160eeb5ef"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q081.md",
+    "size": 5546,
+    "sha256": "d33a10d1cb16778286438b47a1a793f2a2bef925e4b234dae0880c19e205c53e"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q082.md",
+    "size": 5334,
+    "sha256": "4f5f52c72c4b5086c5c1bffe5a5a0379be8b084f5b9e0698fbfe4db3446b41fb"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q083.md",
+    "size": 5501,
+    "sha256": "7fb5a36948e7d501ebc85d30a52a73895bfbda375ecccdb078718e5c3549b33b"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q084.md",
+    "size": 5381,
+    "sha256": "f523ca9497e31ade8228f410eb3b2213c01bbe3dd57ed8d92ad136aa6e4e4635"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q085.md",
+    "size": 5506,
+    "sha256": "d7b76cb16a17cf2837b589757889b8056bd42ebdbcd9212565d59aa2c4451856"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q086.md",
+    "size": 5391,
+    "sha256": "f372fc38ae784e3c66869ee19ae6a6d286768e97cfeb4d4e2b2a44b58dee7c97"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q087.md",
+    "size": 5517,
+    "sha256": "99102e38674f363d6434d49899d9ff28a3bdb46d2bf67ea2fc7e768b6e20b835"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q088.md",
+    "size": 5883,
+    "sha256": "82a35a48c9d81a088cd659b1b25a5da3910ec645b6d8d10fece563daad72de2c"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q089.md",
+    "size": 5425,
+    "sha256": "a596bd093ef3d8190d3d10ab0a1091838d3adf2053a2d275f7bb8c767499fd9c"
+  },
+  {
+    "path": "questions/09-GEMM-Tensor-Core-与-CUTLASS/q090.md",
+    "size": 5459,
+    "sha256": "7911a9421023715c11fee43777c19a65a2d741efbfbae2f72b4fca56e86cdb8a"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/README.md",
+    "size": 1371,
+    "sha256": "c1f72a9cf82a83bc38e0422b1ec6fcf04d4dda71ecd8afc0867420a6501c981e"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q091.md",
+    "size": 5427,
+    "sha256": "50be4ee7c89ccbea49d0b4e8656686f96b2bca9485eb0ca62a99b7e4f3ad1c57"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q092.md",
+    "size": 5720,
+    "sha256": "b79981717d0b1ea80005f832e8604912e92c2e83255e29d04f58116110673caf"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q093.md",
+    "size": 5675,
+    "sha256": "119dce68f3167115b06476324cb0ad0287fcf6c62d5dd8f7d7635b7e04bdf7a4"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q094.md",
+    "size": 5693,
+    "sha256": "9404bebb9efd48055a759562834f15b53007275cefdde215e860e21478b56d1d"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q095.md",
+    "size": 5629,
+    "sha256": "eb66633fd597802f50cf0dcc533e78391feb793a505ed59e4432eda7619f189d"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q096.md",
+    "size": 5648,
+    "sha256": "39b65f6b11e779e6daa45db3f7975c5f30e3c930124cbad5fee6f0e8fe44e6e7"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q097.md",
+    "size": 5464,
+    "sha256": "fafe0b87b31976f81aba688f7f263aaa14479b4a31a60eb6ff938b5518a4011f"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q098.md",
+    "size": 5822,
+    "sha256": "be79308815781f2a9b359455f883bd254db10ec64c246f96d8833aa68b7852c9"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q099.md",
+    "size": 5948,
+    "sha256": "4c289a2540f3d68b163e3b0d9ed03c24bfe4dd746d9a444546a01cb0b2429593"
+  },
+  {
+    "path": "questions/10-Hopper-Blackwell-与-CUDA-13-x/q100.md",
+    "size": 7117,
+    "sha256": "eb7b06d8d004fe869489f50a2c70f5f0e75016f719d5e7003bca1ff79e1aa7dc"
+  },
+  {
+    "path": "scripts/build_summary.py",
+    "size": 664,
+    "sha256": "17d2f4044e43e8d96db2b7622724f9acee32d47e94109f881d7d524c10be9a2b"
+  },
+  {
+    "path": "scripts/validate_repo.py",
+    "size": 2398,
+    "sha256": "136179a0a3a26d7376809ca9102bd8283921ea95b061b641ee354b729510dee6"
+  }
+]

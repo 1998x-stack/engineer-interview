@@ -1,0 +1,154 @@
+site_name: 计算机组成原理面试 100 题
+site_description: 100 道计算机组成原理与体系结构面试题，一题一个 Markdown
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+    - content.code.annotate
+markdown_extensions:
+  - tables
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+nav:
+  - 首页: index.md
+  - 全书知识地图: architecture-map.md
+  - 面试回答 Playbook: interview-playbook.md
+  - 第1章 体系结构与数据表示:
+      - 章节导读: 01-architecture-data/README.md
+      - "Q001 冯·诺依曼体系结构是什么？它的瓶颈在哪里？": 01-architecture-data/q001-question.md
+      - "Q002 冯·诺依曼结构与哈佛结构有什么区别？": 01-architecture-data/q002-question.md
+      - "Q003 32 位与 64 位处理器的本质区别是什么？": 01-architecture-data/q003-32-64.md
+      - "Q004 为什么计算机主流使用二进制？": 01-architecture-data/q004-question.md
+      - "Q005 什么是大端与小端？如何判断机器端序？": 01-architecture-data/q005-question.md
+      - "Q006 原码、反码、补码是什么？为什么现代机器使用补码？": 01-architecture-data/q006-question.md
+      - "Q007 为什么 INT_MIN 的绝对值无法用同宽有符号整数表示？": 01-architecture-data/q007-int-min.md
+      - "Q008 IEEE 754 单精度和双精度浮点数如何编码？": 01-architecture-data/q008-ieee-754.md
+      - "Q009 为什么 0.1 + 0.2 通常不精确等于 0.3？": 01-architecture-data/q009-0-1-0-2-0.md
+      - "Q010 什么是内存对齐？为什么结构体会出现 padding？": 01-architecture-data/q010-padding.md
+  - 第2章 运算器与计算机算术:
+      - 章节导读: 02-arithmetic-alu/README.md
+      - "Q011 CPU 如何只用加法器实现减法？": 02-arithmetic-alu/q011-cpu.md
+      - "Q012 Carry 与 Overflow 有什么区别？": 02-arithmetic-alu/q012-carry-overflow.md
+      - "Q013 ALU 通常包含哪些功能？": 02-arithmetic-alu/q013-alu.md
+      - "Q014 CPU 如何完成有符号与无符号比较？": 02-arithmetic-alu/q014-cpu.md
+      - "Q015 左移为什么常被视为乘 2？有哪些边界？": 02-arithmetic-alu/q015-2.md
+      - "Q016 逻辑右移与算术右移有什么区别？": 02-arithmetic-alu/q016-question.md
+      - "Q017 硬件乘法器为何比加法器复杂？": 02-arithmetic-alu/q017-question.md
+      - "Q018 为什么整数除法往往比乘法慢？": 02-arithmetic-alu/q018-question.md
+      - "Q019 浮点加法器执行一次加法需要哪些步骤？": 02-arithmetic-alu/q019-question.md
+      - "Q020 NaN、Infinity 和 Subnormal 分别为什么存在？": 02-arithmetic-alu/q020-nan-infinity-subnormal.md
+  - 第3章 ISA、指令与 ABI:
+      - 章节导读: 03-isa-abi/README.md
+      - "Q021 什么是 ISA？ISA 与微架构有什么区别？": 03-isa-abi/q021-isa-isa.md
+      - "Q022 RISC 与 CISC 的核心差别是什么？": 03-isa-abi/q022-risc-cisc.md
+      - "Q023 什么是 Load/Store Architecture？": 03-isa-abi/q023-load-store-architecture.md
+      - "Q024 常见寻址方式有哪些？Base+Offset 为什么重要？": 03-isa-abi/q024-base-offset.md
+      - "Q025 固定长度和可变长度指令编码如何权衡？": 03-isa-abi/q025-question.md
+      - "Q026 PC/程序计数器在流水线中扮演什么角色？": 03-isa-abi/q026-pc.md
+      - "Q027 函数调用在机器层面发生了什么？": 03-isa-abi/q027-question.md
+      - "Q028 Caller-saved 与 Callee-saved 寄存器怎么理解？": 03-isa-abi/q028-caller-saved-callee-saved.md
+      - "Q029 什么是 CPU 特权级？为何需要硬件隔离？": 03-isa-abi/q029-cpu.md
+      - "Q030 ISA 与 ABI 有什么区别？": 03-isa-abi/q030-isa-abi.md
+  - 第4章 CPU 数据通路与控制:
+      - 章节导读: 04-datapath-control/README.md
+      - "Q031 一条指令从取指到完成经历哪些阶段？": 04-datapath-control/q031-question.md
+      - "Q032 CPU 中常见寄存器有哪些？": 04-datapath-control/q032-cpu.md
+      - "Q033 控制器如何驱动数据通路执行指令？": 04-datapath-control/q033-question.md
+      - "Q034 硬布线控制与微程序控制有什么区别？": 04-datapath-control/q034-question.md
+      - "Q035 单周期 CPU 为什么主频难以提高？": 04-datapath-control/q035-cpu.md
+      - "Q036 多周期 CPU 为何比单周期设计更灵活？": 04-datapath-control/q036-cpu.md
+      - "Q037 流水线究竟提高的是 Latency 还是 Throughput？": 04-datapath-control/q037-latency-throughput.md
+      - "Q038 CPU 主频越高一定越快吗？": 04-datapath-control/q038-cpu.md
+      - "Q039 CPI 与 IPC 如何理解？": 04-datapath-control/q039-cpi-ipc.md
+      - "Q040 Latency 与 Throughput 在微架构性能分析中如何区分？": 04-datapath-control/q040-latency-throughput.md
+  - 第5章 流水线、预测与乱序执行:
+      - 章节导读: 05-pipeline-ooo/README.md
+      - "Q041 流水线冒险有哪些类型？": 05-pipeline-ooo/q041-question.md
+      - "Q042 RAW、WAR、WAW 分别是什么？哪些是真依赖？": 05-pipeline-ooo/q042-raw-war-waw.md
+      - "Q043 Forwarding/Bypassing 如何减少流水线停顿？": 05-pipeline-ooo/q043-forwarding-bypassing.md
+      - "Q044 Load-Use Hazard 为何特别难处理？": 05-pipeline-ooo/q044-load-use-hazard.md
+      - "Q045 分支为什么会造成 Control Hazard？": 05-pipeline-ooo/q045-control-hazard.md
+      - "Q046 分支预测器通常预测哪些东西？": 05-pipeline-ooo/q046-question.md
+      - "Q047 分支预测失败为何代价高？": 05-pipeline-ooo/q047-question.md
+      - "Q048 什么是乱序执行（Out-of-Order Execution）？": 05-pipeline-ooo/q048-out-of-order-execution.md
+      - "Q049 Register Renaming 为何能消除 WAR/WAW？": 05-pipeline-ooo/q049-register-renaming-war-waw.md
+      - "Q050 ROB（Reorder Buffer）的核心作用是什么？": 05-pipeline-ooo/q050-rob-reorder-buffer.md
+  - 第6章 Cache 与存储层次:
+      - 章节导读: 06-cache-memory/README.md
+      - "Q051 为什么需要 Cache？什么是局部性？": 06-cache-memory/q051-cache.md
+      - "Q052 L1/L2/L3 为何容量越大通常越慢？": 06-cache-memory/q052-l1-l2-l3.md
+      - "Q053 Cache Line 是什么？为什么常见为 64B？": 06-cache-memory/q053-cache-line-64b.md
+      - "Q054 Cache 地址中的 Tag/Index/Offset 如何划分？": 06-cache-memory/q054-cache-tag-index-offset.md
+      - "Q055 直接映射、全相联和组相联如何权衡？": 06-cache-memory/q055-question.md
+      - "Q056 Cache Miss 有哪些经典类型？": 06-cache-memory/q056-cache-miss.md
+      - "Q057 为什么真实 Cache 很少做精确 LRU？": 06-cache-memory/q057-cache-lru.md
+      - "Q058 Write-Through 与 Write-Back 怎么选？": 06-cache-memory/q058-write-through-write-back.md
+      - "Q059 Write-Allocate 与 No-Write-Allocate 有什么区别？": 06-cache-memory/q059-write-allocate-no-write-allocate.md
+      - "Q060 AMAT 如何计算？如何判断优化一个 miss rate 值不值得？": 06-cache-memory/q060-amat-miss-rate.md
+  - 第7章 MMU、页表与 TLB:
+      - 章节导读: 07-mmu-tlb/README.md
+      - "Q061 为什么现代系统需要虚拟地址？": 07-mmu-tlb/q061-question.md
+      - "Q062 MMU 的核心工作是什么？": 07-mmu-tlb/q062-mmu.md
+      - "Q063 TLB 是什么？为什么它对性能如此关键？": 07-mmu-tlb/q063-tlb.md
+      - "Q064 TLB Miss 与 Page Fault 有何本质区别？": 07-mmu-tlb/q064-tlb-miss-page-fault.md
+      - "Q065 为什么页表通常设计成多级？": 07-mmu-tlb/q065-question.md
+      - "Q066 一次 CPU Load 从虚拟地址到数据返回经历什么？": 07-mmu-tlb/q066-cpu-load.md
+      - "Q067 Cache 和 MMU 到底谁先？": 07-mmu-tlb/q067-cache-mmu.md
+      - "Q068 VIVT、VIPT、PIPT Cache 如何比较？": 07-mmu-tlb/q068-vivt-vipt-pipt-cache.md
+      - "Q069 Huge Page 为何能改善性能？有什么代价？": 07-mmu-tlb/q069-huge-page.md
+      - "Q070 为什么修改页表后要做 TLB invalidation/shootdown？": 07-mmu-tlb/q070-tlb-invalidation-shootdown.md
+  - 第8章 多核一致性、原子与内存模型:
+      - 章节导读: 08-coherence-memory-model/README.md
+      - "Q071 为什么多核 CPU 需要 Cache Coherence？": 08-coherence-memory-model/q071-cpu-cache-coherence.md
+      - "Q072 MESI 四个状态分别表示什么？": 08-coherence-memory-model/q072-mesi.md
+      - "Q073 Cache Coherence 与 Memory Consistency 有什么区别？": 08-coherence-memory-model/q073-cache-coherence-memory-consistency.md
+      - "Q074 为什么有 MESI 还需要 Memory Barrier/Fence？": 08-coherence-memory-model/q074-mesi-memory-barrier-fence.md
+      - "Q075 x86、Arm、RISC-V 内存模型为何不同？": 08-coherence-memory-model/q075-x86-arm-risc-v.md
+      - "Q076 Arm 中的 DMB、DSB、ISB 怎么区分？": 08-coherence-memory-model/q076-arm-dmb-dsb-isb.md
+      - "Q077 什么是 False Sharing？为什么逻辑上不同变量也会互相拖慢？": 08-coherence-memory-model/q077-false-sharing.md
+      - "Q078 如何系统解决 False Sharing？": 08-coherence-memory-model/q078-false-sharing.md
+      - "Q079 CPU 原子操作如何实现？": 08-coherence-memory-model/q079-cpu.md
+      - "Q080 CAS 的 ABA 问题是什么？如何缓解？": 08-coherence-memory-model/q080-cas-aba.md
+  - 第9章 I/O、中断、DMA 与互连:
+      - 章节导读: 09-io-dma-interconnect/README.md
+      - "Q081 中断是什么？为什么比纯 Polling 高效？": 09-io-dma-interconnect/q081-polling.md
+      - "Q082 Interrupt、Exception、Trap 如何区分？": 09-io-dma-interconnect/q082-interrupt-exception-trap.md
+      - "Q083 中断向量表/异常向量的作用是什么？": 09-io-dma-interconnect/q083-question.md
+      - "Q084 Polling 与 Interrupt 如何选择？": 09-io-dma-interconnect/q084-polling-interrupt.md
+      - "Q085 DMA 是什么？完整工作流程是什么？": 09-io-dma-interconnect/q085-dma.md
+      - "Q086 DMA 与 CPU Cache 为何会产生一致性问题？": 09-io-dma-interconnect/q086-dma-cpu-cache.md
+      - "Q087 MMIO 是什么？为什么设备寄存器不能当普通内存访问？": 09-io-dma-interconnect/q087-mmio.md
+      - "Q088 地址线、数据线、控制线的教材模型在现代 SoC 中如何演化？": 09-io-dma-interconnect/q088-soc.md
+      - "Q089 AXI 与 AHB 的主要区别是什么？": 09-io-dma-interconnect/q089-axi-ahb.md
+      - "Q090 PCIe 为什么采用点对点串行和 packet 事务模型？": 09-io-dma-interconnect/q090-pcie-packet.md
+  - 第10章 存储、启动与综合性能:
+      - 章节导读: 10-storage-boot-performance/README.md
+      - "Q091 SRAM 与 DRAM 为什么一个做 Cache、一个做主存？": 10-storage-boot-performance/q091-sram-dram-cache.md
+      - "Q092 DRAM 为什么需要 Refresh？": 10-storage-boot-performance/q092-dram-refresh.md
+      - "Q093 HDD 与 SSD 的性能差异来自哪里？": 10-storage-boot-performance/q093-hdd-ssd.md
+      - "Q094 SSD 为什么会产生 Write Amplification？": 10-storage-boot-performance/q094-ssd-write-amplification.md
+      - "Q095 CPU 与 GPU 的架构目标有何根本不同？": 10-storage-boot-performance/q095-cpu-gpu.md
+      - "Q096 SIMD 与 SIMT 有什么区别？": 10-storage-boot-performance/q096-simd-simt.md
+      - "Q097 从上电 Reset 到操作系统 Kernel 开始执行发生了什么？": 10-storage-boot-performance/q097-reset-kernel.md
+      - "Q098 Hardware Prefetch 如何工作？为什么有时反而变慢？": 10-storage-boot-performance/q098-hardware-prefetch.md
+      - "Q099 为什么顺序遍历数组比随机访问快很多？": 10-storage-boot-performance/q099-question.md
+      - "Q100 给你一个‘CPU 很慢’的程序，如何从组成原理角度系统定位？": 10-storage-boot-performance/q100-cpu.md
+  - 附录:
+      - 核心 30 题: appendices/core-30.md
+      - 八条追问链: appendices/interview-chains.md
+      - 公式速查: appendices/formulas.md
+      - 错误表达修正: appendices/pitfalls.md
+      - 参考资料: appendices/references.md
+      - 内容审计: appendices/content-audit.md
+  - 学习计划:
+      - 7 天冲刺: study-plans/7-day.md
+      - 30 天系统学习: study-plans/30-day.md
+  - 术语表: glossary.md

@@ -7,7 +7,7 @@
 [![Questions](https://img.shields.io/badge/questions-3%2C533-ff5f1f)](#-仓库结构与目录)
 [![PDF Handbooks](https://img.shields.io/badge/PDF%20handbooks-35-red)](#-可打印-pdf-手册)
 [![Website](https://img.shields.io/badge/live%20preview-%E2%86%97-12263a)](https://1998x-stack.github.io/engineer-interview/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![License](https://img.shields.io/badge/license-not%20preselected-lightgrey)](LICENSE-NOTICE.md)
 
 > 🔗 **立即在线阅读 (GitHub Pages)** → **https://1998x-stack.github.io/engineer-interview/**
 > 35 个教程概览 · 3,500+ 道题 · 站内题面解答 · LaTeX 公式 · 每套 PDF 在线阅读
@@ -206,6 +206,7 @@ cd site && python3 -m http.server 8000   # 本地预览 → http://localhost:800
 构建输出包含：**概览页 / 35 个教程页 / 3,533 题面页 / 所有 PDF 副本 / LaTeX 公式渲染**。在线版见 👉 [查看在线站点](https://1998x-stack.github.io/engineer-interview/)。
 
 > 说明：`site/` 为构建产物，已在 `.gitignore` 中忽略；线上发布走 `gh-pages` 分支。
+> 各子教程的目录/命名差异与新增约定见 [`REPO_STRUCTURE.md`](REPO_STRUCTURE.md)。
 
 ---
 
@@ -237,7 +238,7 @@ cd site && python3 -m http.server 8000   # 本地预览 → http://localhost:800
 
 ## 🤝 致谢与贡献
 
-欢迎对任意教程提交改进：修正推导、补充边界条件、增加追问或示例。请先在对应目录阅读 `CONTRIBUTING.md`，遵循每题的结构规范提交 PR。
+欢迎对任意教程提交改进：修正推导、补充边界条件、增加追问或示例。请先在对应目录阅读 `CONTRIBUTING.md`，遵循每题的结构规范提交 PR；目录/命名约定见 [`REPO_STRUCTURE.md`](REPO_STRUCTURE.md)。
 
 项目配套的**在线统一站点**由仓库内 `site/build.py` 自动生成——新增或更新题目后执行 `python3 site/build.py` 即可重新生成所有页面。
 
@@ -245,4 +246,9 @@ cd site && python3 -m http.server 8000   # 本地预览 → http://localhost:800
 
 ## 许可证
 
-除特别注明外，本仓库整体遵循各教程自带的 License 文件（多数为 **MIT**）。具体授权以各教程目录内的 `LICENSE` / `LICENSE-NOTICE` 为准。
+本仓库**未在根目录预选统一的开源许可证**（并非 MIT）。在许可证被明确替换之前，默认保留所有权利。
+
+- 根级说明见 [`LICENSE-NOTICE.md`](LICENSE-NOTICE.md)；
+- 每个子教程目录自带 `LICENSE` / `LICENSE.md` / `LICENSE-NOTICE.md`，具体授权以该文件为准。
+
+若计划公开发布，请由仓库所有者为「文档内容」与「代码脚本」分别选择合适的许可证后替换。

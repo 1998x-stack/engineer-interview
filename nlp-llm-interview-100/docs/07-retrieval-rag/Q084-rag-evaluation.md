@@ -65,6 +65,10 @@ answer_depth: "professional"
 - Faithfulness 与 correctness 不同：模型可以忠于错误文档，也可以凭参数知识答对但没有 grounded citation。
 - 线上还要监控 latency、context token、empty/no-answer rate、用户反馈和 corpus freshness。
 
+### 可运行的最小检索评测
+
+`examples/nlp_reference.py` 中的 `recall_at_k(retrieved, relevant, k)` 使用**不同相关文档数**除以 gold relevant 总数，避免重复命中虚增召回；`reciprocal_rank` 取首个相关文档的倒数排名。缺少 gold relevant 时显式报错，不把“未知”伪装成零分。真实 RAG 仍应另外评价多证据覆盖、忠实度、引用质量、无答案案例及生成结果。
+
 ## 7. 实现、复杂度与工程验证
 
 - 拆成 recall→rerank→generation，各层用不同指标和延迟预算。

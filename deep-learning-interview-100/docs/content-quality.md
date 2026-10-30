@@ -26,7 +26,11 @@
 - 每题必须具有题目特定的 `推荐验证协议`；
 - 内部 Markdown 链接必须可解析；
 - `metadata/questions.json` 保持 100 条记录；
-- README 索引由 `build_index.py --check` 保持同步。
+- README 索引由 `build_index.py --check` 保持同步；
+- `scripts/check_contracts.py` 校验 JSON/JSONL、100 题 Frontmatter 与章节路径一致；
+- `tests/test_numerics_reference.py` 对照 PyTorch reference 验证 CE、AdamW、BN、Attention、InfoNCE 的数值和梯度（详见 [可运行实验](numerical-regression-lab.md)）。
+
+校验不能替代 100 道题的人工事实审核。原始 PDF 若未纳入当前 Git 快照，PDF 页码只能作为未独立验证的来源标记。
 
 ## 写作原则
 

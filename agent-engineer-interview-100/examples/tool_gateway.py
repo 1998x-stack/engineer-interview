@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
@@ -79,10 +80,33 @@ class ToolGateway:
                 )
             """)
 
+    @staticmethod
+    def _validate_json_value(value: Any, depth: int = 0) -> None:
+        """Reject non-JSON objects and nested non-string keys before dispatch."""
+        if depth > 32:
+            raise InvalidRequest("JSON nesting limit exceeded")
+        if value is None or isinstance(value, (str, bool, int)):
+            return
+        if isinstance(value, float):
+            if not math.isfinite(value):
+                raise InvalidRequest("tool arguments must be finite JSON values")
+            return
+        if isinstance(value, dict):
+            if not all(isinstance(key, str) for key in value):
+                raise InvalidRequest("all JSON object keys must be strings")
+            for child in value.values():
+                ToolGateway._validate_json_value(child, depth + 1)
+            return
+        if isinstance(value, list):
+            for child in value:
+                ToolGateway._validate_json_value(child, depth + 1)
+            return
+        raise InvalidRequest("tool arguments must contain JSON-compatible values")
+
     def _digest(self, proposal: Proposal) -> str:
-        if (not isinstance(proposal.args, Mapping) or
-                any(not isinstance(x, str) for x in proposal.args.keys())):
-            raise InvalidRequest("tool arguments must be a string-keyed mapping")
+        if not isinstance(proposal.args, dict):
+            raise InvalidRequest("tool arguments must be an object")
+        self._validate_json_value(proposal.args)
         try:
             encoded = json.dumps(
                 {"tool": proposal.tool, "args": proposal.args},

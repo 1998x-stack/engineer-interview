@@ -17,7 +17,8 @@
 - [ ] 每题补白板图 / sequence diagram
 - [ ] 为 20 道必刷题补 3 分钟高级答案
 - [ ] 增加 Agent Runtime 最小实现代码
-- [ ] 增加 Tool Gateway / idempotency / checkpoint 示例
+- [x] 增加 Tool Gateway / idempotency / checkpoint 最小教学示例（M04.1）
+- [ ] 增加完整分布式/外部服务端幂等验证与独立轨迹评测（M04.2）
 - [ ] 增加 Multi-Agent protocol 示例
 
 ## v3 — Eval 层

@@ -12,10 +12,14 @@ ap.add_argument('--frequency')
 ap.add_argument('--priority20',action='store_true')
 ap.add_argument('--seed',type=int)
 args=ap.parse_args()
+if args.count < 1:
+    ap.error('--count must be a positive integer')
 if args.chapter: qs=[q for q in qs if q['chapter_no']==args.chapter]
 if args.difficulty: qs=[q for q in qs if q['diff']==args.difficulty]
 if args.frequency: qs=[q for q in qs if q['freq']==args.frequency]
 if args.priority20: qs=[q for q in qs if q['priority20']]
+if not qs:
+    ap.error('no interview questions match the selected filters')
 r=random.Random(args.seed)
 for q in r.sample(qs,min(args.count,len(qs))):
     print(f"{q['id'].upper()} | {q['freq']} | {q['diff']} | {q['chapter']}")

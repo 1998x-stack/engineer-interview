@@ -34,6 +34,7 @@ Agent 岗面试已经不再主要考“用过哪个框架”，而是在追问�
 - 🧪 [面试评分 Rubric](docs/10-interview-rubric.md)
 - 🧠 [Expanded Edition 内容设计规范](docs/12-expanded-edition-methodology.md)
 - ✅ [Content Quality Gate](docs/13-content-quality.md)
+- 🧪 [Tool Gateway 故障注入实验](docs/14-tool-gateway-failure-lab.md)
 - 📝 [模拟面试评分模板](templates/mock-interview-scorecard.md)
 - 🏗️ [系统设计回答模板](templates/system-design-answer-template.md)
 - 📄 [122 页 PDF](assets/Agent_Engineer_Offer_100_Interview_Handbook.pdf)
@@ -147,7 +148,11 @@ python scripts/random_interview.py --priority20 --count 5
 python scripts/validate_repo.py
 python scripts/build_index.py --check
 python scripts/check_links.py
+python scripts/check_contracts.py
+python -m pytest -q tests
 ```
+
+根目录 `.github/workflows/agent-engineer.yml` 在 PR 中运行上述结构检查、索引、链接与故障注入测试。`examples/tool_gateway.py` 是**教学演示**，其本地 SQLite 去重和审批演示不构成生产环境的端到端 exactly-once 或可信身份校验。
 
 ## 内容来源边界
 

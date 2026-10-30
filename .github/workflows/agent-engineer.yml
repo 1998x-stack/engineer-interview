@@ -1,0 +1,41 @@
+name: Agent Engineer handbook quality
+
+on:
+  pull_request:
+    paths:
+      - 'agent-engineer-interview-100/**'
+      - '.github/workflows/agent-engineer.yml'
+  push:
+    paths:
+      - 'agent-engineer-interview-100/**'
+      - '.github/workflows/agent-engineer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-agent-handbook:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent-engineer-interview-100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated test runner
+        run: python -m pip install 'pytest>=8,<10'
+      - name: Validate existing source and expanded content
+        run: python scripts/validate_repo.py
+      - name: Validate cross-file registry and PDF integrity
+        run: python scripts/check_contracts.py
+      - name: Validate generated index
+        run: python scripts/build_index.py --check
+      - name: Validate local links
+        run: python scripts/check_links.py
+      - name: Run independent gateway fault-injection tests
+        run: python -m pytest -q tests
+      - name: Check reference code compiles
+        run: python -m compileall -q examples scripts

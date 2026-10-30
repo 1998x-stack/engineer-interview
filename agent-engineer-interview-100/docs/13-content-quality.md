@@ -41,6 +41,8 @@ make validate
 5. 每个问题 Markdown 必须达到专业扩展最低内容门槛。
 6. Questions Index 与 JSON 必须同步。
 7. 所有仓库内 Markdown/PDF 相对链接必须可解析。
+8. JSON、CSV、Markdown frontmatter 的题号/章节/优先级一致，PDF 必须与双份 SHA-256 记录匹配。
+9. Tool Gateway 教学参考要通过 timeout、crash、幂等、授权、跨租户隔离的独立故障注入测试（详见 [实验手册](14-tool-gateway-failure-lab.md)）。
 
 ## 人工 Review Gate
 

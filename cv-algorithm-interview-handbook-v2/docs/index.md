@@ -11,7 +11,7 @@
 - [项目拷问 30 题](11-cheatsheets/project-grilling.md)
 - [30 天复习路线](11-cheatsheets/30-day-plan.md)
 - [经典论文与公开依据](12-references/papers.md)
-- [配套 PDF](assets/pdf/图像算法岗_剑指Offer_100题_2026版.pdf)
+- [原始资料与可复现性说明](00-guide/source-assets.md)
 
 ## 10 章导航
 

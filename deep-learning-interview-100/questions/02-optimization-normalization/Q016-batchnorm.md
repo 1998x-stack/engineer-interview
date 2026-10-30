@@ -72,6 +72,8 @@ y_eval = bn(x)            # eval: running statistics
 
 用同一 batch 在 `train()` 与 `eval()` 下前向，打印 running_mean/var；再改变 batch composition 看单样本输出是否改变。
 
+运行 [BatchNorm 数值实验](../../docs/numerical-regression-lab.md) 中的 `batchnorm2d_train/eval`：前向归一化使用 biased batch variance；PyTorch running variance 更新通常使用 unbiased estimator，二者不能混为一谈。比较 train/eval 以及输入/仿射参数的梯度。
+
 **最低验收标准：** shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。
 
 ## 工程实践与诊断视角

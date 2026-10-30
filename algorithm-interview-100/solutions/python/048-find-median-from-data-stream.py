@@ -9,5 +9,7 @@ class MedianFinder:
         if len(self.large) > len(self.small):
             heapq.heappush(self.small, -heapq.heappop(self.large))
     def findMedian(self) -> float:
+        if not self.small and not self.large:
+            raise ValueError('median is undefined for an empty stream')
         if len(self.small) > len(self.large): return float(-self.small[0])
         return (-self.small[0] + self.large[0]) / 2

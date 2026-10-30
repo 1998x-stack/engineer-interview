@@ -16,6 +16,9 @@
 ```bash
 python scripts/validate_repo.py
 python scripts/build_index.py --check
+python scripts/check_links.py
+python scripts/check_contracts.py
+python -m pytest -q tests
 ```
 
 ## 新题建议

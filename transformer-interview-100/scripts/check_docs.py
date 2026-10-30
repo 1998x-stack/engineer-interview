@@ -30,8 +30,16 @@ for p in question_files:
     if not fm:
         errors.append(f'{p}: missing leading YAML frontmatter')
     else:
-        # Only keys inside the initial frontmatter count, never the body.
-        fields = dict(re.findall(r'(?m)^([a-zA-Z_][\w-]*):\s*(.*?)\s*
+        # Only fields in the leading YAML frontmatter count.
+        fields = dict(re.findall(r'(?m)^([a-zA-Z_][\w-]*):[ \t]*(.*?)[ \t]*$', fm.group(1)))
+        if fields.get('id') != f'Q{q:03d}':
+            errors.append(f'{p}: frontmatter id mismatch')
+        title = fields.get('title', '').strip().strip('"\'')
+        if not title.startswith(f'Q{q:03d} '):
+            errors.append(f'{p}: frontmatter title mismatch')
+        if fields.get('chapter') != str(int(p.parent.name.split('-')[-1])):
+            errors.append(f'{p}: frontmatter chapter mismatch')
+    if f'# Q{q:03d} ·' not in text:
         errors.append(f'{p}: title mismatch')
     for section in required_sections:
         if section not in text:
@@ -46,7 +54,7 @@ if ids != expected:
         f'{ids[:5]}...{ids[-5:]} count={len(ids)}'
     )
 
-# The JSON registry must agree with the canonical Markdown pages.
+# Ensure the JSON registry agrees with canonical Markdown files.
 manifest_file = ROOT / 'data/questions.json'
 if not manifest_file.exists():
     errors.append('data/questions.json missing')
@@ -74,8 +82,8 @@ else:
             seen_paths.add(target)
             if canonical.get(qid) != target:
                 errors.append(f'data/questions.json: {qid} path mismatch: {target}')
-            expected_chapter = target.split('/')[2] if len(target.split('/')) >= 4 else None
-            if expected_chapter != f"chapter-{entry.get('chapter', -1):02d}":
+            chapter_part = target.split('/')[2] if len(target.split('/')) >= 4 else None
+            if not isinstance(entry.get('chapter'), int) or chapter_part != f"chapter-{entry['chapter']:02d}":
                 errors.append(f'data/questions.json: {qid} chapter mismatch')
         if seen_ids != set(canonical):
             errors.append('data/questions.json: question IDs differ from Markdown')
@@ -104,52 +112,5 @@ if errors:
 
 print(
     'OK: Q001-Q100 metadata, manifest, and V2 sections; '
-    '9 chapter overviews and 10 system-design pages present.'
-)
-, fm.group(1)))
-        if fields.get('id') != f'Q{q:03d}':
-            errors.append(f'{p}: frontmatter id mismatch')
-        title = fields.get('title', '').strip().strip('"\'')
-        if not title.startswith(f'Q{q:03d} '):
-            errors.append(f'{p}: frontmatter title mismatch')
-        if fields.get('chapter') != str(int(p.parent.name.split('-')[-1])):
-            errors.append(f'{p}: frontmatter chapter mismatch')
-    if f'# Q{q:03d} ·' not in text:
-        errors.append(f'{p}: title mismatch')
-    for section in required_sections:
-        if section not in text:
-            errors.append(f'{p}: missing section {section}')
-    if len(text) < 4500:
-        errors.append(f'{p}: unexpectedly short ({len(text)} chars)')
-
-expected = list(range(1, 101))
-if ids != expected:
-    errors.append(
-        f'question ids are not exactly Q001-Q100: '
-        f'{ids[:5]}...{ids[-5:]} count={len(ids)}'
-    )
-
-for chapter in range(1, 10):
-    p = ROOT / f'docs/questions/chapter-{chapter:02d}/index.md'
-    if not p.exists():
-        errors.append(f'missing chapter overview: {p}')
-        continue
-    text = p.read_text(encoding='utf-8')
-    if '本章完成标准' not in text or '本章自测' not in text:
-        errors.append(f'{p}: incomplete chapter overview')
-
-for sd in range(1, 11):
-    p = ROOT / f'docs/system-design/SD{sd:02d}.md'
-    if not p.exists():
-        errors.append(f'missing system design page: {p}')
-    elif len(p.read_text(encoding='utf-8')) < 1500:
-        errors.append(f'{p}: system design page too short')
-
-if errors:
-    print('\n'.join(errors))
-    sys.exit(1)
-
-print(
-    'OK: Q001-Q100 complete with V2 sections; '
     '9 chapter overviews and 10 system-design pages present.'
 )

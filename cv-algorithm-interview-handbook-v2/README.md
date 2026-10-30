@@ -15,7 +15,7 @@
 - **面试口述导向**：每题均有 30 秒结论、2-5 分钟展开、追问链和失分点。
 - **工程导向**：不是只背网络结构，强调数据、指标、失败模式、部署与 SLA。
 - **可维护**：YAML front matter、问题元数据 JSON/CSV、MkDocs 导航、CI 完整性校验。
-- **原始 PDF 随仓库保留**：[下载/查看 PDF](assets/pdf/图像算法岗_剑指Offer_100题_2026版.pdf)。
+- **来源说明**：当前 Git 版本未包含原始 PDF；[查看资料与复现边界](docs/00-guide/source-assets.md)，不提供失效的 PDF 下载链接。
 
 
 ## V2 深度版新增内容
@@ -71,7 +71,7 @@ python -m pip install -r requirements-docs.txt
 mkdocs serve
 ```
 
-然后访问终端提示的本地地址。GitHub CI 还会检查：问题总数、连续编号、YAML 元数据、章节范围、PDF 是否存在。
+然后访问终端提示的本地地址。根级 `.github/workflows/cv-handbook.yml` 会执行：100 题编号、Markdown/JSON/CSV 元数据一致性、链接检查、PyTorch 数值回归测试和 MkDocs 严格构建。原始 PDF 未随 Git 分发，不作为默认 CI 的必需依赖；若另行获得合法源文件，可运行 `python scripts/validate_repo.py --require-pdf` 核对两份本地路径。
 
 ## 内容来源与扩展边界
 

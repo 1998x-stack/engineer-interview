@@ -5,3 +5,6 @@ __pycache__/
 site/
 .idea/
 .vscode/
+
+# Staging area for MkDocs (not original source)
+.mkdocs-src/

@@ -64,6 +64,10 @@ Sparse+Dense 实战题。
 - 参数 k 控制头部排名差异的敏感度；候选截断深度也会影响融合结果。
 - 若有足够标注数据，可学习 fusion/ranking 模型；RRF 的优势在于稳健、无需训练、易上线。
 
+### 可执行 RRF 基准
+
+`examples/nlp_reference.py` 提供 `reciprocal_rank_fusion(rankings, k=60)`，从 rank=1 起使用 `1/(k+rank)`；**同一条排名中的重复文档只计一次**，输出并列得分时按首次出现顺序稳定排序。数值测试覆盖排名交叉、重复 ID 与并列情况。注意 RRF 只融合排名，不能独立证明文档相关性或证据质量。
+
 ## 7. 实现、复杂度与工程验证
 
 - 拆成 recall→rerank→generation，各层用不同指标和延迟预算。

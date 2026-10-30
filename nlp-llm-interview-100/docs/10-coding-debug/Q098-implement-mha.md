@@ -65,6 +65,12 @@ answer_depth: "professional"
 - GQA 扩展时 Q head 数与 KV head 数不同，不能沿用 MHA 的一一 reshape 假设。
 - Cached Decode 扩展还要处理 $T_q=1$、KV append、RoPE position offset 和不同 batch sequence length。
 
+### 可执行数值验证
+
+模块 `examples/nlp_reference.py` 提供 `(B,H,Tq,D)` 的教学 Attention：`reference_attention(q,k,v,causal=True,key_padding_mask=mask)`。`key_padding_mask` 为 `(B,Tk)`，**True 表示 key 可见**。因果增量解码中 `q` 必须代表 `k` 的末尾 `Tq` 个 token（包含绝对位置偏移）；输出和梯度与 PyTorch SDPA 独立对拍。
+
+这不是可复用的 GQA/Paged KV Cache 生产实现，也不隐含 query padding 处理。
+
 ## 7. 实现、复杂度与工程验证
 
 - 先写 reference 版本和不变量，再写向量化/缓存/融合优化。

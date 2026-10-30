@@ -74,7 +74,15 @@ def validate(root: Path = ROOT) -> list[str]:
             errors.append(f"{qid:03d}: invalid YAML: {exc}")
             continue
         for name, key in FIELDS.items():
-            if fields.get(name) != str(entry.get(key)):
+            observed = fields.get(name)
+            expected = entry.get(key)
+            # YAML id is conventionally zero-padded: id: 041 vs integer num=41.
+            if name == "id":
+                matches = bool(observed and observed.isdecimal() and int(observed) == expected and
+                               observed == f"{qid:03d}")
+            else:
+                matches = observed == str(expected)
+            if not matches:
                 errors.append(f"{qid:03d}: frontmatter {name} differs from registry")
         match = re.search(
             r"^## 9\. Python 参考实现\s*\n\s*```python\s*\n(.*?)\n```",

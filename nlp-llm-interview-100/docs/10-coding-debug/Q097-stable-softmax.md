@@ -65,6 +65,19 @@ answer_depth: "professional"
 - 测试 `[1000,0,-1000]`、全相等、大负数、不同 axis，并验证每行和为 1。
 - 代码题高级回答可继续写 stable `logsumexp(x)=m+log(sum(exp(x-m)))`。
 
+### 可执行数值验证
+
+```python
+import torch
+from examples.nlp_reference import stable_softmax
+
+logits = torch.tensor([[1000., 0., -1000.]])
+p = stable_softmax(logits, dim=-1)
+torch.testing.assert_close(p, torch.softmax(logits, dim=-1))
+```
+
+在模块根目录执行，单元测试含极大/极小 logits、掩码与梯度对拍。完全屏蔽一行被明确拒绝，而非悄然产生 NaN。
+
 ## 7. 实现、复杂度与工程验证
 
 - 先写 reference 版本和不变量，再写向量化/缓存/融合优化。

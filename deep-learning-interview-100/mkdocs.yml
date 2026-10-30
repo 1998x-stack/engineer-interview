@@ -20,7 +20,7 @@ markdown_extensions:
       generic: true
   - tables
   - attr_list
-docs_dir: .
+docs_dir: .mkdocs-src
 site_dir: site
 nav:
   - '首页': README.md
@@ -29,6 +29,7 @@ nav:
   - '训练计划': docs/study-plans.md
   - '评分标准': docs/interview-rubric.md
   - '内容质量标准': docs/content-quality.md
+  - '数值回归实验室': docs/numerical-regression-lab.md
   - '神经网络与反向传播基础':
       - 'Q001 · 为什么神经网络必须引入非线性激活函数？': 'questions/01-foundations/Q001-nonlinear-activation.md'
       - 'Q002 · 反向传播的本质是什么？Autograd 在做什么？': 'questions/01-foundations/Q002-backprop-autograd.md'

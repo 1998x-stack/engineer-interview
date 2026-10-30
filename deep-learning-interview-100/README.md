@@ -169,7 +169,7 @@ deep-learning-interview-100/
 
 ## 原始 PDF
 
-- [《深度学习算法岗面试 100 题 · 2026 版》](assets/pdf/deep_learning_algorithm_interview_100_2026.pdf)
+- 原始 PDF 预期路径：`assets/pdf/deep_learning_algorithm_interview_100_2026.pdf`。**该 PDF 在本次 Git 主分支快照中不可见；无法对其内容与逐题页码进行独立核验。** 当前可验证的是 100 道 Markdown 与 JSON/JSONL 元数据。
 
 ## 质量原则
 
@@ -186,7 +186,11 @@ deep-learning-interview-100/
 ```bash
 python scripts/check_repo.py
 python scripts/build_index.py --check
+python scripts/check_contracts.py
+python -m pytest -q tests  # 需 pytest + PyTorch
 ```
+
+新建 [数值正确性与反向传播实验室](docs/numerical-regression-lab.md)，可复现实验覆盖 Q003、Q012、Q016、Q055、Q069 和 Q100。根级 CI 见 `.github/workflows/deep-learning.yml`。
 
 ## 本地文档站点
 

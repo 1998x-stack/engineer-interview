@@ -73,6 +73,8 @@ def infonce(q, k, temperature=0.07):
 
 实现 symmetric InfoNCE，比较 batch size/negative 数量对 loss 与 retrieval recall 的影响。
 
+运行 [InfoNCE 数值实验](../../docs/numerical-regression-lab.md) 中的 `symmetric_infonce`，分别验证 image→text 与 text→image 的双向交叉熵、温度范围、零向量输入拒绝和梯度一致性。
+
 **最低验收标准：** shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。
 
 ## 工程实践与诊断视角

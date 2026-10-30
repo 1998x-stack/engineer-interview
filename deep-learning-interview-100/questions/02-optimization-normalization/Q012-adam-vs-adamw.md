@@ -61,6 +61,8 @@ $$
 
 在相同 lr/weight_decay 下比较 Adam(L2) 与 AdamW 参数范数轨迹；对 bias/Norm 参数尝试不做 decay。
 
+运行 [AdamW 数值实验](../../docs/numerical-regression-lab.md) 中的 `adamw_step`，用 4 步确定性梯度与 `torch.optim.AdamW` 核对参数/动量/方差轨迹。注意 Adam 的梯度 L2 不等价于 AdamW 的 decoupled decay。
+
 **最低验收标准：** shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。
 
 ## 工程实践与诊断视角

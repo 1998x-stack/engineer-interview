@@ -52,33 +52,36 @@ content_level: "v2-deep"
 
 ```python
 import torch
+from examples.numerics_reference import reference_attention
 
 class MHA(torch.nn.Module):
     def __init__(self, dim: int, heads: int):
         super().__init__()
-        assert dim % heads == 0
+        if dim < 1 or heads < 1 or dim % heads:
+            raise ValueError("dim must be positive and divisible by heads")
         self.h = heads
         self.dh = dim // heads
         self.qkv = torch.nn.Linear(dim, 3 * dim, bias=False)
         self.out = torch.nn.Linear(dim, dim, bias=False)
 
-    def forward(self, x, causal=True):
+    def forward(self, x, *, causal=True, padding_keep=None):
+        if x.ndim != 3 or x.shape[-1] != self.h * self.dh:
+            raise ValueError("x must be [B,T,D]")
         b, t, d = x.shape
-        qkv = self.qkv(x).view(b, t, 3, self.h, self.dh)
-        q, k, v = qkv.unbind(dim=2)
-        q, k, v = [z.transpose(1, 2) for z in (q, k, v)]
-        score = q @ k.transpose(-2, -1) / (self.dh ** 0.5)
-        if causal:
-            m = torch.ones(t, t, device=x.device, dtype=torch.bool).tril()
-            score = score.masked_fill(~m, torch.finfo(score.dtype).min)
-        p = torch.softmax(score.float(), dim=-1).to(score.dtype)
-        y = (p @ v).transpose(1, 2).contiguous().view(b, t, d)
-        return self.out(y)
+        qkv = self.qkv(x).reshape(b, t, 3, self.h, self.dh)
+        q, k, v = [z.transpose(1, 2) for z in qkv.unbind(dim=2)]
+        # padding_keep has shape [B,T] and True means a visible key.
+        # Completely masked query rows raise ValueError, not uniform weights.
+        y = reference_attention(q, k, v, causal=causal,
+                                padding_keep=padding_keep)
+        return self.out(y.transpose(1, 2).contiguous().reshape(b, t, d))
 ```
 
 ### 推荐验证协议
 
 写 reference 版本与 SDPA 对拍 forward/backward；测试 batch=1、T=1、causal+padding、fp16。
+
+[Q055 可运行数值对拍](../../docs/numerical-regression-lab.md)：使用同参数投影的 PyTorch SDPA 作为 oracle，覆盖 causal/padding、全屏蔽 query 拒绝、梯度与增量 decode suffix 一致性。该教学示例不实现 Q/K/V 的完整缓存管理。
 
 **最低验收标准：** shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。
 

@@ -64,6 +64,10 @@ answer_depth: "professional"
 - M×N 本身仍可能过大，真实十亿向量检索要分块或使用 ANN，向量化并没有消除二次候选规模。
 - 测试要和双循环 reference 对拍，并覆盖重复点/tie、batch=1、高维等情况。
 
+### 可执行数值验证
+
+模块内 `nearest_neighbors(queries, corpus, block_size=1024)` 是分块精确 L2 最近邻参考实现，使用 `Q @ X.T` 和逐块最小值，不构造 `[M,N,d]` 中间张量；对随机输入与朴素逐 query 求解对拍。相同距离时保留最早 corpus 索引；极近的大数向量宜使用 `float64` 降低消差误差。
+
 ## 7. 实现、复杂度与工程验证
 
 - 先写 reference 版本和不变量，再写向量化/缓存/融合优化。

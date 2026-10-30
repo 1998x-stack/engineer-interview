@@ -74,6 +74,8 @@ content_level: "v2-deep"
 
 为 Attention/BN/InfoNCE 各准备 reference implementation + 3 个 unit tests + shape assertions + numerical checks。
 
+本题配套的 [可执行数值回归实验](../../docs/numerical-regression-lab.md) 已覆盖 CE、AdamW、BN、Attention 和 InfoNCE，包含 forward/backward reference parity、causal/padding、不合法输入与边界情况。生产级 CUDA/分布式测试不在该教学基线内。
+
 **最低验收标准：** shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。
 
 ## 工程实践与诊断视角

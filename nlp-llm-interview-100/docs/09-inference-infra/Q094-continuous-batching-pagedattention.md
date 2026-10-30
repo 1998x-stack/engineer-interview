@@ -21,7 +21,7 @@ answer_depth: "professional"
 
 > **难度**：★★★★  ·  **频率**：★★★★★  ·  **标签**：`inference-infra`, `attention`
 
-> 本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 [`sources/questions_raw`](../../sources/questions_raw/Q094.txt)，原始 PDF 见 [`assets/pdf`](../../assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf)。
+> 本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 [`sources/questions_raw`](../../sources/questions_raw/Q094.txt)，原始 PDF 未纳入当前 Git 快照，详见 [来源与版权说明](../../sources/provenance.md)。
 
 ## 1. 题目
 
@@ -95,13 +95,6 @@ Continuous batching 在请求完成后即时补入新请求，提高 GPU occupan
 3. 给出一个“不适用”的条件，证明不是机械背诵。
 4. 若追问工程实现，优先说明验证方法和可观测指标。
 
-### 回答追问时的升级原则
-
-1. 先给结论，再写一个关键公式 / shape / 数据流。
-2. 主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。
-3. 给出一个“不适用”的条件，证明不是机械背诵。
-4. 若追问工程实现，优先说明验证方法和可观测指标。
-
 ## 10. 面试现场自检
 
 - [ ] 30-60 秒能给出结论，不绕弯。
@@ -114,7 +107,7 @@ Continuous batching 在请求完成后即时补入新请求，提高 GPU occupan
 ## 11. 参考资料
 
 - [vLLM / PagedAttention](https://arxiv.org/abs/2309.06180)
-- [本项目原始 PDF](../../assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf)
+- [资料来源与授权边界](../../sources/provenance.md)
 
 ## 12. 关联题目与知识网络
 

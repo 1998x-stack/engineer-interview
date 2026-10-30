@@ -40,5 +40,7 @@ jobs:
         run: python -m pytest -q tests
       - name: Compile Python reference modules
         run: python -m compileall -q examples scripts tests
+      - name: Stage documentation sources
+        run: python scripts/stage_docs.py
       - name: Build documentation strictly
         run: mkdocs build --strict

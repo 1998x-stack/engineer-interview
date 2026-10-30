@@ -19,7 +19,7 @@ def test_seed_reproducible():
     second = run("--count", "4", "--seed", "42")
     assert first.returncode == second.returncode == 0
     assert first.stdout == second.stdout
-    assert first.stdout.count(" | ") == 4
+    assert sum(line.startswith("Q") and " | " in line for line in first.stdout.splitlines()) == 4
 
 
 def test_zero_or_negative_count_fails_with_useful_error():

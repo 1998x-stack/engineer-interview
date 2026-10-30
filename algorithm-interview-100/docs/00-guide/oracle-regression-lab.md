@@ -5,7 +5,7 @@ This GitHub-only extension preserves the existing 100 stable LeetCode question I
 ## What is now executable
 
 - `tests/test_smoke.py`: original ten single-example smoke tests.
-- `tests/test_differential.py`: 31 independent, seeded problem families using brute-force, reference-library or state-machine oracles. This checks normal LeetCode input constraints, not just one hand-picked example.
+- `tests/test_differential.py`: 34 seeded differential test methods covering 37 distinct solution IDs using brute-force, reference-library or state-machine oracles. This checks normal LeetCode input constraints, not just one hand-picked example.
 - `tests/test_contract_edges.py`: explicit rejection of invalid empty streams, empty array median, invalid weighted sampling and invalid partition-count inputs.
 - `scripts/check_contracts.py`: registry/frontmatter identity, physical file sets, and *exact* correspondence of Section 9 inline Python snippets to their standalone `solutions/python/*.py` source.
 - `.github/workflows/algorithm-interview.yml`: root-level CI that GitHub recognizes in the parent monorepo.

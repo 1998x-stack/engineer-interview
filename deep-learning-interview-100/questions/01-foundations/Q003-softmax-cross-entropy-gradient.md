@@ -73,6 +73,8 @@ print(logits.grad)  # 等价于 p - one_hot(y)
 
 对极端 logits 比较 `F.cross_entropy` 与手写 `log_softmax + NLL`，再验证 `grad == softmax - one_hot`。
 
+运行 [数值回归实验](../../docs/numerical-regression-lab.md) 中的 `cross_entropy_logits`：极端 logits 下使用 logsumexp，核对交叉熵前向、autograd 梯度和 `softmax-one_hot`（单样本无 reduction 缩放）。
+
 **最低验收标准：** shape 正确、输出 finite、forward 与 reference 对齐；涉及训练时再比较 backward/gradient，涉及系统性能时至少报告 warmup 后的中位数与 P95。
 
 ## 工程实践与诊断视角

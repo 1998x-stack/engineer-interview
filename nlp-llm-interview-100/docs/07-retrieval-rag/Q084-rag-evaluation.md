@@ -21,7 +21,7 @@ answer_depth: "professional"
 
 > **难度**：★★★★  ·  **频率**：★★★★★  ·  **标签**：`retrieval-rag`, `rag`
 
-> 本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 [`sources/questions_raw`](../../sources/questions_raw/Q084.txt)，原始 PDF 见 [`assets/pdf`](../../assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf)。
+> 本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 [`sources/questions_raw`](../../sources/questions_raw/Q084.txt)，原始 PDF 未纳入当前 Git 快照，详见 [来源与版权说明](../../sources/provenance.md)。
 
 ## 1. 题目
 
@@ -65,6 +65,10 @@ answer_depth: "professional"
 - Faithfulness 与 correctness 不同：模型可以忠于错误文档，也可以凭参数知识答对但没有 grounded citation。
 - 线上还要监控 latency、context token、empty/no-answer rate、用户反馈和 corpus freshness。
 
+### 可运行的最小检索评测
+
+`examples/nlp_reference.py` 中的 `recall_at_k(retrieved, relevant, k)` 使用**不同相关文档数**除以 gold relevant 总数，避免重复命中虚增召回；`reciprocal_rank` 取首个相关文档的倒数排名。缺少 gold relevant 时显式报错，不把“未知”伪装成零分。真实 RAG 仍应另外评价多证据覆盖、忠实度、引用质量、无答案案例及生成结果。
+
 ## 7. 实现、复杂度与工程验证
 
 - 拆成 recall→rerank→generation，各层用不同指标和延迟预算。
@@ -96,13 +100,6 @@ answer_depth: "professional"
 3. 给出一个“不适用”的条件，证明不是机械背诵。
 4. 若追问工程实现，优先说明验证方法和可观测指标。
 
-### 回答追问时的升级原则
-
-1. 先给结论，再写一个关键公式 / shape / 数据流。
-2. 主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。
-3. 给出一个“不适用”的条件，证明不是机械背诵。
-4. 若追问工程实现，优先说明验证方法和可观测指标。
-
 ## 10. 面试现场自检
 
 - [ ] 30-60 秒能给出结论，不绕弯。
@@ -116,7 +113,7 @@ answer_depth: "professional"
 
 - [DPR](https://arxiv.org/abs/2004.04906)
 - [Sentence-BERT](https://arxiv.org/abs/1908.10084)
-- [本项目原始 PDF](../../assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf)
+- [资料来源与授权边界](../../sources/provenance.md)
 
 ## 12. 关联题目与知识网络
 

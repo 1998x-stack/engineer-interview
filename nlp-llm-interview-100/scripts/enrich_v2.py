@@ -63,7 +63,12 @@ def enrich_followup(sec9):
     # Keep original specific questions, remove generic v1 additions.
     lines=sec9.splitlines(); out=[]
     for ln in lines:
-        if '如果把本题放到真实大规模系统里' in ln or '与本章相邻方法相比' in ln: continue
+        # Previous enrichment runs already appended this guidance. Preserve the
+        # original follow-up questions and regenerate exactly one copy.
+        if ln.strip() == '### 回答追问时的升级原则':
+            break
+        if '如果把本题放到真实大规模系统里' in ln or '与本章相邻方法相比' in ln:
+            continue
         out.append(ln)
     out += ['', '### 回答追问时的升级原则','',
             '1. 先给结论，再写一个关键公式 / shape / 数据流。',

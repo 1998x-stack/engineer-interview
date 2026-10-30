@@ -20,7 +20,7 @@ answer_depth: "professional"
 
 > **难度**：★★★  ·  **频率**：★★★★★  ·  **标签**：`retrieval-rag`
 
-> 本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 [`sources/questions_raw`](../../sources/questions_raw/Q082.txt)，原始 PDF 见 [`assets/pdf`](../../assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf)。
+> 本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 [`sources/questions_raw`](../../sources/questions_raw/Q082.txt)，原始 PDF 未纳入当前 Git 快照，详见 [来源与版权说明](../../sources/provenance.md)。
 
 ## 1. 题目
 
@@ -64,6 +64,10 @@ Sparse+Dense 实战题。
 - 参数 k 控制头部排名差异的敏感度；候选截断深度也会影响融合结果。
 - 若有足够标注数据，可学习 fusion/ranking 模型；RRF 的优势在于稳健、无需训练、易上线。
 
+### 可执行 RRF 基准
+
+`examples/nlp_reference.py` 提供 `reciprocal_rank_fusion(rankings, k=60)`，从 rank=1 起使用 `1/(k+rank)`；**同一条排名中的重复文档只计一次**，输出并列得分时按首次出现顺序稳定排序。数值测试覆盖排名交叉、重复 ID 与并列情况。注意 RRF 只融合排名，不能独立证明文档相关性或证据质量。
+
 ## 7. 实现、复杂度与工程验证
 
 - 拆成 recall→rerank→generation，各层用不同指标和延迟预算。
@@ -94,13 +98,6 @@ Sparse+Dense 实战题。
 3. 给出一个“不适用”的条件，证明不是机械背诵。
 4. 若追问工程实现，优先说明验证方法和可观测指标。
 
-### 回答追问时的升级原则
-
-1. 先给结论，再写一个关键公式 / shape / 数据流。
-2. 主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。
-3. 给出一个“不适用”的条件，证明不是机械背诵。
-4. 若追问工程实现，优先说明验证方法和可观测指标。
-
 ## 10. 面试现场自检
 
 - [ ] 30-60 秒能给出结论，不绕弯。
@@ -114,7 +111,7 @@ Sparse+Dense 实战题。
 
 - [DPR](https://arxiv.org/abs/2004.04906)
 - [Sentence-BERT](https://arxiv.org/abs/1908.10084)
-- [本项目原始 PDF](../../assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf)
+- [资料来源与授权边界](../../sources/provenance.md)
 
 ## 12. 关联题目与知识网络
 

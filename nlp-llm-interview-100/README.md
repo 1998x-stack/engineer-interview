@@ -31,7 +31,7 @@ Production / System Thinking
 - 每题保留 PDF 原始核心答案，同时增加 **专业深挖：原理、边界与工程**。
 - 每题包含 difficulty / frequency / tags / version / reading time 等 frontmatter。
 - 每题包含 60 秒回答、Know-Why、公式 / 结构、工程验证、失分点、追问树与关联题。
-- PDF 原始文本与逐题 raw extraction 保存在 `sources/`，支持 provenance 审计。
+- PDF 原始文本与逐题 raw extraction 保存在 `sources/`，支持 provenance 审计；**原始 PDF 文件未包含在当前 Git 树中**，不能假定克隆后可访问。
 - `data/questions.json` 提供机器可读索引；`data/deepdives_v2.mdpack` 保存 v2 专属扩写源。
 - MkDocs 配置可直接构建静态站点。
 - GitHub Actions / 本地脚本可自动检查题号、结构、链接和源文件完整性。
@@ -140,7 +140,7 @@ v2.0 的重点是第 6–7 节：不再使用统一模板解释所有问题，�
 │   ├── pdf_text.txt
 │   ├── questions_raw/
 │   └── provenance.md
-├── assets/pdf/
+├── assets/pdf/            # 可选外部资料，Git 快照未提供原始 PDF
 ├── scripts/
 │   ├── check_repo.py
 │   └── enrich_v2.py
@@ -172,13 +172,21 @@ python -m pip install -r requirements-docs.txt
 mkdocs serve
 ```
 
-完整性检查：
+完整性检查（需 Python 3.12，默认不要求外部 PDF）：
 
 ```bash
 python scripts/check_repo.py
 ```
 
-重新应用 v2 深度扩写：
+运行数值回归测试（需安装 PyTorch 和 pytest）：
+
+```bash
+python -m pytest -q tests
+```
+
+可执行基准位于 `examples/nlp_reference.py`，覆盖稳定 Softmax、带 causal/padding mask 的 Attention、分块精确 1-NN、RRF 及检索 Recall/MRR 的单查询基础算子。根目录 `.github/workflows/nlp-llm.yml` 在 PR 中自动执行全部检查与 MkDocs 严格构建。
+
+重新应用 v2 深度扩写（已修复重复追问段落生成问题）：
 
 ```bash
 python scripts/enrich_v2.py
@@ -205,7 +213,7 @@ python scripts/enrich_v2.py
 
 本仓库 **不是任何公司的内部题库**。PDF 与 Repo 中“公开题型”来自公开候选人经验、开源题库、公开职位能力要求与经典高频问法的归纳。扩写部分属于原创学习材料。
 
-- 原始 PDF：`assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf`
+- 原始 PDF 路径（当前 Git 树不存在）：`assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf`
 - PDF 文本：`sources/pdf_text.txt`
 - 逐题原始抽取：`sources/questions_raw/Q001.txt ... Q100.txt`
 - v2 专属扩写：`data/deepdives_v2.mdpack`

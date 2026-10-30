@@ -21,7 +21,7 @@ answer_depth: "professional"
 
 > **难度**：★★★  ·  **频率**：★★★★★  ·  **标签**：`coding-debug`, `softmax`
 
-> 本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 [`sources/questions_raw`](../../sources/questions_raw/Q097.txt)，原始 PDF 见 [`assets/pdf`](../../assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf)。
+> 本页以 PDF v1.0 为基线扩写。PDF 原始文本保存在 [`sources/questions_raw`](../../sources/questions_raw/Q097.txt)，原始 PDF 未纳入当前 Git 快照，详见 [来源与版权说明](../../sources/provenance.md)。
 
 ## 1. 题目
 
@@ -65,6 +65,19 @@ answer_depth: "professional"
 - 测试 `[1000,0,-1000]`、全相等、大负数、不同 axis，并验证每行和为 1。
 - 代码题高级回答可继续写 stable `logsumexp(x)=m+log(sum(exp(x-m)))`。
 
+### 可执行数值验证
+
+```python
+import torch
+from examples.nlp_reference import stable_softmax
+
+logits = torch.tensor([[1000., 0., -1000.]])
+p = stable_softmax(logits, dim=-1)
+torch.testing.assert_close(p, torch.softmax(logits, dim=-1))
+```
+
+在模块根目录执行，单元测试含极大/极小 logits、掩码与梯度对拍。完全屏蔽一行被明确拒绝，而非悄然产生 NaN。
+
 ## 7. 实现、复杂度与工程验证
 
 - 先写 reference 版本和不变量，再写向量化/缓存/融合优化。
@@ -97,13 +110,6 @@ answer_depth: "professional"
 3. 给出一个“不适用”的条件，证明不是机械背诵。
 4. 若追问工程实现，优先说明验证方法和可观测指标。
 
-### 回答追问时的升级原则
-
-1. 先给结论，再写一个关键公式 / shape / 数据流。
-2. 主动说清 trade-off：质量、计算、显存、延迟、数据或偏差至少一个。
-3. 给出一个“不适用”的条件，证明不是机械背诵。
-4. 若追问工程实现，优先说明验证方法和可观测指标。
-
 ## 10. 面试现场自检
 
 - [ ] 30-60 秒能给出结论，不绕弯。
@@ -117,7 +123,7 @@ answer_depth: "professional"
 
 - [PyTorch scaled dot product attention docs](https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html)
 - [NumPy broadcasting](https://numpy.org/doc/stable/user/basics.broadcasting.html)
-- [本项目原始 PDF](../../assets/pdf/NLP_LLM_Interview_100_Professional_2026.pdf)
+- [资料来源与授权边界](../../sources/provenance.md)
 
 ## 12. 关联题目与知识网络
 

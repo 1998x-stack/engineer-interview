@@ -83,6 +83,8 @@ class Solution:
     def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:
         if len(nums1) > len(nums2): return self.findMedianSortedArrays(nums2, nums1)
         a, b = nums1, nums2; m, n = len(a), len(b)
+        if m + n == 0:
+            raise ValueError('at least one sorted array is required')
         half = (m+n+1)//2; l, r = 0, m
         while l <= r:
             i = (l+r)//2; j = half-i

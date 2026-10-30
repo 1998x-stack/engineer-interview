@@ -2,7 +2,7 @@
 
 > 面向算法工程师 / MLE / 推荐 / 搜索 / 广告 / NLP / CV / 多模态 / LLM 算法岗位的 **100 道母题 + 25+ 模式 + 工程化追问** 知识库。
 
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+[![Algorithm CI](https://github.com/1998x-stack/engineer-interview/actions/workflows/algorithm-interview.yml/badge.svg)](https://github.com/1998x-stack/engineer-interview/actions/workflows/algorithm-interview.yml)
 
 <!-- V2-DETAIL-BADGE -->
 > **v2 教材级扩写**：100 道题现均包含 28 个结构化模块，新增解法谱系、状态表、证明骨架、复杂度深拆、测试工程、Code Review、四级 Follow-up Tree、工业约束、迁移导航、评分 Rubric 与 Active Recall。
@@ -33,6 +33,7 @@
 4. [21 天冲刺](docs/02-roadmaps/21-day-sprint.md)
 5. [LeetCode -> 算法系统](docs/00-guide/algorithm-to-system.md)
 6. [“真题”证据口径](docs/00-guide/evidence-policy.md)
+7. [随机差分测试与复杂度实验](docs/00-guide/oracle-regression-lab.md)
 7. [题目页撰写标准](docs/00-guide/problem-authoring-standard.md)
 8. [冻结版 PDF](docs/assets/algorithm-interview-100-2026.pdf)
 
@@ -207,3 +208,18 @@ python -m unittest discover -s tests -v
 ## License
 
 仓库原创分析、代码与组织结构以 MIT License 发布；第三方网站、题目名称及链接归其权利人所有。
+
+
+## M06 · 可运行正确性验收
+
+100 份源码继续保留稳定题号。本轮新增固定种子的小规模独立参考解差分测试、状态型数据结构测试、异常输入契约测试，以及 Markdown 内嵌示例与独立源码的一致性检查。
+
+```bash
+cd algorithm-interview-100
+python scripts/check_repo.py
+python scripts/check_content_depth.py
+python scripts/check_contracts.py
+python -m unittest discover -s tests -v
+```
+
+完整范围与限制见 [Oracle Regression Lab](docs/00-guide/oracle-regression-lab.md)。

@@ -39,7 +39,7 @@ def test_iou_known_cases(a, b, expected):
 
 def test_iou_empty_inputs():
     assert batch_iou(torch.empty(0, 4), torch.zeros(3, 4)).shape == (0, 3)
-    assert batch_iou(torch.empty(3, 4), torch.empty(0, 4)).shape == (3, 0)
+    assert batch_iou(torch.zeros(3, 4), torch.empty(0, 4)).shape == (3, 0)
     assert batch_iou(torch.empty(0, 4), torch.empty(0, 4)).shape == (0, 0)
 
 

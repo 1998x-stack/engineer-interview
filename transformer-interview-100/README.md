@@ -150,15 +150,34 @@ mkdocs build --strict
 
 详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
-## GitHub Pages
+## 仓库级 CI 与独立文档站
 
-仓库内置 `.github/workflows/docs.yml`。在 GitHub Pages 中选择 **GitHub Actions** 作为部署源即可。
+在合集仓库中，GitHub Actions 只会识别**仓库根目录**的 `.github/workflows/`。
+本模块的回归测试由根级 `.github/workflows/transformer.yml` 执行：
+题目结构、站内链接、PyTorch 单元测试，以及 `mkdocs build --strict`。
+模块自带的 `.github/workflows/docs.yml` 仅供模块单独作为仓库时参考，
+**不会**自动部署合集仓库的 GitHub Pages。
+
+### Attention Reference API
+
+`examples/reference_attention.py` 是教学用的显式 Attention 实现，不是生产级
+SDPA/FlashAttention 的性能替代品。输入 `x` 必须是 `(B,T,D)`。
+`mask` 为布尔类型，**True = 可关注、False = 屏蔽**，支持：
+
+- `(T,T)`：所有 batch/head 共用；
+- `(B,T,T)`：每个 batch 单独配置；
+- `(B|1,H|1,T,T)`：按 batch/head 配置或广播。
+
+禁止完全屏蔽一个 query 的所有 key：这类输入会显式抛出 `ValueError`，
+避免 softmax 产生 NaN。对于需要屏蔽 padding **query** 输出的应用，
+应由调用方在 Attention 之后使用独立的 query 有效位掩码处理。
+所有 mask 必须与输入在同一设备上。
 
 ## 内容来源与边界
 
 基础题目与 `PDF Core` 来自项目参考 PDF：
 
-`assets/reference/Transformer_算法岗面试100题_专业版.pdf`
+`assets/reference/Transformer_算法岗面试100题_专业版.pdf`（此参考 PDF 未出现在当前模块 Git 树中；复现时需使用合法取得的原始资料，不能假设克隆仓库后该路径存在）
 
 `Professional Expansion` 是在不静默替换 PDF 核心结论的前提下做的原创专业扩展，并参考公开论文。见 [论文地图](docs/reference/papers.md)。
 

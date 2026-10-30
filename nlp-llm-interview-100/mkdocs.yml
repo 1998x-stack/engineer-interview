@@ -141,3 +141,7 @@ nav:
       - 代码检查: appendices/coding-checklist.md
       - Glossary: appendices/glossary.md
       - References: appendices/references.md
+
+# GitHub-only source files are linked externally on the published site.
+hooks:
+  - scripts/mkdocs_hooks.py

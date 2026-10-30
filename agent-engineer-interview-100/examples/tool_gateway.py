@@ -216,6 +216,9 @@ class ToolGateway:
         """Read status without executing; still requires current authorization."""
         self._authorize(proposal)
         self._digest(proposal)
+        fingerprint = self._digest(proposal)
         with sqlite3.connect(self.database) as db:
             row = self._row(db, proposal)
+        if row and (row[0] != proposal.tool or row[1] != fingerprint):
+            raise IdempotencyConflict("status requested for a different operation payload")
         return row[2] if row else None
